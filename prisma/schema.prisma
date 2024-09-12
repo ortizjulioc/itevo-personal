@@ -1,36 +1,46 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
-model post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  content   String?  @db.Text
-  published Boolean  @default(false)
-  authorId  Int
-  user      user     @relation(fields: [authorId], references: [id], onUpdate: Restrict, map: "post_ibfk_1")
+model Users {
+    id       String @id @default(uuid())
+    username String @unique
+    email    String @unique
+    password String
 
-  @@index([authorId], map: "authorId")
+    roleBranch User_Role_Branch[]
 }
 
-model profile {
-  id     Int     @id @default(autoincrement())
-  bio    String? @db.Text
-  userId Int     @unique(map: "userId")
-  user   user    @relation(fields: [userId], references: [id], onUpdate: Restrict, map: "profile_ibfk_1")
+model Roles {
+    id   String @id @default(uuid())
+    name String
+    normalizedName String
+
+    userRole User_Role_Branch[]
 }
 
-model user {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique(map: "email") @db.VarChar(255)
-  post    post[]
-  profile profile?
-  search  String? @db.VarChar(255)
+model Branches {
+    id   String @id @default(uuid())
+    name String
+    address String
+
+    userRole User_Role_Branch[]
+}
+
+model User_Role_Branch {
+    id         String @id @default(uuid())
+    userId     String
+    roleId     String
+    branchId   String
+
+    user       Users  @relation(fields: [userId], references: [id])
+    role       Roles  @relation(fields: [roleId], references: [id])
+    branch     Branches @relation(fields: [branchId], references: [id])
+
+    @@unique([userId, roleId, branchId])
 }
