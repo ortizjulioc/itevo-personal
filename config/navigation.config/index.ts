@@ -3,6 +3,7 @@ import IconMenuChat from '@/components/icon/menu/icon-menu-chat';
 import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
 import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
 import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
+import IconUser from '@/components/icon/icon-user';
 
 const navigationConfig = [
   {
@@ -26,6 +27,20 @@ const navigationConfig = [
     title: 'Chats',
     icon: IconMenuChat,
     url: '/chats',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
+    key: 'auth',
+    title: 'Auth',
+    type: NAV_ITEM_TYPE_TITLE,
+    subItems: [],
+  },
+  {
+    key: 'users',
+    title: 'Usuarios',
+    icon: IconUser,
+    url: '/users',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },

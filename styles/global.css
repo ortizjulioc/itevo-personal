@@ -1,0 +1,15 @@
+.breadcrumb {
+    @apply flex font-semibold text-gray-500 dark:text-white-dark;
+}
+
+.breadcrumb-icon {
+    @apply hover:text-gray-500/70 dark:hover:text-white-dark/70;
+}
+
+.breadcrumb-item {
+    @apply before:px-1.5 before:content-['/'];
+}
+
+.breadcrumb-item:last-child span {
+    @apply text-black hover:text-black/70 dark:text-white-light dark:hover:text-white-light/70;
+}
