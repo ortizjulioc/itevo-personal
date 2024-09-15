@@ -1,20 +1,19 @@
-'use client';
-import { useEffect } from 'react';
-import useUser from './hook/use-user';
+import { Suspense } from "react";
+import UserList from "./user-list";
 
-export default function Users() {
-    const { users, loading, fetchUsers } = useUser();
+export default async function Users() {
 
-    useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
-
-    console.log(users);
     return (
         <div>
             <div>
                 <h2 className='text-xl'>Usuarios</h2>
             </div>
+
+            <span>WHYYYYYYYY</span>
+            <Suspense key={1} fallback={<div>Loading...</div>}>
+                <UserList />
+            </Suspense>
+
         </div>
     );
 }
