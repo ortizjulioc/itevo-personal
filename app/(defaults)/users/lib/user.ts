@@ -1,13 +1,7 @@
 import apiRequest from "@/utils/lib/api-request/request";
-
-interface User {
-    id: number;
-    username: string;
-    emai: string;
-}
+import { Users } from "@prisma/client";
 
 export const fetchUsers = async () => {
-    const response = await apiRequest.get<User[]>('/users');
-    console.log(response);
+    const response = await apiRequest.get<Users[]>('/users');
     return response.data;
 }
