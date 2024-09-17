@@ -13,6 +13,22 @@ import { getTranslation } from '@/i18n';
 import { NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_TITLE } from "@/constants/navigation.constant";
 import navigationConfig from '@/config/navigation.config';
 
+interface NavigationConfigInterface {
+    key: string;
+    title: string;
+    icon?: React.ElementType;
+    url: string;
+    type: string;
+    subItems: Array<{
+        key: string;
+        title: string;
+        url: string;
+        type: string;
+        subItems?: Array<{ key: string; title: string; url: string }>;
+    }>;
+};
+
+const NavigationConfig: NavigationConfigInterface[] = navigationConfig as NavigationConfigInterface[];
 const Sidebar = () => {
     const dispatch = useDispatch();
     const { t } = getTranslation();
@@ -48,14 +64,21 @@ const Sidebar = () => {
             dispatch(toggleSidebar());
         }
     }, [pathname]);
+
     const setActiveRoute = () => {
-        let allLinks = document.querySelectorAll('.sidebar ul a.active');
-        for (let i = 0; i < allLinks.length; i++) {
-            const element = allLinks[i];
-            element?.classList.remove('active');
-        }
-        const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
-        selector?.classList.add('active');
+        document.querySelectorAll('.sidebar ul a.active').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        document.querySelectorAll('.sidebar ul a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && window.location.pathname.startsWith(href)) {
+                // Verifica que sea una coincidencia exacta o comience con la ruta y un separador '/'
+                if (window.location.pathname === href || window.location.pathname.startsWith(`${href}/`)) {
+                    link.classList.add('active');
+                }
+            }
+        });
     };
     return (
         <div className={semidark ? 'dark' : ''}>
@@ -77,29 +100,35 @@ const Sidebar = () => {
                         </button>
                     </div>
                     <PerfectScrollbar className="relative h-[calc(100vh-80px)]">
-                        {navigationConfig.map((item, index) => (
-                            <ul key={item.key + index} className="relative space-y-0.5 p-4 py-0 font-semibold">
-                                {item.type === NAV_ITEM_TYPE_TITLE && (
+                        {NavigationConfig.map(({
+                            key,
+                            title,
+                            icon: Icon,
+                            url,
+                            type,
+                            subItems,
+                        }, index) => (
+                            <ul key={key + index} className="relative space-y-0.5 p-4 py-0 font-semibold">
+                                {type === NAV_ITEM_TYPE_TITLE && (
                                     <span key={index} className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
-                                        <span>{item.title}</span>
+                                        <span>{title}</span>
                                     </span>
                                 )}
-                                {item.type === NAV_ITEM_TYPE_COLLAPSE && (
+                                {type === NAV_ITEM_TYPE_COLLAPSE && (
                                     <li key={index} className="menu nav-item">
-                                        <button type="button" className={`${currentMenu === item.key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(item.key)}>
+                                        <button type="button" className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(key)}>
                                             <div className="flex items-center">
-                                                <item.icon className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{item.title}</span>
+                                                {Icon && (<Icon className="shrink-0 group-hover:!text-primary" />)}                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{title}</span>
                                             </div>
 
-                                            <div className={currentMenu !== item.key ? '-rotate-90 rtl:rotate-90' : ''}>
+                                            <div className={currentMenu !== key ? '-rotate-90 rtl:rotate-90' : ''}>
                                                 <IconCaretDown />
                                             </div>
                                         </button>
 
-                                        <AnimateHeight duration={300} height={currentMenu === item.key ? 'auto' : 0}>
+                                        <AnimateHeight duration={300} height={currentMenu === key ? 'auto' : 0}>
                                             <ul className="sub-menu text-gray-500">
-                                                {item.subItems.map((subItem, subIndex) => (
+                                                {subItems.map((subItem, subIndex) => (
                                                     <li key={subIndex}>
                                                         <Link href={subItem.url}>{subItem.title}</Link>
                                                     </li>
@@ -108,13 +137,13 @@ const Sidebar = () => {
                                         </AnimateHeight>
                                     </li>
                                 )}
-                                {item.type === NAV_ITEM_TYPE_ITEM && (
+                                {type === NAV_ITEM_TYPE_ITEM && (
                                     <li className="menu nav-item" key={index}>
-                                        <Link href={item.url}>
-                                            <button type="button" className={`${currentMenu === item.key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(item.key)}>
+                                        <Link href={url}>
+                                            <button type="button" className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(key)}>
                                                 <div className="flex items-center">
-                                                    <item.icon className="shrink-0 group-hover:!text-primary" />
-                                                    <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{item.title}</span>
+                                                    {Icon && <Icon className="shrink-0 group-hover:!text-primary" />}
+                                                    <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{title}</span>
                                                 </div>
                                             </button>
                                         </Link>
