@@ -1,4 +1,4 @@
-
+'use client'
 import { Suspense } from "react";
 import UserList from "./components/user-list";
 import { Metadata } from "next";
@@ -7,19 +7,19 @@ import IconUserPlus from "@/components/icon/icon-user-plus";
 import Button from "@/components/ui/button";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-    title: 'Usuarios',
-};
+// export const metadata: Metadata = {
+//     title: 'Usuarios',
+// };
 
 export default async function Users() {
 
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-xl">Usuarios</h2>
+                <ViewTitle title="Usuarios" />
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
-                    <Link href="/users/new">
+                         <Link href="/users/new">
                                 <Button icon={<IconUserPlus />}>Crear usuario</Button>
                             </Link>
                         {/* <div>
