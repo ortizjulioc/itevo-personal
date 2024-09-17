@@ -27,8 +27,8 @@ const UserTable: React.FC<UserListProps> = ({ users = [] }) => {
     }, [users]);
 
     return (
-        <div className="mt-5 flex items-center justify-center">
-            <div className="w-full max-w-5xl">
+        <div className=" mt-3 w-full">
+            <div className="w-full ">
                 <div className="overflow-x-auto">
                     <table className="w-full table-auto text-center">
                         <thead className="sticky top-0 bg-gray-200">
