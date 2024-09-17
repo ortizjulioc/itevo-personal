@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 interface ButtonProps {
@@ -16,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({
     onClick,
     type = 'button',
     disabled = false,
-    className,
+    className = '',
     size = 'md',
     variant = 'default',
     color = 'primary',
@@ -48,14 +49,24 @@ const Button: React.FC<ButtonProps> = ({
         }
     };
 
+    const btnClasses = classNames(
+        'btn',
+        getVariantClass(),
+        getSizeClass(),
+        { 'disabled:opacity-50 disabled:cursor-not-allowed': disabled },
+        { 'p-2': icon || !children },
+        className
+    );
+
     return (
         <button
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`btn ${getSizeClass()} ${getVariantClass()} ${className}`}
+            className={btnClasses}
+            {...rest}
         >
-            {icon && <span className="mr-2">{icon}</span>}
+            {icon && <span className={`${children && 'mr-2'}`}>{icon}</span>}
             {children}
         </button>
     );
