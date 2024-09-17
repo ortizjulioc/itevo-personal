@@ -1,6 +1,6 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { MdOutlineArrowBackIosNew } from "react-icons/md";
 interface ViewTitleProps {
     title: string;
     showBackPage?: boolean;
@@ -8,22 +8,36 @@ interface ViewTitleProps {
 }
 
 const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, rightComponent }) => {
+    const [isClient, setIsClient] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     const handleBackClick = () => {
-        router.back();
+        if (isClient) {
+            router.back();
+        }
     };
 
+    if (!isClient) {
+        return null; // Opcional: Podrías retornar un loading spinner o algo similar
+    }
+
     return (
-        <div className="view-title">
-            {showBackPage && (
-                <button onClick={handleBackClick} className="back-button">
-                    <span className="back-icon">🔙</span>
-                </button>
-            )}
-            <h1>{title}</h1>
-            {rightComponent && <div className="right-component">{rightComponent}</div>}
-        </div>
+        <div className="flex items-center p-4 ">
+        {showBackPage && (
+            <button
+                onClick={handleBackClick}
+                className="bg-transparent border-none cursor-pointer  text-2xl mr-4"
+            >
+                <MdOutlineArrowBackIosNew />
+            </button>
+        )}
+        <h1 className="text-3xl font-bold">{title}</h1>
+        {rightComponent && <div className="ml-auto flex items-center">{rightComponent}</div>}
+    </div>
     );
 };
 
