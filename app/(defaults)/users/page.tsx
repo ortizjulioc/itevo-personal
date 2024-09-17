@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import IconUserPlus from "@/components/icon/icon-user-plus";
 import Button from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
@@ -18,9 +19,9 @@ export default async function Users() {
                 <h2 className="text-xl">Usuarios</h2>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
-                        <div>
-                            <Button icon={<IconUserPlus />}>Crear usuario</Button>
-                        </div>
+                    <Link href="/users/new">
+                                <Button icon={<IconUserPlus />}>Crear usuario</Button>
+                            </Link>
                         {/* <div>
                             <button type="button" className="btn btn-outline-primary p-2 bg-primary text-white">
 
@@ -34,9 +35,12 @@ export default async function Users() {
                     </div>
                     <div className="relative">
                         <input type="text" placeholder="Buscar Usuarios" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value="" />
-                            <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto"><circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5"></circle><path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
-                            </button>
+                        <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                                <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5"></circle>
+                                <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
