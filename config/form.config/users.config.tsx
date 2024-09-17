@@ -17,6 +17,10 @@ const validationSchema = Yup.object({
     .min(3, 'El nombre de usuario debe tener como mínimo 3 caracteres')
     .max(20, 'El nombre de usuario debe tener como máximo 20 caracteres')
     .required('El nombre de usuario es requerido'),
+    password: Yup.string()
+    .min(3, 'La contraseña debe tener como mínimo 3 caracteres')
+    .max(20, 'La contraseña debe tener como máximo 20 caracteres')
+    .required('La contraseña es requerida'),
 });
 
 // Valores predeterminados
@@ -25,6 +29,7 @@ const defaultValues = {
   apellidos: '',
   correo: '',
   username: '',
+  password: '',
 };
 
 // Exportar la configuración del formulario
