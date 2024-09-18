@@ -28,7 +28,11 @@ export async function GET(request: Request) {
 
         return NextResponse.json(users);
     } catch (error) {
-        return NextResponse.error();
+        if (error instanceof Error) {
+            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
+        } else {
+            return NextResponse.json(error, { status: 500 });
+        }
     }
 }
 
@@ -72,7 +76,7 @@ export async function POST(request: Request) {
         if (error instanceof Error) {
             return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
         } else {
-            return NextResponse.json({ error: 'Error desconocido' }, { status: 500 });
+            return NextResponse.json(error, { status: 500 });
         }
     }
 }
