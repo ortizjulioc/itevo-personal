@@ -1,16 +1,37 @@
 import { fetchUsers } from "../lib/user";
 
-export default async function UserList() {
+interface Props {
+    className?: string;
+}
+
+export default async function UserList({ className }: Props) {
     const users = await fetchUsers();
     return (
-        <div>
-            <ul>
-                {users?.map((user) => (
-                    <div key={user.id}>
-                        <li key={user.id}>{user.username}</li>
-                    </div>
-                ))}
-            </ul>
+        <div className={className}>
+            <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+                <table className="table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre de usuario</th>
+                            <th>Correo electrónico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users?.map((user) => {
+                            return (
+                                <tr key={user.id}>
+                                    <td>{user.id}</td>
+                                    <td>
+                                        <div className="whitespace-nowrap">{user.username}</div>
+                                    </td>
+                                    <td>{user.email}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

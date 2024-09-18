@@ -7,9 +7,10 @@ interface ViewTitleProps {
     title: string;
     showBackPage?: boolean;
     rightComponent?: React.ReactNode;
+    className?: string;
 }
 
-const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, rightComponent }) => {
+const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, rightComponent, className = '' }) => {
     const router = useRouter();
 
     const handleBackClick = () => {
@@ -17,7 +18,7 @@ const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, righ
     };
 
     return (
-        <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className={`flex items-center justify-between flex-wrap gap-4 ${className}`}>
             <h2 className="text-xl flex items-center">
                 {showBackPage && (
                     <button onClick={handleBackClick}>

@@ -32,7 +32,7 @@ const navigationConfig = [
   },
   {
     key: 'auth',
-    title: 'Auth',
+    title: 'Acceso',
     type: NAV_ITEM_TYPE_TITLE,
     subItems: [],
   },

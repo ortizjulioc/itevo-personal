@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
             case 'outline':
                 return `btn-outline-${color}`;
             default:
-                return 'btn-primary';
+                return color ? `btn-${color}` : 'btn-primary';
         }
     };
 

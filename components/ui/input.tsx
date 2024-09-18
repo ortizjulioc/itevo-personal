@@ -1,11 +1,13 @@
 import classNames from "classnames";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    field?: any;
     icon?: React.ElementType;
     className?: string;
 }
 
 export default function Input({
+    field,
     className = '',
     icon: Icon,
     ...rest
@@ -17,6 +19,7 @@ export default function Input({
         return (
             <div className="relative">
                 <input
+                    {...field}
                     className={` ${inputClasses} placeholder:tracking-widest pl-9 pr-9 sm:pr-4`}
                     {...rest}
                 />
@@ -30,6 +33,7 @@ export default function Input({
     return (
         <input
             className={inputClasses}
+            {...field}
             {...rest}
         />
     );
