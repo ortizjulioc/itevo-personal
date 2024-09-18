@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import * as Yup from 'yup';
 import { createUser } from "../lib/user";
+import { openNotification } from "@/utils/lib";
 
 const usernameRegex = /^(?!.*[_.]{2})[a-zA-Z0-9._]{3,16}(?<![_.])$/;
 const userSchema = Yup.object().shape({
@@ -35,12 +36,14 @@ const initialValues = {
 export default function UserForm() {
     const route = useRouter();
     const handleSubmit = async (values: any) => {
-        console.log(values);
-        delete values.confirmPassword;
-        const resp = await createUser(values);
+        const data = values;
+        delete data.confirmPassword;
+
+        const resp = await createUser(data);
         console.log(resp);
 
         if (resp.success) {
+            openNotification('success', 'Usuario creado correctamente');
             route.push('/users');
         } else {
             alert(resp.message);
@@ -119,14 +122,13 @@ export default function UserForm() {
                             errorMessage={errors.phone}
                         >
                             <Field name="phone">
-                                {({ field, form }: any) => (
+                                {({ form }: any) => (
                                     <FormatPatterInput
                                         format="(###) ###-####"
                                         placeholder="(___) ___-____"
                                         className="form-input"
                                         value={values.phone}
                                         onValueChange={(value : any) => {
-                                            console.log(value);
                                             form.setFieldValue('phone', value.value);
                                         }}
                                     />
@@ -141,10 +143,10 @@ export default function UserForm() {
                             errorMessage={errors.password}
                         >
                             <Field
-                                type="text"
+                                type="password"
                                 name="password"
                                 component={Input}
-                                placeholder="********"
+                                placeholder="••••••••"
                             />
                         </FormItem>
 
@@ -155,16 +157,16 @@ export default function UserForm() {
                             errorMessage={errors.confirmPassword}
                         >
                             <Field
-                                type="text"
+                                type="password"
                                 name="confirmPassword"
                                 component={Input}
-                                placeholder="********"
+                                placeholder="••••••••"
                             />
                         </FormItem>
 
                         <div className="flex justify-end gap-2 mt-6">
-                            <Button type="button" color="danger" onClick={() => route.back()}>Cancelar</Button>
-                            <Button type="submit">Guardar</Button>
+                            <Button key={1} type="button" color="danger" onClick={() => route.back()}>Cancelar</Button>
+                            <Button key={2} type="submit">Guardar</Button>
                         </div>
                     </Form>
                 )}
