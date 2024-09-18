@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import * as Yup from 'yup';
 import { createUser } from "../lib/user";
-import { openNotification } from "@/utils/lib";
+import { openNotification } from "@/utils";
 
 const usernameRegex = /^(?!.*[_.]{2})[a-zA-Z0-9._]{3,16}(?<![_.])$/;
 const userSchema = Yup.object().shape({

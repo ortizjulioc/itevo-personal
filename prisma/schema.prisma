@@ -15,6 +15,7 @@ model User {
     lastName String
     phone    String
     password String
+    search   String @default("")
     inactive Boolean @default(false)
     deleted  Boolean @default(false)
 

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { validateObject } from "@/utils/lib/validate-object";
+import { validateObject } from "@/utils";
+import { normalizeString } from "@/utils/normalize-string";
 const bcrypt = require('bcrypt');
 const Prisma = new PrismaClient();
 
 export async function GET(request: Request) {
     try {
-        // Use Prisma to fetch all users from the database and return them as JSON
-        // Select only the id, username, email, and username fields
+        const { searchParams } = new URL(request.url);
+        const search = searchParams.get('search') || '';
 
         const users = await Prisma.user.findMany({
             select: {
@@ -19,6 +20,10 @@ export async function GET(request: Request) {
                 phone: true,
                 password: false,
             },
+            where: {
+                deleted: false,
+                search: { contains: search },
+            }
         });
 
         return NextResponse.json(users);
@@ -59,6 +64,7 @@ export async function POST(request: Request) {
         const saltRounds = 10;
         const hash = bcrypt.hashSync(body.password, saltRounds);
         body.password = hash;
+        body.search = normalizeString(`${body.name} ${body.lastName} ${body.username} ${body.email}`);
 
         const user = await Prisma.user.create({ data: body });
         return NextResponse.json(user, { status: 201 });
