@@ -2,10 +2,11 @@ import { fetchUsers } from "../lib/user";
 
 interface Props {
     className?: string;
+    query?: string;
 }
 
-export default async function UserList({ className }: Props) {
-    const users = await fetchUsers();
+export default async function UserList({ className, query = '' }: Props) {
+    const users = await fetchUsers(query);
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">

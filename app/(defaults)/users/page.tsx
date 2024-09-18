@@ -5,21 +5,29 @@ import { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import IconUserPlus from "@/components/icon/icon-user-plus";
 import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
-import IconSearch from "@/components/icon/icon-search";
 import Link from "next/link";
+import { SearchInput } from "@/components/common";
+import { objectToQueryString } from "@/utils";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
 };
 
-export default async function Users() {
+interface UsersProps {
+    searchParams?: {
+        search?: string;
+        page?: string;
+    };
+}
 
+export default async function Users({ searchParams }: UsersProps) {
+    const query = objectToQueryString(searchParams || {});
+    console.log(query);
     return (
         <div>
             <ViewTitle className='mb-6' title="Usuarios" rightComponent={
                 <>
-                    <Input placeholder="Buscar contactos" icon={IconSearch} />
+                    <SearchInput placeholder="Buscar usuarios" />
                     <Link href="/users/new">
                         <Button icon={<IconUserPlus />}>Crear usuario</Button>
                     </Link>
@@ -27,7 +35,7 @@ export default async function Users() {
             } />
 
             <Suspense fallback={<div>Loading...</div>}>
-                <UserList />
+                <UserList query={query} />
             </Suspense>
 
         </div>
