@@ -14,3 +14,17 @@ export const fetchUsers = async (query: string) => {
 export const createUser = async (user: User) => {
     return await apiRequest.post<User>('/users', user);
 }
+
+export const updateUser = async (id: string, user: User) => {
+    return await apiRequest.put<User>(`/users/${id}`, user);
+}
+
+export const deleteUser = async (id: string) => {
+    return await apiRequest.remove(`/users/${id}`);
+}
+
+export const fetchUserById = async (id: string) => {
+    return await apiRequest.get<User>(`/users/${id}`);
+}
+
+

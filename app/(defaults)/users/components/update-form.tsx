@@ -5,8 +5,9 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from "next/navigation";
 
 import * as Yup from 'yup';
-import { createUser } from "../lib/user";
+import { createUser, updateUser } from "../lib/user";
 import { openNotification } from "@/utils";
+import { User } from "@prisma/client";
 
 const usernameRegex = /^(?!.*[_.]{2})[a-zA-Z0-9._]{3,16}(?<![_.])$/;
 const userSchema = Yup.object().shape({
@@ -33,17 +34,17 @@ const initialValues = {
     confirmPassword: '',
 };
 
-export default function UserForm() {
+export default function UpdateUserForm({ initialValues }: { initialValues: User }) {
     const route = useRouter();
     const handleSubmit = async (values: any) => {
         const data = values;
         delete data.confirmPassword;
 
-        const resp = await createUser(data);
+        const resp = await updateUser(initialValues.id, data);
         console.log(resp);
 
         if (resp.success) {
-            openNotification('success', 'Usuario creado correctamente');
+            openNotification('success', 'Usuario editado correctamente');
             route.push('/users');
         } else {
             alert(resp.message);
@@ -51,8 +52,9 @@ export default function UserForm() {
     }
     return (
         <div className='panel'>
+            <h5 className="font-semibold text-lg dark:text-white-light mb-4">Formulario de usuarios</h5>
             <Formik
-                initialValues={initialValues}
+                initialValues={{...initialValues, password: '', confirmPassword: ''}}
                 validationSchema={userSchema}
                 onSubmit={handleSubmit}
             >

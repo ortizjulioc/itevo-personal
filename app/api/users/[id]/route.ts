@@ -27,13 +27,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
         });
 
         if (!user) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
         return NextResponse.json(user);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }    }
@@ -51,7 +51,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             keysRequired: ['name', 'lastName', 'username', 'email'],
         });
         if (!isValid) {
-            return NextResponse.json({ error: message }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS',message }, { status: 400 });
         }
 
         // Verificar si el usuario existe
@@ -59,7 +59,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             where: { id },
         });
         if (!user || user.deleted) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
         // Actualizar el campo password si está presente
@@ -80,7 +80,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         return NextResponse.json(updatedUser);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error creando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -97,7 +97,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
             where: { id },
         });
         if (!user || user.deleted) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
         // Marcar el usuario como eliminado
@@ -109,7 +109,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         return NextResponse.json({ message: 'Usuario eliminado correctamente' });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error creando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }

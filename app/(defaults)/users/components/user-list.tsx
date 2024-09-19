@@ -5,6 +5,8 @@ import { Button, Pagination } from "@/components/ui";
 import IconEdit from "@/components/icon/icon-edit";
 import IconTrashLines from "@/components/icon/icon-trash-lines";
 import Tooltip from "@/components/ui/tooltip";
+import Link from "next/link";
+import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -16,9 +18,6 @@ export default async function UserList({ className, query = '' }: Props) {
     const response = await fetchUsers(query);
     const users = response?.users || [];
     const total = response?.totalUsers || 0;
-
-    // wait 2 seconds
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return (
         <div className={className}>
@@ -48,14 +47,18 @@ export default async function UserList({ className, query = '' }: Props) {
                                     <td>
                                         <div className="whitespace-nowrap">{user.email}</div>
                                     </td>
-                                    <td>{formatPhoneNumber(user.phone)}</td>
+                                    <td>
+                                        <OptionalInfo content={formatPhoneNumber(user.phone)} />
+                                    </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
                                                 <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger"/>
                                             </Tooltip>
                                             <Tooltip title="Editar">
+                                                <Link href={`/users/${user.id}`}>
                                                 <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />}/>
+                                                </Link>
                                             </Tooltip>
                                         </div>
                                     </td>
