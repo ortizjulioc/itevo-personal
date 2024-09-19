@@ -1,7 +1,10 @@
 import Avatar from "@/components/common/Avatar";
 import { fetchUsers } from "../lib/user";
 import { formatPhoneNumber, getInitials, queryStringToObject } from "@/utils";
-import { Pagination } from "@/components/ui";
+import { Button, Pagination } from "@/components/ui";
+import IconEdit from "@/components/icon/icon-edit";
+import IconTrash from "@/components/icon/icon-trash";
+import IconTrashLines from "@/components/icon/icon-trash-lines";
 
 interface Props {
     className?: string;
@@ -13,7 +16,6 @@ export default async function UserList({ className, query = '' }: Props) {
     const response = await fetchUsers(query);
     const users = response?.users || [];
     const total = response?.totalUsers || 0;
-    console.log('Params', params);
 
     return (
         <div className={className}>
@@ -24,6 +26,7 @@ export default async function UserList({ className, query = '' }: Props) {
                             <th>USUARIO</th>
                             <th>CORREO ELECTRÓNICO</th>
                             <th>TELEFONO</th>
+                            <th />
                         </tr>
                     </thead>
                     <tbody>
@@ -43,6 +46,12 @@ export default async function UserList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{user.email}</div>
                                     </td>
                                     <td>{formatPhoneNumber(user.phone)}</td>
+                                    <td>
+                                        <div className="flex gap-2 justify-end">
+                                            <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger"/>
+                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />}/>
+                                        </div>
+                                    </td>
                                 </tr>
                             );
                         })}

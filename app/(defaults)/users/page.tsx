@@ -8,7 +8,6 @@ import Button from "@/components/ui/button";
 import Link from "next/link";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
-import { Pagination } from "@/components/ui";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
