@@ -10,3 +10,20 @@ export const objectToQueryString = (params: Record<string, any>): string => {
 
     return queryString;
   }
+
+
+export const queryStringToObject = (queryString: string): Record<string, any> => {
+    if (queryString === '') {
+      return {};
+    }
+
+    const params = new URLSearchParams(queryString);
+    const entries = Array.from(params.entries());
+    const result: Record<string, any> = {};
+
+    for (const [key, value] of entries) {
+      result[key] = value;
+    }
+
+    return result
+    }

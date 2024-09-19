@@ -1,14 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { validateObject } from "@/utils";
 import { normalizeString } from "@/utils/normalize-string";
 const bcrypt = require('bcrypt');
 const Prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
+        const page = parseInt(searchParams.get('page') || '1', 10);
+        const top = parseInt(searchParams.get('top') || '10', 10);
+        const skip = (page - 1) * top;
 
         const users = await Prisma.user.findMany({
             select: {
@@ -23,13 +26,20 @@ export async function GET(request: Request) {
             where: {
                 deleted: false,
                 search: { contains: search },
-            }
+            },
+            skip: skip,
+            take: top
         });
+        const totalUsers = await Prisma.user.count({ where: { deleted: false, search: { contains: search } } });
 
-        return NextResponse.json(users);
+
+        return NextResponse.json({
+            users,
+            totalUsers,
+        }, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ error: 'Error obteniendo los usuarios', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -47,7 +57,7 @@ export async function POST(request: Request) {
             keysRequired: ['name', 'lastName', 'username', 'email', 'password']
         });
         if (!isValid) {
-            return NextResponse.json({ error: message }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
         // verify if the user already exists

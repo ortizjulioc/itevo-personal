@@ -25,10 +25,13 @@ export default function useURLSearchParams() {
     (key: string) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      if (!params.has(key)) return;
+      if (params.has(key)) {
+        params.delete(key);
+        const queryString = params.toString();
+        const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
 
-      params.delete(key);
-      router.push(`${pathname}?${params.toString()}`, { shallow: true });
+        router.push(newUrl, { shallow: true });
+      }
     },
     [router, searchParams, pathname]
   );
