@@ -3,8 +3,8 @@ import { fetchUsers } from "../lib/user";
 import { formatPhoneNumber, getInitials, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import IconEdit from "@/components/icon/icon-edit";
-import IconTrash from "@/components/icon/icon-trash";
 import IconTrashLines from "@/components/icon/icon-trash-lines";
+import Tooltip from "@/components/ui/tooltip";
 
 interface Props {
     className?: string;
@@ -16,6 +16,9 @@ export default async function UserList({ className, query = '' }: Props) {
     const response = await fetchUsers(query);
     const users = response?.users || [];
     const total = response?.totalUsers || 0;
+
+    // wait 2 seconds
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return (
         <div className={className}>
@@ -48,8 +51,12 @@ export default async function UserList({ className, query = '' }: Props) {
                                     <td>{formatPhoneNumber(user.phone)}</td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                            <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger"/>
-                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />}/>
+                                            <Tooltip title="Eliminar">
+                                                <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger"/>
+                                            </Tooltip>
+                                            <Tooltip title="Editar">
+                                                <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />}/>
+                                            </Tooltip>
                                         </div>
                                     </td>
                                 </tr>

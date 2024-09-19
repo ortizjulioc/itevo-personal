@@ -1,3 +1,4 @@
+'use client';
 import React, { ReactNode } from 'react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';

@@ -8,6 +8,7 @@ import Button from "@/components/ui/button";
 import Link from "next/link";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
+import UserSkeleton from "./components/user-skeleton";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
@@ -22,7 +23,6 @@ interface UsersProps {
 
 export default async function Users({ searchParams }: UsersProps) {
     const query = objectToQueryString(searchParams || {});
-    console.log(query);
     return (
         <div>
             <ViewTitle className='mb-6' title="Usuarios" rightComponent={
@@ -34,10 +34,9 @@ export default async function Users({ searchParams }: UsersProps) {
                 </>
             } />
 
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<UserSkeleton />}>
                 <UserList query={query} />
             </Suspense>
-
         </div>
     );
 }
