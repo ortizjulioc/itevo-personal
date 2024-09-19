@@ -11,6 +11,7 @@ interface ButtonProps {
     color?: 'primary' | 'info' | 'success' | 'warning' | 'danger' | 'secondary' | 'dark';
     children?: React.ReactNode;
     icon?: React.ReactNode;
+    loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
     color = 'primary',
     children,
     icon,
+    loading = false,
     ...rest
 }) => {
     const getSizeClass = () => {
@@ -53,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({
         'btn',
         getVariantClass(),
         getSizeClass(),
-        { 'disabled:opacity-50 disabled:cursor-not-allowed': disabled },
+        { 'disabled:opacity-50 disabled:cursor-not-allowed': (disabled || loading) },
         { 'p-2': icon || !children },
         className
     );
@@ -62,11 +64,12 @@ const Button: React.FC<ButtonProps> = ({
         <button
             type={type}
             onClick={onClick}
-            disabled={disabled}
+            disabled={(disabled || loading)}
             className={btnClasses}
             {...rest}
         >
-            {icon && <span className={`${children && 'mr-2'}`}>{icon}</span>}
+            {loading && (<span className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle"></span>)}
+            {(icon && !loading) && <span className={`${children && 'mr-2'}`}>{icon}</span>}
             {children}
         </button>
     );

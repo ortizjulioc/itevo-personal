@@ -35,19 +35,20 @@ const initialValues = {
 
 export default function CreateUserForm() {
     const route = useRouter();
-    const handleSubmit = async (values: any) => {
-        const data = values;
+    const handleSubmit = async (values: any, { setSubmitting }: any) => {
+        setSubmitting(true);
+        const data = { ...values};
         delete data.confirmPassword;
 
         const resp = await createUser(data);
-        console.log(resp);
 
         if (resp.success) {
             openNotification('success', 'Usuario creado correctamente');
             route.push('/users');
         } else {
-            alert(resp.message);
+            openNotification('error', resp.message);
         }
+        setSubmitting(false);
     }
     return (
         <div className='panel'>
@@ -166,8 +167,10 @@ export default function CreateUserForm() {
                         </FormItem>
 
                         <div className="flex justify-end gap-2 mt-6">
-                            <Button key={1} type="button" color="danger" onClick={() => route.back()}>Cancelar</Button>
-                            <Button key={2} type="submit">Guardar</Button>
+                            <Button type="button" color="danger" onClick={() => route.back()}>Cancelar</Button>
+                            <Button loading={isSubmitting} type="submit">
+                                { isSubmitting ? 'Guardando...' : 'Guardar' }
+                            </Button>
                         </div>
                     </Form>
                 )}
