@@ -19,7 +19,7 @@ const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, righ
 
     return (
         <div className={`flex items-center justify-between flex-wrap gap-4 ${className}`}>
-            <h2 className="text-xl flex items-center">
+            <h2 className="text-2xl font-semibold flex items-center">
                 {showBackPage && (
                     <button onClick={handleBackClick}>
                         <IconCaretDown className='rotate-90 size-5 cursor-pointer' />

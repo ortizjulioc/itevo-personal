@@ -1,6 +1,5 @@
 
 import { Suspense } from "react";
-import UserList from "./components/user-list";
 import { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import IconUserPlus from "@/components/icon/icon-user-plus";
@@ -8,7 +7,8 @@ import Button from "@/components/ui/button";
 import Link from "next/link";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
-import UserSkeleton from "./components/user-skeleton";
+import UserList from "./user-list";
+import UserSkeleton from "./user-list/skeleton";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
