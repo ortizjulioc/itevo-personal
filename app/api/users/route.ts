@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
         });
         const totalUsers = await Prisma.user.count({ where: { deleted: false, search: { contains: search } } });
 
-
         return NextResponse.json({
             users,
             totalUsers,
@@ -52,10 +51,7 @@ export async function POST(request: Request) {
         console.log('BODY: ',body);
 
         // Validate the request body
-        const {isValid, message} = validateObject({
-            object: body,
-            keysRequired: ['name', 'lastName', 'username', 'email', 'password']
-        });
+        const {isValid, message} = validateObject(body, ['name', 'lastName', 'username', 'email', 'password']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }

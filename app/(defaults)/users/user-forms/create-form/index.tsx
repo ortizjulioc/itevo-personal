@@ -1,36 +1,57 @@
 'use client';
-import { Button } from "@/components/ui";
-import { Form, Formik } from 'formik';
-import { useRouter } from "next/navigation";
-import { Fragment } from 'react';
-import { openNotification } from "@/utils";
-import { Tab } from '@headlessui/react'
-import { createUser } from "../../lib/user";
-import { createValidationSchema, initialValues } from "../config";
-import GeneralInfoFields from "./general-info-fields";
-import PasswordFields from "./password-fields";
+// import { Button } from "@/components/ui";
+// import { Form, Formik } from 'formik';
+// import { useRouter } from "next/navigation";
+// import { Fragment } from 'react';
+// import { openNotification } from "@/utils";
+// import { Tab } from '@headlessui/react'
+// import { createUser } from "../../lib/user";
+// import { createValidationSchema, initialValues } from "../config";
+// import GeneralInfoFields from "./general-info-fields";
+// import PasswordFields from "./password-fields";
+import { createUserAction } from "../../lib/actions";
+import { useFormStatus, useFormState } from "react-dom";
 
 export default function CreateUserForm() {
-    const route = useRouter();
-    const handleSubmit = async (values: any, { setSubmitting }: any) => {
-        setSubmitting(true);
-        const data = { ...values };
-        delete data.confirmPassword;
+    const initialState = { message: null, errors: {} };
+    const [state, dispatch] = useFormState((createUserAction), initialState);
+    const {} = useFormStatus();
 
-        const resp = await createUser(data);
+    // const route = useRouter();
+    // const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    //     setSubmitting(true);
+    //     const data = { ...values };
+    //     delete data.confirmPassword;
 
-        if (resp.success) {
-            openNotification('success', 'Usuario creado correctamente');
-            route.push('/users');
-        } else {
-            openNotification('error', resp.message);
-        }
-        setSubmitting(false);
-    }
+    //     const resp = await createUser(data);
+
+    //     if (resp.success) {
+    //         openNotification('success', 'Usuario creado correctamente');
+    //         route.push('/users');
+    //     } else {
+    //         openNotification('error', resp.message);
+    //     }
+    //     setSubmitting(false);
+    // }
     return (
         <div className='panel'>
             <h4 className="font-semibold text-xl dark:text-white-light mb-4">Formulario de usuarios</h4>
-            <Formik
+            <form action={dispatch}>
+                <div className="flex flex-col gap-2 mb-4">
+                    <input className="form-input" type="text" name="name" id="name" placeholder="Nombre" />
+                    <input className="form-input" type="text" name="lastName" id="lastName" placeholder="Apellido" />
+                    <input className="form-input" type="text" name="username" id="user" placeholder="Usuario" />
+                    <input className="form-input" type="email" name="email" id="email" placeholder="Correo electrónico" />
+                    <input className="form-input" type="tel" name="phone" id="phone" placeholder="Teléfono" />
+                    <input className="form-input" type="password" name="password" id="password" placeholder="Contraseña" />
+                    <input className="form-input" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirmar contraseña" />
+                </div>
+                <button className="btn btn-primary" type="submit">Crear usuario</button>
+            </form>
+            <pre>
+                {JSON.stringify(state, null, 2)}
+            </pre>
+            {/* <Formik
                 initialValues={initialValues}
                 validationSchema={createValidationSchema}
                 onSubmit={handleSubmit}
@@ -90,7 +111,7 @@ export default function CreateUserForm() {
                         </div>
                     </Form>
                 )}
-            </Formik>
+            </Formik> */}
         </div>
     );
 }

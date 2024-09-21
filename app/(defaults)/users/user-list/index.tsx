@@ -7,6 +7,9 @@ import IconTrashLines from "@/components/icon/icon-trash-lines";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
+import Swal from 'sweetalert2';
+import { DeleteUser, UpdateUser } from "./actions";
+
 
 interface Props {
     className?: string;
@@ -18,6 +21,26 @@ export default async function UserList({ className, query = '' }: Props) {
     const response = await fetchUsers(query);
     const users = response?.users || [];
     const total = response?.totalUsers || 0;
+
+    const onDelete = async (id: string) => {
+        console.log('delete', id);
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {  // Use `isConfirmed` instead of `value`
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Your file has been deleted.',
+                    icon: 'success',
+                });
+            }
+        });
+    }
 
     return (
         <div className={className}>
@@ -52,14 +75,8 @@ export default async function UserList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger"/>
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/users/${user.id}`}>
-                                                <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />}/>
-                                                </Link>
-                                            </Tooltip>
+                                            <DeleteUser id={user.id} />
+                                            <UpdateUser id={user.id} />
                                         </div>
                                     </td>
                                 </tr>

@@ -1,14 +1,10 @@
-interface ValidateObjectInput {
-    object: Record<string, any>;
-    keysRequired: string[];
-  }
 
   interface ValidationResult {
     isValid: boolean;
     message: string;
   }
 
-  export const validateObject = ({ object, keysRequired }: ValidateObjectInput): ValidationResult => {
+  export const validateObject = (object: Record<string, any>, keysRequired: string[]): ValidationResult => {
     const emptyFields: string[] = [];
 
     for (const key of keysRequired) {

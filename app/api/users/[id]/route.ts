@@ -46,10 +46,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud
-        const { isValid, message } = validateObject({
-            object: body,
-            keysRequired: ['name', 'lastName', 'username', 'email'],
-        });
+        const { isValid, message } = validateObject(body, ['name', 'lastName', 'username', 'email']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS',message }, { status: 400 });
         }

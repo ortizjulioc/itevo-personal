@@ -1,3 +1,4 @@
+'use server';
 import apiRequest from "@/utils/lib/api-request/request";
 import { User } from "@prisma/client";
 
