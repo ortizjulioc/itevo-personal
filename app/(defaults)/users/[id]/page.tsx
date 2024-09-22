@@ -1,6 +1,6 @@
 import { ViewTitle } from "@/components/common";
-import { fetchUserById } from "../lib/user";
-import { UpdateUserForm } from "../user-forms";
+import { fetchUserById } from "../lib/request";
+import { UpdateUserForm } from "../components/user-forms";
 
 
 export default async function EditUser ({ params }: { params: { id: string } }) {

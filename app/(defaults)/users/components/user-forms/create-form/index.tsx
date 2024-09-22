@@ -2,37 +2,37 @@
 import { Button } from "@/components/ui";
 import { Form, Formik } from 'formik';
 import { useRouter } from "next/navigation";
+import { Fragment } from 'react';
 import { openNotification } from "@/utils";
-import { User } from "@prisma/client";
-import { updateUser } from "../../lib/user";
-import { updateValidationSchema } from "../config";
-import { Tab } from "@headlessui/react";
-import { Fragment } from "react";
+import { Tab } from '@headlessui/react'
+import { createValidationSchema, initialValues } from "../form.config";
 import GeneralInfoFields from "./general-info-fields";
 import PasswordFields from "./password-fields";
+import { createUser } from "../../../lib/request";
 
-export default function UpdateUserForm({ initialValues }: { initialValues: User }) {
+export default function CreateUserForm() {
     const route = useRouter();
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: any, { setSubmitting }: any) => {
+        setSubmitting(true);
         const data = { ...values };
         delete data.confirmPassword;
 
-        const resp = await updateUser(initialValues.id, data);
-        console.log(resp);
+        const resp = await createUser(data);
 
         if (resp.success) {
-            openNotification('success', 'Usuario editado correctamente');
+            openNotification('success', 'Usuario creado correctamente');
             route.push('/users');
         } else {
-            alert(resp.message);
+            openNotification('error', resp.message);
         }
+        setSubmitting(false);
     }
     return (
         <div className='panel'>
-            <h5 className="font-semibold text-lg dark:text-white-light mb-4">Formulario de usuarios</h5>
+            <h4 className="font-semibold text-xl dark:text-white-light mb-4">Formulario de usuarios</h4>
             <Formik
-                initialValues={{...initialValues, password: '', confirmPassword: ''}}
-                validationSchema={updateValidationSchema}
+                initialValues={initialValues}
+                validationSchema={createValidationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ isSubmitting, values, errors, touched }) => (
@@ -79,6 +79,8 @@ export default function UpdateUserForm({ initialValues }: { initialValues: User 
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
+
+
 
                         <div className="flex justify-end gap-2 mt-6">
                             <Button type="button" color="danger" onClick={() => route.back()}>Cancelar</Button>

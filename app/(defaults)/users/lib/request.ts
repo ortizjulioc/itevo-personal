@@ -6,6 +6,7 @@ export interface UserResponse {
     users: User[];
     totalUsers: number;
 }
+
 export const fetchUsers = async (query: string) => {
     const response = await apiRequest.get<UserResponse>(`/users?${query}`);
     return response.data;

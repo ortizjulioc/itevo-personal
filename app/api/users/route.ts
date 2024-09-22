@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { validateObject } from "@/utils";
 import { normalizeString } from "@/utils/normalize-string";
+import { getUsers } from "@/services/user-service";
 const bcrypt = require('bcrypt');
 const Prisma = new PrismaClient();
 
@@ -11,26 +12,8 @@ export async function GET(request: NextRequest) {
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
-        const skip = (page - 1) * top;
 
-        const users = await Prisma.user.findMany({
-            select: {
-                id: true,
-                username: true,
-                email: true,
-                name: true,
-                lastName: true,
-                phone: true,
-                password: false,
-            },
-            where: {
-                deleted: false,
-                search: { contains: search },
-            },
-            skip: skip,
-            take: top
-        });
-        const totalUsers = await Prisma.user.count({ where: { deleted: false, search: { contains: search } } });
+        const { users, totalUsers } = await getUsers(search, page, top);
 
         return NextResponse.json({
             users,

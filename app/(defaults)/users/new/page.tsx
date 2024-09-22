@@ -1,5 +1,5 @@
 import ViewTitle from "@/components/common/ViewTitle";
-import { CreateUserForm } from "../user-forms";
+import { CreateUserForm } from "../components/user-forms";
 
 export default function CreateUser() {
     return (

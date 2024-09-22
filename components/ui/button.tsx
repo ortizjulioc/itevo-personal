@@ -14,7 +14,7 @@ interface ButtonProps {
     loading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
     onClick,
     type = 'button',
     disabled = false,
@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
     icon,
     loading = false,
     ...rest
-}) => {
+}, ref) => {
     const getSizeClass = () => {
         switch (size) {
             case 'sm':
@@ -62,6 +62,7 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
+            ref={ref}
             type={type}
             onClick={onClick}
             disabled={(disabled || loading)}
@@ -73,6 +74,8 @@ const Button: React.FC<ButtonProps> = ({
             {children}
         </button>
     );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;
