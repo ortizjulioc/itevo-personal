@@ -1,30 +1,13 @@
-import { validateObject } from '@/utils';
-import { normalizeString } from '@/utils/normalize-string';
-import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-const Prisma = new PrismaClient();
-const bcrypt = require('bcrypt');
+import { findUserById, updateUserById, deleteUserById } from '@/services/user-service';
+import { validateObject } from '@/utils';
 
 // Obtener usuario por ID
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = params;
 
-        const user = await Prisma.user.findUnique({
-            select: {
-                id: true,
-                username: true,
-                email: true,
-                name: true,
-                lastName: true,
-                phone: true,
-                password: false,
-            },
-            where: {
-                id: id,
-                deleted: false,
-            },
-        });
+        const user = await findUserById(id);
 
         if (!user) {
             return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
@@ -36,77 +19,59 @@ export async function GET(request: Request, { params }: { params: { id: string }
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
-        }    }
+        }
+    }
 }
 
 // Actualizar usuario por ID
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = params;
         const body = await request.json();
 
-        // Validar el cuerpo de la solicitud
+        // Validar el cuerpo de la solicitud (usando la validación existente)
         const { isValid, message } = validateObject(body, ['name', 'lastName', 'username', 'email']);
         if (!isValid) {
-            return NextResponse.json({ code: 'E_MISSING_FIELDS',message }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
         // Verificar si el usuario existe
-        const user = await Prisma.user.findUnique({
-            where: { id },
-        });
-        if (!user || user.deleted) {
+        const user = await findUserById(id);
+        if (!user) {
             return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        // Actualizar el campo password si está presente
-        if (body.password) {
-            const saltRounds = 10;
-            body.password = bcrypt.hashSync(body.password, saltRounds);
-        } else {
-            delete body.password;
-        }
-
-        body.search = normalizeString(`${body.name} ${body.lastName} ${body.username} ${body.email}`);
-
-        const updatedUser = await Prisma.user.update({
-            where: { id },
-            data: body,
-        });
+        // Actualizar el usuario
+        const updatedUser = await updateUserById(id, body);
 
         return NextResponse.json(updatedUser);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
     }
 }
 
-// Eliminar usuario por ID
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+// Eliminar usuario por ID (soft delete)
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = params;
 
         // Verificar si el usuario existe
-        const user = await Prisma.user.findUnique({
-            where: { id },
-        });
-        if (!user || user.deleted) {
+        const user = await findUserById(id);
+        if (!user) {
             return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        // Marcar el usuario como eliminado
-        await Prisma.user.update({
-            where: { id },
-            data: { deleted: true },
-        });
+        // Eliminar el usuario
+        await deleteUserById(id);
 
         return NextResponse.json({ message: 'Usuario eliminado correctamente' });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error creando el usuario', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el usuario', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }

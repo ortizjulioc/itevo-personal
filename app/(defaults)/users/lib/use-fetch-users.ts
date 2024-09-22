@@ -36,7 +36,7 @@ const useFetchUsers = (query: string) => {
         fetchUsersData(query);
     }, [query]);
 
-    return { users, totalUsers, loading, error };
+    return { users, totalUsers, loading, error, setUsers };
 };
 
 export default useFetchUsers;

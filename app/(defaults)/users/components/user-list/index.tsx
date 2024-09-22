@@ -1,16 +1,15 @@
 'use client';
 import Avatar from "@/components/common/Avatar";
-import { formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import IconEdit from "@/components/icon/icon-edit";
 import IconTrashLines from "@/components/icon/icon-trash-lines";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
-import Swal from 'sweetalert2';
 import useFetchUsers from "../../lib/use-fetch-users";
 import UserSkeleton from "./skeleton";
-
+import { deleteUser } from "../../lib/request";
 
 interface Props {
     className?: string;
@@ -19,34 +18,27 @@ interface Props {
 
 export default function UserList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const {loading, error, users, totalUsers} = useFetchUsers(query);
+    const { loading, error, users, totalUsers, setUsers } = useFetchUsers(query);
     if (error) {
         openNotification('error', error);
     }
-    console.log('users', users);
-    console.log('totalUsers', totalUsers);
-    console.log('loading', loading);
-    console.log('error', error);
-    // const response = await fetchUsers(query);
-    // const users = response?.users || [];
-    // const total = response?.totalUsers || 0;
 
     const onDelete = async (id: string) => {
         console.log('delete', id);
-        Swal.fire({
-            icon: 'warning',
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            showCancelButton: true,
-            confirmButtonText: 'Delete',
-            padding: '2em',
-        }).then((result) => {
-            if (result.isConfirmed) {  // Use `isConfirmed` instead of `value`
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'Your file has been deleted.',
-                    icon: 'success',
-                });
+        confirmDialog({
+            title: 'Eliminar usuario',
+            text: '¿Seguro que quieres eliminar este usuario?',
+            confirmButtonText: 'Sí, eliminar',
+            icon: 'error' // También puedes usar otros valores como 'success', 'info', etc.
+        }, async() => {
+            // simular carga de 3 segundos
+            const resp = await deleteUser(id);
+            if (resp.success) {
+                setUsers(users?.filter((user) => user.id !== id));
+                openNotification('success', 'Usuario eliminado');
+                return;
+            } else {
+                openNotification('error', resp.message);
             }
         });
     }
@@ -91,7 +83,7 @@ export default function UserList({ className, query = '' }: Props) {
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
-                                                <Button variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                <Button onClick={() => onDelete(user.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
                                             </Tooltip>
                                             <Tooltip title="Editar">
                                                 <Link href={`/users/${user.id}`}>

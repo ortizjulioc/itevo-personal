@@ -31,8 +31,8 @@ export default function UserSkeleton() {
                             </td>
                             <td>
                                 <div className="flex gap-2 justify-end">
-                                    <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
-                                    <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+                                    <div className="h-8 w-8 bg-gray-300 rounded-lg"></div>
+                                    <div className="h-8 w-8 bg-gray-300 rounded-lg"></div>
                                 </div>
                             </td>
                         </tr>

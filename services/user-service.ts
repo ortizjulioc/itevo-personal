@@ -7,6 +7,11 @@ const Prisma = new PrismaClient();
 export const getUsers = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
     const users = await Prisma.user.findMany({
+        orderBy: [
+            { name: 'asc' },
+            { lastName: 'asc' },
+            { username: 'asc' },
+        ],
         select: {
             id: true,
             username: true,

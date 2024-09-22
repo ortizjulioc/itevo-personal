@@ -7,11 +7,6 @@ export interface UserResponse {
     totalUsers: number;
 }
 
-export const fetchUsers = async (query: string) => {
-    const response = await apiRequest.get<UserResponse>(`/users?${query}`);
-    return response.data;
-}
-
 export const createUser = async (user: User) => {
     return await apiRequest.post<User>('/users', user);
 }
@@ -21,7 +16,7 @@ export const updateUser = async (id: string, user: User) => {
 }
 
 export const deleteUser = async (id: string) => {
-    return await apiRequest.remove(`/users/${id}`);
+    return await apiRequest.remove<string>(`/users/${id}`);
 }
 
 export const fetchUserById = async (id: string) => {
