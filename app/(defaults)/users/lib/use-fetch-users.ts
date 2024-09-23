@@ -39,4 +39,34 @@ const useFetchUsers = (query: string) => {
     return { users, totalUsers, loading, error, setUsers };
 };
 
+export const useFetchUserById = (id: string) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserData = async (id: string) => {
+            try {
+                const response = await apiRequest.get<User>(`/users/${id}`);
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                setUser(response.data);
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('Ha ocurrido un error al obtener el usuario');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData(id);
+    }, [id]);
+
+    return { user, loading, error, setUser };
+}
+
 export default useFetchUsers;

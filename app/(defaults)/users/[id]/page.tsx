@@ -1,17 +1,18 @@
-import { ViewTitle } from "@/components/common";
-import { fetchUserById } from "../lib/request";
+'use client';
+import { FormSkeleton, ViewTitle } from "@/components/common";
 import { UpdateUserForm } from "../components/user-forms";
+import { useFetchUserById } from "../lib/use-fetch-users";
 
 
-export default async function EditUser ({ params }: { params: { id: string } }) {
+export default function EditUser({ params }: { params: { id: string } }) {
     const { id } = params;
-
-    const response = await fetchUserById(id);
-    console.log(response);
+    const { loading, user } = useFetchUserById(id);
     return (
         <div>
             <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
-            {response?.data && <UpdateUserForm initialValues={response.data} />}
+
+            {loading && <FormSkeleton />}
+            {user && <UpdateUserForm initialValues={user} />}
         </div>
     )
 }
