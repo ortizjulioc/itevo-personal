@@ -14,6 +14,26 @@ interface ButtonProps {
     loading?: boolean;
 }
 
+const MAP_COLOR = {
+    primary: 'btn-primary',
+    info: 'btn-info',
+    success: 'btn-success',
+    warning: 'btn-warning',
+    danger: 'btn-danger',
+    secondary: 'btn-secondary',
+    dark: 'btn-dark',
+};
+
+const MAP_OUTLINE_COLOR = {
+    primary: 'btn-outline-primary',
+    info: 'btn-outline-info',
+    success: 'btn-outline-success',
+    warning: 'btn-outline-warning',
+    danger: 'btn-outline-danger',
+    secondary: 'btn-outline-secondary',
+    dark: 'btn-outline-dark',
+};
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
     onClick,
     type = 'button',
@@ -45,9 +65,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
             case 'rounded':
                 return 'rounded-full';
             case 'outline':
-                return `btn-outline-${color}`;
+                return MAP_OUTLINE_COLOR[color];
             default:
-                return color ? `btn-${color}` : 'btn-primary';
+                return color ? MAP_COLOR[color] : 'btn-primary';
         }
     };
 
