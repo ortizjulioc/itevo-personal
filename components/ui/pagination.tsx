@@ -5,12 +5,20 @@ import IconCaretsDown from '../icon/icon-carets-down';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import classNames from 'classnames';
+import Dropdown from '../dropdown';
 
 interface PaginationProps {
     currentPage: number; // Página actual
     total: number; // Total de ítems
     top: number; // Ítems por página
 }
+
+const TOP_OPTIONS = [
+    { label: '10 / página', value: 10 },
+    { label: '25 / página', value: 25 },
+    { label: '50 / página', value: 50 },
+    { label: '100 / página', value: 100 },
+];
 
 const Pagination: React.FC<PaginationProps> = ({
     currentPage,
@@ -24,6 +32,13 @@ const Pagination: React.FC<PaginationProps> = ({
     const isFirstPage = currentPage === 1;
     const isLastPage = currentPage === totalPages;
 
+    const createTopURL = (value: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('top', value.toString());
+        params.set('page', '1');
+        return `${pathname}?${params.toString()}`;
+    }
+
     const createPageURL = (pageNumber: number | string) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', pageNumber.toString());
@@ -31,56 +46,81 @@ const Pagination: React.FC<PaginationProps> = ({
     };
 
     return (
-        <ul className="inline-flex items-center mb-4">
-
-            <PaginationLink
-                href={createPageURL(1)}
-                disabled={isFirstPage}
-                isFirst
-            >
-                <IconCaretsDown className='rotate-90 size-5' />
-            </PaginationLink>
-            <PaginationLink
-                href={createPageURL(currentPage - 1)}
-                disabled={isFirstPage}
-            >
-                <IconCaretDown className='rotate-90 size-5' />
-            </PaginationLink>
-            {!isFirstPage && (
+        <div className='flex justify-between items-center w-full'>
+            <div>
+                <div className="dropdown">
+                    <Dropdown
+                        placement={`top-end`}
+                        btnClassName="btn btn-primary btn-sm dropdown-toggle inline-flex"
+                        button={
+                            <>
+                                <span className="mr-2">
+                                    {TOP_OPTIONS.find((option) => option.value === top)?.label}
+                                </span>
+                                <IconCaretDown className='size-5 rotate-180' />
+                            </>
+                        }
+                    >
+                        <ul className="!min-w-[170px]">
+                            {TOP_OPTIONS.map((option) => (
+                                <TopLink key={option.value} href={createTopURL(option.value)}>
+                                    {option.label}
+                                </TopLink>
+                            ))}
+                        </ul>
+                    </Dropdown>
+                </div>
+            </div>
+            <ul className="inline-flex items-center">
+                <PaginationLink
+                    href={createPageURL(1)}
+                    disabled={isFirstPage}
+                    isFirst
+                >
+                    <IconCaretsDown className='rotate-90 size-5' />
+                </PaginationLink>
                 <PaginationLink
                     href={createPageURL(currentPage - 1)}
+                    disabled={isFirstPage}
                 >
-                    {currentPage - 1}
+                    <IconCaretDown className='rotate-90 size-5' />
                 </PaginationLink>
-            )}
+                {!isFirstPage && (
+                    <PaginationLink
+                        href={createPageURL(currentPage - 1)}
+                    >
+                        {currentPage - 1}
+                    </PaginationLink>
+                )}
 
-            <PaginationLink
-                href={'#'}
-                isActive={true}
-            >
-                {currentPage}
-            </PaginationLink>
-            {!isLastPage && (
+                <PaginationLink
+                    href={'#'}
+                    isActive={true}
+                >
+                    {currentPage}
+                </PaginationLink>
+                {!isLastPage && (
+                    <PaginationLink
+                        href={createPageURL(currentPage + 1)}
+                    >
+                        {currentPage + 1}
+                    </PaginationLink>
+                )}
                 <PaginationLink
                     href={createPageURL(currentPage + 1)}
+                    disabled={isLastPage}
                 >
-                    {currentPage + 1}
+                    <IconCaretDown className='-rotate-90 size-5' />
                 </PaginationLink>
-            )}
-            <PaginationLink
-                href={createPageURL(currentPage + 1)}
-                disabled={isLastPage}
-            >
-                <IconCaretDown className='-rotate-90 size-5' />
-            </PaginationLink>
-            <PaginationLink
-                href={createPageURL(totalPages)}
-                disabled={isLastPage}
-                isLast
-            >
-                <IconCaretsDown className='-rotate-90 size-5' />
-            </PaginationLink>
-        </ul>
+                <PaginationLink
+                    href={createPageURL(totalPages)}
+                    disabled={isLastPage}
+                    isLast
+                >
+                    <IconCaretsDown className='-rotate-90 size-5' />
+                </PaginationLink>
+            </ul>
+        </div>
     );
 };
 
@@ -95,18 +135,28 @@ interface PaginationLinkProps {
     isActive?: boolean;
 }
 
+const TopLink: React.FC<PaginationLinkProps> = ({ children, href }) => {
+    return (
+        <li>
+            <Link href={href}>
+                <span className="dropdown-item">{children}</span>
+            </Link>
+        </li>
+    );
+}
+
 const PaginationLink: React.FC<PaginationLinkProps> = ({ children, href, disabled = false, isActive = false, isFirst = false, isLast = false }) => {
     const linkClasses = classNames(
         'flex justify-center font-semibold px-3.5 py-2 transition', // Clases comunes
         {
-          'bg-primary text-white dark:text-white-light dark:bg-primary': isActive, // Clases para el estado activo
-          'bg-white-light text-dark hover:text-white hover:bg-primary dark:text-white-light dark:bg-[#191e3a] dark:hover:bg-primary':
-            !isActive && !disabled, // Clases para el estado no activo
-          'bg-white-light text-dark dark:text-white-light dark:bg-[#191e3a] opacity-50 cursor-not-allowed ': disabled,
-          'rounded-l-full': isFirst, // Estilo para el primer botón
-          'rounded-r-full': isLast,  // Estilo para el último botón
+            'bg-primary text-white dark:text-white-light dark:bg-primary': isActive, // Clases para el estado activo
+            'bg-white-light text-dark hover:text-white hover:bg-primary dark:text-white-light dark:bg-[#191e3a] dark:hover:bg-primary':
+                !isActive && !disabled, // Clases para el estado no activo
+            'bg-white-light text-dark dark:text-white-light dark:bg-[#191e3a] opacity-50 cursor-not-allowed ': disabled,
+            'rounded-l-full': isFirst, // Estilo para el primer botón
+            'rounded-r-full': isLast,  // Estilo para el último botón
         }
-      );
+    );
 
     return (
         <li>

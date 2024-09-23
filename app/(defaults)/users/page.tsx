@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import IconUserPlus from "@/components/icon/icon-user-plus";
@@ -7,7 +6,6 @@ import Link from "next/link";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
 import UserList from "./components/user-list";
-import UserSkeleton from "./components/user-list/skeleton";
 
 export const metadata: Metadata = {
     title: 'Usuarios',
@@ -34,8 +32,6 @@ export default function Users({ searchParams }: UsersProps) {
             } />
 
                 <UserList query={query} />
-            {/* <Suspense fallback={<UserSkeleton />}>
-            </Suspense> */}
         </div>
     );
 }

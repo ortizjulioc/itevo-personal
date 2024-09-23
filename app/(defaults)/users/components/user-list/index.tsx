@@ -29,13 +29,12 @@ export default function UserList({ className, query = '' }: Props) {
             title: 'Eliminar usuario',
             text: '¿Seguro que quieres eliminar este usuario?',
             confirmButtonText: 'Sí, eliminar',
-            icon: 'error' // También puedes usar otros valores como 'success', 'info', etc.
+            icon: 'error'
         }, async() => {
-            // simular carga de 3 segundos
             const resp = await deleteUser(id);
             if (resp.success) {
                 setUsers(users?.filter((user) => user.id !== id));
-                openNotification('success', 'Usuario eliminado');
+                openNotification('success', 'Usuario eliminado correctamente');
                 return;
             } else {
                 openNotification('error', resp.message);
@@ -99,11 +98,11 @@ export default function UserList({ className, query = '' }: Props) {
                 </table>
 
             </div>
-            <div className="flex justify-end w-full">
+            <div className="">
                 <Pagination
                     currentPage={parseInt(params?.page || '1')}
                     total={totalUsers}
-                    top={10}
+                    top={parseInt(params?.top || '10')}
                 />
             </div>
         </div>
