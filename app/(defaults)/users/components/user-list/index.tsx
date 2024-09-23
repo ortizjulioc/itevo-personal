@@ -89,6 +89,11 @@ export default function UserList({ className, query = '' }: Props) {
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
+                                            {/* ALTERNATIVA */}
+                                            {/* <Button onClick={() => onDelete(user.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
+                                            <Link href={`/users/${user.id}`}>
+                                                <Button variant="outline" size="sm">Editar</Button>
+                                            </Link> */}
                                         </div>
                                     </td>
                                 </tr>

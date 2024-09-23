@@ -1,3 +1,4 @@
+'use client';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { URL_API } from 'constants/api.constant';
 import ERRORS_CODE from 'assets/maps/errors-code.json';

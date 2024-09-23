@@ -1,4 +1,3 @@
-'use server';
 import apiRequest from "@/utils/lib/api-request/request";
 import { User } from "@prisma/client";
 
@@ -18,9 +17,3 @@ export const updateUser = async (id: string, user: User) => {
 export const deleteUser = async (id: string) => {
     return await apiRequest.remove<string>(`/users/${id}`);
 }
-
-export const fetchUserById = async (id: string) => {
-    return await apiRequest.get<User>(`/users/${id}`);
-}
-
-
