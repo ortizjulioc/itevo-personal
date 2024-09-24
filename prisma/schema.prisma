@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-    id       String @id @default(uuid())
-    username String @unique
-    email    String @unique
+    id       String  @id @default(uuid())
+    username String  @unique
+    email    String  @unique
     name     String
     lastName String
     phone    String
@@ -23,32 +23,234 @@ model User {
 }
 
 model Role {
-    id   String @id @default(uuid())
-    name String
+    id             String  @id @default(uuid())
+    name           String
     normalizedName String
-    deleted Boolean @default(false)
+    deleted        Boolean @default(false)
 
     userRole User_Role_Branch[]
 }
 
 model Branch {
-    id   String @id @default(uuid())
-    name String
+    id      String  @id @default(uuid())
+    name    String
     address String
     deleted Boolean @default(false)
 
-    userRole User_Role_Branch[]
+    userRole     User_Role_Branch[]
+    CourseBranch CourseBranch[]
 }
 
 model User_Role_Branch {
-    id         String @id @default(uuid())
-    userId     String
-    roleId     String
-    branchId   String
+    id       String @id @default(uuid())
+    userId   String
+    roleId   String
+    branchId String
 
-    user       User  @relation(fields: [userId], references: [id])
-    role       Role  @relation(fields: [roleId], references: [id])
-    branch     Branch @relation(fields: [branchId], references: [id])
+    user   User   @relation(fields: [userId], references: [id])
+    role   Role   @relation(fields: [roleId], references: [id])
+    branch Branch @relation(fields: [branchId], references: [id])
 
     @@unique([userId, roleId, branchId])
+}
+
+model Teacher {
+    id                   String           @id @default(uuid())
+    firstName            String
+    lastName             String
+    identificationNumber String // Cedula
+    address              String
+    phone                String
+    email                String           @unique
+    commissionRate       Float // PorcientoComision
+    CourseBranch         CourseBranch[]
+    AccountPayable       AccountPayable[]
+}
+
+model Student {
+    id              String  @id @default(uuid())
+    enrollmentCode  String  @unique // Matricula
+    firstName       String // Nombre
+    lastName        String // Apellidos
+    phone           String // Telefono
+    email           String  @unique // Correo
+    address         String // Direccion
+    hasTakenCourses Boolean @default(false) // Indica si el estudiante ya ha tomado cursos
+
+    Enrollment        Enrollment[]
+    Graduation        Graduation[]
+    AccountReceivable AccountReceivable[]
+}
+
+model Course {
+    id                 String  @id @default(uuid())
+    code               String  @unique // Codigo
+    name               String // Nombre
+    description        String? // Descripcion
+    duration           Int // Duracion en horas
+    requiresGraduation Boolean // RequiereGraduaccion
+
+    prerequisites Prerequisite[] @relation("CoursePrerequisite")
+    requiredBy    Prerequisite[] @relation("PrerequisiteCourse")
+    CourseBranch  CourseBranch[]
+    Graduation    Graduation[]
+}
+
+model Prerequisite {
+    courseId       String
+    prerequisiteId String
+
+    course       Course @relation("CoursePrerequisite", fields: [courseId], references: [id])
+    prerequisite Course @relation("PrerequisiteCourse", fields: [prerequisiteId], references: [id])
+
+    @@id([courseId, prerequisiteId]) // Llave compuesta
+}
+
+model Promotion {
+    id           String         @id @default(uuid())
+    description  String // Descripcion
+    startDate    DateTime // fechaInicio
+    endDate      DateTime // fechaFin
+    CourseBranch CourseBranch[]
+    Graduation   Graduation[]
+}
+
+model CourseBranch {
+    id             String   @id @default(uuid())
+    promotionId    String // ID de la promoción
+    branchId       String // ID de la sucursal
+    teacherId      String // ID del profesor
+    courseId       String // ID del curso
+    amount         Float // Monto
+    modality       String // Modalidad (presencial, virtual, híbrida)
+    startDate      DateTime // Fecha de inicio
+    endDate        DateTime // Fecha de fin
+    commissionRate Float // PorcientoComision al profesor
+
+    promotion         Promotion           @relation(fields: [promotionId], references: [id])
+    branch            Branch              @relation(fields: [branchId], references: [id])
+    teacher           Teacher             @relation(fields: [teacherId], references: [id])
+    course            Course              @relation(fields: [courseId], references: [id])
+    schedules         Schedule[] // Relación con horarios
+    Enrollment        Enrollment[]
+    AccountReceivable AccountReceivable[]
+    AccountPayable    AccountPayable[]
+}
+
+model Schedule {
+    id             String   @id @default(uuid())
+    courseBranchId String // ID de CourseBranch
+    startTime      DateTime // Hora de inicio
+    endTime        DateTime // Hora de fin
+    weekday        Int // Día de la semana (0 = Domingo, 6 = Sábado)
+
+    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+    Attendance   Attendance[]
+}
+
+enum EnrollmentStatus {
+    waiting
+    enrolled
+    completed
+    abandoned
+}
+
+model Enrollment {
+    id             String           @id @default(uuid())
+    studentId      String
+    courseBranchId String
+    enrollmentDate DateTime
+    status         EnrollmentStatus
+
+    student      Student      @relation(fields: [studentId], references: [id])
+    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+    Attendance   Attendance[]
+}
+
+enum AttendanceStatus {
+    present
+    absent
+    excused
+}
+
+model Attendance {
+    id           String           @id @default(uuid())
+    enrollmentId String // Enrollment ID
+    scheduleId   String // Schedule ID
+    date         DateTime // Date of attendance
+    status       AttendanceStatus // Status of attendance
+
+    enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+    schedule   Schedule   @relation(fields: [scheduleId], references: [id])
+}
+
+enum GraduationType {
+    diploma
+    certificate
+    juramentation
+}
+
+enum GraduationStatus {
+    pending
+    completed
+    canceled
+}
+
+model Graduation {
+    id             String           @id @default(uuid())
+    studentId      String // ID del estudiante
+    promotionId    String // ID de la promoción
+    courseId       String // ID del curso
+    graduationType GraduationType // Tipo de graduación (diploma, certificado)
+    status         GraduationStatus // Estado de la graduación
+    date           DateTime // Fecha de graduación
+
+    student   Student   @relation(fields: [studentId], references: [id])
+    promotion Promotion @relation(fields: [promotionId], references: [id])
+    course    Course    @relation(fields: [courseId], references: [id])
+}
+
+model GraduationPrice {
+    id                             String         @id @default(uuid())
+    graduationType                 GraduationType // Tipo de graduación
+    basePrice                      Float // Precio base
+    discountForPreviousCourses     Float // Descuento para estudiantes con cursos previos
+    discountForMultipleEnrollments Float // Descuento si el estudiante toma más de un curso en la misma promoción
+}
+
+enum AccountStatus {
+    pending
+    paid
+    canceled
+}
+
+model AccountReceivable {
+    id             String        @id @default(uuid())
+    studentId      String // ID del estudiante
+    courseBranchId String // ID del CursoSucursal
+    installment    Int // Número de la cuota (1, 2, 3, ...)
+    amount         Float // Monto de la cuota
+    dueDate        DateTime // Fecha de vencimiento
+    status         AccountStatus // Estado (pendiente, pagado, etc.)
+
+    student      Student      @relation(fields: [studentId], references: [id])
+    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+}
+
+enum PaymentStatus {
+    pending
+    paid
+    canceled
+}
+
+model AccountPayable {
+    id             String        @id @default(uuid())
+    teacherId      String // ID del teacher
+    courseBranchId String // ID del CourseBranch
+    amount         Float // Monto a pagar al teacher
+    dueDate        DateTime // Fecha de pago
+    status         PaymentStatus // Estado (pendiente, pagado, etc.)
+
+    teacher      Teacher      @relation(fields: [teacherId], references: [id])
+    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
 }
