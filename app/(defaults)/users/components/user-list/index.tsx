@@ -43,6 +43,7 @@ export default function UserList({ className, query = '' }: Props) {
     }
 
     if (loading) return <UserSkeleton />;
+
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">

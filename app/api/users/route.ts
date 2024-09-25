@@ -43,6 +43,7 @@ export async function POST(request: Request) {
         const userEmailExists = await Prisma.user.findUnique({
             where: { email: body.email },
         });
+
         if (userEmailExists) {
             return NextResponse.json({ error: 'El email ya está registrado' }, { status: 400 });
         }

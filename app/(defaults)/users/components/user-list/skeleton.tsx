@@ -12,7 +12,7 @@ export default function UserSkeleton() {
                     </tr>
                 </thead>
                 <tbody>
-                    {Array(5).fill(0).map((_, index) => (
+                    {Array(rows).fill(0).map((_, index) => (
                         <tr key={index} className="animate-pulse">
                             <td>
                                 <div className="flex gap-2 items-center ml-2">

@@ -31,7 +31,7 @@ export default function Users({ searchParams }: UsersProps) {
                 </>
             } />
 
-                <UserList query={query} />
+            <UserList query={query} />
         </div>
     );
 }

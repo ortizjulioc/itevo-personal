@@ -31,7 +31,7 @@ model Role {
     userRole User_Role_Branch[]
 }
 
-model Branch {
+model Branch { // Sucursal
     id      String  @id @default(uuid())
     name    String
     address String
@@ -41,7 +41,7 @@ model Branch {
     CourseBranch CourseBranch[]
 }
 
-model User_Role_Branch {
+model User_Role_Branch { // Usuario - Rol - Sucursal
     id       String @id @default(uuid())
     userId   String
     roleId   String
