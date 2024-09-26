@@ -40,7 +40,7 @@ const useFetchRole = (query: string) => {
 };
 
 export const useFetchRoleById = (id: string) => {
-    const [Role, setRole] = useState<Role | null>(null);
+    const [role, setRole] = useState<Role | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ export const useFetchRoleById = (id: string) => {
         fetchRoleData(id);
     }, [id]);
 
-    return { Role, loading, error, setRole };
+    return { role, loading, error, setRole };
 }
 
 export default useFetchRole;
