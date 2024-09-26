@@ -47,7 +47,7 @@ const navigationConfig = [
   },
   {
     key: 'roles',
-    title: 'roles',
+    title: 'Roles',
     icon: IconMenuAuthentication,
     url: '/roles',
     type: NAV_ITEM_TYPE_ITEM,
