@@ -25,7 +25,7 @@ export default function RoleLists({ searchParams }: RoleListsProps) {
             <ViewTitle className='mb-6' title="Roles" rightComponent={
                 <>
                     <SearchInput placeholder="Buscar roles" />
-                    <Link href="/RoleLists/new">
+                    <Link href="/roles/new">
                         <Button icon={<IconPlusCircle/>}>Crear rol</Button>
                     </Link>
                 </>
