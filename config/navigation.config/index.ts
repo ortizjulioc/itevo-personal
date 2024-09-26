@@ -4,6 +4,7 @@ import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from 
 import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
 import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
 import IconUser from '@/components/icon/icon-user';
+import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 
 const navigationConfig = [
   {
@@ -41,6 +42,14 @@ const navigationConfig = [
     title: 'Usuarios',
     icon: IconUser,
     url: '/users',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
+    key: 'roles',
+    title: 'roles',
+    icon: IconMenuAuthentication,
+    url: '/roles',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
