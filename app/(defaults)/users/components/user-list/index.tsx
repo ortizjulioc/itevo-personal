@@ -2,14 +2,13 @@
 import Avatar from "@/components/common/Avatar";
 import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import IconEdit from "@/components/icon/icon-edit";
-import IconTrashLines from "@/components/icon/icon-trash-lines";
+import {IconEdit, IconTrashLines} from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
 import useFetchUsers from "../../lib/use-fetch-users";
-import UserSkeleton from "./skeleton";
 import { deleteUser } from "../../lib/request";
+import Skeleton from "@/components/common/Skeleton";
 
 interface Props {
     className?: string;
@@ -42,7 +41,7 @@ export default function UserList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <UserSkeleton />;
+    if (loading) return <Skeleton rows={5} columns={['USUARIO', 'CORREO ELECTRÓNICO', 'TELÉFONO']} />;
 
     return (
         <div className={className}>
