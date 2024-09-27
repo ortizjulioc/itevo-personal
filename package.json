@@ -28,6 +28,7 @@
         "jsonwebtoken": "^9.0.2",
         "next": "^14.2.13",
         "next-auth": "^4.24.7",
+        "nextjs-toploader": "^3.6.15",
         "ni18n": "^1.0.5",
         "react": "^18.3.1",
         "react-animate-height": "^3.1.0",
