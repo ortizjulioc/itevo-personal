@@ -32,6 +32,14 @@ const navigationConfig = [
     subItems: [],
   },
   {
+    key: 'branches',
+    title: 'Sucursales',
+    icon: IconMenuContacts,
+    url: '/branches',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
     key: 'auth',
     title: 'Acceso',
     type: NAV_ITEM_TYPE_TITLE,
