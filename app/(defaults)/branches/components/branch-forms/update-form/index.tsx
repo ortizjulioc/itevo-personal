@@ -1,0 +1,55 @@
+'use client';
+import { Button, FormItem, Input } from '@/components/ui';
+import { Field, Form, Formik } from 'formik';
+import { useRouter } from 'next/navigation';
+import { openNotification } from '@/utils';
+import { updateValidationSchema, initialValues } from '../form.config';
+import { updateBranch } from '../../../lib/request';
+import { normalizeString } from '@/utils/normalize-string';
+import { Branch } from '@prisma/client';
+
+export default function UpdateBranchForm({ initialValues }: { initialValues: Branch }) {
+    const route = useRouter();
+    const handleSubmit = async (values: any) => {
+        const data = { ...values };
+        delete data.confirmPassword;
+
+        const resp = await updateBranch(initialValues.id, data);
+        console.log(resp);
+
+        if (resp.success) {
+            openNotification('success', 'Sucursal editada correctamente');
+            route.push('/branches');
+        } else {
+            alert(resp.message);
+        }
+    }
+
+   
+    return (
+        <div className="panel">
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Rol</h4>
+            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+                {({ isSubmitting, values, errors, touched }) => (
+                    <Form className="form">
+                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
+                            <Field type="text" name="name" component={Input} placeholder="Nombre" />
+                        </FormItem>
+
+                        <FormItem name="address" label="Direccion" invalid={Boolean(errors.address && touched.address)} errorMessage={errors.address}>
+                            <Field type="text" name="address" component={Input} placeholder="Direccion" />
+                        </FormItem>
+                        <div className="mt-6 flex justify-end gap-2">
+                            <Button type="button" color="danger" onClick={() => route.back()}>
+                                Cancelar
+                            </Button>
+                            <Button loading={isSubmitting} type="submit">
+                                {isSubmitting ? 'Guardando...' : 'Guardar'}
+                            </Button>
+                        </div>
+                    </Form>
+                )}
+            </Formik>
+        </div>
+    );
+}
