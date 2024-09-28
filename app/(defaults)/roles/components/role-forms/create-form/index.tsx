@@ -18,8 +18,8 @@ export default function CreateRoleForm() {
         const resp = await createRole(data);
 
         if (resp.success) {
-            openNotification('success', 'Usuario creado correctamente');
-            route.push('/Roles');
+            openNotification('success', 'Rol creado correctamente');
+            route.push('/roles');
         } else {
             openNotification('error', resp.message);
         }

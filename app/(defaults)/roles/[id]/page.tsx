@@ -5,7 +5,7 @@ import { useFetchRoleById } from "../lib/use-fecth-roles";
 
 
 
-export default function EditUser({ params }: { params: { id: string } }) {
+export default function EditRol({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, role } = useFetchRoleById(id);
     return (
