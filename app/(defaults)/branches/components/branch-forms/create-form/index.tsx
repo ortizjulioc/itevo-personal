@@ -26,15 +26,10 @@ export default function CreateBranchForm() {
         setSubmitting(false);
     };
 
-    const onChangeName = (name: string, form: any) => {
-        const address = normalizeString(name);
-        form.setFieldValue('address', address);
-
-        form.setFieldValue('name', name);
-    };
+   
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Rol</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Sucursal</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">

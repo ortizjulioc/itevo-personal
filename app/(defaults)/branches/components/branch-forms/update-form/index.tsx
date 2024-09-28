@@ -28,7 +28,7 @@ export default function UpdateBranchForm({ initialValues }: { initialValues: Bra
    
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Rol</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Formulario de Sucursal</h4>
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">

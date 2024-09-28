@@ -25,8 +25,8 @@ export default function BranchLists({ searchParams }: BranchListsProps) {
             <ViewTitle className='mb-6' title="Sucursales" rightComponent={
                 <>
                     <SearchInput placeholder="Buscar Sucursales" />
-                    <Link href="/Branchs/new">
-                        <Button icon={<IconPlusCircle/>}>Crear rol</Button>
+                    <Link href="/branches/new">
+                        <Button icon={<IconPlusCircle/>}>Crear sucursal</Button>
                     </Link>
                 </>
             } />
