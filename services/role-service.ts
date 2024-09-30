@@ -34,15 +34,17 @@ export const getRoles = async (search: string, page: number, top: number) => {
 
 export const createrRole = async (data: any) => {
     // Normalizar el nombre del rol
-    data.normalizedName = normalizeString(data.name);
+    data.normalizedName = normalizeString(data.normalizedName, { replacement: '-' });
     const role = await Prisma.role.create({ data: data });
     return role;
 };
 
-export const findUserByNormalizedName = async (normalizedName: string) => {
-    return Prisma.role.findUnique({
-        where: { normalizedName },
+export const findRoleByNormalizedName = async (data: any) => {
+    data.normalizedName = normalizeString(data.normalizedName, { replacement: '-' });
+    const roleNormalizedNameExists = await Prisma.role.findUnique({
+        where: { normalizedName: data.normalizedName },
     });
+    return roleNormalizedNameExists
 };
 
 // Obtener Rol por ID

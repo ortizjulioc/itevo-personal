@@ -1,9 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { validateObject } from "@/utils";
-import { normalizeString } from "@/utils/normalize-string";
-import { getRoles } from "@/services/role-service";
-const Prisma = new PrismaClient();
+import { getRoles, createrRole, findRoleByNormalizedName } from "@/services/role-service";
 
 export async function GET(request: NextRequest) {
     try {
@@ -37,16 +34,15 @@ export async function POST(request: Request) {
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
-        // Normalizando normalizedName
-        body.normalizedName = normalizeString(body.normalizedName, { replacement: '-' });
-        const roleNormalizedNameExists = await Prisma.role.findUnique({
-            where: { normalizedName: body.normalizedName },
-        });
+
+        // Normalizar el nombre del rol
+
+        const roleNormalizedNameExists = await findRoleByNormalizedName(body);
         if (roleNormalizedNameExists) {
             return NextResponse.json({ error: 'Este rol ya está registrado' }, { status: 400 });
         }
-
-        const role = await Prisma.role.create({ data: body });
+        const role = await createrRole(body);
+        // const role = await Prisma.role.create({ data: body });
         return NextResponse.json(role, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {

@@ -25,7 +25,7 @@ model User {
 model Role {
     id             String  @id @default(uuid())
     name           String
-    normalizedName String
+    normalizedName String  @unique
     deleted        Boolean @default(false)
 
     userRole User_Role_Branch[]
