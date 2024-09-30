@@ -1,6 +1,5 @@
 import 'server-only';
 import { PrismaClient } from "@prisma/client";
-const bcrypt = require('bcrypt');
 const Prisma = new PrismaClient();
 
 export const getBranches = async (search: string, page: number, top: number) => {
@@ -31,29 +30,10 @@ export const getBranches = async (search: string, page: number, top: number) => 
 
     return { branches, totalBranches };
 };
-
-// export const createUser = async (data: any) => {
-//     const saltRounds = 10;
-//     const hash = bcrypt.hashSync(data.password, saltRounds);
-
-//     data.password = hash;
-//     data.search = normalizeString(`${data.name} ${data.lastName} ${data.username} ${data.email}`);
-
-//     const user = await Prisma.user.create({ data: data });
-//     return user;
-// };
-
-// export const findUserByEmail = async (email: string) => {
-//     return Prisma.user.findUnique({
-//         where: { email },
-//     });
-// };
-
-// export const findUserByUsername = async (username: string) => {
-//     return Prisma.user.findUnique({
-//         where: { username },
-//     });
-// };
+export const createBranch = async (data: any) => {
+    const branch = await Prisma.branch.create({ data: data });
+    return branch;
+};
 
 // Obtener sucursal por ID
 export const findBranchById = async (id: string) => {

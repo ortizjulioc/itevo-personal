@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { validateObject } from "@/utils";
-import { getBranches } from '@/services/branch-service';
-const Prisma = new PrismaClient();
+import { getBranches, createBranch } from '@/services/branch-service';
 
 // Obtener todas las sucursales
 export async function GET(request: NextRequest) {
@@ -40,7 +38,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        const branch = await Prisma.branch.create({ data: body });
+        const branch = await createBranch(body);
+
         return NextResponse.json(branch, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
