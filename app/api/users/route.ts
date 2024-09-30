@@ -1,10 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { validateObject } from "@/utils";
-import { normalizeString } from "@/utils/normalize-string";
-import { getUsers } from "@/services/user-service";
-const bcrypt = require('bcrypt');
-const Prisma = new PrismaClient();
+import { getUsers, createUser, findUserByEmail, findUserByUsername } from "@/services/user-service";
+
 
 export async function GET(request: NextRequest) {
     try {
@@ -40,27 +37,18 @@ export async function POST(request: Request) {
         }
 
         // verify if the user already exists
-        const userEmailExists = await Prisma.user.findUnique({
-            where: { email: body.email },
-        });
+        const userEmailExists = await findUserByEmail(body.email);
 
         if (userEmailExists) {
             return NextResponse.json({ error: 'El email ya está registrado' }, { status: 400 });
         }
-
-        const userUsernameExists = await Prisma.user.findUnique({
-            where: { username: body.username },
-        });
+        // verify if the user already exists
+        const userUsernameExists = await findUserByUsername(body.username);
         if (userUsernameExists) {
             return NextResponse.json({ error: 'El nombre de usuario ya está registrado' }, { status: 400 });
         }
 
-        const saltRounds = 10;
-        const hash = bcrypt.hashSync(body.password, saltRounds);
-        body.password = hash;
-        body.search = normalizeString(`${body.name} ${body.lastName} ${body.username} ${body.email}`);
-
-        const user = await Prisma.user.create({ data: body });
+        const user = await createUser(body);
         return NextResponse.json(user, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
