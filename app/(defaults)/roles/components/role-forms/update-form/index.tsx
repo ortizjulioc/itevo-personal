@@ -3,9 +3,8 @@ import { Button, FormItem, Input } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
-import { updateValidationSchema, initialValues } from '../form.config';
+import { updateValidationSchema } from '../form.config';
 import { updateRole } from '../../../lib/request';
-import { normalizeString } from '@/utils/normalize-string';
 import { Role } from '@prisma/client';
 
 export default function UpdateRoleForm({ initialValues }: { initialValues: Role }) {
@@ -26,11 +25,9 @@ export default function UpdateRoleForm({ initialValues }: { initialValues: Role 
     }
 
     const onChangeName = (name: string, form: any) => {
-        const normalizedName = normalizeString(name);
-        form.setFieldValue('normalizedName', normalizedName);
-
         form.setFieldValue('name', name);
     };
+
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Rol</h4>
@@ -54,7 +51,7 @@ export default function UpdateRoleForm({ initialValues }: { initialValues: Role 
                         </FormItem>
 
                         <FormItem name="normalizedName" label="Nombre normalizado" invalid={Boolean(errors.normalizedName && touched.normalizedName)} errorMessage={errors.normalizedName}>
-                            <Field type="text" name="normalizedName" component={Input} placeholder="Nombre normalizado" />
+                            <Field type="text" name="normalizedName" component={Input} placeholder="Nombre normalizado" disabled />
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">

@@ -66,7 +66,7 @@ export const findRoleById = async (id: string) => {
 export const updateRoleById = async (id: string, data: any) => {
     return Prisma.role.update({
         where: { id },
-        data: data,
+        data: { name: data.name },
     });
 };
 

@@ -74,7 +74,7 @@ export default function RoleList({ className, query = '' }: Props) {
                                                 <Button onClick={() => onDelete(Role.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
                                             </Tooltip>
                                             <Tooltip title="Editar">
-                                                <Link href={`/Roles/${Role.id}`}>
+                                                <Link href={`/roles/${Role.id}`}>
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
