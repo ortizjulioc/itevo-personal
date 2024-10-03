@@ -12,10 +12,6 @@ export default function Input({
     icon: Icon,
     ...rest
 }: InputProps) {
-
-    console.log('props', rest);
-    console.log('props', rest.disabled);
-
     const inputClasses = classNames(
         'form-input py-2 pr-11 peer disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b]',
         { ' cursor-not-allowed text-gray-600 dark:text-gray-500': rest.disabled },

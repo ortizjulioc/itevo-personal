@@ -8,97 +8,113 @@ datasource db {
 }
 
 model User {
-    id       String  @id @default(uuid())
-    username String  @unique
-    email    String  @unique
-    name     String
-    lastName String
-    phone    String
-    password String?
-    search   String? @default("")
-    inactive Boolean @default(false)
-    deleted  Boolean @default(false)
+    id        String   @id @default(uuid())
+    username  String   @unique
+    email     String   @unique
+    name      String
+    lastName  String   @map("last_name")
+    phone     String
+    password  String?
+    search    String?  @default("")
+    inactive  Boolean  @default(false)
+    deleted   Boolean  @default(false)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    roleBranch User_Role_Branch[]
+    roleBranch UserRoleBranch[]
 }
 
 model Role {
-    id             String  @id @default(uuid())
+    id             String   @id @default(uuid())
     name           String
-    normalizedName String  @unique
-    deleted        Boolean @default(false)
+    normalizedName String   @unique @map("normalized_name")
+    deleted        Boolean  @default(false)
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
 
-    userRole User_Role_Branch[]
+    userRole UserRoleBranch[]
 }
 
-model Branch { // Sucursal
-    id      String  @id @default(uuid())
-    name    String
-    address String
-    deleted Boolean @default(false)
+model Branch {
+    id        String   @id @default(uuid())
+    name      String
+    address   String
+    deleted   Boolean  @default(false)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    userRole     User_Role_Branch[]
-    CourseBranch CourseBranch[]
+    userRole     UserRoleBranch[]
+    courseBranch CourseBranch[]
 }
 
-model User_Role_Branch { // Usuario - Rol - Sucursal
+model UserRoleBranch {
     id       String @id @default(uuid())
-    userId   String
-    roleId   String
-    branchId String
+    userId   String @map("user_id")
+    roleId   String @map("role_id")
+    branchId String @map("branch_id")
 
     user   User   @relation(fields: [userId], references: [id])
     role   Role   @relation(fields: [roleId], references: [id])
     branch Branch @relation(fields: [branchId], references: [id])
 
     @@unique([userId, roleId, branchId])
+    @@map("user_role_branch")
 }
 
 model Teacher {
-    id                   String           @id @default(uuid())
-    firstName            String
-    lastName             String
-    identificationNumber String // Cedula
-    address              String
-    phone                String
-    email                String           @unique
-    commissionRate       Float // PorcientoComision
-    CourseBranch         CourseBranch[]
-    AccountPayable       AccountPayable[]
+    id             String   @id @default(uuid())
+    code           String   @unique // Codigo del profesor
+    firstName      String   @map("first_name")
+    lastName       String   @map("last_name")
+    identification String   @unique
+    address        String
+    phone          String
+    email          String   @unique
+    commissionRate Float    @map("commission_rate")
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    courseBranch   CourseBranch[]
+    accountPayable AccountPayable[]
 }
 
 model Student {
-    id              String  @id @default(uuid())
-    enrollmentCode  String  @unique // Matricula
-    firstName       String // Nombre
-    lastName        String // Apellidos
+    id              String   @id @default(uuid())
+    code            String   @unique // Codigo del estudiante (matricula)
+    firstName       String   @map("first_name") // Nombres
+    lastName        String   @map("last_name") // Apellidos
+    identification  String? // Cedula
     phone           String // Telefono
-    email           String  @unique // Correo
+    email           String   @unique // Correo
     address         String // Direccion
-    hasTakenCourses Boolean @default(false) // Indica si el estudiante ya ha tomado cursos
+    hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
 
-    Enrollment        Enrollment[]
-    Graduation        Graduation[]
-    AccountReceivable AccountReceivable[]
+    enrollment        Enrollment[]
+    graduation        Graduation[]
+    accountReceivable AccountReceivable[]
 }
 
 model Course {
-    id                 String  @id @default(uuid())
-    code               String  @unique // Codigo
+    id                 String   @id @default(uuid())
+    code               String   @unique // Codigo
     name               String // Nombre
     description        String? // Descripcion
     duration           Int // Duracion en horas
-    requiresGraduation Boolean // RequiereGraduaccion
+    requiresGraduation Boolean  @map("requires_graduation") // Requiere graduacion
+    createdAt          DateTime @default(now()) @map("created_at")
+    updatedAt          DateTime @updatedAt @map("updated_at")
 
     prerequisites Prerequisite[] @relation("CoursePrerequisite")
     requiredBy    Prerequisite[] @relation("PrerequisiteCourse")
-    CourseBranch  CourseBranch[]
-    Graduation    Graduation[]
+    courseBranch  CourseBranch[]
+    graduation    Graduation[]
 }
 
 model Prerequisite {
-    courseId       String
-    prerequisiteId String
+    courseId       String @map("course_id") // ID del curso
+    prerequisiteId String @map("prerequisite_id") // ID del curso pre-requisito
 
     course       Course @relation("CoursePrerequisite", fields: [courseId], references: [id])
     prerequisite Course @relation("PrerequisiteCourse", fields: [prerequisiteId], references: [id])
@@ -107,45 +123,54 @@ model Prerequisite {
 }
 
 model Promotion {
-    id           String         @id @default(uuid())
-    description  String // Descripcion
-    startDate    DateTime // fechaInicio
-    endDate      DateTime // fechaFin
-    CourseBranch CourseBranch[]
-    Graduation   Graduation[]
+    id          String   @id @default(uuid())
+    description String // Descripcion
+    startDate   DateTime @map("start_date") // fechaInicio
+    endDate     DateTime @map("end_date") // fechaFin
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    courseBranch CourseBranch[]
+    graduation   Graduation[]
 }
 
 model CourseBranch {
     id             String   @id @default(uuid())
-    promotionId    String // ID de la promoción
-    branchId       String // ID de la sucursal
-    teacherId      String // ID del profesor
-    courseId       String // ID del curso
+    promotionId    String   @map("promotion_id") // ID de la promoción
+    branchId       String   @map("branch_id") // ID de la sucursal
+    teacherId      String   @map("teacher_id") // ID del profesor
+    courseId       String   @map("course_id") // ID del curso
     amount         Float // Monto
     modality       String // Modalidad (presencial, virtual, híbrida)
-    startDate      DateTime // Fecha de inicio
-    endDate        DateTime // Fecha de fin
-    commissionRate Float // PorcientoComision al profesor
+    startDate      DateTime @map("start_date") // Fecha de inicio
+    endDate        DateTime @map("end_date") // Fecha de fin
+    commissionRate Float    @map("commission_rate") // Porcentaje de comisión
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
 
     promotion         Promotion           @relation(fields: [promotionId], references: [id])
     branch            Branch              @relation(fields: [branchId], references: [id])
     teacher           Teacher             @relation(fields: [teacherId], references: [id])
     course            Course              @relation(fields: [courseId], references: [id])
     schedules         Schedule[] // Relación con horarios
-    Enrollment        Enrollment[]
-    AccountReceivable AccountReceivable[]
-    AccountPayable    AccountPayable[]
+    enrollment        Enrollment[]
+    accountReceivable AccountReceivable[]
+    accountPayable    AccountPayable[]
+
+    @@map("course_branch")
 }
 
 model Schedule {
     id             String   @id @default(uuid())
-    courseBranchId String // ID de CourseBranch
-    startTime      DateTime // Hora de inicio
-    endTime        DateTime // Hora de fin
+    courseBranchId String   @map("course_branch_id") // ID del CursoSucursal
+    startTime      DateTime @map("start_time") // Hora de inicio
+    endTime        DateTime @map("end_time") // Hora de fin
     weekday        Int // Día de la semana (0 = Domingo, 6 = Sábado)
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
 
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
-    Attendance   Attendance[]
+    attendance   Attendance[]
 }
 
 enum EnrollmentStatus {
@@ -157,14 +182,16 @@ enum EnrollmentStatus {
 
 model Enrollment {
     id             String           @id @default(uuid())
-    studentId      String
-    courseBranchId String
-    enrollmentDate DateTime
-    status         EnrollmentStatus
+    studentId      String           @map("student_id") // ID del estudiante
+    courseBranchId String           @map("course_branch_id") // ID del CursoSucursal
+    enrollmentDate DateTime         @map("enrollment_date") // Fecha de matriculación
+    status         EnrollmentStatus // Estado de la matriculación
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
 
     student      Student      @relation(fields: [studentId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
-    Attendance   Attendance[]
+    attendance   Attendance[]
 }
 
 enum AttendanceStatus {
@@ -175,10 +202,12 @@ enum AttendanceStatus {
 
 model Attendance {
     id           String           @id @default(uuid())
-    enrollmentId String // Enrollment ID
-    scheduleId   String // Schedule ID
+    enrollmentId String           @map("enrollment_id") // Enrollment ID
+    scheduleId   String           @map("schedule_id") // Schedule ID
     date         DateTime // Date of attendance
     status       AttendanceStatus // Status of attendance
+    createdAt    DateTime         @default(now()) @map("created_at")
+    updatedAt    DateTime         @updatedAt @map("updated_at")
 
     enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
     schedule   Schedule   @relation(fields: [scheduleId], references: [id])
@@ -198,12 +227,14 @@ enum GraduationStatus {
 
 model Graduation {
     id             String           @id @default(uuid())
-    studentId      String // ID del estudiante
-    promotionId    String // ID de la promoción
-    courseId       String // ID del curso
-    graduationType GraduationType // Tipo de graduación (diploma, certificado)
+    studentId      String           @map("student_id") // ID del estudiante
+    promotionId    String           @map("promotion_id") // ID de la promoción
+    courseId       String           @map("course_id") // ID del curso
+    graduationType GraduationType   @map("graduation_type") // Tipo de graduación
     status         GraduationStatus // Estado de la graduación
     date           DateTime // Fecha de graduación
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
 
     student   Student   @relation(fields: [studentId], references: [id])
     promotion Promotion @relation(fields: [promotionId], references: [id])
@@ -212,10 +243,12 @@ model Graduation {
 
 model GraduationPrice {
     id                             String         @id @default(uuid())
-    graduationType                 GraduationType // Tipo de graduación
-    basePrice                      Float // Precio base
-    discountForPreviousCourses     Float // Descuento para estudiantes con cursos previos
-    discountForMultipleEnrollments Float // Descuento si el estudiante toma más de un curso en la misma promoción
+    graduationType                 GraduationType @map("graduation_type") // Tipo de graduación
+    basePrice                      Float          @map("base_price") // Precio base
+    discountForPreviousCourses     Float          @map("discount_for_previous_courses") // Descuento por cursos previos
+    discountForMultipleEnrollments Float          @map("discount_for_multiple_enrollments") // Descuento por múltiples matriculaciones
+    createdAt                      DateTime       @default(now()) @map("created_at")
+    updatedAt                      DateTime       @updatedAt @map("updated_at")
 }
 
 enum AccountStatus {
@@ -226,15 +259,19 @@ enum AccountStatus {
 
 model AccountReceivable {
     id             String        @id @default(uuid())
-    studentId      String // ID del estudiante
-    courseBranchId String // ID del CursoSucursal
+    studentId      String        @map("student_id") // ID del estudiante
+    courseBranchId String        @map("course_branch_id") // ID del CursoSucursal
     installment    Int // Número de la cuota (1, 2, 3, ...)
     amount         Float // Monto de la cuota
-    dueDate        DateTime // Fecha de vencimiento
+    dueDate        DateTime      @map("due_date") // Fecha de vencimiento
     status         AccountStatus // Estado (pendiente, pagado, etc.)
+    createdAt      DateTime      @default(now()) @map("created_at")
+    updatedAt      DateTime      @updatedAt @map("updated_at")
 
     student      Student      @relation(fields: [studentId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+
+    @@map("account_receivable")
 }
 
 enum PaymentStatus {
@@ -245,12 +282,16 @@ enum PaymentStatus {
 
 model AccountPayable {
     id             String        @id @default(uuid())
-    teacherId      String // ID del teacher
-    courseBranchId String // ID del CourseBranch
+    teacherId      String        @map("teacher_id") // ID del teacher
+    courseBranchId String        @map("course_branch_id") // ID del CursoSucursal
     amount         Float // Monto a pagar al teacher
-    dueDate        DateTime // Fecha de pago
+    dueDate        DateTime      @map("due_date") // Fecha de vencimiento
     status         PaymentStatus // Estado (pendiente, pagado, etc.)
+    createdAt      DateTime      @default(now()) @map("created_at")
+    updatedAt      DateTime      @updatedAt @map("updated_at")
 
     teacher      Teacher      @relation(fields: [teacherId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+
+    @@map("account_payable")
 }
