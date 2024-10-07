@@ -299,11 +299,13 @@ model AccountPayable {
 
 model Setting {
     id        String   @id @default(uuid())
+    rnc       String   @unique
     companyName String   @map("company_name")
     address   String
     phone     String
     email     String
     logo      String
+    defaultPassword String @map("default_password")
     deleted   Boolean  @default(false)
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
