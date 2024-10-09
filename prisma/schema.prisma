@@ -305,7 +305,7 @@ model Setting {
     phone     String
     email     String
     logo      String
-    defaultPassword String @map("default_password")
+    defaultPassword String? @map("default_password")
     deleted   Boolean  @default(false)
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
