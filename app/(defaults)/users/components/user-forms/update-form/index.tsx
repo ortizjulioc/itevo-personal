@@ -10,6 +10,7 @@ import { Tab } from "@headlessui/react";
 import { Fragment } from "react";
 import GeneralInfoFields from "./general-info-fields";
 import PasswordFields from "./password-fields";
+import AuthorizationFields from "./authorization-fields";
 
 export default function UpdateUserForm({ initialValues }: { initialValues: User }) {
     const route = useRouter();
@@ -57,6 +58,15 @@ export default function UpdateUserForm({ initialValues }: { initialValues: User 
                                         </button>
                                     )}
                                 </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Permisos
+                                        </button>
+                                    )}
+                                </Tab>
                             </Tab.List>
                             <Tab.Panels>
                                 <Tab.Panel className='p-5'>
@@ -76,6 +86,15 @@ export default function UpdateUserForm({ initialValues }: { initialValues: User 
                                         </p>
                                     </div>
                                     <PasswordFields values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
+                                <Tab.Panel className='p-5'>
+                                    <div className="mb-4">
+                                        <h5 className="font-semibold text-lg dark:text-white-light">Permisos</h5>
+                                        <p className='text-pretty'>
+                                        Asigna los permisos necesarios para determinar las sucursales a las que el usuario tiene acceso.
+                                        </p>
+                                    </div>
+                                    <AuthorizationFields values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
