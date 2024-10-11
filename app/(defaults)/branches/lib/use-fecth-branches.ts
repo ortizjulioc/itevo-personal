@@ -4,7 +4,7 @@ import { Branch } from "@prisma/client";
 
 export interface BranchResponse {
     branches: Branch[];
-    totalBranchs: number;
+    totalBranches: number;
 }
 
 const useFetchBranch = (query: string) => {
@@ -21,7 +21,7 @@ const useFetchBranch = (query: string) => {
                     throw new Error(response.message);
                 }
                 setBranches(response.data?.branches || []);
-                setTotalBranches(response.data?.totalBranchs || 0);
+                setTotalBranches(response.data?.totalBranches || 0);
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error.message);
