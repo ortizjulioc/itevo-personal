@@ -1,4 +1,8 @@
-export const formatPhoneNumber = (phone: string): string => {
+export const formatPhoneNumber = (phone?: string | null): string => {
+    // Si no hay número de teléfono, retornamos un string vacío
+    if (!phone) {
+      return '';
+    }
     // Eliminar caracteres no numéricos
     const cleaned = phone.replace(/\D/g, '');
 
