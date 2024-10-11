@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatPhoneNumber, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import {IconEdit, IconTrashLines} from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import Link from "next/link";
 import useFetchBranch from "../../lib/use-fecth-branches";
 import { deleteBranch } from "../../lib/request";
 import Skeleton from "@/components/common/Skeleton";
+import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -49,13 +50,14 @@ export default function BranchList({ className, query = '' }: Props) {
                         <tr>
                             <th>NOMBRE</th>
                             <th>DIRECCION</th>
+                            <th>TELEFONO</th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
                         {branches?.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Sucursales registradas</td>
+                                <td colSpan={5} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Sucursales registradas</td>
                             </tr>
                         )}
                         {branches?.map((branch) => {
@@ -66,6 +68,9 @@ export default function BranchList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">{branch.address}</div>
+                                    </td>
+                                    <td>
+                                    <OptionalInfo content={formatPhoneNumber(branch.phone)} />
                                     </td>
                                    
                                     <td>

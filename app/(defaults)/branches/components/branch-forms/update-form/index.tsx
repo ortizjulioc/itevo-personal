@@ -3,10 +3,10 @@ import { Button, FormItem, Input } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
-import { updateValidationSchema, initialValues } from '../form.config';
+import { updateValidationSchema } from '../form.config';
 import { updateBranch } from '../../../lib/request';
-import { normalizeString } from '@/utils/normalize-string';
 import { Branch } from '@prisma/client';
+import { FormatPatterInput } from '@/components/common';
 
 export default function UpdateBranchForm({ initialValues }: { initialValues: Branch }) {
     const route = useRouter();
@@ -39,6 +39,28 @@ export default function UpdateBranchForm({ initialValues }: { initialValues: Bra
                         <FormItem name="address" label="Direccion" invalid={Boolean(errors.address && touched.address)} errorMessage={errors.address}>
                             <Field type="text" name="address" component={Input} placeholder="Direccion" />
                         </FormItem>
+                        <FormItem
+                            extra={<span className="text-sm text-gray-500">(Opcional)</span>}
+                            name="phone"
+                            label="Teléfono"
+                            invalid={Boolean(errors.phone && touched.phone)}
+                            errorMessage={errors.phone}
+                        >
+                            <Field name="phone">
+                                {({ form }: any) => (
+                                    <FormatPatterInput
+                                        format="(###) ###-####"
+                                        placeholder="(___) ___-____"
+                                        className="form-input"
+                                        value={values.phone}
+                                        onValueChange={(value: any) => {
+                                            form.setFieldValue('phone', value.value);
+                                        }}
+                                    />
+                                )}
+                            </Field>
+                        </FormItem>
+                        
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
