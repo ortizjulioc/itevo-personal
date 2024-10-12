@@ -1,8 +1,18 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User as PrismaUser, Role, Branch as PrismaBranch } from "@prisma/client";
 import { normalizeString } from "@/utils/normalize-string";
 const bcrypt = require('bcrypt');
 const Prisma = new PrismaClient();
+
+// Definimos las interfaces necesarias para tipificar la respuesta de usuario por id
+interface Branch extends Omit<PrismaBranch, 'roles'> {
+    roles: Role[];
+}
+
+interface UserWithBranchesAndRoles extends Omit<PrismaUser, 'password'> {
+    roleBranch: any | undefined;
+    branches: Branch[];
+}
 
 export const getUsers = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -64,21 +74,62 @@ export const findUserByUsername = async (username: string) => {
 
 // Obtener usuario por ID
 export const findUserById = async (id: string) => {
-    return Prisma.user.findUnique({
-        select: {
-            id: true,
-            username: true,
-            email: true,
-            name: true,
-            lastName: true,
-            phone: true,
-            password: false,
-        },
-        where: {
-            id: id,
-            deleted: false,
+    const user = await Prisma.user.findUnique({
+        where: { id },
+        include: {
+            roleBranch: {
+                include: {
+                    branch: true,
+                    role: true,
+                },
+            },
         },
     });
+
+    if (!user) {
+        return null;
+    }
+
+    // Estructura de salida para agrupar roles por sucursal
+    const userWithBranchesAndRoles: UserWithBranchesAndRoles = {
+        ...user,
+        roleBranch: undefined,
+        branches: user.roleBranch.reduce<Branch[]>((acc, current) => {
+            const branchIndex = acc.findIndex(
+                (branch) => branch.id === current.branch.id
+            );
+
+            const roleData: Role = {
+                id: current.role.id,
+                name: current.role.name,
+                normalizedName: current.role.normalizedName,
+                deleted: current.role.deleted,
+                createdAt: current.role.createdAt,
+                updatedAt: current.role.updatedAt,
+            };
+
+            if (branchIndex === -1) {
+                // Si la sucursal no está en la lista, la agregamos con el primer rol
+                acc.push({
+                    id: current.branch.id,
+                    name: current.branch.name,
+                    address: current.branch.address,
+                    phone: current.branch.phone ?? null,
+                    deleted: current.branch.deleted,
+                    createdAt: current.branch.createdAt,
+                    updatedAt: current.branch.updatedAt,
+                    roles: [roleData],
+                });
+            } else {
+                // Si la sucursal ya está en la lista, solo agregamos el nuevo rol
+                acc[branchIndex].roles.push(roleData);
+            }
+
+            return acc;
+        }, []),
+    };
+
+    return userWithBranchesAndRoles;
 };
 
 // Actualizar usuario por ID
