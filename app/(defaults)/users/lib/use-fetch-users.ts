@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { User } from "@prisma/client";
+import { Branch as PrismaBranch, Role, User } from "@prisma/client";
 
 export interface UserResponse {
     users: User[];
     totalUsers: number;
+}
+
+interface Branch extends PrismaBranch {
+    roles: Role[];
+}
+export interface UserWithBranchesAndRoles extends Omit<User, 'password'> {
+    branches: Branch[];
 }
 
 const useFetchUsers = (query: string) => {
@@ -40,14 +47,14 @@ const useFetchUsers = (query: string) => {
 };
 
 export const useFetchUserById = (id: string) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UserWithBranchesAndRoles | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchUserData = async (id: string) => {
             try {
-                const response = await apiRequest.get<User>(`/users/${id}`);
+                const response = await apiRequest.get<UserWithBranchesAndRoles>(`/users/${id}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

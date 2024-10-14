@@ -1,25 +1,28 @@
 'use client';
 import { Button } from "@/components/ui";
 import { Form, Formik } from 'formik';
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { openNotification } from "@/utils";
-import { User } from "@prisma/client";
 import { updateUser } from "../../../lib/request";
 import { updateValidationSchema } from "../form.config";
 import { Tab } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import GeneralInfoFields from "./general-info-fields";
 import PasswordFields from "./password-fields";
 import AuthorizationFields from "./authorization-fields";
+import { UserContext } from "../../../[id]/page";
 
-export default function UpdateUserForm({ initialValues }: { initialValues: User }) {
+export default function UpdateUserForm() {
     const route = useRouter();
+    const params = useParams();
+    const userId = params.id as string;
+    const { user: initialValues, onChange } = useContext(UserContext); 
+
     const handleSubmit = async (values: any) => {
         const data = { ...values };
         delete data.confirmPassword;
 
-        const resp = await updateUser(initialValues.id, data);
-        console.log(resp);
+        const resp = await updateUser(userId, data);
 
         if (resp.success) {
             openNotification('success', 'Usuario editado correctamente');
@@ -28,6 +31,8 @@ export default function UpdateUserForm({ initialValues }: { initialValues: User 
             alert(resp.message);
         }
     }
+
+    console.log('userId', userId);
     return (
         <div className='panel'>
             <h5 className="font-semibold text-lg dark:text-white-light mb-4">Formulario de usuarios</h5>

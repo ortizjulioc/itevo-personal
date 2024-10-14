@@ -1,22 +1,11 @@
 import React, { FC } from 'react';
 
-interface SwitcherProps {
-  id: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
 
-const Switcher: FC<SwitcherProps> = ({ id, checked, onChange }) => {
+const Switcher = () => {
   return (
     <label className="w-12 h-6 relative">
-      <input
-        type="checkbox"
-        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-        id={id}
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <span className="outline_checkbox bg-icon border-2 border-[#ebedf2] dark:border-white-dark block h-full rounded-full before:absolute before:left-1 before:bg-[#ebedf2] dark:before:bg-white-dark before:bottom-1 before:w-4 before:h-4 before:rounded-full before:bg-[url(/assets/images/close.svg)] before:bg-no-repeat before:bg-center peer-checked:before:left-7 peer-checked:before:bg-[url(/assets/images/checked.svg)] peer-checked:border-primary peer-checked:before:bg-primary before:transition-all before:duration-300"></span>
+      <input type="checkbox" className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id="custom_switch_checkbox1" />
+      <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
     </label>
   );
 };

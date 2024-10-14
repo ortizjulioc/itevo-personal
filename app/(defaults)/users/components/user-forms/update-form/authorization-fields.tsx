@@ -1,6 +1,6 @@
 import { Field } from "formik";
 import { FormItem, Input } from "@/components/ui";
-import BranchesOption from "./BranchesOption";
+import BranchesOption from "./branches-option";
 import useFetchBranch from "../../../lib/use-fetch-branches";
 
 export default function AuthorizationFields({values, errors, touched }: any) {
@@ -9,7 +9,7 @@ export default function AuthorizationFields({values, errors, touched }: any) {
   const { loading, error, branches, totalBranches, setBranches } = useFetchBranch('');
     return (
         <>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           {branches?.map((branch) => {
             return (
               <BranchesOption

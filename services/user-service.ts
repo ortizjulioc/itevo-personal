@@ -76,6 +76,7 @@ export const findUserByUsername = async (username: string) => {
 export const findUserById = async (id: string) => {
     const user = await Prisma.user.findUnique({
         where: { id },
+        omit: { password: true },
         include: {
             roleBranch: {
                 include: {
