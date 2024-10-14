@@ -27,7 +27,7 @@ export default function CreateRoleForm() {
     };
 
     const onChangeName = (name: string, form: any) => {
-        const normalizedName = normalizeString(name);
+        const normalizedName = normalizeString(name, { replacement: '-' });
         form.setFieldValue('normalizedName', normalizedName);
 
         form.setFieldValue('name', name);
