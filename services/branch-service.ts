@@ -1,6 +1,8 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
+import { Branch as PrismaBranch, PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
+
+interface Branch extends Omit<PrismaBranch, 'id' | 'updatedAt' | 'createAt' | 'deleted'> { }
 
 export const getBranches = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -12,6 +14,7 @@ export const getBranches = async (search: string, page: number, top: number) => 
             id: true,
             name: true,
             address: true,
+            phone: true,
         },
         where: {
             deleted: false,
@@ -30,8 +33,8 @@ export const getBranches = async (search: string, page: number, top: number) => 
 
     return { branches, totalBranches };
 };
-export const createBranch = async (data: any) => {
-    const branch = await Prisma.branch.create({ data: data });
+export const createBranch = async (data: Branch) => {
+    const branch = await Prisma.branch.create({ data });
     return branch;
 };
 
@@ -51,7 +54,7 @@ export const findBranchById = async (id: string) => {
 };
 
 // Actualizar sucursal por ID
-export const updateBranchById = async (id: string, data: any) => {
+export const updateBranchById = async (id: string, data: Branch) => {
 
     return Prisma.branch.update({
         where: { id },

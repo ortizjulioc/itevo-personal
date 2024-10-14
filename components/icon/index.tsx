@@ -136,4 +136,5 @@ export { default as IconWheel } from './icon-wheel';
 export { default as IconXCircle } from './icon-x-circle';
 export { default as IconX } from './icon-x';
 export { default as IconZipFile } from './icon-zip-file';
+export { default as IconShieldUser } from './icon-shield-user';
 

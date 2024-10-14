@@ -5,6 +5,8 @@ import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
 import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
 import IconUser from '@/components/icon/icon-user';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
+import { IconUsers, IconUsersGroup } from '@/components/icon';
+import { IconMenuUsers } from '@/components/icon/menu';
 
 const navigationConfig = [
   {
@@ -41,14 +43,14 @@ const navigationConfig = [
   },
   {
     key: 'auth',
-    title: 'Acceso',
+    title: 'Autorización',
     type: NAV_ITEM_TYPE_TITLE,
     subItems: [],
   },
   {
     key: 'users',
     title: 'Usuarios',
-    icon: IconUser,
+    icon: IconMenuUsers,
     url: '/users',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
