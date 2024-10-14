@@ -33,6 +33,7 @@ import IconMenuPages from '@/components/icon/menu/icon-menu-pages';
 import IconMenuMore from '@/components/icon/menu/icon-menu-more';
 import { usePathname, useRouter } from 'next/navigation';
 import { getTranslation } from '@/i18n';
+import { IconSettings } from '../icon';
 
 const Header = () => {
     const pathname = usePathname();
@@ -163,7 +164,7 @@ const Header = () => {
                         </button>
                     </div>
 
-                    <div className="hidden ltr:mr-2 rtl:ml-2 sm:block">
+                    {/* <div className="hidden ltr:mr-2 rtl:ml-2 sm:block">
                         <ul className="flex items-center space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
                             <li>
                                 <Link href="/apps/calendar" className="block rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 hover:text-primary dark:bg-dark/40 dark:hover:bg-dark/60">
@@ -181,10 +182,10 @@ const Header = () => {
                                 </Link>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
                     <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
                         <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                            <form
+                            {/* <form
                                 className={`${search && '!block'} absolute inset-x-0 top-1/2 z-10 mx-4 hidden -translate-y-1/2 sm:relative sm:top-0 sm:mx-0 sm:block sm:translate-y-0`}
                                 onSubmit={() => setSearch(false)}
                             >
@@ -201,7 +202,7 @@ const Header = () => {
                                         <IconXCircle />
                                     </button>
                                 </div>
-                            </form>
+                            </form> */}
                             <button
                                 type="button"
                                 onClick={() => setSearch(!search)}
@@ -247,7 +248,7 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
-                        <div className="dropdown shrink-0">
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -274,8 +275,8 @@ const Header = () => {
                                     })}
                                 </ul>
                             </Dropdown>
-                        </div>
-                        <div className="dropdown shrink-0">
+                        </div> */}
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -329,8 +330,8 @@ const Header = () => {
                                     )}
                                 </ul>
                             </Dropdown>
-                        </div>
-                        <div className="dropdown shrink-0">
+                        </div> */}
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -403,7 +404,7 @@ const Header = () => {
                                     )}
                                 </ul>
                             </Dropdown>
-                        </div>
+                        </div> */}
                         <div className="dropdown flex shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
@@ -429,25 +430,20 @@ const Header = () => {
                                     <li>
                                         <Link href="/users/profile" className="dark:hover:text-white">
                                             <IconUser className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
-                                            Profile
+                                            Perfil
                                         </Link>
                                     </li>
+        
                                     <li>
-                                        <Link href="/apps/mailbox" className="dark:hover:text-white">
-                                            <IconMail className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
-                                            Inbox
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/auth/boxed-lockscreen" className="dark:hover:text-white">
-                                            <IconLockDots className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
-                                            Lock Screen
+                                        <Link href="/settings" className="dark:hover:text-white">
+                                            <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
+                                            Configuracion de Empresa
                                         </Link>
                                     </li>
                                     <li className="border-t border-white-light dark:border-white-light/10">
                                         <Link href="/auth/boxed-signin" className="!py-3 text-danger">
                                             <IconLogout className="h-4.5 w-4.5 shrink-0 rotate-90 ltr:mr-2 rtl:ml-2" />
-                                            Sign Out
+                                            Cerrar Sesion
                                         </Link>
                                     </li>
                                 </ul>
