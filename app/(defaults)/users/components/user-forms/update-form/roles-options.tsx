@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { Button, Drawer } from '@/components/ui';
 import { UserContext } from '../../../[id]/page';
+import Checkbox from '@/components/ui/checkbox';
 
 export default function RolesOptions() {
   const [open, setOpen] = useState(false);
@@ -20,13 +21,9 @@ export default function RolesOptions() {
           </div>
         </div>
 
-        <div className="flex flex-col space-y-4">
+        <div className="grid mt-4 gap-2">
           {roles.map((role) => (
-            <div key={role.id}>
-              <div className="flex justify-between">
-                <span>{role.name}</span>
-              </div>
-            </div>
+            <Checkbox key={role.id}>{role.name}</Checkbox>
           ))}
         </div>
       </Drawer>
