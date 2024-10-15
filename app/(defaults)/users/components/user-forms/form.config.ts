@@ -1,5 +1,14 @@
 import * as Yup from 'yup';
 
+export interface UserFormValues {
+    name: string;
+    lastName: string;
+    username: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+}
 
 const usernameRegex = /^(?!.*[_.]{2})[a-zA-Z0-9._]{3,16}(?<![_.])$/;
 

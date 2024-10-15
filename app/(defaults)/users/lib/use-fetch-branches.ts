@@ -39,34 +39,4 @@ const useFetchBranch = (query: string) => {
     return { branches, totalBranches, loading, error, setBranches };
 };
 
-export const useFetchBranchById = (id: string) => {
-    const [branch, setBranch] = useState<Branch | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchBranchData = async (id: string) => {
-            try {
-                const response = await apiRequest.get<Branch>(`/branches/${id}`);
-                if (!response.success) {
-                    throw new Error(response.message);
-                }
-                setBranch(response.data);
-            } catch (error) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError('Ha ocurrido un error al obtener el rol');
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBranchData(id);
-    }, [id]);
-
-    return { branch, loading, error, setBranch };
-}
-
 export default useFetchBranch;

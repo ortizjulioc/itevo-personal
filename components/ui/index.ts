@@ -3,5 +3,7 @@ export { default as Button} from './button';
 export { default as Input } from './input';
 export { default as FormItem } from './form-item';
 export { default as Pagination } from './pagination';
+export { default as Switcher } from './switcher';
+export { default as Drawer } from './drawer';
 
 // Add more exports as needed

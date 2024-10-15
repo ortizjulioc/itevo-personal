@@ -16,7 +16,7 @@ export default function UpdateUserForm() {
     const route = useRouter();
     const params = useParams();
     const userId = params.id as string;
-    const { user: initialValues, onChange } = useContext(UserContext); 
+    const { user: initialValues, onChange } = useContext(UserContext);
 
     const handleSubmit = async (values: any) => {
         const data = { ...values };
@@ -99,7 +99,7 @@ export default function UpdateUserForm() {
                                         Asigna los permisos necesarios para determinar las sucursales a las que el usuario tiene acceso.
                                         </p>
                                     </div>
-                                    <AuthorizationFields values={values} errors={errors} touched={touched} />
+                                    <AuthorizationFields />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
