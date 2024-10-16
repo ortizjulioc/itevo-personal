@@ -107,7 +107,7 @@ model Course {
     requiresGraduation Boolean  @map("requires_graduation") // Requiere graduacion
     createdAt          DateTime @default(now()) @map("created_at")
     updatedAt          DateTime @updatedAt @map("updated_at")
-
+    deleted   Boolean  @default(false)
     prerequisites Prerequisite[] @relation("CoursePrerequisite")
     requiredBy    Prerequisite[] @relation("PrerequisiteCourse")
     courseBranch  CourseBranch[]
