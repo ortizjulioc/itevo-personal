@@ -5,6 +5,9 @@ import { useFetchUserById, UserWithBranchesAndRoles } from "../lib/use-fetch-use
 import { createContext } from "react";
 import useFetchRole from "../lib/use-fetch-roles";
 import { Role } from "@prisma/client";
+import { AssingRole, RemoveRole } from "../lib/request";
+import { set } from "lodash";
+import { openNotification } from "@/utils";
 
 const UserInitialValues = {
     user: {
@@ -34,12 +37,16 @@ const UserInitialValues = {
         ],
     },
     onChange: (user: UserWithBranchesAndRoles | null) => { },
+    assignRole: (branchId: string, role: Role) => { },
+    deleteRole: (branchId: string, roleId: string) => { },
     roles: [],
 };
 
 interface UserContextType {
     user: UserWithBranchesAndRoles | null;
     onChange: (user: UserWithBranchesAndRoles | null) => void;
+    assignRole: (branchId: string, role: Role) => void;
+    deleteRole: (branchId: string, roleId: string) => void;
     roles: Role[];
 }
 
@@ -49,13 +56,75 @@ export default function EditUser({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, user, setUser } = useFetchUserById(id);
     const { roles } = useFetchRole('');
+    
 
     const onChange = (user: UserWithBranchesAndRoles | null) => {
         setUser(user);
     }
+    const assignRole = async (branchId: string, role: Role) => {
+        const resp = await AssingRole({ userId: id, branchId, roleId: role.id });
+      
+        if (resp.success) {
+          setUser((prev) => {
+            if (!prev) return null;
+      
+            const newBranches = prev.branches.map((branch) => {
+              if (branch.id === branchId) {
+                return {
+                  ...branch,
+                  roles: [...branch.roles, role],
+                };
+              }
+              return branch;
+            });
+      
+            return {
+              ...prev,
+              branches: newBranches,
+            };
+          });
+          openNotification('success', 'Rol asignado correctamente');
+
+        } else {
+          console.error('Error:', resp);
+          openNotification('error', resp.message);
+        }
+        
+      };
+      
+      const deleteRole = async  (branchId: string, roleId: string) => {
+        const resp = await RemoveRole({ userId: id, branchId, roleId });
+
+        if (resp.success) {
+          setUser((prev) => {
+            if (!prev) return null;
+      
+            const newBranches = prev.branches.map((branch) => {
+              if (branch.id === branchId) {
+                return {
+                  ...branch,
+                  roles: branch.roles.filter((role) => role.id !== roleId),
+                };
+              }
+              return branch;
+            });
+      
+            return {
+              ...prev,
+              branches: newBranches,
+            };
+          });
+          openNotification('success', 'Rol eliminado correctamente');
+        } else {
+          console.error('Error:', resp);
+          openNotification('error', resp.message);
+        }
+       
+      }
+    
 
     return (
-        <UserContext.Provider value={ { user, onChange, roles }}>
+        <UserContext.Provider value={ { user, onChange, roles, assignRole, deleteRole }}>
             <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
 
             {loading ? <FormSkeleton /> : <UpdateUserForm />}

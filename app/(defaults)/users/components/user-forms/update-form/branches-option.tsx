@@ -4,13 +4,16 @@ import { Branch } from "@prisma/client";
 import { Switcher } from "@/components/ui";
 import RolesOptions from "./roles-options";
 
+
 interface BranchesOptionsProps {
   branch: Branch;
   className?: string;
+  checked?: boolean;
 }
 
-const BranchesOption: React.FC<BranchesOptionsProps> = ({ branch, className }) => {
+const BranchesOption: React.FC<BranchesOptionsProps> = ({ branch, className, checked }) => {
   const { id, name, address } = branch;
+  
 
   return (
     <>
@@ -18,7 +21,7 @@ const BranchesOption: React.FC<BranchesOptionsProps> = ({ branch, className }) =
         <div className="flex flex-col justify-between h-full">
           <div>
             <div className="absolute top-4 right-4">
-              <Switcher border="rounded" variant="outline" />
+              <Switcher border="rounded" variant="outline" checked={checked} />
             </div>
 
             <div className="mt-4">
@@ -28,7 +31,7 @@ const BranchesOption: React.FC<BranchesOptionsProps> = ({ branch, className }) =
           </div>
 
           <div className="mt-4">
-            <RolesOptions />
+            <RolesOptions branchId={id}/>
           </div>
 
         </div>

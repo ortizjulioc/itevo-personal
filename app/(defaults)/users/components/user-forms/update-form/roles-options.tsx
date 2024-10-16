@@ -1,14 +1,22 @@
 import React, { useContext, useState } from 'react'
 import { Button, Checkbox, Drawer } from '@/components/ui';
 import { UserContext } from '../../../[id]/page';
+import { Role } from '@prisma/client';
 
-export default function RolesOptions() {
+export default function RolesOptions({branchId}: {branchId: string}) {
   const [open, setOpen] = useState(false);
-  const { roles } = useContext(UserContext)
-  console.log(roles);
+  const { roles, user,assignRole,deleteRole} = useContext(UserContext)
 
-  const onCheck = (checked: boolean) => {
-    console.log(checked);
+ const BranchRoles = user?.branches.find((branch) => branch.id === branchId)?.roles;
+
+
+
+  const onCheck = (checked: boolean,role:Role) => {
+    if (checked) {
+      assignRole(branchId, role);
+    } else {
+      deleteRole(branchId, role.id);
+    }
   }
 
   return (
@@ -28,7 +36,8 @@ export default function RolesOptions() {
           {roles.map((role) => (
             <Checkbox
               key={role.id}
-              // onChange={(checked) => console.log(checked)}
+              onChange={(checked) => onCheck(checked, role)}
+              checked={BranchRoles?.some((branchRole) => branchRole.id === role.id)}
             >
               {role.name}
             </Checkbox>
