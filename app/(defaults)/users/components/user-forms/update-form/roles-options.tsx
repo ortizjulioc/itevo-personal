@@ -1,12 +1,15 @@
 import React, { useContext, useState } from 'react'
-import { Button, Drawer } from '@/components/ui';
+import { Button, Checkbox, Drawer } from '@/components/ui';
 import { UserContext } from '../../../[id]/page';
-import Checkbox from '@/components/ui/checkbox';
 
 export default function RolesOptions() {
   const [open, setOpen] = useState(false);
   const { roles } = useContext(UserContext)
   console.log(roles);
+
+  const onCheck = (checked: boolean) => {
+    console.log(checked);
+  }
 
   return (
     <div>
@@ -23,7 +26,12 @@ export default function RolesOptions() {
 
         <div className="grid mt-4 gap-2">
           {roles.map((role) => (
-            <Checkbox key={role.id}>{role.name}</Checkbox>
+            <Checkbox
+              key={role.id}
+              // onChange={(checked) => console.log(checked)}
+            >
+              {role.name}
+            </Checkbox>
           ))}
         </div>
       </Drawer>

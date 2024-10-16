@@ -1,5 +1,6 @@
+'use client';
 import classNames from 'classnames';
-import React from 'react'
+import React, { useState } from 'react'
 
 interface CheckboxProps {
   children?: React.ReactNode
@@ -51,6 +52,8 @@ export default function Checkbox({
   textColored = false
 }: CheckboxProps) {
 
+  const [internalChecked, setInternalChecked] = useState(checked || false);
+
   const getVariantClass = () => {
     switch (variant) {
       case 'solid':
@@ -69,11 +72,22 @@ export default function Checkbox({
     className
   )
 
+  const handleChange = (e: any) => {
+    const newChecked = e.target.checked;
+    console.log(newChecked);
+    setInternalChecked(newChecked);
+    if (onChange) {
+      onChange(newChecked);
+    }
+  };
+
   return (
     <label className="inline-flex hover:cursor-pointer">
       <input
         type="checkbox"
         className={checkboxClasses}
+        checked={internalChecked}
+        onChange={handleChange}
       />
       <span
         className={classNames({[MAP_TEXT_COLORED[color]]: textColored})}

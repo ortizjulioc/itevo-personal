@@ -32,7 +32,6 @@ export default function UpdateUserForm() {
         }
     }
 
-    console.log('userId', userId);
     return (
         <div className='panel'>
             <h5 className="font-semibold text-lg dark:text-white-light mb-4">Formulario de usuarios</h5>
