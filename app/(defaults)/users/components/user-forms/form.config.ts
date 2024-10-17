@@ -34,10 +34,9 @@ export const updateValidationSchema = Yup.object().shape({
         .matches(usernameRegex, 'El nombre de usuario no es válido')
         .required('El nombre de usuario es obligatorio'),
     email: Yup.string().email('Formato de email incorrecto').required('El email es obligatorio'),
-    password: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
+    password: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Las contraseñas no coinciden')
-        .required('Debes confirmar la contraseña'),
 });
 
 export const initialValues = {

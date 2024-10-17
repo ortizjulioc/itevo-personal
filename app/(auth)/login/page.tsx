@@ -1,13 +1,14 @@
 'use client';
 
 import { IconLockDots, IconMail } from '@/components/icon';
+import { openNotification } from '@/utils';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setidentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -16,12 +17,13 @@ export default function LoginPage() {
     setError(''); // Limpiar errores previos
     const result = await signIn('credentials', {
       redirect: false,
-      email,
+      identifier,
       password,
     });
 
     if (result?.error) {
       console.error('Error al iniciar sesión:', result.error);
+      openNotification('error', result?.error,); // Muestra un mensaje de error al usuario
       setError('Credenciales inválidas'); // Muestra un mensaje de error al usuario
     } else {
       // Redirige al usuario después del inicio de sesión exitoso
@@ -50,9 +52,16 @@ export default function LoginPage() {
                             </div>
                             <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
                                 <div>
-                                    <label htmlFor="Email">Usuario / Correo</label>
+                                    <label htmlFor="identifier">Usuario / Correo</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input 
+                                            id="identifier" 
+                                            type="text" 
+                                            placeholder="Enter identifier" 
+                                            className="form-input ps-10 placeholder:text-white-dark" 
+                                            value={identifier} 
+                                            onChange={(e) => setidentifier(e.target.value)}
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
@@ -61,7 +70,14 @@ export default function LoginPage() {
                                 <div>
                                     <label htmlFor="Password">Contraseña</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input 
+                                            id="Password" 
+                                            type="password" 
+                                            placeholder="Enter Password" 
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                         />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>

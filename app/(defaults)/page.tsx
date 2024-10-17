@@ -1,12 +1,18 @@
 import { Metadata } from 'next';
 import React from 'react';
-
+import { getServerSession } from "next-auth/next";
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 export const metadata: Metadata = {
-    title: 'Sales Admin',
+    title: 'Home',
 };
+import ViewTitle from "@/components/common/ViewTitle";
 
-const Sales = () => {
-    return <div>starter page</div>;
+const Sales = async () => {
+    const session = await getServerSession(authOptions);
+    console.log(session);
+    return <div>
+        <ViewTitle title={`¡Bienvenido ${session?.user?.name} ${session?.user?.lastName} !` } />
+    </div>;
 };
 
 export default Sales;
