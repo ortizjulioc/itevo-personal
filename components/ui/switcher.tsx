@@ -27,10 +27,10 @@ const Switcher = ({
   variant = 'solid',
 }: SwitcherProps) => {
   return (
-    <label className={classNames('w-12 h-6 relative', className)}>
+    <label className={classNames('w-12 h-6 relative cursor-pointer', className)}>
       <input
         type="checkbox"
-        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+        className="custom_switch absolute w-full h-full opacity-0 z-10  peer"
         id="custom_switch_checkbox1"
         checked={checked}
         onChange={() => onChange && onChange(!checked)}

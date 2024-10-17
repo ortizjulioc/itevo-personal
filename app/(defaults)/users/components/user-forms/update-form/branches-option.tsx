@@ -21,7 +21,7 @@ const BranchesOption: React.FC<BranchesOptionsProps> = ({ branch, className, che
         <div className="flex flex-col justify-between h-full">
           <div>
             <div className="absolute top-4 right-4">
-              <Switcher border="rounded" variant="outline" checked={checked} />
+              <Switcher border="rounded" variant="outline" checked={checked}  className="cursor-default" />
             </div>
 
             <div className="mt-4">

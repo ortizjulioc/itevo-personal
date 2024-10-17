@@ -2,11 +2,11 @@
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { UpdateUserForm } from "../components/user-forms";
 import { useFetchUserById, UserWithBranchesAndRoles } from "../lib/use-fetch-users";
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
 import useFetchRole from "../lib/use-fetch-roles";
 import { Role } from "@prisma/client";
 import { AssingRole, RemoveRole } from "../lib/request";
-import { set } from "lodash";
+import { add, set } from "lodash";
 import { openNotification } from "@/utils";
 
 const UserInitialValues = {
@@ -62,13 +62,17 @@ export default function EditUser({ params }: { params: { id: string } }) {
         setUser(user);
     }
     const assignRole = async (branchId: string, role: Role) => {
-        const resp = await AssingRole({ userId: id, branchId, roleId: role.id });
-      
-        if (resp.success) {
-          setUser((prev) => {
-            if (!prev) return null;
-      
-            const newBranches = prev.branches.map((branch) => {
+      const resp = await AssingRole({ userId: id, branchId, roleId: role.id });
+    
+      if (resp.success) {
+        setUser((prev) => {
+          if (!prev) return null;
+          const branchExists = prev.branches.find((branch) => branch.id === branchId);
+    
+          let newBranches;
+          if (branchExists) {
+        
+            newBranches = prev.branches.map((branch) => {
               if (branch.id === branchId) {
                 return {
                   ...branch,
@@ -77,50 +81,74 @@ export default function EditUser({ params }: { params: { id: string } }) {
               }
               return branch;
             });
-      
-            return {
-              ...prev,
-              branches: newBranches,
-            };
-          });
-          openNotification('success', 'Rol asignado correctamente');
-
-        } else {
-          console.error('Error:', resp);
-          openNotification('error', resp.message);
-        }
-        
-      };
-      
-      const deleteRole = async  (branchId: string, roleId: string) => {
-        const resp = await RemoveRole({ userId: id, branchId, roleId });
-
-        if (resp.success) {
-          setUser((prev) => {
-            if (!prev) return null;
-      
-            const newBranches = prev.branches.map((branch) => {
+          } else {
+    
+            newBranches = [
+              ...prev.branches,
+              { 
+                id: branchId, 
+                roles: [role], 
+                name: '', 
+                phone: '', 
+                deleted: false,
+                address: '',
+                createdAt: new Date(),
+                updatedAt: new Date()
+              },
+            ];
+          }
+    
+          return {
+            ...prev,
+            branches: newBranches,
+          };
+        });
+        openNotification('success', 'Rol asignado correctamente');
+      } else {
+        console.error('Error:', resp);
+        openNotification('error', resp.message);
+      }
+    };
+    
+    const deleteRole = async (branchId: string, roleId: string) => {
+      const resp = await RemoveRole({ userId: id, branchId, roleId });
+    
+      if (resp.success) {
+        setUser((prev) => {
+          if (!prev) return null;
+    
+         
+          const newBranches = prev.branches
+            .map((branch) => {
               if (branch.id === branchId) {
+                const updatedRoles = branch.roles.filter((role) => role.id !== roleId);
+          
+                if (updatedRoles.length === 0) {
+                  return null;
+                }
                 return {
                   ...branch,
-                  roles: branch.roles.filter((role) => role.id !== roleId),
+                  roles: updatedRoles,
                 };
               }
               return branch;
-            });
-      
-            return {
-              ...prev,
-              branches: newBranches,
-            };
-          });
-          openNotification('success', 'Rol eliminado correctamente');
-        } else {
-          console.error('Error:', resp);
-          openNotification('error', resp.message);
-        }
-       
+            })
+            .filter((branch) => branch !== null); 
+          return {
+            ...prev,
+            branches: newBranches,
+          };
+        });
+        openNotification('success', 'Rol eliminado correctamente');
+      } else {
+        console.error('Error:', resp);
+        openNotification('error', resp.message);
       }
+    };
+    
+      useEffect(() => {
+        console.log('BRANCHES', user?.branches);
+      }, [user]);
     
 
     return (
