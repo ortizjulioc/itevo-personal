@@ -6,7 +6,6 @@ import { createContext, useEffect } from "react";
 import useFetchRole from "../lib/use-fetch-roles";
 import { Role } from "@prisma/client";
 import { AssingRole, RemoveRole } from "../lib/request";
-import { add, set } from "lodash";
 import { openNotification } from "@/utils";
 
 const UserInitialValues = {
