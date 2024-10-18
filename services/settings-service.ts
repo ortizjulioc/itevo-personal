@@ -12,6 +12,8 @@ export const getSettings = async (search: string, page: number, top: number) => 
         select: {
             id: true,
             rnc: true,
+            companyName: true,
+            address: true,
             email: true,
             logo: true,
             phone: true,
