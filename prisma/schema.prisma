@@ -69,13 +69,13 @@ model Teacher {
     firstName      String   @map("first_name")
     lastName       String   @map("last_name")
     identification String   @unique
-    address        String
-    phone          String
-    email          String   @unique
-    commissionRate Float    @map("commission_rate")
+    address        String?
+    phone          String?
+    email          String?   @unique
+    commissionRate Float?    @map("commission_rate")
     createdAt      DateTime @default(now()) @map("created_at")
     updatedAt      DateTime @updatedAt @map("updated_at")
-
+    deleted      Boolean  @default(false) @map("is_deleted")
     courseBranch   CourseBranch[]
     accountPayable AccountPayable[]
 }
