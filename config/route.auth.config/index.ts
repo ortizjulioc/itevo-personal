@@ -1,3 +1,5 @@
+import { ADMIN } from "@/constants/role.constant";
+
 export const routeConfig = [
     {
       key: 'inicio',
@@ -37,7 +39,7 @@ export const routeConfig = [
     {
       key: 'settings',
       url: '/settings',
-      authorization: ['admin'], 
+      authorization: [ADMIN], 
     },
   ];
   

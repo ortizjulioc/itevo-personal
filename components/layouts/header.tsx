@@ -28,6 +28,7 @@ import { signOut } from 'next-auth/react';
 import { Role } from '@prisma/client';
 import Avatar from '../common/Avatar';
 import { getInitials } from '@/utils';
+import { ADMIN } from '@/constants/role.constant';
 
 
 const Header = ({user}:{user:any}) => {
@@ -405,24 +406,24 @@ const Header = ({user}:{user:any}) => {
                                 btnClassName="relative group block"
                                 button={
                                     <div className="flex items-center space-x-2"> 
-                                        <Avatar initials={getInitials(user.name, user.lastName)} size="sm" color="primary" />
-                                        <span>{user.name} {user.lastName}</span>
+                                        <Avatar initials={getInitials(user?.name, user?.lastName)} size="sm" color="primary" />
+                                        <span>{user?.name} {user?.lastName}</span>
                                     </div>
                                 }
                             >
                                 <ul className="w-[350px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
                                     <li>
                                         <div className="flex items-center px-4 py-4">
-                                        <Avatar initials={getInitials(user.name, user.lastName)} size="sm" color="primary" />
+                                        <Avatar initials={getInitials(user?.name, user?.lastName)} size="sm" color="primary" />
                                             <div className="truncate ltr:pl-4 rtl:pr-4">
                                                 <h4 className="text-base">
-                                                   {`${user.name} ${user.lastName}`}
+                                                   {`${user?.name} ${user?.lastName}`}
                                                     <span className="rounded bg-success-light px-1 text-xs text-success ltr:ml-2 rtl:ml-2">
-                                                    {user?.roles?.some((role: Role) => role.normalizedName === 'admin') ? 'Administrador' : 'Usuario'}
+                                                    {user?.roles?.some((role: Role) => role.normalizedName === ADMIN) ? 'Administrador' : 'Usuario'}
                                                     </span>
                                                 </h4>
                                                 <div  className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white min-w-max">
-                                                    {user.email}
+                                                    {user?.email}
                                                 </div>
                                             </div>
                                         </div>
