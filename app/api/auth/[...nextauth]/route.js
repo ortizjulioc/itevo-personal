@@ -59,7 +59,7 @@ export const authOptions = {
         token.email = user.email;
         token.phone = user.phone;
         token.branches = user.branches;
-        token.roles= user.branches[0].roles;
+        token.roles= user.branches[0]?.roles;
 
       }
       return token;
