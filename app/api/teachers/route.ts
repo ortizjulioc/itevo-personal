@@ -36,10 +36,10 @@ export async function POST(request: Request) {
         }
 
 
-        // const teacherCodeExists = await findTeacherByCode(body);
-        // if (teacherCodeExists) {
-        //     return NextResponse.json({ error: 'Este maestro ya está registrado' }, { status: 400 });
-        // }
+        const teacherCodeExists = await findTeacherByCode(body);
+        if (teacherCodeExists) {
+            return NextResponse.json({ error: 'Este maestro ya está registrado' }, { status: 400 });
+        }
         const teacher = await createTeacher(body);
         return NextResponse.json(teacher, { status: 201 });
     } catch (error) {
