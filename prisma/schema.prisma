@@ -85,14 +85,14 @@ model Student {
     code            String   @unique // Codigo del estudiante (matricula)
     firstName       String   @map("first_name") // Nombres
     lastName        String   @map("last_name") // Apellidos
-    identification  String? // Cedula
+    identification  String? // En estudiates puede estar vacio
     phone           String // Telefono
-    email           String   @unique // Correo
-    address         String // Direccion
+    email           String?   @unique // Correo
+    address         String? // Direccion
     hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
-
+    deleted         Boolean  @default(false) @map("is_deleted")
     enrollment        Enrollment[]
     graduation        Graduation[]
     accountReceivable AccountReceivable[]
