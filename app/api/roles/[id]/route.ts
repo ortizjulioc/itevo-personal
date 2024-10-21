@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_ROLE_NOT_FOUND', message: 'Rol no encontrado' }, { status: 404 });
         }
 
-        return NextResponse.json(role);
+        return NextResponse.json(role, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el rol', details: error.message }, { status: 500 });
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el rol
         const updatedRole = await updateRoleById(id, body);
 
-        return NextResponse.json(updatedRole);
+        return NextResponse.json(updatedRole, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el rol', details: error.message }, { status: 500 });

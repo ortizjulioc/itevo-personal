@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        return NextResponse.json(user);
+        return NextResponse.json(user, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el usuario', details: error.message }, { status: 500 });
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el usuario
         const updatedUser = await updateUserById(id, body);
 
-        return NextResponse.json(updatedUser);
+        return NextResponse.json(updatedUser, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el usuario', details: error.message }, { status: 500 });

@@ -18,7 +18,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar la configuracion de empresa
         const updatedSetting = await updateSettingById(id, body);
 
-        return NextResponse.json(updatedSetting);
+        return NextResponse.json(updatedSetting, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando la configuracion de empresa', details: error.message }, { status: 500 });

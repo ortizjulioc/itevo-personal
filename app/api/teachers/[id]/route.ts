@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND', message: 'Maestro no encontrado' }, { status: 404 });
         }
 
-        return NextResponse.json(teacher);
+        return NextResponse.json(teacher, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el maestro', details: error.message }, { status: 500 });
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el TEACHER
         const updatedTeacher = await updateTeacherById(id, body);
 
-        return NextResponse.json(updatedTeacher);
+        return NextResponse.json(updatedTeacher, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el curso', details: error.message }, { status: 500 });

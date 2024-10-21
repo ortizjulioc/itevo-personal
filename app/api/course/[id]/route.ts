@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_COURSE_NOT_FOUND', message: 'Curso no encontrado' }, { status: 404 });
         }
 
-        return NextResponse.json(course);
+        return NextResponse.json(course, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el curso', details: error.message }, { status: 500 });
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el course
         const updatedCourse = await updateCourseById(id, body);
 
-        return NextResponse.json(updatedCourse);
+        return NextResponse.json(updatedCourse, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el curso', details: error.message }, { status: 500 });
