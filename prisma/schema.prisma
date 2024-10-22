@@ -65,10 +65,11 @@ model UserRoleBranch {
 
 model Teacher {
     id             String   @id @default(uuid())
-    code           String   @unique // Codigo del profesor
+    code           Int   @unique @default(autoincrement())
     firstName      String   @map("first_name")
     lastName       String   @map("last_name")
     identification String   @unique
+    prefix         String?  @map("prefix") @default("P")
     address        String?
     phone          String?
     email          String?   @unique

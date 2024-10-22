@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getTeachers, createTeacher, findTeacherByCode } from '@/services/teacher-service';
+import { getTeachers, createTeacher, findTeacherByIdentification } from '@/services/teacher-service';
 
 export async function GET(request: NextRequest) {
     try {
@@ -30,15 +30,14 @@ export async function POST(request: Request) {
         console.log('BODY: ',body);
 
         // Validate the request body
-        const {isValid, message} = validateObject(body, ["code", "firstName", "lastName", "identification"]);
+        const {isValid, message} = validateObject(body, ["firstName", "lastName", "identification"]);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-
-        const teacherCodeExists = await findTeacherByCode(body);
-        if (teacherCodeExists) {
-            return NextResponse.json({ error: 'Este maestro ya está registrado' }, { status: 400 });
+        const teacherIdentificationExists = await findTeacherByIdentification(body);
+        if (teacherIdentificationExists) {
+            return NextResponse.json({ error: 'Esta identificacion de maestro ya existe' }, { status: 400 });
         }
         const teacher = await createTeacher(body);
         return NextResponse.json(teacher, { status: 201 });

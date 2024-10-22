@@ -50,6 +50,13 @@ export const findTeacherByCode= async (data: any) => {
     return teacherCodeExists
 };
 
+export const findTeacherByIdentification= async (data: any) => {
+    const teacherIdentificationExists = await Prisma.teacher.findUnique({
+        where: { identification: data.identification },
+    });
+    return teacherIdentificationExists
+};
+
 // Obtener teacher por ID
 export const findTeacherById = async (id: string) => {
     return Prisma.teacher.findUnique({
