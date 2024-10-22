@@ -43,13 +43,6 @@ export const createStudent = async (data: any) => {
     return student;
 };
 
-export const findStudentByCode= async (data: any) => {
-    const studentCodeExists = await Prisma.student.findUnique({
-        where: { code: data.code },
-    });
-    return studentCodeExists
-};
-
 // Obtener student por ID
 export const findStudentById = async (id: string) => {
     return Prisma.student.findUnique({
@@ -78,4 +71,29 @@ export const deleteStudentById = async (id: string) => {
         where: { id },
         data: { deleted: true },
     });
+};
+
+// Crear codigo de estudiante unico tomando como referencia el año actual, y calculando que el codigo sea autoincremental dependiendo del anterior
+
+export const createStudentCode = async () => {
+    const currentYear = new Date().getFullYear();
+    const students = await Prisma.student.findMany({
+        where: {
+            code: {
+                startsWith: currentYear.toString(),
+            },
+        },
+        orderBy: {
+            code: 'desc',
+        },
+    });
+
+    if (students.length === 0) {
+        return `${currentYear.toString()}-0001`;
+    }
+
+    const [year, code] = students[0].code.split('-');
+    const lastStudentCode = parseInt(code, 10);
+    const newStudentCode = lastStudentCode + 1;
+    return `${year}-${newStudentCode.toString().padStart(4, '0')}`;
 };

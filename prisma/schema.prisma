@@ -76,7 +76,7 @@ model Teacher {
     commissionRate Float?    @map("commission_rate")
     createdAt      DateTime @default(now()) @map("created_at")
     updatedAt      DateTime @updatedAt @map("updated_at")
-    deleted      Boolean  @default(false) @map("is_deleted")
+    deleted      Boolean  @default(false)
     courseBranch   CourseBranch[]
     accountPayable AccountPayable[]
 }
@@ -93,7 +93,7 @@ model Student {
     hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
-    deleted         Boolean  @default(false) @map("is_deleted")
+    deleted         Boolean  @default(false)
     enrollment        Enrollment[]
     graduation        Graduation[]
     accountReceivable AccountReceivable[]

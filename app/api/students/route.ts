@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getStudents, createStudent, findStudentByCode } from '@/services/student-service';
+import { getStudents, createStudent, createStudentCode } from '@/services/student-service';
 
 export async function GET(request: NextRequest) {
     try {
@@ -30,16 +30,11 @@ export async function POST(request: Request) {
         console.log('BODY: ',body);
 
         // Validate the request body
-        const {isValid, message} = validateObject(body, ["code", "firstName", "lastName", "identification"]);
+        const {isValid, message} = validateObject(body, ["firstName", "lastName", "identification"]);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
-
-
-        const studentCodeExists = await findStudentByCode(body);
-        if (studentCodeExists) {
-            return NextResponse.json({ error: 'Este estudiante ya está registrado' }, { status: 400 });
-        }
+        body.code = await createStudentCode();
         const student = await createStudent(body);
         return NextResponse.json(student, { status: 201 });
     } catch (error) {
