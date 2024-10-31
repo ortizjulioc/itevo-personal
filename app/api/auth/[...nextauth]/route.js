@@ -13,7 +13,6 @@ export const authOptions = {
       },
       async authorize(credentials, req) {
         const { identifier, password } = credentials;
-        console.log('credentials', credentials);
 
         let user = await findUserByEmail(identifier);
 
@@ -22,14 +21,12 @@ export const authOptions = {
         }
 
         if (!user) {
-          throw new Error('No user found with this email or username');
+          throw new Error('Usuario o contraseña incorrectos');
         }
-        console.log('user', user);
-
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if (!isPasswordCorrect) {
-          throw new Error('Wrong password');
+          throw new Error('Usuario o contraseña incorrectos');
         }
 
         // Retorna el objeto de usuario si todo está correcto
