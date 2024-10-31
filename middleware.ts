@@ -12,6 +12,11 @@ export default withAuth(
     if (pathname === '/login') {
       return NextResponse.next();
     }
+    
+    // Si no hay token (usuario deslogueado), redirigir al login
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
 
     // Buscar la ruta en la configuración
     const route = routeConfig.find(route => route.url === pathname);
@@ -21,10 +26,6 @@ export default withAuth(
       return NextResponse.next();
     }
 
-    // Si no hay token (usuario deslogueado), redirigir al login
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
 
     // Verificar los roles del usuario
     const userRoles = token?.roles || [];
