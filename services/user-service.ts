@@ -61,15 +61,124 @@ export const createUser = async (data: any) => {
 };
 
 export const findUserByEmail = async (email: string) => {
-    return Prisma.user.findUnique({
+    const user = await Prisma.user.findUnique({
         where: { email },
+        // omit: { password: true },
+        include: {
+            roleBranch: {
+                include: {
+                    branch: true,
+                    role: true,
+                },
+            },
+        },
     });
+
+    if (!user) {
+        console.log('No se encontró el usuario');
+        return null;
+    }
+
+    // Estructura de salida para agrupar roles por sucursal
+    const userWithBranchesAndRoles: UserWithBranchesAndRoles = {
+        ...user,
+        roleBranch: undefined,
+        branches: user.roleBranch.reduce<Branch[]>((acc, current) => {
+            const branchIndex = acc.findIndex(
+                (branch) => branch.id === current.branch.id
+            );
+
+            const roleData: Role = {
+                id: current.role.id,
+                name: current.role.name,
+                normalizedName: current.role.normalizedName,
+                deleted: current.role.deleted,
+                createdAt: current.role.createdAt,
+                updatedAt: current.role.updatedAt,
+            };
+
+            if (branchIndex === -1) {
+                // Si la sucursal no está en la lista, la agregamos con el primer rol
+                acc.push({
+                    id: current.branch.id,
+                    name: current.branch.name,
+                    address: current.branch.address,
+                    phone: current.branch.phone ?? null,
+                    deleted: current.branch.deleted,
+                    createdAt: current.branch.createdAt,
+                    updatedAt: current.branch.updatedAt,
+                    roles: [roleData],
+                });
+            } else {
+                // Si la sucursal ya está en la lista, solo agregamos el nuevo rol
+                acc[branchIndex].roles.push(roleData);
+            }
+
+            return acc;
+        }, []),
+    };
+
+    return userWithBranchesAndRoles;
 };
 
 export const findUserByUsername = async (username: string) => {
-    return Prisma.user.findUnique({
+    const user = await Prisma.user.findUnique({
         where: { username },
+        // omit: { password: true },
+        include: {
+            roleBranch: {
+                include: {
+                    branch: true,
+                    role: true,
+                },
+            },
+        },
     });
+
+    if (!user) {
+        return null;
+    }
+
+    // Estructura de salida para agrupar roles por sucursal
+    const userWithBranchesAndRoles: UserWithBranchesAndRoles = {
+        ...user,
+        roleBranch: undefined,
+        branches: user.roleBranch.reduce<Branch[]>((acc, current) => {
+            const branchIndex = acc.findIndex(
+                (branch) => branch.id === current.branch.id
+            );
+
+            const roleData: Role = {
+                id: current.role.id,
+                name: current.role.name,
+                normalizedName: current.role.normalizedName,
+                deleted: current.role.deleted,
+                createdAt: current.role.createdAt,
+                updatedAt: current.role.updatedAt,
+            };
+
+            if (branchIndex === -1) {
+                // Si la sucursal no está en la lista, la agregamos con el primer rol
+                acc.push({
+                    id: current.branch.id,
+                    name: current.branch.name,
+                    address: current.branch.address,
+                    phone: current.branch.phone ?? null,
+                    deleted: current.branch.deleted,
+                    createdAt: current.branch.createdAt,
+                    updatedAt: current.branch.updatedAt,
+                    roles: [roleData],
+                });
+            } else {
+                // Si la sucursal ya está en la lista, solo agregamos el nuevo rol
+                acc[branchIndex].roles.push(roleData);
+            }
+
+            return acc;
+        }, []),
+    };
+
+    return userWithBranchesAndRoles;
 };
 
 // Obtener usuario por ID

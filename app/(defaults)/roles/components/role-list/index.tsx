@@ -4,7 +4,7 @@ import { Button, Pagination } from "@/components/ui";
 import {IconEdit, IconTrashLines} from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
-import useFetchRoles from "../../lib/use-fecth-roles";
+import useFetchRoles from "../../lib/use-fetch-roles";
 import { deleteRole } from "../../lib/request";
 import Skeleton from "@/components/common/Skeleton";
 

@@ -1,10 +1,11 @@
 interface AvatarProps {
     initials: string;
-    size?: 'sm' | 'md' | 'lg' | 'xl'; // Tamaños predefinidos
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'; // Tamaños predefinidos
     color?: 'success' | 'primary' | 'info' | 'danger'; // Colores predefinidos
   }
 
   const sizeClasses = {
+    xs: 'w-8 h-8 text-sm',
     sm: 'w-10 h-10 text-base',
     md: 'w-14 h-14 text-lg',
     lg: 'w-16 h-16 text-xl',

@@ -24,9 +24,9 @@ export const deleteUser = async (id: string) => {
 };
 
 export const AssingRole = async (data: AssingRole) => {
-    return await apiRequest.post<AssingRole>(`/api/authorization/assign-role`, data);
+    return await apiRequest.post<AssingRole>(`/authorization/assign-role`, data);
 };
 
 export const RemoveRole = async (data: AssingRole) => {
-    return await apiRequest.remove<AssingRole>(`/api/authorization/remove-role`, { data });
+    return await apiRequest.remove<AssingRole>(`/authorization/remove-role`, { data });
 }

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_BRANCH_NOT_FOUND', message: 'Sucural no encontrada' }, { status: 404 });
         }
 
-        return NextResponse.json(branch);
+        return NextResponse.json(branch, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando la sucursal', details: error.message }, { status: 500 });
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar la sucursal
         const updatedBranch = await updateBranchById(id, body);
 
-        return NextResponse.json(updatedBranch);
+        return NextResponse.json(updatedBranch, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando la sucursal', details: error.message }, { status: 500 });

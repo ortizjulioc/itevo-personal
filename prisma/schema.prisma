@@ -65,17 +65,18 @@ model UserRoleBranch {
 
 model Teacher {
     id             String   @id @default(uuid())
-    code           String   @unique // Codigo del profesor
+    code           Int   @unique @default(autoincrement())
     firstName      String   @map("first_name")
     lastName       String   @map("last_name")
     identification String   @unique
-    address        String
-    phone          String
-    email          String   @unique
-    commissionRate Float    @map("commission_rate")
+    prefix         String?  @map("prefix") @default("P")
+    address        String?
+    phone          String?
+    email          String?   @unique
+    commissionRate Float?    @map("commission_rate")
     createdAt      DateTime @default(now()) @map("created_at")
     updatedAt      DateTime @updatedAt @map("updated_at")
-
+    deleted      Boolean  @default(false)
     courseBranch   CourseBranch[]
     accountPayable AccountPayable[]
 }
@@ -85,14 +86,14 @@ model Student {
     code            String   @unique // Codigo del estudiante (matricula)
     firstName       String   @map("first_name") // Nombres
     lastName        String   @map("last_name") // Apellidos
-    identification  String? // Cedula
+    identification  String? // En estudiates puede estar vacio
     phone           String // Telefono
-    email           String   @unique // Correo
-    address         String // Direccion
+    email           String?   @unique // Correo
+    address         String? // Direccion
     hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
-
+    deleted         Boolean  @default(false)
     enrollment        Enrollment[]
     graduation        Graduation[]
     accountReceivable AccountReceivable[]
@@ -107,7 +108,7 @@ model Course {
     requiresGraduation Boolean  @map("requires_graduation") // Requiere graduacion
     createdAt          DateTime @default(now()) @map("created_at")
     updatedAt          DateTime @updatedAt @map("updated_at")
-
+    deleted   Boolean  @default(false)
     prerequisites Prerequisite[] @relation("CoursePrerequisite")
     requiredBy    Prerequisite[] @relation("PrerequisiteCourse")
     courseBranch  CourseBranch[]
