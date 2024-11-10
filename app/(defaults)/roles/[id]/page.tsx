@@ -1,7 +1,7 @@
 'use client';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { UpdateRoleForm} from "../components/role-forms";
-import { useFetchRoleById } from "../lib/use-fecth-roles";
+import { useFetchRoleById } from "../lib/use-fetch-roles";
 
 
 

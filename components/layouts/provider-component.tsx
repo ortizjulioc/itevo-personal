@@ -20,5 +20,3 @@ const ProviderComponent = ({ children }: IProps) => {
 };
 
 export default ProviderComponent;
-// todo
-// export default appWithI18Next(ProviderComponent, ni18nConfig);
