@@ -56,15 +56,15 @@ export const routeConfig = [
       url: '/teachers/:path*',
       authorization: [], 
     },
-    {
-      key: 'contactos',
-      url: '/contactos',
+   {
+      key: 'students',
+      url: '/students',
       authorization: [], 
     },
     {
-      key: 'contactos-subroutes',
-      url: '/contactos/:path*',
+      key: 'students-subroutes',
+      url: '/students/:path*',
       authorization: [],
-    }
+   }
   ];
   
