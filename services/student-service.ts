@@ -46,10 +46,6 @@ export const createStudent = async (data: any) => {
 // Obtener student por ID
 export const findStudentById = async (id: string) => {
     return Prisma.student.findUnique({
-        select: {
-            id: true,
-            code: true,
-        },
         where: {
             id: id,
             deleted: false,
