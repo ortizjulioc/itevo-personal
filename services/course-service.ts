@@ -48,11 +48,6 @@ export const findCourseByCode= async (data: any) => {
 // Obtener course por ID
 export const findCourseById = async (id: string) => {
     return Prisma.course.findUnique({
-        select: {
-            id: true,
-            name: true,
-            code: true,
-        },
         where: {
             id: id,
             deleted: false,
