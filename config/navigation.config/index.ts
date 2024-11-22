@@ -34,6 +34,14 @@ const navigationConfig = [
     subItems: [],
   },
   {
+    key: 'students',
+    title: 'Estudiantes',
+    icon: IconMenuUsers,
+    url: '/students',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
     key: 'branches',
     title: 'Sucursales',
     icon: IconMenuContacts,
