@@ -104,7 +104,7 @@ model Course {
     code               String   @unique // Codigo
     name               String // Nombre
     description        String? // Descripcion
-    duration           Int // Duracion en horas
+    duration           Int? // Duracion en horas
     requiresGraduation Boolean  @map("requires_graduation") @default(false)// Requiere graduacion
     createdAt          DateTime @default(now()) @map("created_at")
     updatedAt          DateTime @updatedAt @map("updated_at")
