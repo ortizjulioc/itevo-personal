@@ -25,15 +25,15 @@ export default function TeacherList({ className, query = '' }: Props) {
   const onDelete = async (id: string) => {
     console.log('delete', id);
     confirmDialog({
-      title: 'Eliminar usuario',
-      text: '¿Seguro que quieres eliminar este usuario?',
+      title: 'Eliminar Profesor',
+      text: '¿Seguro que quieres eliminar este Profesor?',
       confirmButtonText: 'Sí, eliminar',
       icon: 'error'
     }, async () => {
       const resp = await deleteTeacher(id);
       if (resp.success) {
-        setTeachers(teachers?.filter((user) => user.id !== id));
-        openNotification('success', 'Usuario eliminado correctamente');
+        setTeachers(teachers?.filter((teacher) => teacher.id !== id));
+        openNotification('success', 'Profesor eliminado correctamente');
         return;
       } else {
         openNotification('error', resp.message);
@@ -49,7 +49,7 @@ export default function TeacherList({ className, query = '' }: Props) {
         <table className="table-hover">
           <thead>
             <tr>
-              <th>USUARIO</th>
+              <th>NOMBRE</th>
               <th>CORREO ELECTRÓNICO</th>
               <th>TELEFONO</th>
               <th />
@@ -58,7 +58,7 @@ export default function TeacherList({ className, query = '' }: Props) {
           <tbody>
             {teachers?.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron usuarios registrados</td>
+                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Profesors registrados</td>
               </tr>
             )}
             {teachers?.map((teacher) => {
@@ -85,13 +85,13 @@ export default function TeacherList({ className, query = '' }: Props) {
                         <Button onClick={() => onDelete(teacher.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
                       </Tooltip>
                       <Tooltip title="Editar">
-                        <Link href={`/users/${teacher.id}`}>
+                        <Link href={`/teachers/${teacher.id}`}>
                           <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                         </Link>
                       </Tooltip>
                       {/* ALTERNATIVA */}
-                      {/* <Button onClick={() => onDelete(user.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/users/${user.id}`}>
+                      {/* <Button onClick={() => onDelete(teacher.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
+                                            <Link href={`/teachers/${teacher.id}`}>
                                                 <Button variant="outline" size="sm">Editar</Button>
                                             </Link> */}
                     </div>

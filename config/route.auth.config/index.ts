@@ -29,17 +29,42 @@ export const routeConfig = [
     {
       key: 'branches',
       url: '/branches',
-      authorization: [], 
+      authorization: [ADMIN], 
     },
     {
       key: 'branches-subroutes',
       url: '/branches/:path*',
-      authorization: [], 
+      authorization: [ADMIN], 
     },
     {
       key: 'settings',
       url: '/settings',
       authorization: [ADMIN], 
     },
+    {
+      key: 'settings-subroutes',
+      url: '/settings/:path*',
+      authorization: [ADMIN], 
+    },
+    {
+      key: 'teachers',
+      url: '/teachers',
+      authorization: [], 
+    },
+    {
+      key: 'teachers-subroutes',
+      url: '/teachers/:path*',
+      authorization: [], 
+    },
+    {
+      key: 'contactos',
+      url: '/contactos',
+      authorization: [], 
+    },
+    {
+      key: 'contactos-subroutes',
+      url: '/contactos/:path*',
+      authorization: [],
+    }
   ];
   
