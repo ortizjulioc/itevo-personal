@@ -1,6 +1,5 @@
 
-import { add, first } from 'lodash';
-import Email from 'next-auth/providers/email';
+
 import * as Yup from 'yup';
 
 

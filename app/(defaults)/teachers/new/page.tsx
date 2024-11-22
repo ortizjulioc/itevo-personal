@@ -1,9 +1,10 @@
-import TeacherForm from "../components/teacher-form/create-form/index.tsx";
+import CreateTeacherForm from "../components/teacher-form/create-form";
+
 
 export default function NewTeacher() {
   return (
     <div>
-      <TeacherForm />
+      <CreateTeacherForm />
     </div>
   )
 }
