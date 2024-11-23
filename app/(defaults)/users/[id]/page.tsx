@@ -55,22 +55,22 @@ export default function EditUser({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, user, setUser } = useFetchUserById(id);
     const { roles } = useFetchRole('');
-    
+
 
     const onChange = (user: UserWithBranchesAndRoles | null) => {
         setUser(user);
     }
     const assignRole = async (branchId: string, role: Role) => {
       const resp = await AssingRole({ userId: id, branchId, roleId: role.id });
-    
+
       if (resp.success) {
         setUser((prev) => {
           if (!prev) return null;
           const branchExists = prev.branches.find((branch) => branch.id === branchId);
-    
+
           let newBranches;
           if (branchExists) {
-        
+
             newBranches = prev.branches.map((branch) => {
               if (branch.id === branchId) {
                 return {
@@ -81,14 +81,14 @@ export default function EditUser({ params }: { params: { id: string } }) {
               return branch;
             });
           } else {
-    
+
             newBranches = [
               ...prev.branches,
-              { 
-                id: branchId, 
-                roles: [role], 
-                name: '', 
-                phone: '', 
+              {
+                id: branchId,
+                roles: [role],
+                name: '',
+                phone: '',
                 deleted: false,
                 address: '',
                 createdAt: new Date(),
@@ -96,7 +96,7 @@ export default function EditUser({ params }: { params: { id: string } }) {
               },
             ];
           }
-    
+
           return {
             ...prev,
             branches: newBranches,
@@ -108,20 +108,19 @@ export default function EditUser({ params }: { params: { id: string } }) {
         openNotification('error', resp.message);
       }
     };
-    
+
     const deleteRole = async (branchId: string, roleId: string) => {
       const resp = await RemoveRole({ userId: id, branchId, roleId });
-    
+
       if (resp.success) {
         setUser((prev) => {
           if (!prev) return null;
-    
-         
+
           const newBranches = prev.branches
             .map((branch) => {
               if (branch.id === branchId) {
                 const updatedRoles = branch.roles.filter((role) => role.id !== roleId);
-          
+
                 if (updatedRoles.length === 0) {
                   return null;
                 }
@@ -132,7 +131,7 @@ export default function EditUser({ params }: { params: { id: string } }) {
               }
               return branch;
             })
-            .filter((branch) => branch !== null); 
+            .filter((branch) => branch !== null);
           return {
             ...prev,
             branches: newBranches,
@@ -144,11 +143,11 @@ export default function EditUser({ params }: { params: { id: string } }) {
         openNotification('error', resp.message);
       }
     };
-    
+
       useEffect(() => {
         console.log('BRANCHES', user?.branches);
       }, [user]);
-    
+
 
     return (
         <UserContext.Provider value={ { user, onChange, roles, assignRole, deleteRole }}>

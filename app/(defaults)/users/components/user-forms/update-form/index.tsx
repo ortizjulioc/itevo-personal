@@ -20,6 +20,7 @@ export default function UpdateUserForm() {
 
     const handleSubmit = async (values: any) => {
         const data = { ...values };
+        delete data.branches;
         delete data.confirmPassword;
 
         const resp = await updateUser(userId, data);
@@ -28,7 +29,7 @@ export default function UpdateUserForm() {
             openNotification('success', 'Usuario editado correctamente');
             route.push('/users');
         } else {
-            alert(resp.message);
+            openNotification('error', 'Error al editar el usuario');
         }
     }
 
