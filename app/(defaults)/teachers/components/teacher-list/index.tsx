@@ -26,7 +26,7 @@ export default function TeacherList({ className, query = '' }: Props) {
     console.log('delete', id);
     confirmDialog({
       title: 'Eliminar Profesor',
-      text: '¿Seguro que quieres eliminar este Profesor?',
+      text: '¿Seguro que quieres eliminar este profesor?',
       confirmButtonText: 'Sí, eliminar',
       icon: 'error'
     }, async () => {
@@ -58,7 +58,7 @@ export default function TeacherList({ className, query = '' }: Props) {
           <tbody>
             {teachers?.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Profesors registrados</td>
+                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron profesors registrados</td>
               </tr>
             )}
             {teachers?.map((teacher) => {

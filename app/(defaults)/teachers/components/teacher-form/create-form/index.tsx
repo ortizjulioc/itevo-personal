@@ -63,15 +63,6 @@ export default function CreateTeacherForm() {
               </Field>
             </FormItem>
             <FormItem
-              name="address"
-              label="Dirección"
-              invalid={Boolean(errors.address && touched.address)}
-              errorMessage={errors.address}
-              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
-            >
-              <Field type="text" name="address" component={Input} />
-            </FormItem>
-            <FormItem
 
               name="phone"
               label="Teléfono"
@@ -96,6 +87,15 @@ export default function CreateTeacherForm() {
               <Field type="email" name="email" component={Input} />
             </FormItem>
 
+            <FormItem
+              name="address"
+              label="Dirección"
+              invalid={Boolean(errors.address && touched.address)}
+              errorMessage={errors.address}
+              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
+            >
+              <Field type="text" name="address" component={Input} />
+            </FormItem>
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => route.back()}>
                 Cancelar

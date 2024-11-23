@@ -12,7 +12,7 @@ import { Teacher } from '@prisma/client';
 export default function UpdateTeacherForm({ initialValues }: { initialValues: Teacher }) {
   const route = useRouter();
 
- 
+
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
@@ -67,15 +67,6 @@ export default function UpdateTeacherForm({ initialValues }: { initialValues: Te
               </Field>
             </FormItem>
             <FormItem
-              name="address"
-              label="Dirección"
-              invalid={Boolean(errors.address && touched.address)}
-              errorMessage={errors.address}
-              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
-            >
-              <Field type="text" name="address" component={Input} />
-            </FormItem>
-            <FormItem
 
               name="phone"
               label="Teléfono"
@@ -98,6 +89,15 @@ export default function UpdateTeacherForm({ initialValues }: { initialValues: Te
             </FormItem>
             <FormItem name="email" label="Correo electrónico" invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
               <Field type="email" name="email" component={Input} />
+            </FormItem>
+            <FormItem
+              name="address"
+              label="Dirección"
+              invalid={Boolean(errors.address && touched.address)}
+              errorMessage={errors.address}
+              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
+            >
+              <Field type="text" name="address" component={Input} />
             </FormItem>
 
             <div className="mt-6 flex justify-end gap-2">
