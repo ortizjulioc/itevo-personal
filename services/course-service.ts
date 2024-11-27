@@ -47,16 +47,38 @@ export const findCourseByCode= async (data: any) => {
 
 // Obtener course por ID
 export const findCourseById = async (id: string) => {
-    return Prisma.course.findUnique({
+
+    const course = await Prisma.course.findUnique({
         where: {
             id: id,
             deleted: false,
         },
+        include: {
+            prerequisites: {
+                select: {
+                    prerequisite: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+            },
+        },
     });
+
+    // Devolviendo prerequisites como un arreglo de IDs
+
+    if (course) {
+        course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite.id);
+    }
+
+    return course;
+
 };
 
 // Actualizar course por ID
 export const updateCourseById = async (id: string, data: any) => {
+
     return Prisma.course.update({
         where: { id },
         data: { name: data.name, code: data.code, description: data.description, duration: data.duration, requiresGraduation: data.requiresGraduation },
@@ -70,3 +92,69 @@ export const deleteCourseById = async (id: string) => {
         data: { deleted: true },
     });
 };
+
+// Agregar prerequisito a un curso
+
+
+export const addPrerequisite = async (courseId: string, prerequisiteId: string) => {
+
+    console.log("Entrando a addPrerequisite");
+    return Prisma.course.update({
+        where: { id: courseId },
+        data: {
+            prerequisites: {
+                create: { prerequisiteId: prerequisiteId },
+            },
+        },
+    });
+};
+
+export const updatePrerequisite = async (courseId: string, prerequisiteId: string) => {
+    return Prisma.course.update({
+        where: { id: courseId },
+        data: {
+            prerequisites: {
+                create: { prerequisiteId: prerequisiteId },
+            },
+        },
+    });
+};
+// findByPrequisiteId
+
+
+export const findPrerequisiteById = async (courseId: string, prerequisiteId: string) => {
+    console.log("Entrando a findPrerequisiteById");
+    return Prisma.prerequisite.findUnique({
+        where: {
+            courseId_prerequisiteId: {
+                courseId: courseId,
+                prerequisiteId: prerequisiteId,
+            },
+        }
+    });
+};
+
+// Buscar todos los prerequisitos de un curso
+
+export const findPrerequisitesByCourseId = async (courseId: string) => {
+    return Prisma.prerequisite.findMany({
+        where: {
+            courseId: courseId,
+        },
+    });
+};
+
+// Eliminar prerequisito de un curso
+
+export const deletePrerequisite = async (courseId: string, prerequisiteId: string) => {
+    return Prisma.prerequisite.delete({
+        where: {
+            courseId_prerequisiteId: {
+                courseId: courseId,
+                prerequisiteId: prerequisiteId,
+            },
+        },
+    });
+};
+
+
