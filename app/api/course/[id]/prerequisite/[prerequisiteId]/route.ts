@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findCourseById, updateCourseById, deleteCourseById, addPrerequisite } from '@/services/course-service';
+import { findCourseById, updateCourseById, deleteCourseById, addPrerequisite, deletePrerequisite, findPrerequisiteById } from '@/services/course-service';
 import { validateObject } from '@/utils';
 
 // Obtener role por ID
@@ -54,24 +54,27 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-// Eliminar course por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+// Eliminar prerequisito por ID
+export async function DELETE(request: NextRequest, { params }: { params: { id: string, prerequisiteId: string } }) {
     try {
         const { id } = params;
+        const { prerequisiteId } = params;
 
-        // Verificar si el rol existe
-        const course = await findCourseById(id);
-        if (!course) {
-            return NextResponse.json({ code: 'E_COURSE_NOT_FOUND', message: 'Course no encontrado' }, { status: 404 });
+        // Verificar si el prerequisito existe en el curso
+
+        const prerequisite = await findPrerequisiteById(id, prerequisiteId);
+        if (!prerequisite) {
+            return NextResponse.json({ code: 'E_PREREQUISITE_NOT_FOUND', message: 'Prerequisito no encontrado' }, { status: 404 });
         }
 
-        // Eliminar el rol
-        await deleteCourseById(id);
+        // Eliminar prerequisito de un curso
+        await deletePrerequisite(id, prerequisiteId);
 
-        return NextResponse.json({ message: 'course eliminado correctamente' });
+
+        return NextResponse.json({ message: 'Prerequisito eliminado correctamente' });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el course', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el prerequisito', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
