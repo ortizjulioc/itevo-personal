@@ -1,72 +1,72 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Role } from "@prisma/client";
+import type { Promotion } from "@prisma/client";
 
-export interface RoleResponse {
-    roles: Role[];
-    totalroles: number;
+export interface PromotionsResponse {
+    promotions: Promotion[];
+    totalPromotions: number;
 }
 
-const useFetchRole = (query: string) => {
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [totalroles, setTotalRoles] = useState<number>(0);
+const useFetchPromotions = (query: string) => {
+    const [promotions, setPromotions] = useState<Promotion[]>([]);
+    const [totalPromotions, setTotalPromotions] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchrolesData = async (query: string) => {
+        const fetchPromotionsData = async (query: string) => {
             try {
-                const response = await apiRequest.get<RoleResponse>(`/roles?${query}`);
+                const response = await apiRequest.get<PromotionsResponse>(`/promotions?${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
-                setRoles(response.data?.roles || []);
-                setTotalRoles(response.data?.totalroles || 0);
+                setPromotions(response.data?.promotions || []);
+                setTotalPromotions(response.data?.totalPromotions || 0);
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error.message);
                 } else {
-                    setError('Ha ocurrido un error al obtener los roles');
+                    setError('Ha ocurrido un error al obtener los promociones');
                 }
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchrolesData(query);
+        fetchPromotionsData(query);
     }, [query]);
 
-    return { roles, totalroles, loading, error, setRoles };
+    return { promotions, setTotalPromotions, loading, error, setPromotions, totalPromotions };
 };
 
-export const useFetchRoleById = (id: string) => {
-    const [role, setRole] = useState<Role | null>(null);
+export const useFetchPromotionsById = (id: string) => {
+    const [promotion, setPromotion] = useState<Promotion | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchRoleData = async (id: string) => {
+        const fetchPromotionData = async (id: string) => {
             try {
-                const response = await apiRequest.get<Role>(`/roles/${id}`);
+                const response = await apiRequest.get<Promotion>(`/promotions/${id}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
-                setRole(response.data);
+                setPromotion(response.data);
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error.message);
                 } else {
-                    setError('Ha ocurrido un error al obtener el rol');
+                    setError('Ha ocurrido un error al obtener el promoción');
                 }
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchRoleData(id);
+        fetchPromotionData(id);
     }, [id]);
 
-    return { role, loading, error, setRole };
+    return { promotion, loading, error, setPromotion };
 }
 
-export default useFetchRole;
+export default useFetchPromotions;

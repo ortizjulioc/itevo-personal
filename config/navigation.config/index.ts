@@ -50,6 +50,14 @@ const navigationConfig = [
     subItems: [],
   },
   {
+    key: 'promotions',
+    title: 'Promociones',
+    icon: IconMenuContacts,
+    url: '/promotions',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
     key: 'auth',
     title: 'Autorización',
     type: NAV_ITEM_TYPE_TITLE,

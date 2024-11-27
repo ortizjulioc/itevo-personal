@@ -1,19 +1,19 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import { Role } from "@prisma/client";
+import type { Promotion } from "@prisma/client";
 
-export interface RoleResponse {
-    roles: Role[];
-    totalRoles: number;
+export interface PromotionResponse {
+    promotions: Promotion[];
+    totalPromotions: number;
 }
 
-export const createRole = async (role: Role) => {
-    return await apiRequest.post<Role>('/roles', role);
+export const createPromotion = async (promotion: Promotion) => {
+    return await apiRequest.post<Promotion>('/promotions', promotion);
 }
 
-export const updateRole = async (id: string, role: Role) => {
-    return await apiRequest.put<Role>(`/roles/${id}`, role);
+export const updatePromotion = async (id: string, promotion: Promotion) => {
+    return await apiRequest.put<Promotion>(`/promotions/${id}`, promotion);
 }
 
-export const deleteRole = async (id: string) => {
-    return await apiRequest.remove<string>(`/roles/${id}`);
+export const deletePromotion = async (id: string) => {
+    return await apiRequest.remove<string>(`/promotions/${id}`);
 }

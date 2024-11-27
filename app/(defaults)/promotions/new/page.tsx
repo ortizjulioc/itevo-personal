@@ -1,11 +1,11 @@
 import ViewTitle from "@/components/common/ViewTitle";
-import { CreateRoleForm } from "../components/role-forms";
+import { CreatePromotionForm } from "../components/promotion-forms";
 
 export default function CreateRole() {
     return (
         <div>
-            <ViewTitle className='mb-6' title="Crear role" showBackPage />
-            <CreateRoleForm />
+            <ViewTitle className='mb-6' title="Crear promoción" showBackPage />
+            <CreatePromotionForm />
         </div>
     );
 }

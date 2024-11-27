@@ -4,8 +4,8 @@ import { Button, Pagination } from "@/components/ui";
 import {IconEdit, IconTrashLines} from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
-import useFetchRoles from "../../lib/use-fetch-roles";
-import { deleteRole } from "../../lib/request";
+import useFetchPromotions from "../../lib/use-fetch-promotions";
+import { deletePromotion } from "../../lib/request";
 import Skeleton from "@/components/common/Skeleton";
 
 interface Props {
@@ -13,9 +13,9 @@ interface Props {
     query?: string;
 }
 
-export default function RoleList({ className, query = '' }: Props) {
+export default function PromotionList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, roles, totalroles, setRoles } = useFetchRoles(query);
+    const { loading, error, promotions, totalPromotions, setPromotions } = useFetchPromotions(query);
     if (error) {
         openNotification('error', error);
     }
@@ -23,22 +23,21 @@ export default function RoleList({ className, query = '' }: Props) {
     const onDelete = async (id: string) => {
         console.log('delete', id);
         confirmDialog({
-            title: 'Eliminar rol',
-            text: '¿Seguro que quieres eliminar este rol?',
+            title: 'Eliminar promoción',
+            text: '¿Seguro que quieres eliminar este promoción?',
             confirmButtonText: 'Sí, eliminar',
             icon: 'error'
         }, async() => {
-            const resp = await deleteRole(id);
+            const resp = await deletePromotion(id);
             if (resp.success) {
-                setRoles(roles?.filter((role) => role.id !== id));
-                openNotification('success', 'Rol eliminado correctamente');
+                setPromotions(promotions?.filter((promotion) => promotion.id !== id));
+                openNotification('success', 'Promoción eliminada correctamente');
                 return;
-            } else {
-                openNotification('error', resp.message);
             }
+            openNotification('error', resp.message);
         });
     }
-
+    console.log('promotions', promotions);
     if (loading) return <Skeleton rows={4} columns={['NOMBRE', 'NOMBRE NORMALIZADO']} />;
 
     return (
@@ -47,34 +46,37 @@ export default function RoleList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
-                            <th>NOMBRE</th>
-                            <th>NOMBRE NORMALIZADO</th>
+                            <th>Descripcion</th>
+                            <th>F. Inicio</th>
+                            <th>F. Fin</th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
-                        {roles?.length === 0 && (
+                        {promotions?.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron roles registrados</td>
+                                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron promociones registrados</td>
                             </tr>
                         )}
-                        {roles?.map((Role) => {
+                        {promotions?.map((promotion) => {
                             return (
-                                <tr key={Role.id}>
+                                <tr key={promotion.id}>
                                     <td>
-                                        <div className="whitespace-nowrap">{Role.name}</div>
+                                        <div className="whitespace-nowrap">{promotion.description}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{Role.normalizedName}</div>
+                                        <div className="whitespace-nowrap">{new Date(promotion.startDate).toLocaleDateString()}</div>
                                     </td>
-                                   
+                                    <td>
+                                        <div className="whitespace-nowrap">{new Date(promotion.endDate).toLocaleDateString()}</div>
+                                    </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(Role.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                <Button onClick={() => onDelete(promotion.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
                                             </Tooltip>
                                             <Tooltip title="Editar">
-                                                <Link href={`/roles/${Role.id}`}>
+                                                <Link href={`/promotions/${promotion.id}`}>
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
@@ -94,9 +96,9 @@ export default function RoleList({ className, query = '' }: Props) {
             </div>
             <div className="">
                 <Pagination
-                    currentPage={parseInt(params?.page || '1')}
-                    total={totalroles}
-                    top={parseInt(params?.top || '10')}
+                    currentPage={Number.parseInt(params?.page || '1')}
+                    total={totalPromotions}
+                    top={Number.parseInt(params?.top || '10')}
                 />
             </div>
         </div>

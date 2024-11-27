@@ -1,14 +1,14 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import Button from "@/components/ui/button";
 import Link from "next/link";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
-import RoleList from "./components/role-list";
+import PromotionList from "./components/promotion-list";
 import { IconPlusCircle } from "@/components/icon";
 
 export const metadata: Metadata = {
-    title: 'Roles',
+    title: 'Promociones',
 };
 
 interface RoleListsProps {
@@ -22,16 +22,16 @@ export default function RoleLists({ searchParams }: RoleListsProps) {
     const query = objectToQueryString(searchParams || {});
     return (
         <div>
-            <ViewTitle className='mb-6' title="Roles" rightComponent={
+            <ViewTitle className='mb-6' title="Promociones" rightComponent={
                 <>
-                    <SearchInput placeholder="Buscar roles" />
-                    <Link href="/roles/new">
-                        <Button icon={<IconPlusCircle/>}>Crear rol</Button>
+                    <SearchInput placeholder="Buscar promociones" />
+                    <Link href="/promotions/new">
+                        <Button icon={<IconPlusCircle/>}>Crear promoción</Button>
                     </Link>
                 </>
             } />
 
-            <RoleList query={query} />
+            <PromotionList query={query} />
         </div>
     );
 }

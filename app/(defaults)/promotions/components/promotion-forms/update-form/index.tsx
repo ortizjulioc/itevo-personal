@@ -4,56 +4,54 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { updateRole } from '../../../lib/request';
-import { Role } from '@prisma/client';
+import { updatePromotion } from '../../../lib/request';
+import type { Promotion } from '@prisma/client';
 
-export default function UpdateRoleForm({ initialValues }: { initialValues: Role }) {
+export default function UpdatePromotionForm({ initialValues }: { initialValues: Promotion }) {
+    const newValues  = {
+        ...initialValues,
+        // la fecha inicia con formato ISO pero quiero este formato a datetime-local yyyy-MM-ddThh:mm
+        startDate: initialValues.startDate.replace('Z', ''),
+        endDate: initialValues.endDate.replace('Z', '')
+    }
     const route = useRouter();
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any) => {
         const data = { ...values };
-        delete data.confirmPassword;
+        data.startDate = new Date(data.startDate).toISOString();
+        data.endDate = new Date(data.endDate).toISOString();
 
-        const resp = await updateRole(initialValues.id, data);
+        const resp = await updatePromotion(newValues.id, data);
         console.log(resp);
 
         if (resp.success) {
-            openNotification('success', 'Rol editado correctamente');
-            route.push('/roles');
+            openNotification('success', 'Promoción editada correctamente');
+            route.push('/promotions');
         } else {
             alert(resp.message);
         }
     }
 
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const onChangeName = (name: string, form: any) => {
         form.setFieldValue('name', name);
     };
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Rol</h4>
-            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de promociones</h4>
+            <Formik initialValues={newValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-                        <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
-                        <Field name='name'>
-                            {({ field, form }:any) => (
-                                <Input
-                                field={field}
-                                form={form}
-                                type="text"
-                                placeholder='Nombre'
-                                value={values.name}
-                                onChange={(e) => onChangeName(e.target.value, form)}
-                                autoFocus
-                                />
-                            )}
-                      </Field>
+                        <FormItem name="description" label="Descripción" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
+                            <Field type="text" name="description" component={Input} placeholder="Descripción" />
                         </FormItem>
-
-                        <FormItem name="normalizedName" label="Nombre normalizado" invalid={Boolean(errors.normalizedName && touched.normalizedName)} errorMessage={errors.normalizedName}>
-                            <Field type="text" name="normalizedName" component={Input} placeholder="Nombre normalizado" disabled />
+                        <FormItem name="startDate" label="Descripción" invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
+                            <Field type="datetime-local" name="startDate" component={Input} placeholder="Descripción" />
                         </FormItem>
-
+                        <FormItem name="endDate" label="Descripción" invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
+                            <Field type="datetime-local" name="endDate" component={Input} placeholder="Descripción" />
+                        </FormItem>
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
