@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
         }, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo los usuarios', details: error.message }, { status: 500 });
+            return NextResponse.json({ error: 'Error obteniendo los courses', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
