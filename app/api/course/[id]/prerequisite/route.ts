@@ -1,28 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import { validateObject } from "@/utils";
-import { getCourses, createCourse, findCourseByCode, addPrerequisite, findPrerequisiteById, findCourseById } from "@/services/course-service";
+import { addPrerequisite, findPrerequisiteById, findCourseById } from "@/services/course-service";
 
-export async function GET(request: NextRequest) {
-    try {
-        // const { searchParams } = new URL(request.url);
-        // const search = searchParams.get('search') || '';
-        // const page = parseInt(searchParams.get('page') || '1', 10);
-        // const top = parseInt(searchParams.get('top') || '10', 10);
 
-        // const { courses, totalCourses } = await getCourses(search, page, top);
-
-        return NextResponse.json({
-        }, { status: 200 });
-    } catch (error) {
-        // if (error instanceof Error) {
-        //     return NextResponse.json({ error: 'Error obteniendo los usuarios', details: error.message }, { status: 500 });
-        // } else {
-        //     return NextResponse.json(error, { status: 500 });
-        // }
-    }
-}
-
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = params;
         const body = await request.json();
