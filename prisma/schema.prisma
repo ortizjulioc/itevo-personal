@@ -8,7 +8,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User {
+model User { // Usuarios del sistema
     id        String   @id @default(uuid())
     username  String   @unique
     email     String   @unique
@@ -25,7 +25,7 @@ model User {
     roleBranch UserRoleBranch[]
 }
 
-model Role {
+model Role { // Roles de los usuarios
     id             String   @id @default(uuid())
     name           String
     normalizedName String   @unique @map("normalized_name")
@@ -36,7 +36,7 @@ model Role {
     userRole UserRoleBranch[]
 }
 
-model Branch {
+model Branch { // Sucursales
     id        String   @id @default(uuid())
     name      String
     address   String
@@ -49,7 +49,7 @@ model Branch {
     courseBranch CourseBranch[]
 }
 
-model UserRoleBranch {
+model UserRoleBranch { // Relacion de roles con sucursales
     id       String @id @default(uuid())
     userId   String @map("user_id")
     roleId   String @map("role_id")
@@ -63,7 +63,7 @@ model UserRoleBranch {
     @@map("user_role_branch")
 }
 
-model Teacher {
+model Teacher { // Profesores
     id             String   @id @default(uuid())
     code           Int   @unique @default(autoincrement())
     firstName      String   @map("first_name")
@@ -81,7 +81,7 @@ model Teacher {
     accountPayable AccountPayable[]
 }
 
-model Student {
+model Student { // Estudiantes
     id              String   @id @default(uuid())
     code            String   @unique // Codigo del estudiante (matricula)
     firstName       String   @map("first_name") // Nombres
@@ -99,7 +99,7 @@ model Student {
     accountReceivable AccountReceivable[]
 }
 
-model Course {
+model Course { // Cursos
     id                 String   @id @default(uuid())
     code               String   @unique // Codigo
     name               String // Nombre
@@ -115,7 +115,7 @@ model Course {
     graduation    Graduation[]
 }
 
-model Prerequisite {
+model Prerequisite { // Requisitos de los cursos
     courseId       String @map("course_id") // ID del curso
     prerequisiteId String @map("prerequisite_id") // ID del curso pre-requisito
 
@@ -125,7 +125,7 @@ model Prerequisite {
     @@id([courseId, prerequisiteId]) // Llave compuesta
 }
 
-model Promotion {
+model Promotion { // Promociones de los cursos
     id          String   @id @default(uuid())
     description String // Descripcion
     startDate   DateTime @map("start_date") // fechaInicio
@@ -137,7 +137,7 @@ model Promotion {
     graduation   Graduation[]
 }
 
-model CourseBranch {
+model CourseBranch { // Cursos en las sucursales
     id             String   @id @default(uuid())
     promotionId    String   @map("promotion_id") // ID de la promoción
     branchId       String   @map("branch_id") // ID de la sucursal
@@ -163,7 +163,7 @@ model CourseBranch {
     @@map("course_branch")
 }
 
-model Schedule {
+model Schedule { // Horarios de los cursos
     id             String   @id @default(uuid())
     courseBranchId String   @map("course_branch_id") // ID del CursoSucursal
     startTime      DateTime @map("start_time") // Hora de inicio
@@ -176,14 +176,14 @@ model Schedule {
     attendance   Attendance[]
 }
 
-enum EnrollmentStatus {
+enum EnrollmentStatus { // Estados de las matriculaciones de los estudiantes en los cursos
     waiting
     enrolled
     completed
     abandoned
 }
 
-model Enrollment {
+model Enrollment { // Cursos en los que se matricula un estudiante
     id             String           @id @default(uuid())
     studentId      String           @map("student_id") // ID del estudiante
     courseBranchId String           @map("course_branch_id") // ID del CursoSucursal
@@ -197,13 +197,13 @@ model Enrollment {
     attendance   Attendance[]
 }
 
-enum AttendanceStatus {
+enum AttendanceStatus { // Estados de las asistencias
     present
     absent
     excused
 }
 
-model Attendance {
+model Attendance { // Llevar asistencias de los estudiantes
     id           String           @id @default(uuid())
     enrollmentId String           @map("enrollment_id") // Enrollment ID
     scheduleId   String           @map("schedule_id") // Schedule ID
@@ -216,19 +216,19 @@ model Attendance {
     schedule   Schedule   @relation(fields: [scheduleId], references: [id])
 }
 
-enum GraduationType {
+enum GraduationType { // Tipos de graduaciones
     diploma
     certificate
     juramentation
 }
 
-enum GraduationStatus {
+enum GraduationStatus { // Estados de las graduaciones
     pending
     completed
     canceled
 }
 
-model Graduation {
+model Graduation { // Graduaciones de los estudiantes
     id             String           @id @default(uuid())
     studentId      String           @map("student_id") // ID del estudiante
     promotionId    String           @map("promotion_id") // ID de la promoción
@@ -244,7 +244,7 @@ model Graduation {
     course    Course    @relation(fields: [courseId], references: [id])
 }
 
-model GraduationPrice {
+model GraduationPrice { // Precios de graduación
     id                             String         @id @default(uuid())
     graduationType                 GraduationType @map("graduation_type") // Tipo de graduación
     basePrice                      Float          @map("base_price") // Precio base
@@ -254,7 +254,7 @@ model GraduationPrice {
     updatedAt                      DateTime       @updatedAt @map("updated_at")
 }
 
-enum AccountStatus {
+enum AccountStatus { // Estados de las cuentas por cobrar y pagar de los estudiantes
     pending
     paid
     canceled
@@ -300,7 +300,7 @@ model AccountPayable {
 }
 
 
-model Setting {
+model Setting { // Configuraciones principales de la empresa
     id        String   @id @default(uuid())
     rnc       String   @unique
     companyName String   @map("company_name")
