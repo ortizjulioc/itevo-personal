@@ -11,7 +11,7 @@ export default function UpdateRoleForm({ initialValues }: { initialValues: Role 
     const route = useRouter();
     const handleSubmit = async (values: any) => {
         const data = { ...values };
-        delete data.confirmPassword;
+      
 
         const resp = await updateRole(initialValues.id, data);
         console.log(resp);

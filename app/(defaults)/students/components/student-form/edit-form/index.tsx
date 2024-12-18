@@ -17,7 +17,7 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     const data = { ...values };
-    delete data.confirmPassword;
+ 
 
     const resp = await updateStudent(initialValues.id,data);
 
