@@ -14,6 +14,7 @@ export const getCourses = async (search: string, page: number, top: number) => {
             name: true,
             description: true,
             duration: true,
+            requiresGraduation: true,
         },
         where: {
             deleted: false,
