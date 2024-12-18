@@ -6,7 +6,7 @@ import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
 import IconUser from '@/components/icon/icon-user';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 import { IconUsers, IconUsersGroup } from '@/components/icon';
-import { IconMenuUsers } from '@/components/icon/menu';
+import { IconMenuTodo, IconMenuUsers } from '@/components/icon/menu';
 
 const navigationConfig = [
   {
@@ -38,6 +38,14 @@ const navigationConfig = [
     title: 'Estudiantes',
     icon: IconMenuUsers,
     url: '/students',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
+    key: 'courses',
+    title: 'Cursos',
+    icon: IconMenuTodo,
+    url: '/courses',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
