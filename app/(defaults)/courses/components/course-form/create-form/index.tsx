@@ -29,7 +29,7 @@ export default function CreateCourseForm() {
 
   return (
     <div className="panel">
-      <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Estudiante</h4>
+      <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Curso</h4>
       <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting, values, errors, touched }) => (
           <Form className="form">
@@ -51,7 +51,7 @@ export default function CreateCourseForm() {
             
            
             <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>
-              <Field type="checkbox" name="hasTakenCourses" component={Checkbox} >
+              <Field type="checkbox" name="requiresGraduation" component={Checkbox} >
                 Este Curso Requiere Graduacion
               </Field>
             </FormItem>

@@ -23,6 +23,7 @@ export default function CoursetList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
+    console.log('courses', courses);
 
     const onDelete = async (id: string) => {
         console.log('delete', id);
@@ -43,7 +44,7 @@ export default function CoursetList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <Skeleton rows={5} columns={['ESTUDIANTE', 'CORREO ELECTRÓNICO', 'TELÉFONO']} />;
+    if (loading) return <Skeleton rows={6} columns={['CODIGO','NOMBRE', 'DESCRIPCION', 'DURACION','REQUIERE GRADUUACION']} />;
 
     return (
         <div className={className}>
@@ -51,16 +52,18 @@ export default function CoursetList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
+                            <th>CODIGO</th>
                             <th>NOMBRE</th>
-                            <th>CORREO ELECTRÓNICO</th>
-                            <th>TELEFONO</th>
+                            <th>DESCRIPCION</th>
+                            <th>DURACION</th>
+                            <th>REQUIERE GRADUACION</th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
                         {courses?.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraronSTUDIANTEs registrados</td>
+                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron cursos registrados</td>
                             </tr>
                         )}
                         {courses?.map((course) => {

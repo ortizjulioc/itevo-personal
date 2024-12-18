@@ -23,6 +23,7 @@ export default function StudentList({ className, query = '' }: Props) {
   if (error) {
     openNotification('error', error);
   }
+  console.log('students', students);
 
   const onDelete = async (id: string) => {
     console.log('delete', id);

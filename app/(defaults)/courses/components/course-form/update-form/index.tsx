@@ -4,7 +4,6 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { FormatPatterInput } from '@/components/common';
 import { Course } from '@prisma/client';
 import { updateCourse } from '../../../lib/request';
 
@@ -12,18 +11,19 @@ import { updateCourse } from '../../../lib/request';
 export default function UpdateCourseForm({ initialValues }: { initialValues: Course }) {
     const route = useRouter();
 
-
+        
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
+        console.log(data);
 
 
         const resp = await updateCourse(initialValues.id, data);
 
         if (resp.success) {
             openNotification('success', 'Estudiante creado correctamente');
-            route.push('/Courses');
+            route.push('/courses');
         } else {
             openNotification('error', resp.message);
         }
@@ -33,7 +33,7 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Estudiante</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Curso</h4>
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
@@ -55,7 +55,7 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
 
 
                         <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>
-                            <Field type="checkbox" name="hasTakenCourses" component={Checkbox} >
+                            <Field type="checkbox" name="requiresGraduation" component={Checkbox} >
                                 Este Curso Requiere Graduacion
                             </Field>
                         </FormItem>
