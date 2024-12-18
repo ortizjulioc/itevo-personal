@@ -7,6 +7,8 @@ interface CheckboxProps {
   checked?: boolean
   className?: string
   onChange?: (checked: boolean) => void,
+  form?: any,
+  field?: any,
   color?: 'primary' | 'info' | 'success' | 'warning' | 'danger' | 'secondary' | 'dark',
   variant?: 'solid' | 'outline',
   textColored?: boolean
@@ -47,6 +49,8 @@ export default function Checkbox({
   checked,
   className,
   onChange,
+  form,
+  field,
   color = 'primary',
   variant = 'solid',
   textColored = false
@@ -74,7 +78,7 @@ export default function Checkbox({
 
   const handleChange = (e: any) => {
     const newChecked = e.target.checked;
-    console.log(newChecked);
+
     setInternalChecked(newChecked);
     if (onChange) {
       onChange(newChecked);
@@ -88,9 +92,11 @@ export default function Checkbox({
         className={checkboxClasses}
         checked={internalChecked}
         onChange={handleChange}
+        {...field}
+        {...form}
       />
       <span
-        className={classNames({[MAP_TEXT_COLORED[color]]: textColored})}
+        className={classNames({ [MAP_TEXT_COLORED[color]]: textColored })}
       >{children}</span>
     </label >
   )
