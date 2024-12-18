@@ -39,7 +39,7 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
                     <Form className="form">
 
                         <FormItem name="code" label="Codigo" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
-                            <Field type="text" name="code" component={Input} />
+                            <Field type="text" name="code" component={Input} disabled />
                         </FormItem>
 
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
