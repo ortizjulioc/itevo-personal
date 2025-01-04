@@ -43,14 +43,14 @@ export default function UpdatePromotionForm({ initialValues }: { initialValues: 
             <Formik initialValues={newValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-                        <FormItem name="description" label="Descripción" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
-                            <Field type="text" name="description" component={Input} placeholder="Descripción" />
+                        <FormItem name="description" label="Nombre" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
+                            <Field type="text" name="description" component={Input} placeholder="Ingrese el nombre de la promoción" />
                         </FormItem>
-                        <FormItem name="startDate" label="Descripción" invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
-                            <Field type="datetime-local" name="startDate" component={Input} placeholder="Descripción" />
+                        <FormItem name="startDate" label="Fecha inicio" invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
+                            <Field type="datetime-local" name="startDate" component={Input} placeholder="Seleccione la fecha de inicio" />
                         </FormItem>
-                        <FormItem name="endDate" label="Descripción" invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
-                            <Field type="datetime-local" name="endDate" component={Input} placeholder="Descripción" />
+                        <FormItem name="endDate" label="Fecha fin" invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
+                            <Field type="datetime-local" name="endDate" component={Input} placeholder="Seleccione la fecha de finalización" />
                         </FormItem>
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>

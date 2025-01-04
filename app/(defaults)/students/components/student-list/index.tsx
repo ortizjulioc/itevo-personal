@@ -61,7 +61,7 @@ export default function StudentList({ className, query = '' }: Props) {
           <tbody>
             {students?.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraronSTUDIANTEs registrados</td>
+                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron estudiantes registrados</td>
               </tr>
             )}
             {students?.map((student) => {
