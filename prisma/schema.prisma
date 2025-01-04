@@ -155,7 +155,7 @@ model CourseBranch { // Cursos en las sucursales
     branch            Branch              @relation(fields: [branchId], references: [id])
     teacher           Teacher             @relation(fields: [teacherId], references: [id])
     course            Course              @relation(fields: [courseId], references: [id])
-    schedules         Schedule[] // Relación con horarios
+    schedules         CourseSchedule[] // Relación con horarios
     enrollment        Enrollment[]
     accountReceivable AccountReceivable[]
     accountPayable    AccountPayable[]
@@ -165,15 +165,26 @@ model CourseBranch { // Cursos en las sucursales
 
 model Schedule { // Horarios de los cursos
     id             String   @id @default(uuid())
-    courseBranchId String   @map("course_branch_id") // ID del CursoSucursal
     startTime      DateTime @map("start_time") // Hora de inicio
     endTime        DateTime @map("end_time") // Hora de fin
     weekday        Int // Día de la semana (0 = Domingo, 6 = Sábado)
     createdAt      DateTime @default(now()) @map("created_at")
     updatedAt      DateTime @updatedAt @map("updated_at")
 
-    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
-    attendance   Attendance[]
+    courses        CourseSchedule[] // Relación con cursos
+    attendance     Attendance[]
+}
+
+model CourseSchedule { // Tabla intermedia entre Course y Schedule
+    courseId       String   @map("course_id")
+    scheduleId     String   @map("schedule_id")
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    course         CourseBranch   @relation(fields: [courseId], references: [id])
+    schedule       Schedule @relation(fields: [scheduleId], references: [id])
+
+    @@id([courseId, scheduleId]) // Combinación de claves primarias
 }
 
 enum EnrollmentStatus { // Estados de las matriculaciones de los estudiantes en los cursos
