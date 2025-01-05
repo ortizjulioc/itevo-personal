@@ -5,11 +5,13 @@ import { getSchedules, createSchedule, findScheduleById } from "@/services/sched
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
+        const weekday = searchParams.get('weekday') ? parseInt(searchParams.get('weekday') || '1', 10) : null;
+        const startTime = searchParams.get('startTime') || null;
+        const endTime = searchParams.get('endTime') || null;
 
-        const { schedules, totalSchedules } = await getSchedules(search, page, top);
+        const { schedules, totalSchedules } = await getSchedules(page, top, weekday, startTime, endTime);
 
         return NextResponse.json({
             schedules,
@@ -27,19 +29,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ',body);
 
         // Validate the request body
         const {isValid, message} = validateObject(body, ['courseBranchId']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
-
-
-        // const courseCodeExists = await findCourseByCode(body);
-        // if (courseCodeExists) {
-        //     return NextResponse.json({ error: 'Este curso ya está registrado' }, { status: 400 });
-        // }
         const schedule = await createSchedule(body);
         return NextResponse.json(schedule, { status: 201 });
     } catch (error) {
