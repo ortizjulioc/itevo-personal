@@ -4,15 +4,15 @@ import { NextResponse } from "next/server";
 import { routeConfig } from '@/config/route.auth.config' // Importa tu configuración de rutas
 
 export default withAuth(
-  async function middleware(req) {
+  async function middleware(req, res) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth?.token;
 
-   
+
     if (pathname === '/login') {
       return NextResponse.next();
     }
-    
+
     // Si no hay token (usuario deslogueado), redirigir al login
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
@@ -62,5 +62,6 @@ export const config = {
     "/branches",               // Protege /branches
     "/branches/:path*",        // Protege subrutas de /branches
     "/settings",               // Protege /settings, solo admin tiene acceso
+    "/api/:path*",             // Protege todas las rutas de la API
   ],
 };

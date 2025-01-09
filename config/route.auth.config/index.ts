@@ -4,67 +4,71 @@ export const routeConfig = [
     {
       key: 'inicio',
       url: '/',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'users',
       url: '/users',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'users-subroutes',
       url: '/users/:path*',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'roles',
       url: '/roles',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'roles-subroutes',
       url: '/roles/:path*',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'branches',
       url: '/branches',
-      authorization: [ADMIN], 
+      authorization: [ADMIN],
     },
     {
       key: 'branches-subroutes',
       url: '/branches/:path*',
-      authorization: [ADMIN], 
+      authorization: [ADMIN],
     },
     {
       key: 'settings',
       url: '/settings',
-      authorization: [ADMIN], 
+      authorization: [ADMIN],
     },
     {
       key: 'settings-subroutes',
       url: '/settings/:path*',
-      authorization: [ADMIN], 
+      authorization: [ADMIN],
     },
     {
       key: 'teachers',
       url: '/teachers',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'teachers-subroutes',
       url: '/teachers/:path*',
-      authorization: [], 
+      authorization: [],
     },
    {
       key: 'students',
       url: '/students',
-      authorization: [], 
+      authorization: [],
     },
     {
       key: 'students-subroutes',
       url: '/students/:path*',
       authorization: [],
+   },
+   {
+    key: 'api',
+    url: '/api/:path*',
+    authorization: [],
    }
   ];
-  
