@@ -8,7 +8,7 @@
     const emptyFields: string[] = [];
 
     for (const key of keysRequired) {
-      if (!object[key]) {
+      if (object[key] === null || object[key] === undefined || object[key] === '') {
         emptyFields.push(key);
       }
     }
