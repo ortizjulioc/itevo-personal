@@ -333,9 +333,9 @@ model Log {
     action      ActionType
     description String
     origin      String
-    elementId   String? // Opcional
+    elementId   String?
     success     Boolean
-    authorId    String? // Puede ser null
+    authorId    String?
     author      User?      @relation(fields: [authorId], references: [id])
 
     createdAt DateTime @default(now())
