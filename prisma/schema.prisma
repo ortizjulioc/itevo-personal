@@ -1,5 +1,5 @@
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["omitApi"] // Add this line
 }
 
@@ -8,7 +8,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User { // Usuarios del sistema
+model User {
     id        String   @id @default(uuid())
     username  String   @unique
     email     String   @unique
@@ -23,9 +23,10 @@ model User { // Usuarios del sistema
     updatedAt DateTime @updatedAt @map("updated_at")
 
     roleBranch UserRoleBranch[]
+    Log        Log[]
 }
 
-model Role { // Roles de los usuarios
+model Role {
     id             String   @id @default(uuid())
     name           String
     normalizedName String   @unique @map("normalized_name")
@@ -36,7 +37,7 @@ model Role { // Roles de los usuarios
     userRole UserRoleBranch[]
 }
 
-model Branch { // Sucursales
+model Branch {
     id        String   @id @default(uuid())
     name      String
     address   String
@@ -49,7 +50,7 @@ model Branch { // Sucursales
     courseBranch CourseBranch[]
 }
 
-model UserRoleBranch { // Relacion de roles con sucursales
+model UserRoleBranch {
     id       String @id @default(uuid())
     userId   String @map("user_id")
     roleId   String @map("role_id")
@@ -63,59 +64,59 @@ model UserRoleBranch { // Relacion de roles con sucursales
     @@map("user_role_branch")
 }
 
-model Teacher { // Profesores
-    id             String   @id @default(uuid())
-    code           Int   @unique @default(autoincrement())
-    firstName      String   @map("first_name")
-    lastName       String   @map("last_name")
-    identification String   @unique
-    prefix         String?  @map("prefix") @default("P")
+model Teacher {
+    id             String           @id @default(uuid())
+    code           Int              @unique @default(autoincrement())
+    firstName      String           @map("first_name")
+    lastName       String           @map("last_name")
+    identification String           @unique
+    prefix         String?          @default("P") @map("prefix")
     address        String?
     phone          String?
-    email          String?   @unique
-    commissionRate Float?    @map("commission_rate")
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
-    deleted      Boolean  @default(false)
+    email          String?          @unique
+    commissionRate Float?           @map("commission_rate")
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+    deleted        Boolean          @default(false)
     courseBranch   CourseBranch[]
     accountPayable AccountPayable[]
 }
 
-model Student { // Estudiantes
-    id              String   @id @default(uuid())
-    code            String   @unique // Codigo del estudiante (matricula)
-    firstName       String   @map("first_name") // Nombres
-    lastName        String   @map("last_name") // Apellidos
-    identification  String? // En estudiates puede estar vacio
-    phone           String // Telefono
-    email           String?   @unique // Correo
-    address         String? // Direccion
-    hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
-    createdAt       DateTime @default(now()) @map("created_at")
-    updatedAt       DateTime @updatedAt @map("updated_at")
-    deleted         Boolean  @default(false)
+model Student {
+    id                String              @id @default(uuid())
+    code              String              @unique // Codigo del estudiante (matricula)
+    firstName         String              @map("first_name") // Nombres
+    lastName          String              @map("last_name") // Apellidos
+    identification    String? // En estudiates puede estar vacio
+    phone             String // Telefono
+    email             String?             @unique // Correo
+    address           String? // Direccion
+    hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
+    createdAt         DateTime            @default(now()) @map("created_at")
+    updatedAt         DateTime            @updatedAt @map("updated_at")
+    deleted           Boolean             @default(false)
     enrollment        Enrollment[]
     graduation        Graduation[]
     accountReceivable AccountReceivable[]
 }
 
-model Course { // Cursos
-    id                 String   @id @default(uuid())
-    code               String   @unique // Codigo
+model Course {
+    id                 String         @id @default(uuid())
+    code               String         @unique // Codigo
     name               String // Nombre
     description        String? // Descripcion
     duration           Int? // Duracion en horas
-    requiresGraduation Boolean  @map("requires_graduation") @default(false)// Requiere graduacion
-    createdAt          DateTime @default(now()) @map("created_at")
-    updatedAt          DateTime @updatedAt @map("updated_at")
-    deleted   Boolean  @default(false)
-    prerequisites Prerequisite[] @relation("CoursePrerequisite")
-    requiredBy    Prerequisite[] @relation("PrerequisiteCourse")
-    courseBranch  CourseBranch[]
-    graduation    Graduation[]
+    requiresGraduation Boolean        @default(false) @map("requires_graduation") // Requiere graduacion
+    createdAt          DateTime       @default(now()) @map("created_at")
+    updatedAt          DateTime       @updatedAt @map("updated_at")
+    deleted            Boolean        @default(false)
+    prerequisites      Prerequisite[] @relation("CoursePrerequisite")
+    requiredBy         Prerequisite[] @relation("PrerequisiteCourse")
+    courseBranch       CourseBranch[]
+    graduation         Graduation[]
 }
 
-model Prerequisite { // Requisitos de los cursos
+model Prerequisite {
     courseId       String @map("course_id") // ID del curso
     prerequisiteId String @map("prerequisite_id") // ID del curso pre-requisito
 
@@ -125,7 +126,7 @@ model Prerequisite { // Requisitos de los cursos
     @@id([courseId, prerequisiteId]) // Llave compuesta
 }
 
-model Promotion { // Promociones de los cursos
+model Promotion {
     id          String   @id @default(uuid())
     description String // Descripcion
     startDate   DateTime @map("start_date") // fechaInicio
@@ -137,7 +138,7 @@ model Promotion { // Promociones de los cursos
     graduation   Graduation[]
 }
 
-model CourseBranch { // Cursos en las sucursales
+model CourseBranch {
     id             String   @id @default(uuid())
     promotionId    String   @map("promotion_id") // ID de la promoción
     branchId       String   @map("branch_id") // ID de la sucursal
@@ -163,38 +164,38 @@ model CourseBranch { // Cursos en las sucursales
     @@map("course_branch")
 }
 
-model Schedule { // Horarios de los cursos
-    id             String   @id @default(uuid())
-    startTime      DateTime @map("start_time") // Hora de inicio
-    endTime        DateTime @map("end_time") // Hora de fin
-    weekday        Int // Día de la semana (0 = Domingo, 6 = Sábado)
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+model Schedule {
+    id        String   @id @default(uuid())
+    startTime DateTime @map("start_time") // Hora de inicio
+    endTime   DateTime @map("end_time") // Hora de fin
+    weekday   Int // Día de la semana (0 = Domingo, 6 = Sábado)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-    courses        CourseSchedule[] // Relación con cursos
-    attendance     Attendance[]
+    courses    CourseSchedule[] // Relación con cursos
+    attendance Attendance[]
 }
 
-model CourseSchedule { // Tabla intermedia entre Course y Schedule
-    courseId       String   @map("course_id")
-    scheduleId     String   @map("schedule_id")
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+model CourseSchedule {
+    courseId   String   @map("course_id")
+    scheduleId String   @map("schedule_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
 
-    course         CourseBranch   @relation(fields: [courseId], references: [id])
-    schedule       Schedule @relation(fields: [scheduleId], references: [id])
+    course   CourseBranch @relation(fields: [courseId], references: [id])
+    schedule Schedule     @relation(fields: [scheduleId], references: [id])
 
     @@id([courseId, scheduleId]) // Combinación de claves primarias
 }
 
-enum EnrollmentStatus { // Estados de las matriculaciones de los estudiantes en los cursos
+enum EnrollmentStatus {
     waiting
     enrolled
     completed
     abandoned
 }
 
-model Enrollment { // Cursos en los que se matricula un estudiante
+model Enrollment {
     id             String           @id @default(uuid())
     studentId      String           @map("student_id") // ID del estudiante
     courseBranchId String           @map("course_branch_id") // ID del CursoSucursal
@@ -208,13 +209,13 @@ model Enrollment { // Cursos en los que se matricula un estudiante
     attendance   Attendance[]
 }
 
-enum AttendanceStatus { // Estados de las asistencias
+enum AttendanceStatus {
     present
     absent
     excused
 }
 
-model Attendance { // Llevar asistencias de los estudiantes
+model Attendance {
     id           String           @id @default(uuid())
     enrollmentId String           @map("enrollment_id") // Enrollment ID
     scheduleId   String           @map("schedule_id") // Schedule ID
@@ -227,19 +228,19 @@ model Attendance { // Llevar asistencias de los estudiantes
     schedule   Schedule   @relation(fields: [scheduleId], references: [id])
 }
 
-enum GraduationType { // Tipos de graduaciones
+enum GraduationType {
     diploma
     certificate
     juramentation
 }
 
-enum GraduationStatus { // Estados de las graduaciones
+enum GraduationStatus {
     pending
     completed
     canceled
 }
 
-model Graduation { // Graduaciones de los estudiantes
+model Graduation {
     id             String           @id @default(uuid())
     studentId      String           @map("student_id") // ID del estudiante
     promotionId    String           @map("promotion_id") // ID de la promoción
@@ -255,7 +256,7 @@ model Graduation { // Graduaciones de los estudiantes
     course    Course    @relation(fields: [courseId], references: [id])
 }
 
-model GraduationPrice { // Precios de graduación
+model GraduationPrice {
     id                             String         @id @default(uuid())
     graduationType                 GraduationType @map("graduation_type") // Tipo de graduación
     basePrice                      Float          @map("base_price") // Precio base
@@ -265,7 +266,7 @@ model GraduationPrice { // Precios de graduación
     updatedAt                      DateTime       @updatedAt @map("updated_at")
 }
 
-enum AccountStatus { // Estados de las cuentas por cobrar y pagar de los estudiantes
+enum AccountStatus {
     pending
     paid
     canceled
@@ -310,17 +311,41 @@ model AccountPayable {
     @@map("account_payable")
 }
 
+model Setting {
+    id              String   @id @default(uuid())
+    rnc             String   @unique
+    companyName     String   @map("company_name")
+    address         String
+    phone           String
+    email           String
+    logo            String
+    defaultPassword String?  @map("default_password")
+    deleted         Boolean  @default(false)
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
+}
 
-model Setting { // Configuraciones principales de la empresa
-    id        String   @id @default(uuid())
-    rnc       String   @unique
-    companyName String   @map("company_name")
-    address   String
-    phone     String
-    email     String
-    logo      String
-    defaultPassword String? @map("default_password")
-    deleted   Boolean  @default(false)
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+
+// Activity log
+model Log {
+    id          String     @id @default(uuid())
+    date        DateTime   @default(now())
+    action      ActionType
+    description String
+    origin      String
+    elementId   String? // Opcional
+    success     Boolean
+    authorId    String? // Puede ser null
+    author      User?      @relation(fields: [authorId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum ActionType {
+    POST
+    PUT
+    DELETE
+    GET
+    PATCH
 }
