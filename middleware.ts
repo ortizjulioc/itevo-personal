@@ -8,7 +8,6 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth?.token;
 
-
     if (pathname === '/login') {
       return NextResponse.next();
     }
@@ -62,6 +61,6 @@ export const config = {
     "/branches",               // Protege /branches
     "/branches/:path*",        // Protege subrutas de /branches
     "/settings",               // Protege /settings, solo admin tiene acceso
-    // "/api/:path*",             // Protege todas las rutas de la API
+    "/api/:path*",             // Protege todas las rutas de la API
   ],
 };

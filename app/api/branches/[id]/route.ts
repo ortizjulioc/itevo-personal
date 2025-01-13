@@ -5,6 +5,7 @@ import { validateObject } from '@/utils';
 // Obtener sucursal por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
+        console.log('GET BRANCH BY ID: ', request);
         const { id } = params;
 
         const branch = await findBranchById(id);

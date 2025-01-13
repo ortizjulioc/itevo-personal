@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from "@/utils";
 import { getBranches, createBranch } from '@/services/branch-service';
+import { createLog } from '@/services/log-service';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 // Obtener todas las sucursales
 export async function GET(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        console.log('GET BRANCHES: ', session);
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
@@ -39,7 +44,14 @@ export async function POST(request: NextRequest) {
         }
 
         const branch = await createBranch(body);
-
+        // await createLog({
+        //     action: 'POST',
+        //     description: `Se creó la sucursal con la siguiente información: \n${JSON.stringify(branch, null, 2)}`,
+        //     authorId: 'adsdsdsd',
+        //     origin: 'branches',
+        //     elementId: branch.id,
+        //     success: true,
+        // });
         return NextResponse.json(branch, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
