@@ -54,30 +54,6 @@ export const getLogs = async (
     return { logs, totalLogs };
 };
 
-export const createLog = async (
-    data: {
-        action: 'POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH';
-        description: string;
-        origin: string;
-        elementId?: string;
-        success: boolean;
-        authorId?: string;
-    }
-) => {
-    const log = await Prisma.log.create({
-        data: {
-            action: data.action,
-            description: data.description,
-            origin: data.origin,
-            elementId: data.elementId,
-            success: data.success,
-            authorId: data.authorId,
-        },
-    });
-
-    return log;
-};
-
 export const getLogById = async (id: string) => {
     const log = await Prisma.log.findUnique({
         where: { id },
