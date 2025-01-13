@@ -331,7 +331,7 @@ model Log {
     id          String     @id @default(uuid())
     date        DateTime   @default(now())
     action      ActionType
-    description String
+    description String     @db.Text // Descripción
     origin      String
     elementId   String?
     success     Boolean
