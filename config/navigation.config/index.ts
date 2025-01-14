@@ -4,12 +4,13 @@ import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
 import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 import { IconMenuTodo, IconMenuUsers } from '@/components/icon/menu';
+import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield } from "react-icons/tb";
 
 const navigationConfig = [
   {
     key: 'inicio',
     title: 'Inicio',
-    icon: IconMenuDashboard,
+    icon: TbHome,
     url: '/',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -17,7 +18,7 @@ const navigationConfig = [
   {
     key: 'teachers',
     title: 'Profesores',
-    icon: IconMenuUsers,
+    icon: TbUserScreen,
     url: '/teachers',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -25,7 +26,7 @@ const navigationConfig = [
   {
     key: 'students',
     title: 'Estudiantes',
-    icon: IconMenuUsers,
+    icon: TbUserEdit,
     url: '/students',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -33,7 +34,7 @@ const navigationConfig = [
   {
     key: 'courses',
     title: 'Cursos',
-    icon: IconMenuTodo,
+    icon: TbFileText,
     url: '/courses',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -41,7 +42,7 @@ const navigationConfig = [
   {
     key: 'branches',
     title: 'Sucursales',
-    icon: IconMenuContacts,
+    icon: TbLiveView,
     url: '/branches',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -49,7 +50,7 @@ const navigationConfig = [
   {
     key: 'promotions',
     title: 'Promociones',
-    icon: IconMenuContacts,
+    icon: TbSpeakerphone,
     url: '/promotions',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -63,7 +64,7 @@ const navigationConfig = [
   {
     key: 'users',
     title: 'Usuarios',
-    icon: IconMenuUsers,
+    icon: TbUserShield,
     url: '/users',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -71,7 +72,7 @@ const navigationConfig = [
   {
     key: 'roles',
     title: 'Roles',
-    icon: IconMenuAuthentication,
+    icon: TbUserCog,
     url: '/roles',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
