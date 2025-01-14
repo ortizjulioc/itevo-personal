@@ -165,15 +165,15 @@ model CourseBranch {
 }
 
 model Schedule {
-    id        String   @id @default(uuid())
-    startTime DateTime @map("start_time") // Hora de inicio
-    endTime   DateTime @map("end_time") // Hora de fin
-    weekday   Int // Día de la semana (0 = Domingo, 6 = Sábado)
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    id          String      @id     @default(uuid())
+    startTime   String      @map("start_time") // Hora de inicio
+    endTime     String      @map("end_time") // Hora de fin
+    weekday     Int // Día de la semana (0 = Domingo, 6 = Sábado)
+    createdAt   DateTime    @default(now())     @map("created_at")
+    updatedAt   DateTime    @updatedAt      @map("updated_at")
 
-    courses    CourseSchedule[] // Relación con cursos
-    attendance Attendance[]
+    courses     CourseSchedule[] // Relación con cursos
+    attendance  Attendance[]
 }
 
 model CourseSchedule {
