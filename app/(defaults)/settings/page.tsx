@@ -1,8 +1,8 @@
 'use client';
 import { ViewTitle } from "@/components/common";
 import { Tab } from "@headlessui/react";
-import useFetchSetting from "./lib/use-fetch-settings";
-import UpdateSettingForm from "./components/setting-form/update-form";
+import useFetchSetting from "./lib/settings/use-fetch-settings";
+import UpdateSettingForm from "./components/settings/setting-form/update-form";
 import { Fragment } from "react";
 
 

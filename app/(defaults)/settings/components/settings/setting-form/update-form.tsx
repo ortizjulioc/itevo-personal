@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from './form.config';
 import { Setting } from '@prisma/client';
 import { FormatPatterInput } from '@/components/common';
-import { updateSetting } from '../../lib/request';
+import { updateSetting } from '../../../lib/settings/request';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
