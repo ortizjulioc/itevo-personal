@@ -8,7 +8,7 @@ export interface ScheduleResponse {
 }
 
 const useFetchSchedule = (query: string) => {
-    const [schedules, setSchedule] = useState<Schedule[]>([]);
+    const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [totalSchedules, setTotalSchedules] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ const useFetchSchedule = (query: string) => {
                 if (!response.success) {
                     throw new Error(response.message);
                 }
-                setSchedule(response.data?.schedules || []);
+                setSchedules(response.data?.schedules || []);
                 setTotalSchedules(response.data?.totalSchedules || 0);
             } catch (error) {
                 if (error instanceof Error) {
@@ -36,7 +36,7 @@ const useFetchSchedule = (query: string) => {
         fetchSchedulesData(query);
     }, [query]);
 
-    return { schedules, totalSchedules, loading, error, setSchedule };
+    return { schedules, totalSchedules, loading, error, setSchedules };
 };
 
 export const useFetchScheduleById = (id: string) => {

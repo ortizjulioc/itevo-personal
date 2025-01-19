@@ -4,11 +4,13 @@ import { Tab } from "@headlessui/react";
 import useFetchSetting from "./lib/settings/use-fetch-settings";
 import UpdateSettingForm from "./components/settings/setting-form/update-form";
 import { Fragment } from "react";
+import ScheduleLists from "./components/schedules";
 
 
 export default function EditSetting({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, Setting } = useFetchSetting();
+    
     return (
         <div>
             <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
@@ -43,7 +45,7 @@ export default function EditSetting({ params }: { params: { id: string } }) {
                     </Tab.Panel>
                     <Tab.Panel>
                         <div className="mt-6">
-                            {Setting && <UpdateSettingForm initialValues={Setting} />}
+                           <ScheduleLists  />
                         </div>
                     </Tab.Panel>
                 </Tab.Panels>
