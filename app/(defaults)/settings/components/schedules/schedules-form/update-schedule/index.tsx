@@ -63,7 +63,7 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
 
     const stringToTime = (time: string | Date) => {
         if (time instanceof Date) {
-            return time; // Si ya es un objeto Date, retornarlo
+            return time; 
         }
 
         if (typeof time === 'string') {

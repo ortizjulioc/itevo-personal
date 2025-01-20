@@ -12,17 +12,19 @@ export default function EditSetting({ params }: { params: { id: string } }) {
     const { loading, Setting } = useFetchSetting();
     
     return (
-        <div>
-            <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
+        <>
+        <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
 
+        <div className="container mx-auto px-4 panel bg">
+            
             <Tab.Group>
-                <Tab.List className="mt-3 flex flex-wrap">
+                <Tab.List className=" flex flex-wrap">
                     <Tab as={Fragment}>
                         {({ selected }) => (
                             <button
                                 className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
                             >
-                                Información general
+                                Información general de la empresa
                             </button>
                         )}
                     </Tab>
@@ -31,7 +33,7 @@ export default function EditSetting({ params }: { params: { id: string } }) {
                             <button
                                 className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
                             >
-                                Horarios de Clase
+                                Horarios de clases
                             </button>
                         )}
                     </Tab>
@@ -51,5 +53,6 @@ export default function EditSetting({ params }: { params: { id: string } }) {
                 </Tab.Panels>
             </Tab.Group>
         </div>
+        </>
     )
 }

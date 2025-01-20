@@ -25,8 +25,8 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
 
    
     return (
-        <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Formulario de Sucursal</h4>
+        <div>
+
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">

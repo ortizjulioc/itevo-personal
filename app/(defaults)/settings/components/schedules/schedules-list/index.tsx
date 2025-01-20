@@ -16,7 +16,7 @@ interface Props {
     query?: string;
 }
 
-const Weekday = [
+const WEEKDAY = [
     'Domingo',
     'Lunes',
     'Martes',
@@ -68,6 +68,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
                         setScheduleToEdit(undefined); // Clear schedule when adding a new one
                         setOpenModal(true);
                     }}
+                    size="sm"
                 >
                     Agregar Horario
                 </Button>
@@ -92,7 +93,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
                             <tr key={schedule.id}>
                                 <td>{schedule.startTime}</td>
                                 <td>{schedule.endTime}</td>
-                                <td>{Weekday[schedule.weekday]}</td>
+                                <td>{WEEKDAY[schedule.weekday]}</td>
                                 <td>
                                     <div className="flex gap-2 justify-end">
                                         <Tooltip title="Eliminar">
