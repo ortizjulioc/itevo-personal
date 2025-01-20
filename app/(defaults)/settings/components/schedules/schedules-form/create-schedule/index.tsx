@@ -10,18 +10,19 @@ import { createSchedule } from '@/app/(defaults)/settings/lib/schedules/request'
 import DatePicker from '@/components/ui/date-picker';
 
 interface WeekOption {
-    value: number; 
+    value: number;
     label: string;
 }
 
 const weekOptions: WeekOption[] = [
+    { value: 0, label: 'Domingo' },
     { value: 1, label: 'Lunes' },
     { value: 2, label: 'Martes' },
     { value: 3, label: 'Miércoles' },
     { value: 4, label: 'Jueves' },
     { value: 5, label: 'Viernes' },
     { value: 6, label: 'Sábado' },
-    { value: 0, label: 'Domingo' },
+   
 ];
 const stringToTime = (time: string | Date) => {
     if (time instanceof Date) {
@@ -35,23 +36,25 @@ const stringToTime = (time: string | Date) => {
 
     throw new Error("Invalid time format: must be a string in 'HH:mm' format or a Date object");
 };
-export default function CreateScheduleForm({ setOpenModal }: { setOpenModal: (value: boolean) => void }) {
+export default function CreateScheduleForm({ setOpenModal, setSchedules }: { setOpenModal: (value: boolean) => void, setSchedules: any }) {
     const route = useRouter();
-    
+
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        
-         const formatTime = (isoTime: string): string => {
+
+        const formatTime = (isoTime: string): string => {
             const date = new Date(isoTime);
-            return date.toTimeString().slice(0, 5); 
+            return date.toTimeString().slice(0, 5);
         };
+        console.log(values);
         const data = {
             ...values,
-            startTime: formatTime(values.startTime), 
-            endTime: formatTime(values.endTime),     
-            weekday: values.weekday, 
+            startTime: formatTime(values.startTime),
+            endTime: formatTime(values.endTime),
+            weekday: values.weekday,
         };
+
 
         console.log(data);
 
@@ -59,6 +62,8 @@ export default function CreateScheduleForm({ setOpenModal }: { setOpenModal: (va
 
         if (resp.success) {
             openNotification('success', 'Horario creado correctamente');
+            setSchedules((prev: any) => [...prev, resp.data]);
+            setOpenModal(false);
         } else {
             openNotification('error', resp.message);
         }
@@ -66,7 +71,7 @@ export default function CreateScheduleForm({ setOpenModal }: { setOpenModal: (va
     };
 
     return (
-        <div className="panel">
+        <div >
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
@@ -98,10 +103,17 @@ export default function CreateScheduleForm({ setOpenModal }: { setOpenModal: (va
                                 options={weekOptions}
                                 value={weekOptions.find((opt) => opt.value === values.weekday)} 
                                 onChange={(option: WeekOption | null) => {
-                                    setFieldValue('weekday', option?.value || null); 
+                                    setFieldValue('weekday', option?.value ?? null); 
                                 }}
                                 isSearchable={false}
                                 placeholder="Selecciona un día"
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    menuPortal: (base: React.CSSProperties) => ({
+                                        ...base,
+                                        zIndex: 9999, 
+                                    }),
+                                }}
                             />
                         </FormItem>
 

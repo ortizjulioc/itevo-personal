@@ -1,27 +1,38 @@
 'use client';
-import { confirmDialog, formatPhoneNumber, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconPlusCircle, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
-import OptionalInfo from "@/components/common/optional-info";
 import useFetchSchedule from "../../../lib/schedules/use-fetch-schedules";
 import { deleteSchedule } from "../../../lib/schedules/request";
-import { set } from "lodash";
 import { useState } from "react";
 import ScheduleModal from "../schedules-modal";
+import { Schedule } from "@prisma/client";
 
 interface Props {
     className?: string;
     query?: string;
 }
 
+const Weekday = [
+    'Domingo',
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+]
+
 export default function ScheduleList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
     const [openModal, setOpenModal] = useState(false);
+    const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | undefined>(undefined); // State for the schedule being edited
 
     const { loading, error, schedules, setSchedules, totalSchedules } = useFetchSchedule(query);
+    
     if (error) {
         openNotification('error', error);
     }
@@ -53,11 +64,13 @@ export default function ScheduleList({ className, query = '' }: Props) {
                 <Button
                     variant="default"
                     icon={<IconPlusCircle className="size-4" />}
-                    onClick={() => setOpenModal(true)}
+                    onClick={() => {
+                        setScheduleToEdit(undefined); // Clear schedule when adding a new one
+                        setOpenModal(true);
+                    }}
                 >
                     Agregar Horario
                 </Button>
-                <ScheduleModal openModal={openModal} setOpenModal={setOpenModal} value={undefined} />
             </div>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
                 <table className="table-hover">
@@ -72,48 +85,47 @@ export default function ScheduleList({ className, query = '' }: Props) {
                     <tbody>
                         {schedules?.length === 0 && (
                             <tr>
-                                <td colSpan={5} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Sucursales registradas</td>
+                                <td colSpan={5} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron horarios registrados</td>
                             </tr>
                         )}
-                        {schedules?.map((schedule) => {
-                            return (
-                                <tr key={schedule.id}>
-                                    <td>
-                                        <div className="whitespace-nowrap">{schedule.startTime}</div>
-                                    </td>
-                                    <td>
-                                        <div className="whitespace-nowrap">{schedule.endTime}</div>
-                                    </td>
-                                    <td>
-                                        <div className="whitespace-nowrap">{schedule.weekday}</div>
-                                    </td>
-
-                                    <td>
-                                        <div className="flex gap-2 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(schedule.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/shedules/${schedule.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                                                </Link>
-                                            </Tooltip>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {schedules?.map((schedule) => (
+                            <tr key={schedule.id}>
+                                <td>{schedule.startTime}</td>
+                                <td>{schedule.endTime}</td>
+                                <td>{Weekday[schedule.weekday]}</td>
+                                <td>
+                                    <div className="flex gap-2 justify-end">
+                                        <Tooltip title="Eliminar">
+                                            <Button onClick={() => onDelete(schedule.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                        </Tooltip>
+                                        <Tooltip title="Editar">
+                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} onClick={() => {
+                                                setScheduleToEdit(schedule); 
+                                                setOpenModal(true);
+                                            }} />
+                                        </Tooltip>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
-
             </div>
-            <div className="">
+            <div>
                 <Pagination
                     currentPage={parseInt(params?.page || '1')}
                     total={totalSchedules}
                     top={parseInt(params?.top || '10')}
                 />
             </div>
+
+            {/* Schedule Modal for editing/creating */}
+            <ScheduleModal
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                value={scheduleToEdit}
+                setSchedules={setSchedules}
+            />
         </div>
     );
-};
+}
