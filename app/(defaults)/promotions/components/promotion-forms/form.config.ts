@@ -16,6 +16,6 @@ export const updateValidationSchema = Yup.object().shape({
 
 export const initialValues = {
     description: '',
-    startDate: null,
-    endDate: null,
+    startDate: undefined,
+    endDate: undefined,
 };

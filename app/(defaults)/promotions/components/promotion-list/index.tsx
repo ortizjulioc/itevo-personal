@@ -47,8 +47,8 @@ export default function PromotionList({ className, query = '' }: Props) {
                     <thead>
                         <tr>
                             <th>Descripcion</th>
-                            <th>F. Inicio</th>
-                            <th>F. Fin</th>
+                            <th>Fecha de inicio</th>
+                            <th>Fecha de fin</th>
                             <th />
                         </tr>
                     </thead>

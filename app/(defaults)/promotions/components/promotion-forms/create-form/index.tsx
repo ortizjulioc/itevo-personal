@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createPromotion } from '../../../lib/request';
-import { normalizeString } from '@/utils/normalize-string';
+import DatePicker from '@/components/ui/date-picker';
 
 
 export default function CreatePromotionForm() {
@@ -32,17 +32,38 @@ export default function CreatePromotionForm() {
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de promoción</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched }) => (
+                {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
                         <FormItem name="description" label="Nombre" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
                             <Field type="text" name="description" component={Input} placeholder="Ingrese el nombre de la promoción" />
                         </FormItem>
 
                         <FormItem name="startDate" label="Fecha de inicio" invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
-                            <Field type="datetime-local" name="startDate" component={Input} placeholder="Seleccione la fecha de inicio" />
+                            <DatePicker
+                                value={values.startDate}
+                                onChange={(date: Date | Date[]) => {
+                                    // Verificar si "date" es un objeto `Date` o un array
+                                    if (date instanceof Date) {
+                                        setFieldValue('startDate', date);
+                                    } else if (Array.isArray(date) && date.length > 0) {
+                                        // Si es un array, tomar el primer elemento como el valor
+                                        setFieldValue('startDate', date[0]);
+                                    }
+                                }}
+                            />
                         </FormItem>
                         <FormItem name="endDate" label="Fecha fin" invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
-                            <Field type="datetime-local" name="endDate" component={Input} placeholder="Seleccione la fecha de finalización" />
+                            <DatePicker
+
+                                value={values.endDate}
+                                onChange={(date: Date | Date[]) => {
+                                    if (date instanceof Date) {
+                                        setFieldValue('endDate', date);
+                                    } else if (Array.isArray(date) && date.length > 0) {
+                                        setFieldValue('endDate', date[0]);
+                                    }
+                                }}
+                            />
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
