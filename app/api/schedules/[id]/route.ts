@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
-        const { isValid, message } = validateObject(body, ['courseBranchId', 'startTime', 'endTime', 'weekday']);
+        const { isValid, message } = validateObject(body, ['startTime', 'endTime', 'weekday']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }

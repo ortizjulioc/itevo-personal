@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         // Validate the request body
-        const {isValid, message} = validateObject(body, ['courseBranchId']);
+        const {isValid, message} = validateObject(body, ['startTime', 'endTime', 'weekday']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
