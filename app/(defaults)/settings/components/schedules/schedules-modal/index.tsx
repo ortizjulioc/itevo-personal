@@ -9,9 +9,10 @@ interface ScheduleModalProps {
     setOpenModal: (value: boolean) => void;
     openModal: boolean;
     value: any;
+    setSchedules?: any;
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = ({ setOpenModal, openModal, value }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = ({ setOpenModal, openModal, value,setSchedules }) => {
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
@@ -41,9 +42,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ setOpenModal, openModal, 
                                
                                 <div className="p-5">
                                     {value === undefined ? (
-                                        <CreateScheduleForm setOpenModal={setOpenModal} />
+                                        <CreateScheduleForm 
+                                            setOpenModal={setOpenModal}
+                                            setSchedules={setSchedules}
+                                            />
                                     ) : (
-                                        <UpdateScheduleForm initialValues={value} />
+                                        <UpdateScheduleForm 
+                                            initialValues={value}  
+                                            setOpenModal={setOpenModal}
+                                            setSchedules={setSchedules}
+                                            />
                                     )}
 
 
