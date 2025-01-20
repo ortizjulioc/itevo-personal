@@ -10,6 +10,7 @@ import { deleteSchedule } from "../../../lib/schedules/request";
 import { useState } from "react";
 import ScheduleModal from "../schedules-modal";
 import { Schedule } from "@prisma/client";
+import { convertToAmPm } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -91,8 +92,8 @@ export default function ScheduleList({ className, query = '' }: Props) {
                         )}
                         {schedules?.map((schedule) => (
                             <tr key={schedule.id}>
-                                <td>{schedule.startTime}</td>
-                                <td>{schedule.endTime}</td>
+                                <td>{convertToAmPm(schedule.startTime)}</td>
+                                <td>{convertToAmPm(schedule.endTime)}</td>
                                 <td>{WEEKDAY[schedule.weekday]}</td>
                                 <td>
                                     <div className="flex gap-2 justify-end">
