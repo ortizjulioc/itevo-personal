@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, FormItem, Input } from '@/components/ui';
-import { Field, Form, Formik } from 'formik';
+import {  Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config'; 
@@ -33,17 +33,27 @@ export default function UpdateScheduleForm({ initialValues }: { initialValues: S
 
         if (resp.success) {
             openNotification('success', 'Horario actualizado correctamente');
-            route.push('/schedules'); // Redirige según lo necesario
+            route.push('/schedules'); 
         } else {
-            alert(resp.message); // O usa un sistema de notificación
+           openNotification('error', resp.message);
         }
     };
+
+    const stringToTime = (time: string) => {
+        const [hours, minutes] = time.split(':');
+        return new Date(new Date().setHours(Number(hours), Number(minutes)));
+    };
+    const initialValuesWithDates = {
+        ...initialValues,
+        // startTime: new Date(`2022-01-01T${initialValues.startTime}`),
+        // endTime:  new Date(`2022-01-01T${initialValues.endTime}`),
+      };
 
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Actualización de Horario</h4>
             <Formik
-                initialValues={initialValues}
+                initialValues={initialValuesWithDates}
                 validationSchema={updateValidationSchema}
                 onSubmit={handleSubmit}
             >
@@ -52,6 +62,7 @@ export default function UpdateScheduleForm({ initialValues }: { initialValues: S
 
                         <FormItem name="startTime" label="Hora de inicio" invalid={Boolean(errors.startTime && touched.startTime)} errorMessage={errors.startTime}>
                             <DatePicker
+                             value={values.startTime ? stringToTime(values.startTime) : undefined}
                                 mode="time"
                                 onChange={(date: Date | Date[]) => {
                                     const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
@@ -62,6 +73,7 @@ export default function UpdateScheduleForm({ initialValues }: { initialValues: S
 
                         <FormItem name="endTime" label="Hora de fin" invalid={Boolean(errors.endTime && touched.endTime)} errorMessage={errors.endTime}>
                             <DatePicker
+                                value={values.endTime ? stringToTime(values.endTime) : undefined}
                                 mode="time"
                                 onChange={(date: Date | Date[]) => {
                                     const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date

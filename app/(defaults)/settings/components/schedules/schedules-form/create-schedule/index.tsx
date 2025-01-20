@@ -23,13 +23,37 @@ const weekOptions: WeekOption[] = [
     { value: 6, label: 'Sábado' },
     { value: 0, label: 'Domingo' },
 ];
+const stringToTime = (time: string | Date) => {
+    if (time instanceof Date) {
+        return time; // Si ya es un objeto Date, retornarlo
+    }
 
-export default function CreateScheduleForm() {
+    if (typeof time === 'string') {
+        const [hours, minutes] = time.split(':');
+        return new Date(new Date().setHours(Number(hours), Number(minutes), 0, 0));
+    }
+
+    throw new Error("Invalid time format: must be a string in 'HH:mm' format or a Date object");
+};
+export default function CreateScheduleForm({ setOpenModal }: { setOpenModal: (value: boolean) => void }) {
     const route = useRouter();
+    
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        const data = { ...values, weekday: values.weekday.value }; // Transformar `weekday` para enviar solo su valor
+        
+         const formatTime = (isoTime: string): string => {
+            const date = new Date(isoTime);
+            return date.toTimeString().slice(0, 5); 
+        };
+        const data = {
+            ...values,
+            startTime: formatTime(values.startTime), 
+            endTime: formatTime(values.endTime),     
+            weekday: values.weekday, 
+        };
+
+        console.log(data);
 
         const resp = await createSchedule(data);
 
@@ -49,7 +73,7 @@ export default function CreateScheduleForm() {
                         <FormItem name="startTime" label="Hora de inicio" invalid={Boolean(errors.startTime && touched.startTime)} errorMessage={errors.startTime}>
                             <DatePicker
                                 mode="time"
-                                value={values.startTime}
+                                value={values.startTime ? stringToTime(values.startTime) : undefined}
                                 onChange={(date: Date | Date[]) => {
                                     const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
                                     setFieldValue('startTime', selectedDate);
@@ -60,7 +84,7 @@ export default function CreateScheduleForm() {
                         <FormItem name="endTime" label="Hora de fin" invalid={Boolean(errors.endTime && touched.endTime)} errorMessage={errors.endTime}>
                             <DatePicker
                                 mode="time"
-                                value={values.endTime}
+                                value={values.endTime ? stringToTime(values.endTime) : undefined}
                                 onChange={(date: Date | Date[]) => {
                                     const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
                                     setFieldValue('endTime', selectedDate);
@@ -82,7 +106,7 @@ export default function CreateScheduleForm() {
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
-                            <Button type="button" color="danger" onClick={() => route.back()}>
+                            <Button type="button" color="danger" onClick={() => setOpenModal(false)}>
                                 Cancelar
                             </Button>
                             <Button loading={isSubmitting} type="submit">
