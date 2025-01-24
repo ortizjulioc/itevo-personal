@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findTeacherById, updateTeacherById, deleteTeacherById } from '@/services/teacher-service';
 import { validateObject } from '@/utils';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener teacher por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -15,11 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(teacher, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el maestro', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -46,11 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(updatedTeacher, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el curso', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -70,10 +63,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
         return NextResponse.json({ message: 'Maestro eliminado correctamente' });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el maestro', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

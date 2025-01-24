@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getTeachers, createTeacher, findTeacherByIdentification } from '@/services/teacher-service';
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,11 +17,7 @@ export async function GET(request: NextRequest) {
             totalTeachers,
         }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo los maestros', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -42,11 +39,6 @@ export async function POST(request: Request) {
         const teacher = await createTeacher(body);
         return NextResponse.json(teacher, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            console.log('ERROR: ',error);
-            return NextResponse.json({ error: 'Error creando maestro', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
