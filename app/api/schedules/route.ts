@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getSchedules, createSchedule, findScheduleById } from "@/services/schedule-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function GET(request: NextRequest) {
     try {
@@ -18,11 +19,7 @@ export async function GET(request: NextRequest) {
             totalSchedules,
         }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo los schedules', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -38,11 +35,6 @@ export async function POST(request: Request) {
         const schedule = await createSchedule(body);
         return NextResponse.json(schedule, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            console.log('ERROR: ',error);
-            return NextResponse.json({ error: 'Error creando schedule', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
