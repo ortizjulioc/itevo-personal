@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { assignRoleToUserInBranch } from "@/services/authorization-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,10 +15,6 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(result, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error asignando role', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

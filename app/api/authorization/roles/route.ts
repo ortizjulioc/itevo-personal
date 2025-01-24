@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getUserRolesInBranch } from "@/services/authorization-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function GET(request: NextRequest) {
     try {
@@ -15,10 +16,6 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ roles }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo roles', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
