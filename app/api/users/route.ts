@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getUsers, createUser, findUserByEmail, findUserByUsername } from "@/services/user-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 
 export async function GET(request: NextRequest) {
@@ -17,11 +18,7 @@ export async function GET(request: NextRequest) {
             totalUsers,
         }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo los usuarios', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -51,10 +48,6 @@ export async function POST(request: Request) {
         const user = await createUser(body);
         return NextResponse.json(user, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
