@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { deletePrerequisite, findPrerequisiteById } from '@/services/course-service';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Eliminar prerequisito por ID
 export async function DELETE(request: NextRequest, { params }: { params: { id: string, prerequisiteId: string } }) {
@@ -20,10 +21,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
         return NextResponse.json({ message: 'Prerequisito eliminado correctamente' });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el prerequisito', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

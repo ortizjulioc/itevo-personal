@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { addPrerequisite, findPrerequisiteById, findCourseById } from "@/services/course-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -29,11 +30,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
 
     } catch (error) {
-        if (error instanceof Error) {
-            console.log('ERROR: ',error);
-            return NextResponse.json({ error: 'Error agregando prerequisito', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
