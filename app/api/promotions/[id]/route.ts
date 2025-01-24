@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findPromotionById, updatePromotionById, deletePromotionById } from '@/services/promotion-service';
 import { validateObject } from '@/utils';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener promoción por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -15,11 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(promotion, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo la promoción', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -42,11 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const updatedPromotion = await updatePromotionById(id, body);
         return NextResponse.json(updatedPromotion, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error actualizando la promoción', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -63,10 +56,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         await deletePromotionById(id);
         return NextResponse.json({ message: 'Promoción eliminada correctamente' });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error eliminando la promoción', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

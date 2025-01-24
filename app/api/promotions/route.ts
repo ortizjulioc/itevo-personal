@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getPromotions, createPromotion } from "@/services/promotion-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function GET(request: NextRequest) {
     try {
@@ -13,11 +14,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ promotions, totalPromotions }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo promociones', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -33,10 +30,6 @@ export async function POST(request: Request) {
         const promotion = await createPromotion(body);
         return NextResponse.json(promotion, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando la promoción', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
