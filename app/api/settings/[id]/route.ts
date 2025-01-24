@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateSettingById } from '@/services/settings-service';
 import { validateObject } from '@/utils';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 
 // Actualizar la configuracion de empresa por ID
@@ -20,10 +21,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(updatedSetting, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando la configuracion de empresa', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
