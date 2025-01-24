@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findRoleById, updateRoleById, deleteRoleById } from '@/services/role-service';
 import { validateObject } from '@/utils';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener role por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -70,10 +71,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
         return NextResponse.json({ message: 'role eliminado correctamente' });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el rol', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

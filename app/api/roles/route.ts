@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getRoles, createrRole, findRoleByNormalizedName } from "@/services/role-service";
+import { formatErrorMessage } from "@/utils/error-to-string";
 
 export async function GET(request: NextRequest) {
     try {
@@ -45,10 +46,6 @@ export async function POST(request: Request) {
         // const role = await Prisma.role.create({ data: body });
         return NextResponse.json(role, { status: 201 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error creando el usuario', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
