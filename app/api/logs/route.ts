@@ -1,4 +1,5 @@
 import { getLogs } from '@/services/log-service';
+import { formatErrorMessage } from '@/utils/error-to-string';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -25,10 +26,6 @@ export async function GET(request: NextRequest) {
             totalLogs,
         }, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: 'Error obteniendo los logs', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

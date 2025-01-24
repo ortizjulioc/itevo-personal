@@ -1,4 +1,5 @@
 import { getLogById } from '@/services/log-service';
+import { formatErrorMessage } from '@/utils/error-to-string';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -13,10 +14,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(log, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el log', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
