@@ -23,7 +23,6 @@ model User {
     updatedAt DateTime @updatedAt @map("updated_at")
 
     roleBranch UserRoleBranch[]
-    Log        Log[]
 }
 
 model Role {
@@ -323,29 +322,4 @@ model Setting {
     deleted         Boolean  @default(false)
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
-}
-
-
-// Activity log
-model Log {
-    id          String     @id @default(uuid())
-    date        DateTime   @default(now())
-    action      ActionType
-    description String     @db.Text // Descripción
-    origin      String
-    elementId   String?
-    success     Boolean
-    authorId    String?
-    author      User?      @relation(fields: [authorId], references: [id])
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-enum ActionType {
-    POST
-    PUT
-    DELETE
-    GET
-    PATCH
 }

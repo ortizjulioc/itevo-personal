@@ -1,0 +1,25 @@
+[
+  {
+    "date": "2025-01-25T21:52:23.284Z",
+    "action": "POST",
+    "description": "Se creó un nuevo log con la siguiente información: \n{\n  \"action\": \"GET\",\n  \"description\": \"Consulta de lista de usuarios\",\n  \"origin\": \"UserService\",\n  \"success\": true,\n  \"authorId\": \"8be1744f-c5b7-454c-a1d0-7fd6ce886d65\"\n}",
+    "origin": "logs",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-01-25T21:54:04.828Z",
+    "action": "POST",
+    "description": "Se creó un nuevo log con la siguiente información: \n{\n  \"action\": \"GET\",\n  \"description\": \"Consulta de lista de usuarios 2\",\n  \"origin\": \"UserService2\",\n  \"success\": true,\n  \"authorId\": \"8be1744f-c5b7-454c-a1d0-7fd6ce886d65\"\n}",
+    "origin": "logs",
+    "elementId": "new-log",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-01-25T22:00:34.561Z",
+    "action": "POST",
+    "description": "Se creó un nuevo log con la siguiente información: \n{\n  \"action\": \"GET\",\n  \"description\": \"Consulta de lista de usuarios 2\",\n  \"origin\": \"UserService2\",\n  \"success\": true,\n  \"authorId\": \"8be1744f-c5b7-454c-a1d0-7fd6ce886d65\"\n}",
+    "origin": "logs",
+    "elementId": "new-log",
+    "authorId": "anonymous"
+  }
+]
