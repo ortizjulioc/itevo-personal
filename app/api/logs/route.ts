@@ -1,30 +1,49 @@
-import { getLogs } from '@/services/log-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { createLog } from '@/utils/log';
+import { createLog, getLogsByDate, LogEntry } from '@/utils/log';
 import { NextRequest, NextResponse } from 'next/server';
+
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
 
-        const filters = {
-            date: searchParams.get('date') ? new Date(searchParams.get('date')!) : undefined,
-            action: searchParams.getAll('action').length > 0 ? searchParams.getAll('action') as ('POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH')[] : undefined,
-            description: searchParams.get('description') || undefined,
-            origin: searchParams.get('origin') || undefined,
-            elementId: searchParams.get('elementId') || undefined,
-            success: searchParams.get('success') ? searchParams.get('success') === 'true' : undefined,
-            authorId: searchParams.get('authorId') || undefined,
-        };
+        // Obtener y preparar los filtros
+        const date = searchParams.get("date");
+        if (!date) {
+            return NextResponse.json({ error: "El parámetro 'date' es obligatorio." }, { status: 400 });
+        }
 
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
+        const actionFilter = new Set(
+            searchParams.getAll("action") as ('POST' | 'PUT' | 'DELETE' | 'GET' | 'PATCH')[]
+        );
+        const descriptionFilter = searchParams.get("description");
+        const originFilter = searchParams.get("origin");
+        const elementIdFilter = searchParams.get("elementId");
+        const successFilter = searchParams.get("success") ? searchParams.get("success") === "true" : undefined;
+        const authorIdFilter = searchParams.get("authorId");
 
-        const { logs, totalLogs } = await getLogs(filters, page, top);
+        // Obtener los logs por fecha
+        const logs = await getLogsByDate(date);
+
+        // Aplicar filtros optimizados
+        const filteredLogs = logs.reduce<LogEntry[]>((result, log) => {
+            if (
+                (actionFilter.size > 0 && !actionFilter.has(log.action)) ||
+                (descriptionFilter && !log.description.includes(descriptionFilter)) ||
+                (originFilter && log.origin !== originFilter) ||
+                (elementIdFilter && log.elementId !== elementIdFilter) ||
+                (successFilter !== undefined && (log.success ?? false) !== successFilter) ||
+                (authorIdFilter && log.authorId !== authorIdFilter)
+            ) {
+                return result; // Si no coincide con algún filtro, se omite el log
+            }
+            result.push(log);
+            return result;
+        }, []);
 
         return NextResponse.json({
-            logs,
-            totalLogs,
+            logs: filteredLogs,
+            totalLogs: filteredLogs.length,
         }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});

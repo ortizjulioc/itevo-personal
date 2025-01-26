@@ -11,6 +11,16 @@ interface LogData {
     success?: boolean;
 }
 
+export interface LogEntry {
+    date: string;
+    action: "POST" | "PUT" | "DELETE" | "GET" | "PATCH";
+    description: string;
+    origin: string;
+    elementId?: string;
+    authorId: string;
+    success?: boolean;
+}
+
 const LOGS_DIR = path.join(process.cwd(), "logs");
 
 /**
@@ -58,5 +68,52 @@ export const createLog = async (logData: LogData): Promise<void> => {
         await fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), "utf-8");
     } catch (error) {
         console.error("Error creando el log:", error);
+    }
+};
+
+/**
+ * Obtiene los logs de un día específico.
+ * @param date - Fecha en formato "YYYY-MM-DD".
+ * @returns Un array con los logs encontrados.
+ */
+export const getLogsByDate = async (date: string): Promise<LogEntry[]> => {
+    try {
+        const [year, month, day] = date.split("-");
+
+        if (!year || !month || !day) {
+            throw new Error("Formato de fecha inválido. Usa 'YYYY-MM-DD'.");
+        }
+
+        const logFileNames = [
+            { file: `acciones-${year}-${month}-${day}.json`, success: true },
+            { file: `errores-${year}-${month}-${day}.json`, success: false }
+        ];
+
+        let allLogs: LogEntry[] = [];
+
+        for (const logFile of logFileNames) {
+            const logFilePath = path.join(LOGS_DIR, year, month, day, logFile.file);
+
+            try {
+                const fileContent = await fs.readFile(logFilePath, "utf-8");
+                const logs: LogEntry[] = JSON.parse(fileContent).map((log: LogEntry) => ({
+                    ...log,
+                    success: logFile.success, // Agregamos la propiedad success según el archivo
+                }));
+                allLogs = allLogs.concat(logs);
+            } catch (err) {
+                if (err instanceof Error && (err as NodeJS.ErrnoException).code === "ENOENT") {
+                    console.warn(`Archivo no encontrado: ${logFilePath}`);
+                    continue; // Si el archivo no existe, seguimos con el siguiente
+                } else {
+                    throw err; // Si es otro error, lo lanzamos
+                }
+            }
+        }
+
+        return allLogs;
+    } catch (error) {
+        console.error("Error obteniendo logs:", error);
+        throw error;
     }
 };
