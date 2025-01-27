@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findRoleById, updateRoleById, deleteRoleById } from '@/services/role-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
 
 // Obtener role por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -45,13 +46,30 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el rol
         const updatedRole = await updateRoleById(id, body);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Se actualizó un rol. Información anterior: ${JSON.stringify(role, null, 2)}. Información actualizada: ${JSON.stringify(updatedRole, null, 2)}`,
+            origin: "roles/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json(updatedRole, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el rol', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Error al actualizar un rol: ${formatErrorMessage(error)}`,
+            origin: "roles/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -69,8 +87,29 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Eliminar el rol
         await deleteRoleById(id);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó un rol con los siguientes datos: ${JSON.stringify(role, null, 2)}`,
+            origin: "roles/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json({ message: 'role eliminado correctamente' });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Error al eliminar un rol: ${formatErrorMessage(error)}`,
+            origin: "roles/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

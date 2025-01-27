@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getRoles, createrRole, findRoleByNormalizedName } from "@/services/role-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -44,8 +45,28 @@ export async function POST(request: Request) {
         }
         const role = await createrRole(body);
         // const role = await Prisma.role.create({ data: body });
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un rol con los siguientes datos: ${JSON.stringify(role, null, 2)}`,
+            origin: "roles",
+            elementId: role.id,
+            success: true,
+        });
+
         return NextResponse.json(role, { status: 201 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un rol: ${formatErrorMessage(error)}`,
+            origin: "roles",
+            success: false,
+        });
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
