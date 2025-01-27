@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getPromotions, createPromotion } from "@/services/promotion-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -28,8 +29,28 @@ export async function POST(request: Request) {
         }
 
         const promotion = await createPromotion(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó una promoción con los siguientes datos: ${JSON.stringify(promotion, null, 2)}`,
+            origin: "promotions",
+            elementId: promotion.id,
+            success: true,
+        });
+
         return NextResponse.json(promotion, { status: 201 });
     } catch (error) {
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear una promoción: ${formatErrorMessage(error)}`,
+            origin: "promotions",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
