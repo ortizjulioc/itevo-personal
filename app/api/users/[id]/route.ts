@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findUserById, updateUserById, deleteUserById } from '@/services/user-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
 
 // Obtener usuario por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -41,8 +42,29 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el usuario
         const updatedUser = await updateUserById(id, body);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Se actualizó un usuario. Información anterior: ${JSON.stringify(user, null, 2)}. Información actualizada: ${JSON.stringify(updatedUser, null, 2)}`,
+            origin: "users/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json(updatedUser, { status: 200 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Error al actualizar un usuario. ${formatErrorMessage(error)}`,
+            origin: "users/[id]",
+            elementId: params.id,
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
@@ -61,8 +83,29 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Eliminar el usuario
         await deleteUserById(id);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó un usuario. Información: ${JSON.stringify(user, null, 2)}`,
+            origin: "users/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json({ message: 'Usuario eliminado correctamente' });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Error al eliminar un usuario: ${formatErrorMessage(error)}`,
+            origin: "users/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

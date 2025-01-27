@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getUsers, createUser, findUserByEmail, findUserByUsername } from "@/services/user-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 
 export async function GET(request: NextRequest) {
@@ -46,8 +47,30 @@ export async function POST(request: Request) {
         }
 
         const user = await createUser(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un usuario con los siguientes datos: ${JSON.stringify(user, null, 2)}`,
+            origin: "users",
+            elementId: user.id,
+            success: true,
+        });
+
         return NextResponse.json(user, { status: 201 });
     } catch (error) {
+
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un usuario: ${formatErrorMessage(error)}`,
+            origin: "users",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
