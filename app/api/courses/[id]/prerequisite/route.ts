@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { addPrerequisite, findPrerequisiteById, findCourseById } from "@/services/course-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -26,10 +27,32 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
             return NextResponse.json({ error: 'El curso ya tiene este prerequisito asignado' }, { status: 400 });
         }
         await addPrerequisite(id, body.prerequisites);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se agregó un prerequisito al curso con id: ${id}. Prerequisito: ${body.prerequisites}`,
+            origin: "courses/[id]/prerequisite",
+            elementId: id,
+            success: true,
+        });
+
+
         return NextResponse.json({ message: 'Prerequisito agregado correctamente' }, { status: 201 });
 
 
     } catch (error) {
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al agregar un prerequisito a un curso: ${formatErrorMessage(error)}`,
+            origin: "courses/[id]/prerequisite",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

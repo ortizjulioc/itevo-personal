@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getCourseBranch, createCourseBranch, findCourseBranchById } from "@/services/course-branch-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -38,8 +39,29 @@ export async function POST(request: Request) {
         //     return NextResponse.json({ error: 'Este curso ya está registrado' }, { status: 400 });
         // }
         const courseBranch = await createCourseBranch(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un curso con los siguientes datos: ${JSON.stringify(body, null, 2)}`,
+            origin: "course-branch",
+            elementId: courseBranch.id,
+            success: true,
+        });
+
         return NextResponse.json(courseBranch, { status: 201 });
     } catch (error) {
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un curso: ${formatErrorMessage(error)}`,
+            origin: "course-branch",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
