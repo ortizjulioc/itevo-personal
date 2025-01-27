@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findScheduleById, updateScheduleById, deleteScheduleById } from '@/services/schedule-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
 
 // Obtener schedule por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -45,13 +46,30 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el schedule
         const updatedSchedule = await updateScheduleById(id, body);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Se actualizó un schedule. Información anterior: ${JSON.stringify(schedule, null, 2)}. Información actualizada: ${JSON.stringify(updatedSchedule, null, 2)}`,
+            origin: "schedules/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json(updatedSchedule, { status: 200 });
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el schedule', details: error.message }, { status: 500 });
-        } else {
-            return NextResponse.json(error, { status: 500 });
-        }
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Error al actualizar un schedule: ${formatErrorMessage(error)}`,
+            origin: "schedules/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
+        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
 
@@ -68,6 +86,16 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
         // Eliminar el rol
         await deleteScheduleById(id);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó un schedule. Información: ${JSON.stringify(schedule, null, 2)}`,
+            origin: "schedules/[id]",
+            elementId: id,
+            success: true,
+        });
 
         return NextResponse.json({ message: 'schedule eliminado correctamente' });
     } catch (error) {
