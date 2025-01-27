@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getEnrollments, createEnrollment } from "@/services/enrollment-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -38,8 +39,31 @@ export async function POST(request: Request) {
         //     return NextResponse.json({ error: 'Este curso ya está registrado' }, { status: 400 });
         // }
         const enrollment = await createEnrollment(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un enrollment con los siguientes datos: ${JSON.stringify(enrollment, null, 2)}`,
+            origin: "enrollments",
+            elementId: enrollment.id,
+            success: true,
+        });
+
+
         return NextResponse.json(enrollment, { status: 201 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un enrollment: ${formatErrorMessage(error)}`,
+            origin: "enrollments",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

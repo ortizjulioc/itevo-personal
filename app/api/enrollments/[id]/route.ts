@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findEnrollmentById, updateEnrollmentById, deleteEnrollmentById } from '@/services/enrollment-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
 
 // Obtener enrollment por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -41,8 +42,29 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el enrollment
         const updatedEnrollment = await updateEnrollmentById(id, body);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Se actualizó un enrollment. Información anterior: ${JSON.stringify(enrollment, null, 2)}. Información actualizada: ${JSON.stringify(updatedEnrollment, null, 2)}`,
+            origin: "enrollments/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json(updatedEnrollment, { status: 200 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Error al actualizar un enrollment: ${formatErrorMessage(error)}`,
+            origin: "enrollments/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
@@ -61,8 +83,29 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Eliminar el enrollment
         await deleteEnrollmentById(id);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó un enrollment con los siguientes datos: ${JSON.stringify(enrollment, null, 2)}`,
+            origin: "enrollments/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json({ message: 'Enrollment eliminado correctamente' });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Error al eliminar un enrollment: ${formatErrorMessage(error)}`,
+            origin: "enrollments/[id]",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
