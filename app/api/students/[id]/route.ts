@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { findStudentById, updateStudentById, deleteStudentById } from '@/services/student-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
 
 // Obtener estudiante por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -41,8 +42,29 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Actualizar el estudiante
         const updatedStudent = await updateStudentById(id, body);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Se actualizó un estudiante. Información anterior: ${JSON.stringify(student, null, 2)}. Información actualizada: ${JSON.stringify(updatedStudent, null, 2)}`,
+            origin: "students/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json(updatedStudent, { status: 200 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "PUT",
+            description: `Error actualizando un estudiante. ${formatErrorMessage(error)}`,
+            origin: "students/[id]",
+            elementId: params.id,
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
@@ -61,8 +83,29 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Eliminar el estudiante
         await deleteStudentById(id);
 
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó un estudiante. Información: ${JSON.stringify(student, null, 2)}`,
+            origin: "students/[id]",
+            elementId: id,
+            success: true,
+        });
+
         return NextResponse.json({ message: 'Estudiante eliminado correctamente' });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "DELETE",
+            description: `Error al eliminar un estudiante. ${formatErrorMessage(error)}`,
+            origin: "students/[id]",
+            elementId: params.id,
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }

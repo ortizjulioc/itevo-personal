@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getStudents, createStudent, createStudentCode } from '@/services/student-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -33,8 +34,28 @@ export async function POST(request: Request) {
         }
         body.code = await createStudentCode();
         const student = await createStudent(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un student con los siguientes datos: ${JSON.stringify(student, null, 2)}`,
+            origin: "students",
+            elementId: student.id,
+            success: true,
+        });
+
         return NextResponse.json(student, { status: 201 });
     } catch (error) {
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un student: ${formatErrorMessage(error)}`,
+            origin: "students",
+            success: false,
+        });
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
