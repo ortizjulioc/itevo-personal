@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
 import { getTeachers, createTeacher, findTeacherByIdentification } from '@/services/teacher-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
@@ -37,8 +38,27 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Esta identificacion de maestro ya existe' }, { status: 400 });
         }
         const teacher = await createTeacher(body);
+
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un teacher con los siguientes datos: ${JSON.stringify(teacher, null, 2)}`,
+            origin: "teachers",
+            elementId: teacher.id,
+            success: true,
+        });
         return NextResponse.json(teacher, { status: 201 });
     } catch (error) {
+        // Enviar log de auditoría
+
+        await createLog({
+            action: "POST",
+            description: `Error al crear un teacher: ${formatErrorMessage(error)}`,
+            origin: "teachers",
+            success: false,
+        });
+
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
     }
 }
