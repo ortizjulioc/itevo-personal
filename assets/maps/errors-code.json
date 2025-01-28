@@ -1,3 +1,6 @@
 {
-  "E_MISSING_FIELDS": "Campos faltantes"
+  "E_MISSING_FIELDS": "Campos faltantes",
+  "E_INVALID_FIELDS": "Campos inválidos",
+  "E_ROLE_EXISTS": "Rol ya existe",
+  "E_ROLE_NOT_FOUND": "Rol no encontrado"
 }

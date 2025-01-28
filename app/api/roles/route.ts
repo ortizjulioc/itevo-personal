@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
         const roleNormalizedNameExists = await findRoleByNormalizedName(body);
         if (roleNormalizedNameExists) {
-            return NextResponse.json({ error: 'Este rol ya está registrado' }, { status: 400 });
+            return NextResponse.json({ code: 'E_ROLE_EXISTS', error: 'Este rol ya está registrado' }, { status: 400 });
         }
         const role = await createrRole(body);
         // const role = await Prisma.role.create({ data: body });
