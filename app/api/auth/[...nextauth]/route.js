@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcrypt';
 import { findUserByEmail, findUserByUsername } from '@/services/user-service'; // Importa las funciones
+import { createLog } from "@/utils/log";
 
 export const authOptions = {
   providers: [
@@ -28,6 +29,17 @@ export const authOptions = {
         if (!isPasswordCorrect) {
           throw new Error('Usuario o contraseña incorrectos');
         }
+
+        // Enviar al log de auditoria
+
+        await createLog({
+            action: "POST",
+            description: `Inicio de sesión de usuario ${user.username}`,
+            origin: "auth",
+            elementId: user.id,
+            success: true,
+        });
+
 
         // Retorna el objeto de usuario si todo está correcto
         return {
