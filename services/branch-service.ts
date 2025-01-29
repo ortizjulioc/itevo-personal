@@ -45,6 +45,7 @@ export const findBranchById = async (id: string) => {
             id: true,
             name: true,
             address: true,
+            phone: true,
         },
         where: {
             id: id,
