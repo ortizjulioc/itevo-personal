@@ -138,17 +138,17 @@ const Header = ({ user }: { user: any }) => {
                                             </div>
                                         </div>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <Link href="/users/profile" className="dark:hover:text-white">
                                             <IconUser className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
                                             Perfil
                                         </Link>
-                                    </li>
+                                    </li> */}
 
                                     <li>
                                         <Link href="/settings" className="dark:hover:text-white">
                                             <IconSettings className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
-                                            Configuracion de Empresa
+                                            Configuración de la empresa
                                         </Link>
                                     </li>
                                     <li className="border-t border-white-light dark:border-white-light/10">

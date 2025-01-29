@@ -31,6 +31,7 @@ export default function PasswordFields({ errors, touched }: any) {
                     placeholder="Confirme su nueva contraseña"
                 />
             </FormItem>
+            
         </>
     )
 }
