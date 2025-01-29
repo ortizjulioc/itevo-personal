@@ -77,37 +77,37 @@ const navigationConfig = [
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
-  {
-    key: 'page3',
-    title: 'Page 3',
-    icon: IconMenuDashboard,
-    url: '',
-    type: NAV_ITEM_TYPE_TITLE,
-    subItems: [],
-  },
-  {
-    key: 'page3',
-    title: 'Page 3',
-    icon: IconMenuWidgets,
-    url: '/page2',
-    type: NAV_ITEM_TYPE_COLLAPSE,
-    subItems: [
-      {
-        key: 'page3-1',
-        title: 'Page 3-1',
-        url: '/page3-1',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-      },
-      {
-        key: 'page3-2',
-        title: 'Page 3-2',
-        url: '/page3-2',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-      },
-    ],
-  },
+  // {
+  //   key: 'page3',
+  //   title: 'Page 3',
+  //   icon: IconMenuDashboard,
+  //   url: '',
+  //   type: NAV_ITEM_TYPE_TITLE,
+  //   subItems: [],
+  // },
+  // {
+  //   key: 'page3',
+  //   title: 'Page 3',
+  //   icon: IconMenuWidgets,
+  //   url: '/page2',
+  //   type: NAV_ITEM_TYPE_COLLAPSE,
+  //   subItems: [
+  //     {
+  //       key: 'page3-1',
+  //       title: 'Page 3-1',
+  //       url: '/page3-1',
+  //       type: NAV_ITEM_TYPE_ITEM,
+  //       subItems: [],
+  //     },
+  //     {
+  //       key: 'page3-2',
+  //       title: 'Page 3-2',
+  //       url: '/page3-2',
+  //       type: NAV_ITEM_TYPE_ITEM,
+  //       subItems: [],
+  //     },
+  //   ],
+  // },
 ];
 
 export default navigationConfig;
