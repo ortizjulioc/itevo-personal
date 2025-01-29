@@ -8,7 +8,7 @@ import Setting from '@/components/layouts/setting';
 import Sidebar from '@/components/layouts/sidebar';
 import Portals from '@/components/portals';
 import {getServerSession} from 'next-auth/next';
-import { authOptions } from '../api/auth/[...nextauth]/route';
+import { authOptions } from '../api/auth/[...nextauth]/auth-options';
 
 export default async function DefaultLayout({ children }: { children: React.ReactNode }) {
     const session = await getServerSession(authOptions);

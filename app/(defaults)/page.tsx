@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import React from 'react';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import ViewTitle from "@/components/common/ViewTitle";
+import { authOptions } from '../api/auth/[...nextauth]/auth-options';
 
 export const metadata: Metadata = {
     title: 'Inicio',

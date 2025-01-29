@@ -1,7 +1,7 @@
 import BranchesOption from "./branches-option";
 import useFetchBranch from "../../../lib/use-fetch-branches";
-import { UserContext } from '../../../[id]/page';
 import { useContext } from "react";
+import { UserContext } from "@/context/user";
 
 const CardSkeleton = () => {
   return (
@@ -13,7 +13,8 @@ const CardSkeleton = () => {
 
 export default function AuthorizationFields() {
   const { branches, loading } = useFetchBranch('');
-  const { user } = useContext(UserContext);
+  const userContext = useContext(UserContext);
+  const user = userContext?.user;
   return (
     <>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">

@@ -16,7 +16,7 @@ export default function useURLSearchParams() {
         params.set(key, value);
       }
 
-      router.push(`${pathname}?${params.toString()}`, { shallow: true });
+      router.push(`${pathname}?${params.toString()}`);
     },
     [router, searchParams, pathname]
   );
@@ -30,7 +30,7 @@ export default function useURLSearchParams() {
         const queryString = params.toString();
         const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
 
-        router.push(newUrl, { shallow: true });
+        router.push(newUrl);
       }
     },
     [router, searchParams, pathname]
@@ -44,7 +44,7 @@ export default function useURLSearchParams() {
   );
 
   const clearParams = useCallback(() => {
-    router.push(pathname, { shallow: true });
+    router.push(pathname);
   }, [router, pathname]);
 
   return {

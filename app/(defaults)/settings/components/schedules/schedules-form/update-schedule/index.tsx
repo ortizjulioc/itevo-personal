@@ -1,8 +1,7 @@
 'use client';
 
-import { Button, FormItem, Input } from '@/components/ui';
+import { Button, FormItem } from '@/components/ui';
 import { Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Schedule } from '@prisma/client';
@@ -27,7 +26,6 @@ const weekOptions: WeekOption[] = [
 ];
 
 export default function UpdateScheduleForm({ initialValues, setOpenModal, setSchedules }: { initialValues: Schedule, setOpenModal: (value: boolean) => void, setSchedules: any }) {
-    const route = useRouter();
 
     const handleSubmit = async (values: any) => {
         const formatTime = (isoTime: string): string => {

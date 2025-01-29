@@ -27,16 +27,15 @@ const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 's
   };
 
   const getOptions = () => {
-    switch (mode) {
-      case 'datetime':
-        return { enableTime: true, dateFormat: 'Y-m-d H:i' };
-      case 'range':
-        return { mode: 'range', dateFormat: 'Y-m-d' };
-      case 'time':
-        return { noCalendar: true, enableTime: true, dateFormat: 'H:i' };
-      default:
-        return { dateFormat: 'Y-m-d' };
+    if (mode === 'datetime') {
+      return { enableTime: true, dateFormat: 'Y-m-d H:i' }; // Sin 'mode'
     }
+    return {
+      mode: mode as 'single' | 'range' | 'time' | 'multiple', // Forzamos el tipo correcto
+      dateFormat: 'Y-m-d',
+      enableTime: mode === 'time',
+      noCalendar: mode === 'time',
+    };
   };
 
   return (

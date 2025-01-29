@@ -1,7 +1,7 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import fs from "fs/promises";
 import path from "path";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 
 interface LogData {
     action: "POST" | "PUT" | "DELETE" | "GET" | "PATCH";
