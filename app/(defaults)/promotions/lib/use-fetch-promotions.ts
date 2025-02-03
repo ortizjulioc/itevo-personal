@@ -16,7 +16,7 @@ const useFetchPromotions = (query: string) => {
     useEffect(() => {
         const fetchPromotionsData = async (query: string) => {
             try {
-                const response = await apiRequest.get<PromotionsResponse>(`/promotions?${query}`);
+                const response = await apiRequest.get<PromotionsResponse>(`/promotions?search=${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

@@ -8,8 +8,8 @@ export interface CourseBranchResponse {
 }
 
 const useFetchCourseBranch = (query: string) => {
-  const [courseBranch, setCourseBranch] = useState<CourseBranch[]>([]);
-  const [totalCourseBranch, setTotalCourseBranch] = useState<number>(0);
+  const [courseBranches, setCourseBranches] = useState<CourseBranch[]>([]);
+  const [totalCourseBranches, setTotalCourseBranches] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,8 +20,8 @@ const useFetchCourseBranch = (query: string) => {
         if (!response.success) {
           throw new Error(response.message);
         }
-        setCourseBranch(response.data?.courseBranch || []);
-        setTotalCourseBranch(response.data?.totalCourseBranch || 0);
+        setCourseBranches(response.data?.courseBranch || []);
+        setTotalCourseBranches(response.data?.totalCourseBranch || 0);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -36,7 +36,7 @@ const useFetchCourseBranch = (query: string) => {
     fetchrolesData(query);
   }, [query]);
 
-  return { courseBranch, totalCourseBranch, loading, error, setCourseBranch };
+  return { courseBranches, totalCourseBranches, loading, error, setCourseBranches };
 };
 
 export const useFetchCourseBranchById = (id: string) => {
