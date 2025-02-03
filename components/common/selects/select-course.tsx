@@ -2,60 +2,60 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { Branch } from '@prisma/client';
+import { Course } from '@prisma/client';
 import { Select } from '@/components/ui';
 
-interface BranchSelect {
+interface CourseSelect {
   value: string;
   label: string;
 }
 
-export interface BranchesResponse {
-  branches: Branch[];
-  totalBranches: number;
+export interface CoursesResponse {
+  courses: Course[];
+  totalCourses: number;
 }
 
-interface SelectBranchProps {
+interface SelectCourseProps {
   value?: string;
-  onChange?: (selected: BranchSelect | null) => void;
+  onChange?: (selected: CourseSelect | null) => void;
 }
 
-export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
-  const [options, setOptions] = useState<BranchSelect[]>([]);
+export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
+  const [options, setOptions] = useState<CourseSelect[]>([]);
 
-  const fetchBranchData = async (inputValue: string): Promise<BranchSelect[]> => {
+  const fetchCourseData = async (inputValue: string): Promise<CourseSelect[]> => {
     try {
-      const response = await apiRequest.get<BranchesResponse>(`/branches?search=${inputValue}`);
+      const response = await apiRequest.get<CoursesResponse>(`/courses?search=${inputValue}`);
       if (!response.success) {
         throw new Error(response.message);
       }
-      console.log('response:', response.data?.branches);
-      return response.data?.branches.map(branch => ({ value: branch.id, label: branch.name })) || [];
+      console.log('response:', response.data?.courses);
+      return response.data?.courses.map(course => ({ value: course.id, label: course.name })) || [];
     } catch (error) {
-      console.error('Error fetching Branches data:', error);
+      console.error('Error fetching Courses data:', error);
       return [];
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: BranchSelect[]) => void) => {
-    const options = await fetchBranchData(inputValue);
+  const loadOptions = async (inputValue: string, callback: (options: CourseSelect[]) => void) => {
+    const options = await fetchCourseData(inputValue);
     callback(options);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedOptions = await fetchBranchData('');
+      const fetchedOptions = await fetchCourseData('');
       setOptions(fetchedOptions);
 
       if (value && !fetchedOptions.some(option => option.value === value)) {
         try {
-          const response = await apiRequest.get<Branch>(`/branchs/${value}`);
+          const response = await apiRequest.get<Course>(`/courses/${value}`);
           if (response.success && response.data) {
             const newOption = { value: response.data.id, label: response.data.name };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
         } catch (error) {
-          console.error('Error fetching single Branch:', error);
+          console.error('Error fetching single Course:', error);
         }
       }
     };
@@ -72,7 +72,7 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
-        placeholder="-Sucursales-"
+        placeholder="-Cursos-"
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
