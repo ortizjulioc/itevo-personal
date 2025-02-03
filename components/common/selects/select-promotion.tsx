@@ -1,8 +1,8 @@
-import { Select } from 'components/ui';
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState} from 'react';
-import AsyncSelect from 'react-select/async';
 import { Promotion } from '@prisma/client';
+import Select from '@/components/ui/select';
+import AsyncSelect from 'react-select/async';
 
 interface PromotionSelect {
   value: string;
@@ -21,60 +21,82 @@ interface SelectPromotionProps {
 
 export default function SelectPromotion({ value, ...rest }: SelectPromotionProps) {
   const [options, setOptions] = useState<PromotionSelect[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [defaultValue, setDefaultValue] = useState<PromotionSelect | null>(null);
 
-  const fetchPromotionData = async (inputValue: string): Promise<PromotionSelect[]> => {
+  const fetchPromotionData = async (inputValue: string = ''): Promise<PromotionSelect[]> => {
     try {
-      const response = await apiRequest.get<PromotionsResponse>(`/promotions?search=${inputValue}`);
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-      console.log('response:', response.data?.promotions);
-      return response.data?.promotions.map(promo => ({ value: promo.id, label: promo.description })) || [];
+      const query = inputValue ? `search=${inputValue}` : '';
+      const response = await apiRequest.get<PromotionsResponse>(`/promotions?${query}`);
+      if (!response.success) throw new Error(response.message);
+
+      return response.data?.promotions.map(promo => ({
+        value: promo.id,
+        label: promo.description,
+      })) || [];
     } catch (error) {
       console.error('Error fetching promotions data:', error);
       return [];
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: PromotionSelect[]) => void) => {
-    const options = await fetchPromotionData(inputValue);
-    callback(options);
+  const loadOptions = async (inputValue: string): Promise<PromotionSelect[]> => {
+    setLoading(true);
+    const result = await fetchPromotionData(inputValue);
+    setLoading(false);
+    return result;
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedOptions = await fetchPromotionData('');
+      setLoading(true);
+      const fetchedOptions = await fetchPromotionData();
       setOptions(fetchedOptions);
-
-      if (value && !fetchedOptions.some(option => option.value === value)) {
-        try {
-          const response = await apiRequest.get<Promotion>(`/promotions/${value}`);
-          if (response.success && response.data) {
-            const newOption = { value: response.data.id, label: response.data.description };
-            setOptions(prevOptions => [...prevOptions, newOption]);
-          }
-        } catch (error) {
-          console.error('Error fetching single promotion:', error);
-        }
-      }
+      setLoading(false);
     };
 
     fetchData();
-  
-  }, [value]);
+  }, []);
+
+  useEffect(() => {
+    if (value) {
+      const existingPromotion = options.find(option => option.value === value);
+      if (existingPromotion) {
+        setDefaultValue(existingPromotion);
+      } else {
+        const fetchPromotionById = async () => {
+          try {
+            const response = await apiRequest.get<Promotion>(`/promotions/${value}`);
+            if (response.success && response.data) {
+              const newOption = { value: response.data.id, label: response.data.description };
+              setOptions(prev => [...prev, newOption]);
+              setDefaultValue(newOption);
+            }
+          } catch (error) {
+            console.error('Error fetching single promotion:', error);
+          }
+        };
+
+        fetchPromotionById();
+      }
+    } else {
+      setDefaultValue(null);
+    }
+  }, [value, options]);
  console.log('options:', options);
  
 
   return (
     <div>
-      <AsyncSelect
-        loadOptions={loadOptions}
+      <Select
         cacheOptions
+        loadOptions={loadOptions}
         defaultOptions={options}
         placeholder="-Promociones-"
         noOptionsMessage={() => 'No hay opciones'}
-        value={options.find((option) => option.value === value) || null}
-        
+        value={options.filter(({ value }) => value === defaultValue?.value)}
+        isLoading={loading}
+        asComponent={AsyncSelect}
         isClearable
         {...rest}
       />
