@@ -4,7 +4,7 @@ import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
 import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 import { IconMenuTodo, IconMenuUsers } from '@/components/icon/menu';
-import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield } from "react-icons/tb";
+import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield } from "react-icons/tb";
 
 const navigationConfig = [
   {
@@ -12,6 +12,15 @@ const navigationConfig = [
     title: 'Inicio',
     icon: TbHome,
     url: '/',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  }
+  ,
+  {
+    key: 'course-branch',
+    title: 'Gestion Academica',
+    icon: TbBooks,
+    url: '/course-branch',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
