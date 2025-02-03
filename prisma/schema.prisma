@@ -138,18 +138,20 @@ model Promotion {
 }
 
 model CourseBranch {
-    id             String   @id @default(uuid())
-    promotionId    String   @map("promotion_id") // ID de la promoción
-    branchId       String   @map("branch_id") // ID de la sucursal
-    teacherId      String   @map("teacher_id") // ID del profesor
-    courseId       String   @map("course_id") // ID del curso
+    id             String             @id @default(uuid())
+    promotionId    String             @map("promotion_id") // ID de la promoción
+    branchId       String             @map("branch_id") // ID de la sucursal
+    teacherId      String             @map("teacher_id") // ID del profesor
+    courseId       String             @map("course_id") // ID del curso
     amount         Float // Monto
     modality       String // Modalidad (presencial, virtual, híbrida)
-    startDate      DateTime @map("start_date") // Fecha de inicio
-    endDate        DateTime @map("end_date") // Fecha de fin
-    commissionRate Float    @map("commission_rate") // Porcentaje de comisión
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+    startDate      DateTime           @map("start_date") // Fecha de inicio
+    endDate        DateTime           @map("end_date") // Fecha de fin
+    commissionRate Float              @map("commission_rate") // Porcentaje de comisión
+    capacity       Int                @default(0) // Capacidad
+    status         CourseBranchStatus // Estado
+    createdAt      DateTime           @default(now()) @map("created_at")
+    updatedAt      DateTime           @updatedAt @map("updated_at")
 
     promotion         Promotion           @relation(fields: [promotionId], references: [id])
     branch            Branch              @relation(fields: [branchId], references: [id])
@@ -163,16 +165,24 @@ model CourseBranch {
     @@map("course_branch")
 }
 
-model Schedule {
-    id          String      @id     @default(uuid())
-    startTime   String      @map("start_time") // Hora de inicio
-    endTime     String      @map("end_time") // Hora de fin
-    weekday     Int // Día de la semana (0 = Domingo, 6 = Sábado)
-    createdAt   DateTime    @default(now())     @map("created_at")
-    updatedAt   DateTime    @updatedAt      @map("updated_at")
+enum CourseBranchStatus {
+    WAITING     @map("waiting") // A la espera de alcanzar el limite de estudiantes
+    CONFIRMED   @map("confirmed") // Confirmado (alcanzó el limite de estudiantes) y listo para iniciar
+    IN_PROGRESS @map("in_progress") // En progreso (ya inició)
+    COMPLETED   @map("completed") // Completado (ya finalizó)
+    CANCELED    @map("canceled") // Cancelado (no se inició o se canceló antes de finalizar)
+}
 
-    courses     CourseSchedule[] // Relación con cursos
-    attendance  Attendance[]
+model Schedule {
+    id        String   @id @default(uuid())
+    startTime String   @map("start_time") // Hora de inicio
+    endTime   String   @map("end_time") // Hora de fin
+    weekday   Int // Día de la semana (0 = Domingo, 6 = Sábado)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    courses    CourseSchedule[] // Relación con cursos
+    attendance Attendance[]
 }
 
 model CourseSchedule {
@@ -188,10 +198,10 @@ model CourseSchedule {
 }
 
 enum EnrollmentStatus {
-    waiting
-    enrolled
-    completed
-    abandoned
+    WAITING   @map("waiting")
+    ENROLLED  @map("enrolled")
+    COMPLETED @map("completed")
+    ABANDONED @map("abandoned")
 }
 
 model Enrollment {
@@ -209,9 +219,9 @@ model Enrollment {
 }
 
 enum AttendanceStatus {
-    present
-    absent
-    excused
+    PRESENT @map("present")
+    ABSENT  @map("absent")
+    EXCUSED @map("excused")
 }
 
 model Attendance {
@@ -228,15 +238,15 @@ model Attendance {
 }
 
 enum GraduationType {
-    diploma
-    certificate
-    juramentation
+    DIPLOMA       @map("diploma")
+    CERTIFICATE   @map("certificate")
+    JURAMENTATION @map("juramentation")
 }
 
 enum GraduationStatus {
-    pending
-    completed
-    canceled
+    PENDING   @map("pending")
+    COMPLETED @map("completed")
+    CANCELED  @map("canceled")
 }
 
 model Graduation {
@@ -266,9 +276,9 @@ model GraduationPrice {
 }
 
 enum AccountStatus {
-    pending
-    paid
-    canceled
+    PENDING  @map("pending")
+    PAID     @map("paid")
+    CANCELED @map("canceled")
 }
 
 model AccountReceivable {
@@ -289,9 +299,9 @@ model AccountReceivable {
 }
 
 enum PaymentStatus {
-    pending
-    paid
-    canceled
+    PENDING  @map("pending")
+    PAID     @map("paid")
+    CANCELED @map("canceled")
 }
 
 model AccountPayable {
@@ -322,4 +332,13 @@ model Setting {
     deleted         Boolean  @default(false)
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
+}
+
+model Holiday {
+    id          String   @id @default(cuid())
+    name        String // Nombre del feriado (Ejemplo: "Navidad")
+    date        DateTime // Fecha completa (Ejemplo: "2025-12-25")
+    isRecurring Boolean  @default(false) // Si el feriado es recurrente
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }

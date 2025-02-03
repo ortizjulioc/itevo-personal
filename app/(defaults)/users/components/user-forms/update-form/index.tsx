@@ -10,13 +10,15 @@ import { Fragment, useContext } from "react";
 import GeneralInfoFields from "./general-info-fields";
 import PasswordFields from "./password-fields";
 import AuthorizationFields from "./authorization-fields";
-import { UserContext } from "../../../[id]/page";
+import { UserContext } from "@/context/user";
 
 export default function UpdateUserForm() {
     const route = useRouter();
     const params = useParams();
     const userId = params.id as string;
-    const { user: initialValues, onChange } = useContext(UserContext);
+    // const { user: initialValues, onChange } = useContext(UserContext);
+      const userContext = useContext(UserContext);
+      const initialValues = userContext?.user;
 
     const handleSubmit = async (values: any) => {
         const data = { ...values };

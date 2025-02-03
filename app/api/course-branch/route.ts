@@ -1,8 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getCourseBranch, createCourseBranch, findCourseBranchById } from "@/services/course-branch-service";
+import { getCourseBranch, createCourseBranch } from "@/services/course-branch-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
+import { CourseBranch } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
     try {
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         console.log('BODY: ',body);
+        body.status = 'waiting';
 
         // Validate the request body
         const {isValid, message} = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
@@ -33,15 +35,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-
-        // const courseCodeExists = await findCourseByCode(body);
-        // if (courseCodeExists) {
-        //     return NextResponse.json({ error: 'Este curso ya está registrado' }, { status: 400 });
-        // }
         const courseBranch = await createCourseBranch(body);
-
-        // Enviar log de auditoría
-
         await createLog({
             action: "POST",
             description: `Se creó un curso con los siguientes datos: ${JSON.stringify(body, null, 2)}`,
@@ -52,8 +46,6 @@ export async function POST(request: Request) {
 
         return NextResponse.json(courseBranch, { status: 201 });
     } catch (error) {
-        // Enviar log de auditoría
-
         await createLog({
             action: "POST",
             description: `Error al crear un curso: ${formatErrorMessage(error)}`,
