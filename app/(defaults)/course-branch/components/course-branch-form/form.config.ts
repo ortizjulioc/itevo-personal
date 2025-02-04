@@ -1,3 +1,4 @@
+import { MODALITIES } from '@/constants/modality.constant';
 import * as Yup from 'yup';
 
 export const createValidationSchema = Yup.object().shape({
@@ -33,10 +34,10 @@ export const initialValues = {
     branchId: '',
     teacherId: '',
     courseId: '',
-    amount: 0,
-    modality: 'presential',
+    amount: null,
+    modality: MODALITIES.PRESENTIAL,
     startDate: '',
     endDate: '',
-    commissionRate: 0,
-    capacity: 0,
+    commissionRate: null,
+    capacity: null,
 };

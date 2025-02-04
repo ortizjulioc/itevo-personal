@@ -144,7 +144,7 @@ model CourseBranch {
     teacherId      String             @map("teacher_id") // ID del profesor
     courseId       String             @map("course_id") // ID del curso
     amount         Float // Monto
-    modality       Modality                             // Modalidad
+    modality       Modality                           // Modalidad
     startDate      DateTime           @map("start_date") // Fecha de inicio
     endDate        DateTime           @map("end_date") // Fecha de fin
     commissionRate Float              @map("commission_rate") // Porcentaje de comisión
