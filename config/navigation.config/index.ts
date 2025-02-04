@@ -18,7 +18,7 @@ const navigationConfig = [
   ,
   {
     key: 'course-branch',
-    title: 'Gestion Academica',
+    title: 'Oferta Academica',
     icon: TbBooks,
     url: '/course-branch',
     type: NAV_ITEM_TYPE_ITEM,
