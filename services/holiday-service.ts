@@ -47,13 +47,14 @@ export const findHolidayById = async (id: string) => {
 };
 
 export const updateHolidayById = async (id: string, data: any) => {
-    const { name, date } = data;
+    const { name, date, isRecurring } = data;
 
     return Prisma.holiday.update({
         where: { id },
         data: {
             name,
-            date
+            date,
+            isRecurring
         }
     });
 };
