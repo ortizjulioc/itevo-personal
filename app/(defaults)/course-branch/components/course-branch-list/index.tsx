@@ -26,15 +26,15 @@ export default function CourseBranchList({ className, query = '' }: Props) {
     const onDelete = async (id: string) => {
         console.log('delete', id);
         confirmDialog({
-            title: 'Eliminar gestion academica',
-            text: '¿Seguro que quieres eliminar esta gestion academica?',
+            title: 'Eliminar oferta academica',
+            text: '¿Seguro que quieres eliminar esta oferta  academica?',
             confirmButtonText: 'Sí, eliminar',
             icon: 'error'
         }, async () => {
             const resp = await deleteCourseBranch(id);
             if (resp.success) {
                 setCourseBranches(courseBranches?.filter((courseBranch) => courseBranch.id !== id));
-                openNotification('success', 'gestion academica eliminada correctamente');
+                openNotification('success', 'oferta  academica eliminada correctamente');
                 return;
             } else {
                 openNotification('error', resp.message);
@@ -63,7 +63,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                     <tbody>
                         {courseBranches?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron gestiones registradas</td>
+                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron ofertas academicas registradas</td>
                             </tr>
                         )}
                         {courseBranches?.map((courseBranch) => {

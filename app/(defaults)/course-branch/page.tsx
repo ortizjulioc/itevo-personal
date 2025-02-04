@@ -20,11 +20,11 @@ export default function Coursets({ searchParams }: CoursetListProps) {
   const query = objectToQueryString(searchParams || {});
   return (
     <div>
-      <ViewTitle className='mb-6' title="Gestion Academica" rightComponent={
+      <ViewTitle className='mb-6' title="Oferta  Academica" rightComponent={
         <>
-          <SearchInput placeholder="Buscar gestion" />
+          <SearchInput placeholder="Buscar Oferta " />
           <Link href="/course-branch/new">
-            <Button icon={<IconUserPlus />}>Crear gestion academica</Button>
+            <Button icon={<IconUserPlus />}>Crear Oferta academica</Button>
           </Link>
 
          

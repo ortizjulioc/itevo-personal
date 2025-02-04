@@ -11,6 +11,7 @@ import { createCourseBranch } from '../../../lib/request';
 import SelectTeacher from '@/components/common/selects/select-teacher';
 import SelectCourse from '@/components/common/selects/select-course';
 import DatePicker from '@/components/ui/date-picker';
+import { MODALITIES } from '@/constants/modality.constant';
 
 
 
@@ -25,9 +26,9 @@ interface ModalityOption {
 }
 
 const modalities: ModalityOption[] = [
-  { value: 'presential', label: 'Presencial' },
-  { value: 'virtual', label: 'Virtual' },
-  { value: 'hybrid', label: 'Hibrido' },
+  { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
+  { value: MODALITIES.VIRTUAL, label: 'Virtual' },
+  { value: MODALITIES.HYBRID, label: 'Hibrido' },
 ];
 
 
@@ -42,7 +43,7 @@ export default function CreateCourseBranchForm() {
 
     if (resp.success) {
       openNotification('success', 'Curso creado correctamente');
-      route.push('/courses');
+      route.push('/course-branch');
     } else {
       openNotification('error', resp.message);
     }
@@ -65,7 +66,7 @@ export default function CreateCourseBranchForm() {
 
   return (
     <div className="panel">
-      <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de gestion academica</h4>
+      <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
       <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting, values, errors, touched, setFieldValue }) => (
           <Form className="form">

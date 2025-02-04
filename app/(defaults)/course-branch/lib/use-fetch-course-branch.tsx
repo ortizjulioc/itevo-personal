@@ -26,7 +26,7 @@ const useFetchCourseBranch = (query: string) => {
         if (error instanceof Error) {
           setError(error.message);
         } else {
-          setError('Ha ocurrido un error al obtener las gestiones academicas');
+          setError('Ha ocurrido un error al obtener las ofertas academicas');
         }
       } finally {
         setLoading(false);
@@ -56,7 +56,7 @@ export const useFetchCourseBranchById = (id: string) => {
         if (error instanceof Error) {
           setError(error.message);
         } else {
-          setError('Ha ocurrido un error al obtener la gestion academica');
+          setError('Ha ocurrido un error al obtener la ofertas academica');
         }
       } finally {
         setLoading(false);
