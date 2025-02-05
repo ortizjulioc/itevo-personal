@@ -29,7 +29,7 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
       if (!response.success) {
         throw new Error(response.message);
       }
-      console.log('response:', response.data?.branches);
+   
       return response.data?.branches.map(branch => ({ value: branch.id, label: branch.name })) || [];
     } catch (error) {
       console.error('Error fetching Branches data:', error);

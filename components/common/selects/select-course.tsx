@@ -29,7 +29,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
       if (!response.success) {
         throw new Error(response.message);
       }
-      console.log('response:', response.data?.courses);
+   
       return response.data?.courses.map(course => ({ value: course.id, label: course.name })) || [];
     } catch (error) {
       console.error('Error fetching Courses data:', error);

@@ -83,7 +83,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
       setDefaultValue(null);
     }
   }, [value, options]);
- console.log('options:', options);
+
  
 
   return (

@@ -29,7 +29,7 @@ export default function SelectTeacher({ value, ...rest }: SelectTeacherProps) {
       if (!response.success) {
         throw new Error(response.message);
       }
-      console.log('response:', response.data?.teachers);
+   
       return response.data?.teachers.map(teacher => ({ value: teacher.id, label: `${teacher.firstName} ${teacher.lastName}` })) || [];
     } catch (error) {
       console.error('Error fetching Teachers data:', error);
