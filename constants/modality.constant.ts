@@ -1,5 +1,5 @@
 export const MODALITIES = {
-    PRESENTIAL: 'presential',
-    VIRTUAL: 'virtual',
-    HYBRID: 'hybrid',
+    PRESENTIAL: 'PRESENTIAL',
+    VIRTUAL: 'VIRTUAL',
+    HYBRID: 'HYBRID',
 };

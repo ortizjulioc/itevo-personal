@@ -1,7 +1,7 @@
 export const STATUS = {
-    WAITING: 'waiting',
-    CONFIRMED: 'confirmed',
-    IN_PROGRESS: 'in_progress',
-    COMPLETED: 'completed',
-    CANCELED: 'canceled',
+    WAITING: 'WAITING',
+    CONFIRMED: 'CONFIRMED',
+    IN_PROGRESS: 'IN_PROGRESS',
+    COMPLETED: 'COMPLETED',
+    CANCELED: 'CANCELED',
 };
