@@ -8,7 +8,7 @@ interface ButtonProps {
     className?: string;
     size?: 'sm' | 'md' | 'lg';
     variant?: 'default' | 'rounded' | 'outline';
-    color?: 'primary' | 'info' | 'success' | 'warning' | 'danger' | 'secondary' | 'dark';
+    color?: 'primary' | 'info' | 'success' | 'warning' | 'danger' | 'secondary' | 'dark'| 'outline';
     children?: React.ReactNode;
     icon?: React.ReactNode;
     loading?: boolean;
@@ -22,6 +22,7 @@ const MAP_COLOR = {
     danger: 'btn-danger',
     secondary: 'btn-secondary',
     dark: 'btn-dark',
+    outline: 'btn-outline-primary',
 };
 
 const MAP_OUTLINE_COLOR = {
@@ -32,6 +33,7 @@ const MAP_OUTLINE_COLOR = {
     danger: 'btn-outline-danger',
     secondary: 'btn-outline-secondary',
     dark: 'btn-outline-dark',
+    outline: 'btn-outline-primary',
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
