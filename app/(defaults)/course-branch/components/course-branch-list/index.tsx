@@ -7,6 +7,10 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
+import PromotionLabel from "@/components/common/info-labels/promotion-label";
+import BranchLabel from "@/components/common/info-labels/branch-label";
+import TeacherLabel from "@/components/common/info-labels/teacher-label";
+import CourseLabel from "@/components/common/info-labels/course-label";
 
 
 
@@ -14,6 +18,11 @@ interface Props {
     className?: string;
     query?: string;
 }
+const modalities = {
+    PRESENTIAL: 'Presencial',
+    VIRTUAL: 'Virtual',
+    HYBRID: 'Hibrido',
+  };
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
@@ -69,13 +78,13 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         {courseBranches?.map((courseBranch) => {
                             return (
                                 <tr key={courseBranch.id}>
-                                    <td>{courseBranch.promotionId}</td>
-                                    <td>{courseBranch.branchId}</td>
-                                    <td>{courseBranch.teacherId}</td>
-                                    <td>{courseBranch.courseId}</td>
-                                    <td>{courseBranch.modality}</td>
+                                    <td><PromotionLabel promotionId={courseBranch.promotionId}/></td>
+                                    <td>{<BranchLabel branchId={courseBranch.branchId}/>}</td>
+                                    <td>{<TeacherLabel teacherId={courseBranch.teacherId}/>}</td>
+                                    <td>{<CourseLabel courseId={courseBranch.courseId}/>}</td>
+                                    <td>{modalities[courseBranch.modality]}</td>
                                     <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
-                                    <td>{new Date(courseBranch.endDate).toLocaleTimeString()}</td>
+                                    <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
