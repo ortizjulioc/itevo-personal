@@ -3,8 +3,8 @@ import apiRequest from "@/utils/lib/api-request/request";
 import { CourseBranch } from "@prisma/client";
 
 export interface CourseBranchResponse {
-  courseBranch: CourseBranch[];
-  totalCourseBranch: number;
+  courseBranches: CourseBranch[];
+  totalCourseBranches: number;
 }
 
 const useFetchCourseBranch = (query: string) => {
@@ -20,8 +20,8 @@ const useFetchCourseBranch = (query: string) => {
         if (!response.success) {
           throw new Error(response.message);
         }
-        setCourseBranches(response.data?.courseBranch || []);
-        setTotalCourseBranches(response.data?.totalCourseBranch || 0);
+        setCourseBranches(response.data?.courseBranches || []);
+        setTotalCourseBranches(response.data?.totalCourseBranches || 0);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
