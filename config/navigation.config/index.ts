@@ -1,10 +1,6 @@
-import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard';
-import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
-import IconMenuContacts from '@/components/icon/menu/icon-menu-contacts';
-import IconMenuWidgets from '@/components/icon/menu/icon-menu-widgets';
-import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
-import { IconMenuTodo, IconMenuUsers } from '@/components/icon/menu';
-import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield } from "react-icons/tb";
+
+import {  NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
+import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield, TbBeach } from "react-icons/tb";
 
 const navigationConfig = [
   {
@@ -61,6 +57,14 @@ const navigationConfig = [
     title: 'Promociones',
     icon: TbSpeakerphone,
     url: '/promotions',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
+    key: 'holidays',
+    title: 'Feriados',
+    icon: TbBeach,
+    url: '/holidays',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
