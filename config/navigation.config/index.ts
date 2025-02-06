@@ -62,7 +62,7 @@ const navigationConfig = [
   },
   {
     key: 'holidays',
-    title: 'Feriados',
+    title: 'Días feriados',
     icon: TbBeach,
     url: '/holidays',
     type: NAV_ITEM_TYPE_ITEM,
