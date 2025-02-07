@@ -1,5 +1,4 @@
 'use client';
-import Avatar from "@/components/common/Avatar";
 import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
