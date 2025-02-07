@@ -1,7 +1,7 @@
 
 import {  NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
 import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield, TbBeach } from "react-icons/tb";
-
+import { GiArchiveRegister } from "react-icons/gi";
 const navigationConfig = [
   {
     key: 'inicio',
@@ -17,6 +17,14 @@ const navigationConfig = [
     title: 'Oferta Academica',
     icon: TbBooks,
     url: '/course-branch',
+    type: NAV_ITEM_TYPE_ITEM,
+    subItems: [],
+  },
+  {
+    key: 'enrollment',
+    title: 'Inscripciones',
+    icon: GiArchiveRegister,
+    url: '/enrollment',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
