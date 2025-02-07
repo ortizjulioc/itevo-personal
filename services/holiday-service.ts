@@ -29,12 +29,13 @@ export const getHolidays = async (page: number, top: number, search: string) => 
 };
 
 export const createHoliday = async (data: any) => {
-    const { name, date } = data;
+    const { name, date,isRecurring } = data;
 
     const holiday = await Prisma.holiday.create({
         data: {
             name,
-            date
+            date,
+            isRecurring
         }
     });
     return holiday;
