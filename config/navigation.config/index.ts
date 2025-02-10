@@ -21,10 +21,10 @@ const navigationConfig = [
     subItems: [],
   },
   {
-    key: 'enrollment',
+    key: 'enrollments',
     title: 'Inscripciones',
     icon: GiArchiveRegister,
-    url: '/enrollment',
+    url: '/enrollments',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
   },
