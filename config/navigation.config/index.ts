@@ -1,6 +1,6 @@
 
 import {  NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
-import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield, TbBeach } from "react-icons/tb";
+import { TbFileText, TbHome, TbLiveView,TbBooks, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield, TbBeach, TbSchool, TbEdit } from "react-icons/tb";
 import { GiArchiveRegister } from "react-icons/gi";
 const navigationConfig = [
   {
@@ -15,7 +15,7 @@ const navigationConfig = [
   {
     key: 'course-branch',
     title: 'Oferta Academica',
-    icon: TbBooks,
+    icon: TbSchool,
     url: '/course-branch',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
@@ -23,7 +23,7 @@ const navigationConfig = [
   {
     key: 'enrollments',
     title: 'Inscripciones',
-    icon: GiArchiveRegister,
+    icon: TbEdit,
     url: '/enrollments',
     type: NAV_ITEM_TYPE_ITEM,
     subItems: [],
