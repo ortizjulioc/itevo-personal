@@ -31,7 +31,7 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
           { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
       ];
   
-    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE','OFERTA ACADEMICA','FECHA DE INSCRIPCION']} />;
+    if (loading) return <Skeleton rows={3} columns={['OFERTA ACADEMICA','FECHA DE INSCRIPCION','ESTADO']} />;
 
     return (
         <div className='col-span-2'>
