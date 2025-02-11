@@ -23,7 +23,7 @@ export default function TeacherList({ className, query = '' }: Props) {
   }
 
   const onDelete = async (id: string) => {
-    console.log('delete', id);
+ 
     confirmDialog({
       title: 'Eliminar Profesor',
       text: '¿Seguro que quieres eliminar este profesor?',

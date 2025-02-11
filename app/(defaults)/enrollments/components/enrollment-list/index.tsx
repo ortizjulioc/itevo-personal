@@ -29,7 +29,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
 
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+     ;
         confirmDialog({
             title: 'Eliminar inscripcion',
             text: '¿Seguro que quieres eliminar esta inscripcion?',

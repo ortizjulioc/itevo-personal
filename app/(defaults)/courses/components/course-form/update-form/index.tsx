@@ -16,8 +16,7 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-        console.log(data);
-
+    
 
         const resp = await updateCourse(initialValues.id, data);
 

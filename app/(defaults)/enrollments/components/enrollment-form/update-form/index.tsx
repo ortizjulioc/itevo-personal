@@ -35,7 +35,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-        console.log(data);
+    
 
 
         const resp = await updateEnrollment(initialValues.id, data);

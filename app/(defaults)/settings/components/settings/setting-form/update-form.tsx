@@ -14,7 +14,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         const data = { ...values };
 
         const resp = await updateSetting(initialValues.id, data);
-        console.log(resp);
+      
 
         if (resp.success) {
             openNotification('success', 'Configuracion editada correctamente');

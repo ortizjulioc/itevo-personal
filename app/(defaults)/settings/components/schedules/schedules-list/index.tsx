@@ -39,7 +39,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
     }
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+
         confirmDialog({
             title: 'Eliminar Horario',
             text: '¿Seguro que quieres eliminar este horario?',

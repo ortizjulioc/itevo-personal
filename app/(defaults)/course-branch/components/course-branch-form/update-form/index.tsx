@@ -54,7 +54,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-        console.log(data);
+       
 
 
         const resp = await updateCourseBranch(initialValues.id, data);

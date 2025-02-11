@@ -20,7 +20,7 @@ const useFetchSetting = () => {
                 }
                 
                 const setting = response.data?.settings[0];
-                console.log(setting);
+              
                 setSetting(setting);
             
             } catch (error) {

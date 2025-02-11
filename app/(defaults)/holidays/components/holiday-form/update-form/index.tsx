@@ -18,7 +18,7 @@ export default function UpdateHolidayForm({ initialValues }: { initialValues: Ho
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-        console.log(data);
+     
 
 
         const resp = await updateHoliday(initialValues.id, data);

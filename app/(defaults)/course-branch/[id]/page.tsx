@@ -10,8 +10,7 @@ import UpdateCourseBranchForm from "../components/course-branch-form/update-form
 export default function EditCourseBranch({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, courseBranch } = useFetchCourseBranchById(id);
-    console.log('courseBranch', courseBranch);
-   
+
     return (
         <div>
             <ViewTitle className='mb-6' title="Editar Curso" showBackPage />

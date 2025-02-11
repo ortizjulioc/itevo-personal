@@ -30,10 +30,10 @@ export default function CourseBranchList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
-    console.log('courseBranch', courseBranches);
+
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+       
         confirmDialog({
             title: 'Eliminar oferta academica',
             text: '¿Seguro que quieres eliminar esta oferta  academica?',

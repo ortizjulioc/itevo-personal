@@ -17,7 +17,7 @@ export default function CreateEnrollmentForm() {
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-        console.log(data);
+     
 
         const resp = await createEnrollment(data);
 

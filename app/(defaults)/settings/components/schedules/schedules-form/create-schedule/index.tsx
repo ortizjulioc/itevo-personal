@@ -47,7 +47,7 @@ export default function CreateScheduleForm({ setOpenModal, setSchedules }: { set
             const date = new Date(isoTime);
             return date.toTimeString().slice(0, 5);
         };
-        console.log(values);
+     
         const data = {
             ...values,
             startTime: formatTime(values.startTime),
@@ -56,7 +56,6 @@ export default function CreateScheduleForm({ setOpenModal, setSchedules }: { set
         };
 
 
-        console.log(data);
 
         const resp = await createSchedule(data);
 

@@ -36,7 +36,7 @@ export async function createUserAction(prevState: any, data: FormData) {
         // Validar campos requeridos con yup
         const validatedFields = userValidationSchema.safeParse(userToCreate);
 
-        console.log(validatedFields?.error?.format());
+     
 
         if (!validatedFields.success) {
             return { code: 'E_MISSING_FIELDS', message: validatedFields.error.message, error: validatedFields.error.format() };

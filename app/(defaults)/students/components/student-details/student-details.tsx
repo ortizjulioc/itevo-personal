@@ -8,7 +8,7 @@ import React from 'react';
 export default function StudentDetails({ student }: { student: Student }) {
 
     const onDelete = (id: string) => {
-        console.log('Deleting student', id);
+        console.log('delete', id);
     };
     return (
         <div className="grid grid-cols-1 gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">

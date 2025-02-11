@@ -23,10 +23,10 @@ export default function StudentList({ className, query = '' }: Props) {
   if (error) {
     openNotification('error', error);
   }
-  console.log('students', students);
+
 
   const onDelete = async (id: string) => {
-    console.log('delete', id);
+
     confirmDialog({
       title: 'Eliminar Estudiante',
       text: '¿Seguro que quieres eliminar este Estudiante?',

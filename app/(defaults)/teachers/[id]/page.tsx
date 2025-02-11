@@ -9,7 +9,7 @@ import UpdateTeacherForm from "../components/teacher-form/update-form";
 export default function EditTeacher({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, teacher } = useFetchTeacherById(id);
-    console.log(teacher);
+
     return (
         <div>
             <ViewTitle className='mb-6' title="Editar Profesor" showBackPage />

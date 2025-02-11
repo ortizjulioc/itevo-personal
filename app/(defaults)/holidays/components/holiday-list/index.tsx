@@ -26,7 +26,7 @@ export default function HolidayList({ className, query = '' }: Props) {
 
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+  s
         confirmDialog({
             title: 'Eliminar Dia Feriado',
             text: '¿Seguro que quieres eliminar este dia festido?',

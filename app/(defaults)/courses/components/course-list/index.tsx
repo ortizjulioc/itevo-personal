@@ -22,10 +22,10 @@ export default function CoursetList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
-    console.log('courses', courses);
+  
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+       
         confirmDialog({
             title: 'Eliminar Curso',
             text: '¿Seguro que quieres eliminar este Curso?',

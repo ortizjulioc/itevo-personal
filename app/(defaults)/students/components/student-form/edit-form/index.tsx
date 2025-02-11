@@ -59,7 +59,7 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
                     className="form-input"
                     value={values.identification}
                     onValueChange={(value: any) => {
-                      console.log(value);
+                  
                       form.setFieldValue('identification', value.value);
                     }}
                   />
