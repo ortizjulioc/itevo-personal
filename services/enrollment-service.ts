@@ -15,10 +15,10 @@ export const getEnrollments = async (search: string, page: number, top: number) 
             enrollmentDate: true,
             status: true,
         },
-        // where: {
-        //     // deleted: false,
-        //     studentId: { contains: search },
-        // },
+        where: {
+            studentId: { contains: search },
+            courseBranchId: { contains: search },
+        },
         skip: skip,
         take: top,
     });
