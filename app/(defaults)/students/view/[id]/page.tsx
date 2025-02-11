@@ -12,7 +12,7 @@ import StudentEnrollments from "../../components/student-details/student-enrollm
 export default function StudentView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
 
     const id = params?.id; // Extraer el ID de params
-    const query = objectToQueryString({ ...searchParams, id }); // Combinar id con searchParams
+    const query = objectToQueryString({ ...searchParams,studentId:id }); // Combinar id con searchParams
     const { loading, student } = useFetchStudentById(id);
 
     return (
@@ -21,8 +21,8 @@ export default function StudentView({ params, searchParams }: { params: { id: st
 
             {loading && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-200  dark:bg-gray-700 animate-pulse rounded-md h-70 "></div>
-                    <div className="bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md h-70 md:col-span-2"></div>
+                    <div className="bg-gray-200  dark:bg-gray-700 animate-pulse rounded-md h-70 md:col-span-2 "></div>
+                    <div className="bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md h-70 "></div>
                 </div>
             )}
 
