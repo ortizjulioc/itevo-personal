@@ -79,3 +79,29 @@ export function countClassSessions(
 
     return sessionCount;
 }
+
+
+/**
+ * Esta función recibe un objeto Date y devuelve la hora en formato HH:mm.
+ * Es útil para aplicaciones donde se necesita mostrar la hora de manera uniforme.
+ *
+ * @param fecha Objeto Date que representa la fecha y hora a formatear.
+ * @returns Cadena de texto con la hora en formato HH:mm.
+ *
+ * Ejemplo de uso:
+ * const fechaActual = new Date();
+ * console.log(getFormattedTime(fechaActual)); // "14:30" (dependiendo de la hora actual)
+ */
+export function getFormattedTime(fecha: Date): string {
+    // Verificamos que la fecha proporcionada sea válida.
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
+        throw new Error('Fecha inválida proporcionada.');
+    }
+
+    // Convertimos la fecha a una cadena de tiempo con formato de 24 horas (HH:mm).
+    return fecha.toLocaleTimeString('es-ES', {
+        hour: '2-digit',      // Asegura que la hora siempre tenga dos dígitos (ej. 09, 18).
+        minute: '2-digit',    // Asegura que los minutos siempre tengan dos dígitos (ej. 05, 45).
+        hour12: false         // Usa el formato de 24 horas (ej. 14:30 en vez de 2:30 PM).
+    });
+}
