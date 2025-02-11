@@ -1,7 +1,7 @@
 'use client';
 import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
+import { IconEdit, IconEye, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
@@ -22,7 +22,7 @@ const modalities = {
     PRESENTIAL: 'Presencial',
     VIRTUAL: 'Virtual',
     HYBRID: 'Hibrido',
-  };
+};
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
@@ -33,7 +33,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
 
 
     const onDelete = async (id: string) => {
-       
+
         confirmDialog({
             title: 'Eliminar oferta academica',
             text: '¿Seguro que quieres eliminar esta oferta  academica?',
@@ -51,7 +51,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <Skeleton rows={8} columns={['PROMOCION','SUCURSAL','PROFESOR','CURSO','MODALIDAD','F. INICIO','F. FIN']} />;
+    if (loading) return <Skeleton rows={8} columns={['PROMOCION', 'SUCURSAL', 'PROFESOR', 'CURSO', 'MODALIDAD', 'F. INICIO', 'F. FIN']} />;
 
     return (
         <div className={className}>
@@ -78,10 +78,10 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         {courseBranches?.map((courseBranch) => {
                             return (
                                 <tr key={courseBranch.id}>
-                                    <td><PromotionLabel promotionId={courseBranch.promotionId}/></td>
-                                    <td>{<BranchLabel branchId={courseBranch.branchId}/>}</td>
-                                    <td>{<TeacherLabel teacherId={courseBranch.teacherId}/>}</td>
-                                    <td>{<CourseLabel courseId={courseBranch.courseId}/>}</td>
+                                    <td><PromotionLabel promotionId={courseBranch.promotionId} /></td>
+                                    <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
+                                    <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
+                                    <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
                                     <td>{modalities[courseBranch.modality]}</td>
                                     <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
                                     <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td>
@@ -93,6 +93,11 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                             <Tooltip title="Editar">
                                                 <Link href={`/course-branch/${courseBranch.id}`}>
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                </Link>
+                                            </Tooltip>
+                                            <Tooltip title="Ver">
+                                                <Link href={`/course-branch/view/${courseBranch.id}`}>
+                                                    <Button variant="outline" color='success' size="sm" icon={<IconEye className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
                                             {/* ALTERNATIVA */}
