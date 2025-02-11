@@ -1,13 +1,13 @@
 'use client';
 
-import { Button, FormItem, Input } from '@/components/ui';
-import { Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
+import { Button, FormItem } from '@/components/ui';
+import { Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import Select from 'react-select';
 import { createSchedule } from '@/app/(defaults)/settings/lib/schedules/request';
 import DatePicker from '@/components/ui/date-picker';
+import { getFormattedTime } from '@/utils/date';
 
 interface WeekOption {
     value: number;
@@ -37,7 +37,6 @@ const stringToTime = (time: string | Date) => {
     throw new Error("Invalid time format: must be a string in 'HH:mm' format or a Date object");
 };
 export default function CreateScheduleForm({ setOpenModal, setSchedules }: { setOpenModal: (value: boolean) => void, setSchedules: any }) {
-    const route = useRouter();
 
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
@@ -79,8 +78,8 @@ export default function CreateScheduleForm({ setOpenModal, setSchedules }: { set
                                 mode="time"
                                 value={values.startTime ? stringToTime(values.startTime) : undefined}
                                 onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('startTime', selectedDate);
+                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date                                    
+                                    setFieldValue('startTime',  selectedDate);
                                 }}
                             />
                         </FormItem>

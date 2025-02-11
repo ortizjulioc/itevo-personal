@@ -11,6 +11,7 @@ import { useState } from "react";
 import ScheduleModal from "../schedules-modal";
 import { Schedule } from "@prisma/client";
 import { convertToAmPm } from "@/utils/date";
+import { TbPlus } from "react-icons/tb";
 
 interface Props {
     className?: string;
@@ -64,7 +65,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
             <div className="flex justify-end mb-4">
                 <Button
                     variant="default"
-                    icon={<IconPlusCircle className="size-4" />}
+                    icon={<TbPlus className="size-4" />}
                     onClick={() => {
                         setScheduleToEdit(undefined); // Clear schedule when adding a new one
                         setOpenModal(true);
