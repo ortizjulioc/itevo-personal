@@ -12,7 +12,8 @@ import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 
 
 
-export default function CreateEnrollmentForm() {
+
+export default function CreateEnrollmentForm({ courseBranchId,studentId }: { courseBranchId?: string,studentId?:string }) {
     const route = useRouter();
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
@@ -54,7 +55,7 @@ export default function CreateEnrollmentForm() {
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Inscripcion</h4>
-            <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={{...initialValues, courseBranchId: courseBranchId || initialValues.courseBranchId, studentId: studentId || initialValues.studentId}} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
 
@@ -90,7 +91,7 @@ export default function CreateEnrollmentForm() {
                         </FormItem>
 
 
-                        <FormItem name="enrollmentDate" label="Fecha de Inscripcion" invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)} errorMessage={errors.enrollmentDate}>
+                        <FormItem name="enrollmentDate" label="Fecha de Inscripcion" invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)} errorMessage={errors.enrollmentDate ? String(errors.enrollmentDate) : undefined}>
                             <DatePicker
 
                                 value={values.enrollmentDate}

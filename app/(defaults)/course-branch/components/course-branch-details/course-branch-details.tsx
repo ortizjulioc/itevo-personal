@@ -69,7 +69,7 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                     </Link>
                 </Tooltip>
                 <Tooltip title="Inscribir">
-                    <Link href={`/course-branch/${courseBranch.id}`}   className="w-full">
+                    <Link href={`/enrollments/new?courseBranchId=${courseBranch.id}`}   className="w-full">
                         <Button
                             variant="outline"
                             size="sm"

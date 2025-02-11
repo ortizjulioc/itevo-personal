@@ -57,7 +57,7 @@ export default function StudentDetails({ student }: { student: Student }) {
                     </Link>
                 </Tooltip>
                 <Tooltip title="Inscribir">
-                    <Link href={`/students/${student.id}`}   className="w-full">
+                    <Link href={`/enrollments/new?studentId=${student.id}`}   className="w-full">
                         <Button
                             variant="outline"
                             size="sm"
