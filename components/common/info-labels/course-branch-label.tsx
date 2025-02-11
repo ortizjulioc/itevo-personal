@@ -7,37 +7,37 @@ import CourseLabel from './course-label';
 import TeacherLabel from './teacher-label';
 
 export default function CourseBranchLabel({ CourseBranchId }: { CourseBranchId: string }) {
-    const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(null);
+  const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(null);
 
-    const fetchCourseBranchById = async () => {
-        try {
-            const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
-            console.log('response:', response)
-            if (response.success && response.data) {
-                setCourseBranch(response.data);
-            }
-        } catch (error) {
-            console.error('Error fetching single courseBranch:', error);
-        }
-    };
+  const fetchCourseBranchById = async () => {
+    try {
+      const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
+      console.log('response:', response)
+      if (response.success && response.data) {
+        setCourseBranch(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching single courseBranch:', error);
+    }
+  };
 
-    useEffect(() => {
-        fetchCourseBranchById();
-    }, []);
+  useEffect(() => {
+    fetchCourseBranchById();
+  }, []);
 
-    return (   
+  return (
+    <>
+      {courseBranch ? (
         <>
-        {courseBranch ? (
-          <>
-            <PromotionLabel promotionId={courseBranch.promotionId} /> ||  
-            <BranchLabel branchId={courseBranch.branchId} /> ||  
-            <CourseLabel courseId={courseBranch.courseId} /> || 
-            <TeacherLabel   teacherId={courseBranch.teacherId} />
-          </>
-        ) : (
-          '...'
-        )}
-      </>
-      
-    )
+          <CourseLabel courseId={courseBranch.courseId} /> {' || '}
+          <TeacherLabel teacherId={courseBranch.teacherId} /> {' || '}
+          <BranchLabel branchId={courseBranch.branchId} /> {' || '}
+          <PromotionLabel promotionId={courseBranch.promotionId} />
+        </>
+      ) : (
+        '...'
+      )}
+    </>
+
+  )
 }
