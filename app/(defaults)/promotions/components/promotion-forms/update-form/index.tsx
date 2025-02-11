@@ -18,7 +18,7 @@ export default function UpdatePromotionForm({ initialValues }: { initialValues: 
         data.endDate = new Date(data.endDate).toISOString();
 
         const resp = await updatePromotion(initialValues.id, data);
-        console.log(resp);
+     
 
         if (resp.success) {
             openNotification('success', 'Promoción editada correctamente');

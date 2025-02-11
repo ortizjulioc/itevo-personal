@@ -8,7 +8,7 @@ export default function PromotionLabel({ promotionId }: { promotionId: string })
     const fetchPromotionById = async () => {
         try {
             const response = await apiRequest.get<Promotion>(`/promotions/${promotionId}`);
-            console.log('response:', response)
+           
             if (response.success && response.data) {
                 setPromotion(response.data);
             }

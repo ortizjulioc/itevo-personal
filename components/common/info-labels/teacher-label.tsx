@@ -8,7 +8,7 @@ export default function TeacherLabel({ teacherId }: { teacherId: string }) {
     const fetchteacherById = async () => {
         try {
             const response = await apiRequest.get<Teacher>(`/teachers/${teacherId}`);
-            console.log('response:', response)
+           
             if (response.success && response.data) {
                 setteacher(response.data);
             }

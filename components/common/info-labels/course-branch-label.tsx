@@ -12,7 +12,7 @@ export default function CourseBranchLabel({ CourseBranchId }: { CourseBranchId: 
   const fetchCourseBranchById = async () => {
     try {
       const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
-      console.log('response:', response)
+   
       if (response.success && response.data) {
         setCourseBranch(response.data);
       }

@@ -8,7 +8,7 @@ export default function CourseLabel({ courseId }: { courseId: string }) {
     const fetchcourseById = async () => {
         try {
             const response = await apiRequest.get<Course>(`/courses/${courseId}`);
-            console.log('response:', response)
+           
             if (response.success && response.data) {
                 setcourse(response.data);
             }

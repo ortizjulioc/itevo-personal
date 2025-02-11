@@ -10,7 +10,7 @@ export default function BranchLabel({ branchId }: { branchId: string }) {
     const fetchBranchById = async () => {
         try {
             const response = await apiRequest.get<Branch>(`/branches/${branchId}`);
-            console.log('response:', response)
+            
             if (response.success && response.data) {
                 setbranch(response.data);
             }

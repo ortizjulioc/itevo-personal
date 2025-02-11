@@ -8,7 +8,7 @@ export default function StudentLabel({ StudentId }: { StudentId: string }) {
     const fetchStudentById = async () => {
         try {
             const response = await apiRequest.get<Student>(`/students/${StudentId}`);
-            console.log('response:', response)
+           
             if (response.success && response.data) {
                 setStudent(response.data);
             }
