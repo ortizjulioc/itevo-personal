@@ -22,7 +22,14 @@ export const getStudents = async (search: string, page: number, top: number) => 
         },
         where: {
             deleted: false,
-            firstName: { contains: search },
+            OR: [
+                { firstName: { contains: search } },
+                { lastName: { contains: search } },
+                { identification: { contains: search } },
+                { address: { contains: search } },
+                { phone: { contains: search } },
+                { email: { contains: search } },
+            ],
         },
         skip: skip,
         take: top,
