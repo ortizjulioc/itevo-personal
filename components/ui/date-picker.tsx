@@ -32,9 +32,9 @@ const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 's
     }
     return {
       mode: mode as 'single' | 'range' | 'time' | 'multiple', // Forzamos el tipo correcto
-      dateFormat: 'Y-m-d',
       enableTime: mode === 'time',
       noCalendar: mode === 'time',
+      dateFormat: mode === 'time' ? 'H:i' : 'Y-m-d',
     };
   };
 
