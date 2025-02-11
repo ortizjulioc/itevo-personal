@@ -7,7 +7,7 @@ interface SkeletonProps {
 
 const TableSkeleton: React.FC<SkeletonProps> = ({ rows = 5, columns = [] }) => {
     return (
-        <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+        <div className="col-span-2 w-full table-responsive mb-5 panel p-0 border-0 overflow-hidden">
             <table className="table-hover">
                 <thead>
                     <tr>
