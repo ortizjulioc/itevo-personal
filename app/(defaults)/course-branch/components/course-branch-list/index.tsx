@@ -11,6 +11,7 @@ import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
+import { MODALITIES } from "@/constants/modality.constant";
 
 
 
@@ -18,11 +19,6 @@ interface Props {
     className?: string;
     query?: string;
 }
-const modalities = {
-    PRESENTIAL: 'Presencial',
-    VIRTUAL: 'Virtual',
-    HYBRID: 'Hibrido',
-};
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
@@ -82,7 +78,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
                                     <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
                                     <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
-                                    <td>{modalities[courseBranch.modality]}</td>
+                                    <td>{MODALITIES[courseBranch.modality]}</td>
                                     <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
                                     <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td>
                                     <td>
