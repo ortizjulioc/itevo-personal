@@ -1,15 +1,35 @@
+'use client'
 import { IconEdit, IconTrashLines, IconUserPlus } from '@/components/icon';
 import { Button } from '@/components/ui';
 import Tooltip from '@/components/ui/tooltip';
+import { confirmDialog, openNotification } from '@/utils';
 import { Student } from '@prisma/client';
 import Link from 'next/link';
 import React from 'react';
+import { deleteStudent } from '../../lib/request';
+import { useRouter } from 'next/navigation';
 
 export default function StudentDetails({ student }: { student: Student }) {
-
-    const onDelete = (id: string) => {
-        console.log('delete', id);
-    };
+    const router = useRouter()
+     const onDelete = async (id: string) => {
+   
+       confirmDialog({
+         title: 'Eliminar Estudiante',
+         text: '¿Seguro que quieres eliminar este Estudiante?',
+         confirmButtonText: 'Sí, eliminar',
+         icon: 'error'
+       }, async () => {
+         const resp = await deleteStudent(id);
+         if (resp.success) {
+           openNotification('success', 'estudiante eliminado correctamente');
+           router.push('/students')
+           return;
+         } else {
+           openNotification('error', resp.message);
+         }
+       });
+     }
+   
     return (
         <div className="grid grid-cols-1 gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             {/* Nombre del estudiante */}
@@ -57,7 +77,7 @@ export default function StudentDetails({ student }: { student: Student }) {
                     </Link>
                 </Tooltip>
                 <Tooltip title="Inscribir">
-                    <Link href={`/students/${student.id}`}   className="w-full">
+                    <Link href={`/enrollments/new?studentId=${student.id}`}   className="w-full">
                         <Button
                             variant="outline"
                             size="sm"

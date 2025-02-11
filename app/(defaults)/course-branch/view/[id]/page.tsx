@@ -12,7 +12,7 @@ import CourseBranchEnrollments from "../../components/course-branch-details/cour
 export default function CourseBranchView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
 
     const id = params?.id; // Extraer el ID de params
-    const query = objectToQueryString({ ...searchParams,CourseBranchId:id }); // Combinar id con searchParams
+    const query = objectToQueryString({ ...searchParams,courseBranchId:id }); // Combinar id con searchParams
     const { loading, courseBranch } = useFetchCourseBranchById(id);
 
     return (
