@@ -7,6 +7,9 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchEnrollments from "../../lib/use-fetch-enrollments";
 import { deleteEnrollment } from "../../lib/request";
+import StudentLabel from "@/components/common/info-labels/student-label";
+import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
+import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 
 
 
@@ -43,7 +46,13 @@ export default function EnrollmentList({ className, query = '' }: Props) {
             }
         });
     }
-
+    const enrollmentStatus = [
+          { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
+          { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
+          { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
+          { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
+      ];
+  
     if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE','OFERTA ACADEMICA','FECHA DE INSCRIPCION']} />;
 
     return (
@@ -54,8 +63,8 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                         <tr>
                             <th>ESTUDIANTE</th>
                             <th>OFERTA ACADEMICA</th>
-                            <th>FECHA DE INSCRIPCION
-                            </th>
+                            <th>FECHA DE INSCRIPCION</th>
+                            <th>ESTADO</th>
                             <th />
                         </tr>
                     </thead>
@@ -69,13 +78,16 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                             return (
                                 <tr key={enrollment.id}>
                                     <td>
-                                        {enrollment.studentId}
+                                        <StudentLabel StudentId={enrollment.studentId} />
                                     </td>
                                     <td>
-                                        {enrollment.courseBranchId}
+                                        <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
                                     </td>
                                     <td>
-                                        {new Date(enrollment.createdAt).toLocaleDateString()}
+                                        {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                    </td>
+                                    <td>
+                                       {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}
                                     </td>
                                    
                                     <td>
@@ -88,6 +100,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
+                                            
                                             {/* ALTERNATIVA */}
                                             {/* <Button onClick={() => onDelete(Enrollmentt.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
                                             <Link href={`/Enrollments/${Enrollmentt.id}`}>

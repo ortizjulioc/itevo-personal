@@ -1,5 +1,5 @@
 'use client';
-import { Button, FormItem, Input, Checkbox } from '@/components/ui';
+import { Button, FormItem, Input, Checkbox, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -8,7 +8,7 @@ import DatePicker from '@/components/ui/date-picker';
 import { createEnrollment } from '../../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
-
+import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 
 
 
@@ -38,6 +38,17 @@ export default function CreateEnrollmentForm() {
         value: string;
         label: JSX.Element;
     }
+    interface statusOption {
+        value: string;
+        label: string;
+    }
+
+    const enrollmentStatus = [
+        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
+        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
+        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
+        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
+    ];
 
 
     return (
@@ -62,6 +73,19 @@ export default function CreateEnrollmentForm() {
                                 onChange={(option: OptionSelect | null) => {
                                     setFieldValue('studentId', option?.value || '');
                                 }}
+                            />
+                        </FormItem>
+
+                        <FormItem name='status' label='Estado' invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
+                            <Select
+                                name="status"
+                                options={enrollmentStatus}
+                                value={enrollmentStatus.find((status) => status.value === values.status)}
+                                onChange={(option: statusOption | null) => {
+                                    setFieldValue('status', option?.value ?? null);
+                                }}
+                                isSearchable={false}
+                                placeholder="Selecciona un estado"
                             />
                         </FormItem>
 
