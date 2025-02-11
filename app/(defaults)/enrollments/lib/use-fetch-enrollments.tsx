@@ -16,7 +16,9 @@ const useFetchEnrollments = (query: string) => {
   useEffect(() => {
     const fetchrolesData = async (query: string) => {
       try {
+        console.log(query);
         const response = await apiRequest.get<EnrollmentResponse>(`/enrollments?${query}`);
+       ;
         if (!response.success) {
           throw new Error(response.message);
         }
@@ -47,6 +49,7 @@ export const useFetchEnrollmentById = (id: string) => {
   useEffect(() => {
     const fetchEnrollmentData = async (id: string) => {
       try {
+        setLoading(true)
         const response = await apiRequest.get<Enrollment>(`/enrollments/${id}`);
         if (!response.success) {
           throw new Error(response.message);
