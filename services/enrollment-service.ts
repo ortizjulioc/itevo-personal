@@ -1,9 +1,30 @@
 import 'server-only';
 import { PrismaClient } from "@prisma/client";
+import { equal } from 'assert';
 const Prisma = new PrismaClient();
 
-export const getEnrollments = async (search: string, page: number, top: number) => {
+export const getEnrollments = async (search: string, page: number, top: number, studentId?: string, courseBranchId?: string) => {
     const skip = (page - 1) * top;
+
+
+    const where: any = {};
+
+    if(search){
+        where.OR = [
+            { studentId: { contains: search } },
+            { courseBranchId: { contains: search } },
+        ];
+    }
+
+    if(studentId){
+        where.studentId = { equals: studentId };
+    }
+    if(courseBranchId){
+        where.courseBranchId = { equals: courseBranchId };
+    }
+
+
+
     const enrollments = await Prisma.enrollment.findMany({
         orderBy: [
             { enrollmentDate: 'asc' },
@@ -15,19 +36,13 @@ export const getEnrollments = async (search: string, page: number, top: number) 
             enrollmentDate: true,
             status: true,
         },
-        where: {
-            studentId: { contains: search },
-            courseBranchId: { contains: search },
-        },
+        where,
         skip: skip,
         take: top,
     });
 
     const totalEnrollments = await Prisma.enrollment.count({
-        // where: {
-        //     // deleted: false,
-        //     // courseId: { contains: search },
-        // },
+        where
     });
 
     return { enrollments, totalEnrollments };

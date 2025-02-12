@@ -8,10 +8,15 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
+        const studentId = searchParams.get('studentId') || '';
+        const courseBranchId = searchParams.get('courseBranchId') || '';
+
+
+
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
 
-        const { enrollments, totalEnrollments } = await getEnrollments(search, page, top);
+        const { enrollments, totalEnrollments } = await getEnrollments(search, page, top, studentId, courseBranchId);
 
         return NextResponse.json({
             enrollments,
