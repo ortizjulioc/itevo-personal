@@ -1,9 +1,8 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-import { equal } from 'assert';
+import { PrismaClient, EnrollmentStatus } from "@prisma/client";
 const Prisma = new PrismaClient();
 
-export const getEnrollments = async (search: string, page: number, top: number, studentId?: string, courseBranchId?: string, enrollmentDate?: string) => {
+export const getEnrollments = async (search: string, page: number, top: number, studentId?: string, courseBranchId?: string, enrollmentDate?: string, status?: string) => {
     const skip = (page - 1) * top;
 
 
@@ -31,6 +30,18 @@ export const getEnrollments = async (search: string, page: number, top: number, 
                 gte: new Date(date.setHours(0, 0, 0, 0)), // Desde las 00:00
                 lte: new Date(date.setHours(23, 59, 59, 999)) // Hasta las 23:59
             };
+        }
+    }
+
+     // Filtrar por `status` con valores de Prisma EnrollmentStatus
+     if (status) {
+        const normalizedStatus = status.toLowerCase(); // Convertimos a minúsculas
+        const validStatuses = Object.values(EnrollmentStatus); // Obtenemos los valores del enum de Prisma
+
+        if (validStatuses.includes(normalizedStatus as EnrollmentStatus)) {
+            where.status = normalizedStatus as EnrollmentStatus;
+        } else {
+            throw new Error(`Estado inválido: ${status}. Los valores válidos son: ${validStatuses.join(", ")}`);
         }
     }
 
