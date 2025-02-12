@@ -12,7 +12,14 @@ export async function GET(request: NextRequest) {
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
 
-        const { courseBranches, totalCourseBranches } = await getCourseBranch(search, page, top);
+        // Filtros de búsqueda
+
+        const promotionId = searchParams.get('promotionId') || '';
+        const branchId = searchParams.get('branchId') || '';
+        const teacherId = searchParams.get('teacherId') || '';
+        const courseId = searchParams.get('courseId') || '';
+
+        const { courseBranches, totalCourseBranches } = await getCourseBranch(search, page, top, promotionId, branchId, teacherId, courseId);
 
         return NextResponse.json(
             {
@@ -31,7 +38,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         console.log('BODY: ', body);
         body.status = CourseBranchStatus.WAITING;
-      
+
         // Validate the request body
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
         if (!isValid) {

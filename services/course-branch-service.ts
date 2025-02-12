@@ -2,7 +2,7 @@ import 'server-only';
 import { PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
-export const getCourseBranch = async (search: string, page: number, top: number) => {
+export const getCourseBranch = async (search: string, page: number, top: number, promotionId: string, branchId: string, teacherId: string, courseId: string) => {
     const skip = (page - 1) * top;
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
@@ -21,8 +21,10 @@ export const getCourseBranch = async (search: string, page: number, top: number)
             commissionRate: true,
         },
         where: {
-            // deleted: false,
-            courseId: { contains: search },
+            promotionId: { contains: promotionId },
+            branchId: { contains: branchId },
+            teacherId: { contains: teacherId },
+            courseId: { contains: courseId },
         },
         skip: skip,
         take: top,
