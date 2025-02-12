@@ -8,18 +8,11 @@ export const getEnrollments = async (search: string, page: number, top: number, 
 
     const where: any = {};
 
-    if(search){
-        where.OR = [
-            { studentId: { contains: search } },
-            { courseBranchId: { contains: search } },
-        ];
-    }
-
     if(studentId){
-        where.studentId = { equals: studentId };
+        where.studentId = { contains: studentId };
     }
     if(courseBranchId){
-        where.courseBranchId = { equals: courseBranchId };
+        where.courseBranchId = { contains: courseBranchId };
     }
 
     // Filtrar por enrollmentDate
