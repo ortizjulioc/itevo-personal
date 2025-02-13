@@ -148,6 +148,7 @@ model CourseBranch {
     endDate        DateTime           @map("end_date") // Fecha de fin
     commissionRate Float              @map("commission_rate") // Porcentaje de comisión
     capacity       Int                @default(0) // Capacidad
+    sessionCount   Int                @default(0) @map("session_count") // Cantidad de sesiones
     status         CourseBranchStatus // Estado
     createdAt      DateTime           @default(now()) @map("created_at")
     updatedAt      DateTime           @updatedAt @map("updated_at")
@@ -290,7 +291,6 @@ model AccountReceivable {
     id             String        @id @default(uuid())
     studentId      String        @map("student_id") // ID del estudiante
     courseBranchId String        @map("course_branch_id") // ID del CursoSucursal
-    installment    Int // Número de la cuota (1, 2, 3, ...)
     amount         Float // Monto de la cuota
     dueDate        DateTime      @map("due_date") // Fecha de vencimiento
     status         AccountStatus // Estado (pendiente, pagado, etc.)
