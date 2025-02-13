@@ -8,18 +8,19 @@ import { CourseBranch, CourseBranchStatus, Modality } from '@prisma/client';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
 
         // Filtros de búsqueda
 
-        const promotionId = searchParams.get('promotionId') || '';
-        const branchId = searchParams.get('branchId') || '';
-        const teacherId = searchParams.get('teacherId') || '';
-        const courseId = searchParams.get('courseId') || '';
+        const filters = {
+            page: parseInt(searchParams.get('page') || '1', 10),
+            top: parseInt(searchParams.get('top') || '10', 10),
+            promotionId: searchParams.get('promotionId') || undefined,
+            branchId: searchParams.get('branchId') || undefined,
+            teacherId: searchParams.get('teacherId') || undefined,
+            courseId: searchParams.get('courseId') || undefined,
+        }
 
-        const { courseBranches, totalCourseBranches } = await getCourseBranch(search, page, top, promotionId, branchId, teacherId, courseId);
+        const { courseBranches, totalCourseBranches } = await getCourseBranch(filters);
 
         return NextResponse.json(
             {
