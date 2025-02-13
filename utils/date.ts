@@ -23,25 +23,28 @@ function toLocalDate(date: Date): Date {
  * Calcula el número de sesiones (clases) que se impartirán entre startDate y endDate,
  * considerando los horarios y los días feriados.
  *
+ * También devuelve un array con las fechas exactas en las que se impartirán clases.
+ *
  * Para feriados:
- * - Si es no recurrente se compara la fecha completa.
- * - Si es recurrente se comparan sólo el mes y el día.
+ * - Si es no recurrente, se compara la fecha completa.
+ * - Si es recurrente, se comparan solo el mes y el día.
  *
  * Se asume que tanto startDate como endDate deben interpretarse en hora local.
  *
- * @param startDate Fecha de inicio del curso (se recomienda crearlas con new Date(año, mes-1, día))
+ * @param startDate Fecha de inicio del curso (se recomienda crearlas con new Date(año, mes-1, día)).
  * @param endDate Fecha fin del curso.
  * @param schedules Array de objetos que contienen la propiedad `weekday` (0 = Domingo, 6 = Sábado).
  * @param holidays Array de feriados con propiedades `date` (Date) e `isRecurring` (boolean).
- * @returns Número de sesiones en las que se impartirá la clase.
+ * @returns Un objeto con el número de sesiones y las fechas en que se impartirá la clase.
  */
-export function countClassSessions(
+export function getClassSessions(
     startDate: Date,
     endDate: Date,
     schedules: { weekday: number; startTime: string; endTime: string }[],
     holidays: { date: Date; isRecurring: boolean }[]
-): number {
+): { count: number; dates: Date[] } {
     let sessionCount = 0;
+    let sessionDates: Date[] = [];
 
     // Convertimos startDate y endDate a fechas locales (a medianoche)
     let currentDate = toLocalDate(startDate);
@@ -49,27 +52,22 @@ export function countClassSessions(
 
     // Iteramos día a día desde startDate hasta endDate (inclusive)
     while (currentDate <= finalDate) {
-        // Para cada día, revisamos cada horario definido
         for (const schedule of schedules) {
+            // Verificamos si el día actual coincide con un día de clase
             if (currentDate.getDay() === schedule.weekday) {
-                // Verificamos si este día es feriado
+                // Revisamos si la fecha actual es un feriado
                 const isHoliday = holidays.some((holiday) => {
-                    // Convertimos el feriado a fecha local (ignorando la hora)
                     const holidayLocal = toLocalDate(holiday.date);
-                    if (holiday.isRecurring) {
-                        // Para feriados recurrentes comparamos mes y día
-                        return (
-                            currentDate.getMonth() === holidayLocal.getMonth() &&
-                            currentDate.getDate() === holidayLocal.getDate()
-                        );
-                    } else {
-                        // Para feriados no recurrentes comparamos la fecha completa
-                        return currentDate.getTime() === holidayLocal.getTime();
-                    }
+                    return holiday.isRecurring
+                        ? currentDate.getMonth() === holidayLocal.getMonth() &&
+                        currentDate.getDate() === holidayLocal.getDate()
+                        : currentDate.getTime() === holidayLocal.getTime();
                 });
 
+                // Si no es feriado, contamos la sesión y almacenamos la fecha
                 if (!isHoliday) {
-                    sessionCount++;
+                    sessionCount++; // Contamos la sesión
+                    sessionDates.push(new Date(currentDate)); // Guardamos la fecha exacta
                 }
             }
         }
@@ -77,7 +75,7 @@ export function countClassSessions(
         currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    return sessionCount;
+    return { count: sessionCount, dates: sessionDates };
 }
 
 
