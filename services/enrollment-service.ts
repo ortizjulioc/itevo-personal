@@ -26,7 +26,7 @@ export const getEnrollments = async (filters: any) => {
 
      // Filtrar por `status` con valores de Prisma EnrollmentStatus
      if (status) {
-        const normalizedStatus = status.toLowerCase(); // Convertimos a minúsculas
+        const normalizedStatus = status.toUpperCase(); // Convertimos a minúsculas
         const validStatuses = Object.values(EnrollmentStatus); // Obtenemos los valores del enum de Prisma
 
         if (validStatuses.includes(normalizedStatus as EnrollmentStatus)) {
