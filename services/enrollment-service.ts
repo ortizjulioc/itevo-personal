@@ -2,18 +2,16 @@ import 'server-only';
 import { PrismaClient, EnrollmentStatus } from "@prisma/client";
 const Prisma = new PrismaClient();
 
-export const getEnrollments = async (search: string, page: number, top: number, studentId?: string, courseBranchId?: string, enrollmentDate?: string, status?: string) => {
+export const getEnrollments = async (filters: any) => {
+    const { studentId, courseBranchId, status, enrollmentDate, page, top } = filters;
     const skip = (page - 1) * top;
 
+    let where: any = {};
 
-    const where: any = {};
-
-    if(studentId){
-        where.studentId = { contains: studentId };
-    }
-    if(courseBranchId){
-        where.courseBranchId = { contains: courseBranchId };
-    }
+    where = {
+        studentId: studentId,
+        courseBranchId: courseBranchId,
+    };
 
     // Filtrar por enrollmentDate
     if (enrollmentDate) {

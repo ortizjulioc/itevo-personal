@@ -7,18 +7,17 @@ import { createLog } from "@/utils/log";
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
-        const studentId = searchParams.get('studentId') || '';
-        const courseBranchId = searchParams.get('courseBranchId') || '';
-        const status = searchParams.get('status') || '';
-        const enrollmentDate = searchParams.get('enrollmentDate') || '';
 
+        const filters = {
+            studentId: searchParams.get('studentId') || undefined,
+            courseBranchId: searchParams.get('courseBranchId') || undefined,
+            status: searchParams.get('status') || '',
+            enrollmentDate: searchParams.get('enrollmentDate') || '',
+            page: parseInt(searchParams.get('page') || '1', 10),
+            top: parseInt(searchParams.get('top') || '10', 10),
+        }
 
-
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
-
-        const { enrollments, totalEnrollments } = await getEnrollments(search, page, top, studentId, courseBranchId, enrollmentDate, status);
+        const { enrollments, totalEnrollments } = await getEnrollments(filters);
 
         return NextResponse.json({
             enrollments,
