@@ -47,8 +47,8 @@ export function getClassSessions(
     let sessionDates: Date[] = [];
 
     // Convertimos startDate y endDate a fechas locales (a medianoche)
-    let currentDate = toLocalDate(startDate);
-    const finalDate = toLocalDate(endDate);
+    let currentDate = toLocalDate(new Date(startDate));
+    const finalDate = toLocalDate(new Date(endDate));
 
     // Iteramos día a día desde startDate hasta endDate (inclusive)
     while (currentDate <= finalDate) {
@@ -57,7 +57,7 @@ export function getClassSessions(
             if (currentDate.getDay() === schedule.weekday) {
                 // Revisamos si la fecha actual es un feriado
                 const isHoliday = holidays.some((holiday) => {
-                    const holidayLocal = toLocalDate(holiday.date);
+                    const holidayLocal = toLocalDate(new Date(holiday.date));
                     return holiday.isRecurring
                         ? currentDate.getMonth() === holidayLocal.getMonth() &&
                         currentDate.getDate() === holidayLocal.getDate()
