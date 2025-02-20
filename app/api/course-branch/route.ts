@@ -3,14 +3,14 @@ import { validateObject } from '@/utils';
 import { getCourseBranch, createCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranch, CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus } from '@prisma/client';
+import { getClassSessions } from '@/utils/date';
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
 
         // Filtros de búsqueda
-
         const filters = {
             page: parseInt(searchParams.get('page') || '1', 10),
             top: parseInt(searchParams.get('top') || '10', 10),
@@ -37,8 +37,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ', body);
         body.status = CourseBranchStatus.WAITING;
+
+        // Calculando las fechas de las sesiones
+        const { startDate, endDate, schedules, holidays } = body;
+
+        if (startDate && endDate && schedules && holidays) {
+            const { count } = getClassSessions(startDate, endDate, schedules, holidays);
+            body.sessionCount = count;
+        }
 
         // Validate the request body
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
