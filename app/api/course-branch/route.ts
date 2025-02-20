@@ -3,7 +3,7 @@ import { validateObject } from '@/utils';
 import { getCourseBranch, createCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranchStatus } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@prisma/client';
 import { getClassSessions } from '@/utils/date';
 
 export async function GET(request: NextRequest) {
@@ -18,6 +18,9 @@ export async function GET(request: NextRequest) {
             branchId: searchParams.get('branchId') || undefined,
             teacherId: searchParams.get('teacherId') || undefined,
             courseId: searchParams.get('courseId') || undefined,
+            Modality: searchParams.get('modality') as Modality,
+            startDate: searchParams.get('startDate') || undefined,
+            endDate: searchParams.get('endDate') || undefined,
         }
 
         const { courseBranches, totalCourseBranches } = await getCourseBranch(filters);

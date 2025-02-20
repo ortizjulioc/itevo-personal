@@ -4,7 +4,7 @@ const Prisma = new PrismaClient();
 
 export const getCourseBranch = async (filters: any) => {
 
-    const { search, page, top, promotionId, branchId, teacherId, courseId } = filters;
+    const { page, top, promotionId, branchId, teacherId, courseId, modality } = filters;
     const skip = (page - 1) * top;
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
@@ -26,7 +26,8 @@ export const getCourseBranch = async (filters: any) => {
             promotionId,
             branchId,
             teacherId,
-            courseId
+            courseId,
+            modality,
         },
         skip: skip,
         take: top,
@@ -34,8 +35,11 @@ export const getCourseBranch = async (filters: any) => {
 
     const totalCourseBranches = await Prisma.courseBranch.count({
         where: {
-            // deleted: false,
-            courseId: { contains: search },
+            promotionId,
+            branchId,
+            teacherId,
+            courseId,
+            modality,
         },
     });
 
