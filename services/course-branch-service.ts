@@ -100,6 +100,7 @@ export const updateCourseBranchById = async (id: string, data: any) => {
             startDate: data.startDate,
             endDate: data.endDate,
             commissionRate: data.commissionRate,
+            sessionCount: data.sessionCount,
         },
     });
 };
