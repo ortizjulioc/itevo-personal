@@ -3,11 +3,12 @@
 import { Button, FormItem } from '@/components/ui';
 import { Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
-import { createValidationSchema, initialValues } from '../form.config';
+import { initialValues } from '../form.config'
 import Select from 'react-select';
 import { createSchedule } from '@/app/(defaults)/settings/lib/schedules/request';
 import DatePicker from '@/components/ui/date-picker';
-
+import { getFormattedTime } from '@/utils/date';
+import {createValidationSchema } from "../form.config"
 
 interface WeekOption {
     value: number;
