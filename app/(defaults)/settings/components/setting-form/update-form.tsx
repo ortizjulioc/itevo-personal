@@ -3,10 +3,10 @@ import { Button, FormItem, Input } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
-import { updateValidationSchema } from './form.config';
+import { updateValidationSchema } from '../form.config';
 import { Setting } from '@prisma/client';
 import { FormatPatterInput } from '@/components/common';
-import { updateSetting } from '../../../lib/settings/request';
+import { updateSetting } from '../../lib/request';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();

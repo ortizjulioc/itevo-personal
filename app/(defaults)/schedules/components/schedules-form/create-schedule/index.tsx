@@ -5,10 +5,11 @@ import { Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
 import { initialValues } from '../form.config'
 import Select from 'react-select';
-import { createSchedule } from '@/app/(defaults)/settings/lib/schedules/request';
+
 import DatePicker from '@/components/ui/date-picker';
 import { getFormattedTime } from '@/utils/date';
 import {createValidationSchema } from "../form.config"
+import { createSchedule } from '../../../lib/request';
 
 interface WeekOption {
     value: number;
