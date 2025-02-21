@@ -86,7 +86,7 @@ model Student {
     firstName         String              @map("first_name") // Nombres
     lastName          String              @map("last_name") // Apellidos
     identification    String? // En estudiates puede estar vacio
-    phone             String // Telefono
+    phone             String? // Telefono
     email             String?             @unique // Correo
     address           String? // Direccion
     hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
@@ -172,6 +172,7 @@ enum Modality {
 }
 
 enum CourseBranchStatus {
+    DRAFT       @map("draft") // Borrador (aun no se ha terminado de configurar)
     WAITING     @map("waiting") // A la espera de alcanzar el limite de estudiantes
     CONFIRMED   @map("confirmed") // Confirmado (alcanzó el limite de estudiantes) y listo para iniciar
     IN_PROGRESS @map("in_progress") // En progreso (ya inició)

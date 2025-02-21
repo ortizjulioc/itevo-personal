@@ -1,9 +1,6 @@
 import { ViewTitle } from "@/components/common";
 import CreateCourseBranchForm from "../components/course-branch-form/create-form";
 
-
-
-
 export default function NewCourse() {
     return (
         <div>
