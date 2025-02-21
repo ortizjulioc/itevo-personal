@@ -47,7 +47,34 @@ export const getCourseBranch = async (filters: any) => {
 };
 
 export const createCourseBranch = async (data: any) => {
-    const courseBranch = await Prisma.courseBranch.create({ data: data });
+    const dataToCreate = {
+        promotion: {
+            connect: {
+                id: data.promotionId,
+            },
+        },
+        branch: {
+            connect: {
+                id: data.branchId,
+            },
+        },
+        teacher: {
+            connect: {
+                id: data.teacherId,
+            },
+        },
+        course: {
+            connect: {
+                id: data.courseId,
+            },
+        }
+    };
+    delete data.promotionId;
+    delete data.branchId;
+    delete data.teacherId;
+    delete data.courseId;
+
+    const courseBranch = await Prisma.courseBranch.create({ data: {...dataToCreate, ...data} });
     return courseBranch;
 };
 

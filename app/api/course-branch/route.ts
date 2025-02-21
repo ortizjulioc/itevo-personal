@@ -4,7 +4,6 @@ import { getCourseBranch, createCourseBranch } from '@/services/course-branch-se
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { CourseBranchStatus, Modality } from '@prisma/client';
-import { getClassSessions } from '@/utils/date';
 
 export async function GET(request: NextRequest) {
     try {
@@ -40,15 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        body.status = CourseBranchStatus.WAITING;
-
-        // Calculando las fechas de las sesiones
-        const { startDate, endDate, schedules, holidays } = body;
-
-        if (startDate && endDate && schedules && holidays) {
-            const { count } = getClassSessions(startDate, endDate, schedules, holidays);
-            body.sessionCount = count;
-        }
+        body.status = CourseBranchStatus.DRAFT;
 
         // Validate the request body
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
@@ -56,6 +47,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
+        console.log('post course-branch', body);
         const courseBranch = await createCourseBranch(body);
         await createLog({
             action: 'POST',

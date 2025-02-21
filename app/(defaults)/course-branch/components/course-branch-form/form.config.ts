@@ -6,14 +6,12 @@ export const createValidationSchema = Yup.object().shape({
     branchId: Yup.string().required('La sucursal es obligatoria'),
     teacherId: Yup.string().required('El profesor es obligatorio'),
     courseId: Yup.string().required('El curso es obligatorio'),
-    amount: Yup.number().required('El monto es obligatorio'),
+    amount: Yup.number().required('El monto es obligatorio').nullable(),
     modality: Yup.string().required('La modalidad es obligatoria'),
     startDate: Yup.string().required('La fecha de inicio es obligatoria'),
     endDate: Yup.string().required('La fecha de fin es obligatoria'),
-    commissionRate: Yup.number().required('La comisión es obligatoria'),
-    capacity: Yup.number().required('La capacidad es obligatoria'),
-
-    
+    commissionRate: Yup.number().required('La comisión es obligatoria').nullable(),
+    capacity: Yup.number().required('La capacidad es obligatoria').nullable(),
 });
 
 export const updateValidationSchema = Yup.object().shape({

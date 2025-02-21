@@ -14,6 +14,8 @@ import DatePicker from '@/components/ui/date-picker';
 import { MODALITIES } from '@/constants/modality.constant';
 import { Tab } from '@headlessui/react';
 import { Fragment } from 'react';
+import Tooltip from '@/components/ui/tooltip';
+import { TbQuestionMark } from 'react-icons/tb';
 
 interface OptionSelect {
     value: string;
@@ -36,17 +38,15 @@ export default function CreateCourseBranchForm() {
     const route = useRouter();
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        const data = { ...values };
-        delete data.confirmPassword;
+        console.log('values', values);
+        // const resp = await createCourseBranch(values);
 
-        const resp = await createCourseBranch(data);
-
-        if (resp.success) {
-            openNotification('success', 'Curso creado correctamente');
-            route.push('/course-branch');
-        } else {
-            openNotification('error', resp.message);
-        }
+        // if (resp.success) {
+        //     openNotification('success', 'Curso creado correctamente');
+        //     route.push(`/course-branch/${resp.data?.id}`);
+        // } else {
+        //     openNotification('error', resp.message);
+        // }
         setSubmitting(false);
     };
 
@@ -81,17 +81,7 @@ export default function CreateCourseBranchForm() {
                                         </button>
                                     )}
                                 </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Configuración financiera
-                                </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Asignación de horarios
-                                </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Confirmación
-                                </Tab>
-
-                                {/* <Tab as={Fragment}>
+                                <Tab as={Fragment}>
                                     {({ selected }) => (
                                         <button
                                             className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
@@ -99,7 +89,16 @@ export default function CreateCourseBranchForm() {
                                             Configuración financiera
                                         </button>
                                     )}
+                                </Tab>
+                                {/* <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Configuración financiera
                                 </Tab> */}
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Asignación de horarios
+                                </Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Confirmación
+                                </Tab>
                                 {/* <Tab as={Fragment}>
                                     {({ selected }) => (
                                         <button
@@ -123,12 +122,18 @@ export default function CreateCourseBranchForm() {
                                 <Tab.Panel>
                                     <div className="mt-6">
                                         <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
-                                            <SelectPromotion
-                                                value={values.promotionId}
-                                                onChange={(option: OptionSelect | null) => {
-                                                    setFieldValue('promotionId', option?.value || '');
-                                                }}
-                                            />
+                                            <Field>
+                                                {({ form, field }: any) => (
+                                                    <SelectPromotion
+                                                        {...form}
+                                                        {...field}
+                                                        value={values.promotionId}
+                                                        onChange={(option: OptionSelect | null) => {
+                                                            setFieldValue('promotionId', option?.value || '');
+                                                        }}
+                                                    />
+                                                )}
+                                            </Field>
                                         </FormItem>
                                         <FormItem name="branchId" label="Sucursal" invalid={Boolean(errors.branchId && touched.branchId)} errorMessage={errors.branchId}>
                                             <SelectBranch
@@ -158,63 +163,83 @@ export default function CreateCourseBranchForm() {
                                         </FormItem>
                                     </div>
                                 </Tab.Panel>
+
+                                <Tab.Panel>
+                                    <div className="mt-6">
+                                        <FormItem
+                                            extra={(<Tooltip title="Este es el costo que tendrá cada cuota"><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
+                                            name='amount'
+                                            label='Monto'
+                                            invalid={Boolean(errors.amount && touched.amount)}
+                                            errorMessage={errors.amount}
+                                        >
+                                            <Field
+                                                type='number'
+                                                name='amount'
+                                                component={Input}
+                                                placeholder='Ingrese el monto'
+                                            />
+                                        </FormItem>
+
+                                        <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
+                                            <Select
+                                                name="weekday"
+                                                options={modalities}
+                                                value={modalities.find((modality) => modality.value === values.modality)}
+                                                onChange={(option: ModalityOption | null) => {
+                                                    setFieldValue('modality', option?.value ?? null);
+                                                }}
+                                                isSearchable={false}
+                                                placeholder="Selecciona una modalidad"
+                                            />
+                                        </FormItem>
+
+                                        <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
+                                            <DatePicker
+                                                placeholder='Selecciona una fecha'
+                                                value={values.startDate ? stringToTime(values.startDate) : undefined}
+                                                onChange={(date: Date | Date[]) => {
+                                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
+                                                    setFieldValue('startDate', selectedDate);
+                                                }}
+                                            />
+                                        </FormItem>
+
+                                        <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
+                                            <DatePicker
+                                                placeholder='Selecciona una fecha'
+                                                value={values.endDate ? stringToTime(values.endDate) : undefined}
+                                                onChange={(date: Date | Date[]) => {
+                                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
+                                                    setFieldValue('endDate', selectedDate);
+                                                }}
+                                            />
+                                        </FormItem>
+
+                                        <FormItem
+                                            extra={(<Tooltip title="El porcentaje que recibirá el profesor por este curso"><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
+                                            name='commissionRate'
+                                            label='Comision'
+                                            invalid={Boolean(errors.commissionRate && touched.commissionRate)}
+                                            errorMessage={errors.commissionRate}
+                                        >
+                                            <Field type='number' name='commissionRate' component={Input} />
+                                        </FormItem>
+
+                                        <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
+                                            <Field type="number" name="capacity" component={Input} />
+                                        </FormItem>
+                                    </div>
+                                </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
-
-                        <FormItem name='amount' label='Monto' invalid={Boolean(errors.amount && touched.amount)} errorMessage={errors.amount}>
-                            <Field type='number' name='amount' component={Input} />
-                        </FormItem>
-
-                        <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
-                            <Select
-                                name="weekday"
-                                options={modalities}
-                                value={modalities.find((modality) => modality.value === values.modality)}
-                                onChange={(option: ModalityOption | null) => {
-                                    setFieldValue('modality', option?.value ?? null);
-                                }}
-                                isSearchable={false}
-                                placeholder="Selecciona una modalidad"
-                            />
-                        </FormItem>
-
-                        <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
-                            <DatePicker
-                                value={values.startDate ? stringToTime(values.startDate) : undefined}
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('startDate', selectedDate);
-                                }}
-                            />
-                        </FormItem>
-
-                        <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
-                            <DatePicker
-                                value={values.endDate ? stringToTime(values.endDate) : undefined}
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('endDate', selectedDate);
-                                }}
-                            />
-                        </FormItem>
-
-                        <FormItem name='commissionRate' label='Comision' invalid={Boolean(errors.commissionRate && touched.commissionRate)} errorMessage={errors.commissionRate}>
-                            <Field type='number' name='commissionRate' component={Input} />
-                        </FormItem>
-
-
-
-
-                        <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
-                            <Field type="number" name="capacity" component={Input} />
-                        </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
                             </Button>
                             <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Guardando...' : 'Guardar'}
+                                {isSubmitting ? 'Guardando...' : 'Siguiente'}
                             </Button>
                         </div>
                     </Form>
