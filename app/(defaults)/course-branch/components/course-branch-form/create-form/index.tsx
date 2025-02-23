@@ -1,15 +1,14 @@
 'use client';
 import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { Tab } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
 import FinancialConfigFields from './financial-config-fields';
 import { createCourseBranch } from '../../../lib/request';
-import { useURLSearchParams } from '@/utils/hooks';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -20,12 +19,12 @@ const COURSE_BRANCH_TABS = [
 
 export default function CreateCourseBranchForm() {
     const route = useRouter();
-    const params = useURLSearchParams();
+    const pathname = usePathname();
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const currentTab = () => COURSE_BRANCH_TABS.findIndex(tab => tab === params.currentHash);
-    const onChangeTab = (tab: number) => {
-        console.log('tab', tab);
-        params.setHash(COURSE_BRANCH_TABS[tab]);
+    const handleTabChange = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
     };
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
@@ -42,13 +41,21 @@ export default function CreateCourseBranchForm() {
         }
     };
 
+    useEffect(() => {
+        const hash = window.location.hash.replace('#', '');
+        const tabIndex = COURSE_BRANCH_TABS.indexOf(hash);
+        if (tabIndex !== -1) {
+            setSelectedIndex(tabIndex);
+        }
+    }, []);
+
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-                        <Tab.Group selectedIndex={currentTab()} onChange={onChangeTab}>
+                        <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                             <Tab.List className=" flex flex-wrap">
                                 <Tab as={Fragment}>
                                     {({ selected }) => (

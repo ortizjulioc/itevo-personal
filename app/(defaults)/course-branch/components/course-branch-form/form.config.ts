@@ -37,12 +37,12 @@ export const initialValues = {
     branchId: '',
     teacherId: '',
     courseId: '',
-    amount: null,
+    amount: '',
     modality: MODALITIES.PRESENTIAL,
     startDate: '',
     endDate: '',
-    commissionRate: null,
-    capacity: null,
+    commissionRate: '',
+    capacity: '',
 };
 
 export type CourseBranchFormType = {
