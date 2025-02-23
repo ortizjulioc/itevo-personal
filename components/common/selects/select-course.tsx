@@ -5,7 +5,7 @@ import AsyncSelect from 'react-select/async';
 import { Course } from '@prisma/client';
 import { Select } from '@/components/ui';
 
-interface CourseSelect {
+type SelectCourseType = {
   value: string;
   label: string;
 }
@@ -17,19 +17,19 @@ export interface CoursesResponse {
 
 interface SelectCourseProps {
   value?: string;
-  onChange?: (selected: CourseSelect | null) => void;
+  onChange?: (selected: SelectCourseType | null) => void;
 }
 
 export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
-  const [options, setOptions] = useState<CourseSelect[]>([]);
+  const [options, setOptions] = useState<SelectCourseType[]>([]);
 
-  const fetchCourseData = async (inputValue: string): Promise<CourseSelect[]> => {
+  const fetchCourseData = async (inputValue: string): Promise<SelectCourseType[]> => {
     try {
       const response = await apiRequest.get<CoursesResponse>(`/courses?search=${inputValue}`);
       if (!response.success) {
         throw new Error(response.message);
       }
-   
+
       return response.data?.courses.map(course => ({ value: course.id, label: course.name })) || [];
     } catch (error) {
       console.error('Error fetching Courses data:', error);
@@ -37,7 +37,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: CourseSelect[]) => void) => {
+  const loadOptions = async (inputValue: string, callback: (options: SelectCourseType[]) => void) => {
     const options = await fetchCourseData(inputValue);
     callback(options);
   };
@@ -61,10 +61,10 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
     };
 
     fetchData();
-  
+
   }, [value]);
 
- 
+
 
   return (
     <div>

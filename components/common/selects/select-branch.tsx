@@ -5,7 +5,7 @@ import AsyncSelect from 'react-select/async';
 import { Branch } from '@prisma/client';
 import { Select } from '@/components/ui';
 
-interface BranchSelect {
+export type SelectBranchType = {
   value: string;
   label: string;
 }
@@ -17,19 +17,19 @@ export interface BranchesResponse {
 
 interface SelectBranchProps {
   value?: string;
-  onChange?: (selected: BranchSelect | null) => void;
+  onChange?: (selected: SelectBranchType | null) => void;
 }
 
 export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
-  const [options, setOptions] = useState<BranchSelect[]>([]);
+  const [options, setOptions] = useState<SelectBranchType[]>([]);
 
-  const fetchBranchData = async (inputValue: string): Promise<BranchSelect[]> => {
+  const fetchBranchData = async (inputValue: string): Promise<SelectBranchType[]> => {
     try {
       const response = await apiRequest.get<BranchesResponse>(`/branches?search=${inputValue}`);
       if (!response.success) {
         throw new Error(response.message);
       }
-   
+
       return response.data?.branches.map(branch => ({ value: branch.id, label: branch.name })) || [];
     } catch (error) {
       console.error('Error fetching Branches data:', error);
@@ -37,7 +37,7 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: BranchSelect[]) => void) => {
+  const loadOptions = async (inputValue: string, callback: (options: SelectBranchType[]) => void) => {
     const options = await fetchBranchData(inputValue);
     callback(options);
   };
@@ -61,10 +61,10 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
     };
 
     fetchData();
-  
+
   }, [value]);
 
- 
+
 
   return (
     <div>
