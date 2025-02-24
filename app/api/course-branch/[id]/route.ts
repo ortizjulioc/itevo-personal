@@ -3,6 +3,9 @@ import { findCourseBranchById, updateCourseBranchById, deleteCourseBranchById } 
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { getClassSessions } from '@/utils/date';
+import { getHolidays } from '@/services/holiday-service';
+import { getCourseSchedulesByCourseId } from '@/services/course-schedule-service';
 
 // Obtener courseBranch por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -26,11 +29,30 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     try {
         const { id } = params;
         const body = await request.json();
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get('page') || '1', 10);
+        const top = parseInt(searchParams.get('top') || '10', 10);
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
+        }
+
+        // Traer los horarios de los cursos para calcular las sesiones
+        const { courseSchedules } = await getCourseSchedulesByCourseId({ courseId: id});
+
+        // Traer holidays con el api de holidays
+        const { holidays } = await getHolidays(page, top, '');
+
+        // Calculando las fechas de las sesiones
+        const { startDate, endDate } = body;
+        const schedules = courseSchedules.map((schedule: any) => schedule.schedule);
+
+        if (startDate && endDate && schedules && holidays) {
+            const { count } = getClassSessions(startDate, endDate, schedules, holidays);
+
+            body.sessionCount = count;
         }
 
         // Verificar si el course existe
@@ -43,7 +65,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const updatedCourseBranch = await updateCourseBranchById(id, body);
 
         // Enviar log de auditoría
-
         await createLog({
             action: "PUT",
             description: `Se actualizó un courseBranch. Información anterior: ${JSON.stringify(courseBranch, null, 2)}. Información actualizada: ${JSON.stringify(updatedCourseBranch, null, 2)}`,

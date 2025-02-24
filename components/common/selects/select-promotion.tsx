@@ -4,7 +4,7 @@ import { Promotion } from '@prisma/client';
 import Select from '@/components/ui/select';
 import AsyncSelect from 'react-select/async';
 
-interface PromotionSelect {
+export type SelectPromotionType = {
   value: string;
   label: string;
 }
@@ -16,15 +16,15 @@ export interface PromotionsResponse {
 
 interface SelectPromotionProps {
   value?: string;
-  onChange?: (selected: PromotionSelect | null) => void;
+  onChange?: (selected: SelectPromotionType | null) => void;
 }
 
 export default function SelectPromotion({ value, ...rest }: SelectPromotionProps) {
-  const [options, setOptions] = useState<PromotionSelect[]>([]);
+  const [options, setOptions] = useState<SelectPromotionType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [defaultValue, setDefaultValue] = useState<PromotionSelect | null>(null);
+  const [defaultValue, setDefaultValue] = useState<SelectPromotionType | null>(null);
 
-  const fetchPromotionData = async (inputValue: string = ''): Promise<PromotionSelect[]> => {
+  const fetchPromotionData = async (inputValue: string = ''): Promise<SelectPromotionType[]> => {
     try {
       const query = inputValue ? `search=${inputValue}` : '';
       const response = await apiRequest.get<PromotionsResponse>(`/promotions?${query}`);
@@ -40,7 +40,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
     }
   };
 
-  const loadOptions = async (inputValue: string): Promise<PromotionSelect[]> => {
+  const loadOptions = async (inputValue: string): Promise<SelectPromotionType[]> => {
     setLoading(true);
     const result = await fetchPromotionData(inputValue);
     setLoading(false);
@@ -84,7 +84,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
     }
   }, [value, options]);
 
- 
+
 
   return (
     <div>

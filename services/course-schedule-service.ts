@@ -37,3 +37,18 @@ export const createCourseSchedule = async (data: any) => {
     const courseSchedule = await Prisma.courseSchedule.create({ data: data });
     return courseSchedule;
 };
+
+export const getCourseSchedulesByCourseId = async (courseId: any) => {
+
+    console.log("Este es el courseId que llego a la funcion SchedulesByCourseId: ", courseId);
+    const courseSchedules = await Prisma.courseSchedule.findMany({
+        where: {
+            courseId: courseId.courseId
+        },
+        select: {
+            schedule: true
+        }
+    });
+
+    return {courseSchedules};
+};

@@ -3,14 +3,13 @@ import { validateObject } from '@/utils';
 import { getCourseBranch, createCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranch, CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
 
         // Filtros de búsqueda
-
         const filters = {
             page: parseInt(searchParams.get('page') || '1', 10),
             top: parseInt(searchParams.get('top') || '10', 10),
@@ -18,6 +17,9 @@ export async function GET(request: NextRequest) {
             branchId: searchParams.get('branchId') || undefined,
             teacherId: searchParams.get('teacherId') || undefined,
             courseId: searchParams.get('courseId') || undefined,
+            Modality: searchParams.get('modality') as Modality,
+            startDate: searchParams.get('startDate') || undefined,
+            endDate: searchParams.get('endDate') || undefined,
         }
 
         const { courseBranches, totalCourseBranches } = await getCourseBranch(filters);
@@ -37,8 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ', body);
-        body.status = CourseBranchStatus.WAITING;
+        body.status = CourseBranchStatus.DRAFT;
 
         // Validate the request body
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
+        console.log('post course-branch', body);
         const courseBranch = await createCourseBranch(body);
         await createLog({
             action: 'POST',

@@ -4,7 +4,7 @@ const Prisma = new PrismaClient();
 
 export const getCourseBranch = async (filters: any) => {
 
-    const { search, page, top, promotionId, branchId, teacherId, courseId } = filters;
+    const { page, top, promotionId, branchId, teacherId, courseId, modality } = filters;
     const skip = (page - 1) * top;
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
@@ -26,7 +26,8 @@ export const getCourseBranch = async (filters: any) => {
             promotionId,
             branchId,
             teacherId,
-            courseId
+            courseId,
+            modality,
         },
         skip: skip,
         take: top,
@@ -34,8 +35,11 @@ export const getCourseBranch = async (filters: any) => {
 
     const totalCourseBranches = await Prisma.courseBranch.count({
         where: {
-            // deleted: false,
-            courseId: { contains: search },
+            promotionId,
+            branchId,
+            teacherId,
+            courseId,
+            modality,
         },
     });
 
@@ -43,7 +47,34 @@ export const getCourseBranch = async (filters: any) => {
 };
 
 export const createCourseBranch = async (data: any) => {
-    const courseBranch = await Prisma.courseBranch.create({ data: data });
+    const dataToCreate = {
+        promotion: {
+            connect: {
+                id: data.promotionId,
+            },
+        },
+        branch: {
+            connect: {
+                id: data.branchId,
+            },
+        },
+        teacher: {
+            connect: {
+                id: data.teacherId,
+            },
+        },
+        course: {
+            connect: {
+                id: data.courseId,
+            },
+        }
+    };
+    delete data.promotionId;
+    delete data.branchId;
+    delete data.teacherId;
+    delete data.courseId;
+
+    const courseBranch = await Prisma.courseBranch.create({ data: {...dataToCreate, ...data} });
     return courseBranch;
 };
 
@@ -100,6 +131,7 @@ export const updateCourseBranchById = async (id: string, data: any) => {
             startDate: data.startDate,
             endDate: data.endDate,
             commissionRate: data.commissionRate,
+            sessionCount: data.sessionCount,
         },
     });
 };
