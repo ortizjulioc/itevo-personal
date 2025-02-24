@@ -50,10 +50,10 @@ export type CourseBranchFormType = {
     branchId: string;
     teacherId: string;
     courseId: string;
-    amount: number | null;
-    modality: string;
-    startDate: string;
-    endDate: string;
-    commissionRate: number | null;
-    capacity: number | null;
+    amount?: number | string;
+    modality?: string;
+    startDate?: Date | string;
+    endDate?: Date | string;
+    commissionRate?: number | string;
+    capacity: number | string;
 }

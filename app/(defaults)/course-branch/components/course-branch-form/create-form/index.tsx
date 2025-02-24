@@ -9,6 +9,7 @@ import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
 import FinancialConfigFields from './financial-config-fields';
 import { createCourseBranch } from '../../../lib/request';
+import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -23,6 +24,11 @@ export default function CreateCourseBranchForm() {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const handleTabChange = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
+    };
+
+    const changeTab = (index: number) => {
         setSelectedIndex(index);
         window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
     };
@@ -96,13 +102,39 @@ export default function CreateCourseBranchForm() {
                             </Tab.Panels>
                         </Tab.Group>
 
-                        <div className="mt-6 flex justify-end gap-2">
+                        <div className="mt-6 flex justify-between gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
                             </Button>
-                            <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Guardando...' : 'Siguiente'}
-                            </Button>
+
+                            <div className="flex gap-2">
+                                {selectedIndex > 0 && (
+                                    <Button
+                                        type="button"
+                                        color="secondary"
+                                        onClick={() => changeTab(selectedIndex - 1)}
+                                        icon={<TbArrowLeft />}
+                                    >
+                                        Anterior
+                                    </Button>
+                                )}
+
+                                {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
+                                    <Button
+                                        type="button"
+                                        color="primary"
+                                        onClick={() => changeTab(selectedIndex + 1)}
+                                        icon={<TbArrowRight />}
+                                    >
+                                        Siguiente
+                                    </Button>
+                                )}
+                                {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
+                                    <Button loading={isSubmitting} type="submit">
+                                        {isSubmitting ? 'Guardando...' : 'Finalizar'}
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </Form>
                 )}

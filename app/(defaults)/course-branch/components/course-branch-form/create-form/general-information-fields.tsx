@@ -1,5 +1,5 @@
 import SelectPromotion, { SelectPromotionType } from "@/components/common/selects/select-promotion";
-import { FormItem } from "@/components/ui";
+import { FormItem, Input } from "@/components/ui";
 import { Field, FormikErrors, FormikTouched } from "formik";
 import { CourseBranchFormType } from "../form.config";
 import SelectBranch, { SelectBranchType } from "@/components/common/selects/select-branch";
@@ -69,6 +69,17 @@ export default function GeneralInformationFields({ values, errors, touched }: Ge
                     )}
                 </Field>
             </FormItem>
+
+            <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
+                <Field
+                    type="number"
+                    name="capacity"
+                    component={Input}
+                    placeholder="Ingrese la capacidad de estudiantes para este curso"
+                />
+            </FormItem>
+
+            {/* TODO: Agregar select de estados */}
         </div>
     )
 }

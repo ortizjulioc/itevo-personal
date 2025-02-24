@@ -79,7 +79,7 @@ export default function FinancialConfigFields({ values, errors, touched, setFiel
                 </Field>
             </FormItem>
 
-            <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
+            {/* <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
                 <DatePicker
                     placeholder='Selecciona una fecha'
                     value={values.startDate ? new Date(values.startDate) : undefined}
@@ -99,7 +99,7 @@ export default function FinancialConfigFields({ values, errors, touched, setFiel
                         setFieldValue('endDate', selectedDate);
                     }}
                 />
-            </FormItem>
+            </FormItem> */}
 
             <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
                 <Field type="number" name="capacity" component={Input} />
