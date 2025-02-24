@@ -16,8 +16,9 @@ export interface BranchesResponse {
 }
 
 interface SelectBranchProps {
-  value?: string;
+  value?: string | BranchSelect | null;
   onChange?: (selected: BranchSelect | null) => void;
+
 }
 
 export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
