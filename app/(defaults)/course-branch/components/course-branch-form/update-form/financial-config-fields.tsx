@@ -7,11 +7,12 @@ interface FinancialConfigFieldsProps {
     values: CourseBranchFormType;
     errors: FormikErrors<CourseBranchFormType>;
     touched: FormikTouched<CourseBranchFormType>;
+    className?: string;
 }
 
-export default function FinancialConfigFields({ errors, touched }: FinancialConfigFieldsProps) {
+export default function FinancialConfigFields({ errors, touched, className }: FinancialConfigFieldsProps) {
     return (
-        <div className="mt-6">
+        <div className={className}>
             <FormItem
                 extra={(<Tooltip title={"Este es el costo que tendrá cada cuota del curso.\nEste monto será cobrado en cada clase."}><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
                 name='amount'
@@ -52,28 +53,6 @@ export default function FinancialConfigFields({ errors, touched }: FinancialConf
                     )}
                 </Field>
             </FormItem>
-
-            {/* <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
-                <DatePicker
-                    placeholder='Selecciona una fecha'
-                    value={values.startDate ? new Date(values.startDate) : undefined}
-                    onChange={(date: Date | Date[]) => {
-                        const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                        setFieldValue('startDate', selectedDate);
-                    }}
-                />
-            </FormItem>
-
-            <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
-                <DatePicker
-                    placeholder='Selecciona una fecha'
-                    value={values.endDate ? new Date(values.endDate) : undefined}
-                    onChange={(date: Date | Date[]) => {
-                        const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                        setFieldValue('endDate', selectedDate);
-                    }}
-                />
-            </FormItem> */}
 
             {/* <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
                 <Field type="number" name="capacity" component={Input} />

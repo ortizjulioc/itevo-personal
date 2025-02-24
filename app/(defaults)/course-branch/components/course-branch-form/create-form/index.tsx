@@ -3,7 +3,7 @@ import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
 import { usePathname, useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
-import { createValidationSchema, initialValues } from '../form.config';
+import { createValidationSchema, createInitialValues as initialValues } from '../form.config';
 import { Tab } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
@@ -13,9 +13,9 @@ import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
-    'financial-config',
-    'schedule-assignment',
-    'confirmation',
+    // 'financial-config',
+    // 'schedule-assignment',
+    // 'confirmation',
 ];
 
 export default function CreateCourseBranchForm() {
@@ -40,7 +40,7 @@ export default function CreateCourseBranchForm() {
         console.log(resp)
         if (resp.success) {
             openNotification('success', 'Curso creado correctamente');
-            route.push(`/course-branch/${resp.data?.id}`);
+            route.push(`/course-branch/${resp.data?.id}?new=true#schedule-assignment`);
         } else {
             openNotification('error', resp.message);
             setSubmitting(false);
@@ -59,7 +59,7 @@ export default function CreateCourseBranchForm() {
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched, setFieldValue }) => (
+                {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
                         <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                             <Tab.List className=" flex flex-wrap">
@@ -72,7 +72,7 @@ export default function CreateCourseBranchForm() {
                                         </button>
                                     )}
                                 </Tab>
-                                <Tab as={Fragment}>
+                                {/* <Tab as={Fragment}>
                                     {({ selected }) => (
                                         <button
                                             className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
@@ -80,12 +80,12 @@ export default function CreateCourseBranchForm() {
                                             Configuración financiera
                                         </button>
                                     )}
-                                </Tab>
-                                {/* <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Configuración financiera
                                 </Tab> */}
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Asignación de horarios
+                                    Modalidad y horarios
+                                </Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Configuración financiera
                                 </Tab>
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
                                     Confirmación
@@ -93,11 +93,11 @@ export default function CreateCourseBranchForm() {
                             </Tab.List>
                             <Tab.Panels>
                                 <Tab.Panel>
-                                    <GeneralInformationFields values={values} errors={errors} touched={touched}     />
+                                    <GeneralInformationFields values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
 
                                 <Tab.Panel>
-                                    <FinancialConfigFields values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
+                                    <FinancialConfigFields values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
@@ -122,7 +122,7 @@ export default function CreateCourseBranchForm() {
                                 {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
                                     <Button
                                         type="button"
-                                        color="primary"
+                                        color="secondary"
                                         onClick={() => changeTab(selectedIndex + 1)}
                                         icon={<TbArrowRight />}
                                     >
@@ -131,7 +131,7 @@ export default function CreateCourseBranchForm() {
                                 )}
                                 {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
                                     <Button loading={isSubmitting} type="submit">
-                                        {isSubmitting ? 'Guardando...' : 'Finalizar'}
+                                        {isSubmitting ? 'Guardando...' : 'Continuar'}
                                     </Button>
                                 )}
                             </div>

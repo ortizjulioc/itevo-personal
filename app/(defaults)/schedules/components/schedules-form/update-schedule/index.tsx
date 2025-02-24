@@ -6,10 +6,8 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Schedule } from '@prisma/client';
 import Select from 'react-select';
-import { updateSchedule } from '@/app/(defaults)/settings/lib/schedules/request';
 import DatePicker from '@/components/ui/date-picker';
-
-
+import { updateSchedule } from '../../../lib/request';
 interface WeekOption {
     value: number;
     label: string;

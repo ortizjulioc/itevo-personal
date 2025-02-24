@@ -7,7 +7,7 @@ export interface ScheduleResponse {
     totalSchedules: number;
 }
 
-const useFetchSchedule = (query: string) => {
+const useFetchSchedule = (query: string = '') => {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [totalSchedules, setTotalSchedules] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);

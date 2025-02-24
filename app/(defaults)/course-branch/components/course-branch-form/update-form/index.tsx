@@ -1,62 +1,44 @@
 'use client';
-import { Button,  FormItem, Input, Select } from '@/components/ui';
-import { Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui';
+import { Form, Formik } from 'formik';
+import { usePathname, useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
 import { updateCourseBranch } from '../../../lib/request';
-import DatePicker from '@/components/ui/date-picker';
-import SelectPromotion from '@/components/common/selects/select-promotion';
-import { MODALITIES } from '@/constants/modality.constant';
-import SelectBranch from '@/components/common/selects/select-branch';
-import SelectTeacher from '@/components/common/selects/select-teacher';
-import SelectCourse from '@/components/common/selects/select-course';
+import { Tab } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
+import GeneralInformationFields from './general-information-fields';
+import FinancialConfigFields from './financial-config-fields';
+import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
+import ScheduleAssignmentFields from './schedule-assignment-fields';
 
-
-
-interface OptionSelect {
-  value: string;
-  label: string;
-}
-
-interface ModalityOption {
-  value: string;
-  label: string;
-}
-
-const modalities: ModalityOption[] = [
-  { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
-  { value: MODALITIES.VIRTUAL, label: 'Virtual' },
-  { value: MODALITIES.HYBRID, label: 'Hibrido' },
+const COURSE_BRANCH_TABS = [
+    'general-information',
+    'schedule-assignment',
+    'financial-config',
+    'confirmation',
 ];
-
-const stringToTime = (time: string | Date) => {
-  if (time instanceof Date) {
-    return time; // Si ya es un objeto Date, retornarlo
-  }
-
-  if (typeof time === 'string') {
-    const [hours, minutes] = time.split(':');
-    return new Date(new Date().setHours(Number(hours), Number(minutes), 0, 0));
-  }
-
-  return new Date();
-};
-
 
 export default function UpdateCourseBranchForm({ initialValues }: { initialValues: CourseBranch }) {
     const route = useRouter();
-    
+    const pathname = usePathname();
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    console.log(initialValues);
 
+    const handleTabChange = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
+    };
 
+    const changeTab = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
+    };
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-       
-
-
         const resp = await updateCourseBranch(initialValues.id, data);
 
         if (resp.success) {
@@ -67,22 +49,72 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
         }
         setSubmitting(false);
     };
-    const formattedInitialValues = {
-        ...initialValues,
-        startDate: new Date(initialValues.startDate),
-        endDate: new Date(initialValues.endDate),
-    };
-    
+
+    useEffect(() => {
+        const hash = window.location.hash.replace('#', '');
+        const tabIndex = COURSE_BRANCH_TABS.indexOf(hash);
+        if (tabIndex !== -1) {
+            setSelectedIndex(tabIndex);
+        }
+    }, []);
 
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Oferta academica</h4>
-            <Formik initialValues={formattedInitialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
+            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+                {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
 
+                        <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
+                            <Tab.List className=" flex flex-wrap">
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Información general
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Modalidad y horarios
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Configuración financiera
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Confirmación
+                                </Tab>
+                            </Tab.List>
+                            <Tab.Panels>
+                                <Tab.Panel>
+                                    <GeneralInformationFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
 
-                        <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
+                                <Tab.Panel>
+                                    <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
+
+                                <Tab.Panel>
+                                    <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
+                            </Tab.Panels>
+                        </Tab.Group>
+
+
+                        {/* <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
                             <SelectPromotion
                                 value={values.promotionId}
                                 onChange={(option: OptionSelect | null) => {
@@ -163,17 +195,43 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
                         <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
                             <Field type="number" name="capacity" component={Input} />
-                        </FormItem>
+                        </FormItem> */}
 
 
 
-                        <div className="mt-6 flex justify-end gap-2">
+                        <div className="mt-6 flex justify-between gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
                             </Button>
-                            <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Guardando...' : 'Guardar'}
-                            </Button>
+
+                            <div className="flex gap-2">
+                                {selectedIndex > 0 && (
+                                    <Button
+                                        type="button"
+                                        color="secondary"
+                                        onClick={() => changeTab(selectedIndex - 1)}
+                                        icon={<TbArrowLeft />}
+                                    >
+                                        Anterior
+                                    </Button>
+                                )}
+
+                                {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
+                                    <Button
+                                        type="button"
+                                        color="secondary"
+                                        onClick={() => changeTab(selectedIndex + 1)}
+                                        icon={<TbArrowRight />}
+                                    >
+                                        Siguiente
+                                    </Button>
+                                )}
+                                {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
+                                    <Button loading={isSubmitting} type="submit">
+                                        {isSubmitting ? 'Guardando...' : 'Finalizar'}
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </Form>
                 )}
