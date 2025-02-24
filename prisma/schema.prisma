@@ -1,5 +1,5 @@
 generator client {
-    provider        = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -22,6 +22,7 @@ model User {
     updatedAt DateTime @updatedAt @map("updated_at")
 
     roleBranch UserRoleBranch[]
+
     @@map("users")
 }
 
@@ -34,6 +35,7 @@ model Role {
     updatedAt      DateTime @updatedAt @map("updated_at")
 
     userRole UserRoleBranch[]
+
     @@map("roles")
 }
 
@@ -48,6 +50,7 @@ model Branch {
 
     userRole     UserRoleBranch[]
     courseBranch CourseBranch[]
+
     @@map("branches")
 }
 
@@ -154,10 +157,10 @@ model CourseBranch {
     branchId       String             @map("branch_id") // ID de la sucursal
     teacherId      String             @map("teacher_id") // ID del profesor
     courseId       String             @map("course_id") // ID del curso
-    amount         Float              @default(0)// Monto
-    modality       Modality                           // Modalidad: presencial, virtual, hibrido
-    startDate      DateTime?           @map("start_date") // Fecha de inicio
-    endDate        DateTime?           @map("end_date") // Fecha de fin
+    amount         Float              @default(0) // Monto
+    modality       Modality // Modalidad: presencial, virtual, hibrido
+    startDate      DateTime?          @map("start_date") // Fecha de inicio
+    endDate        DateTime?          @map("end_date") // Fecha de fin
     commissionRate Float              @default(0) @map("commission_rate") // Porcentaje de comisión
     capacity       Int                @default(0) // Capacidad
     sessionCount   Int                @default(0) @map("session_count") // Cantidad de sesiones
@@ -193,10 +196,12 @@ enum CourseBranchStatus {
 }
 
 model Schedule {
-    id        String   @id @default(uuid())
-    startTime String   @map("start_time") // Hora de inicio
-    endTime   String   @map("end_time") // Hora de fin
+    id        String @id @default(uuid())
+    startTime String @map("start_time") // Hora de inicio
+    endTime   String @map("end_time") // Hora de fin
     weekday   Int // Día de la semana (0 = Domingo, 6 = Sábado)
+
+    deleted   Boolean  @default(false)
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -216,7 +221,6 @@ model CourseSchedule {
     schedule Schedule     @relation(fields: [scheduleId], references: [id])
 
     @@id([courseId, scheduleId]) // Combinación de claves primarias
-
     @@map("courses_schedules")
 }
 

@@ -75,6 +75,27 @@ export default function CreateScheduleForm({ setOpenModal, setSchedules }: { set
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
+                        
+                        <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
+                            <Select
+                                name="weekday"
+                                options={weekOptions}
+                                value={weekOptions.find((opt) => opt.value === values.weekday)} 
+                                onChange={(option: WeekOption | null) => {
+                                    setFieldValue('weekday', option?.value ?? null); 
+                                }}
+                                isSearchable={false}
+                                placeholder="Selecciona un día"
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    menuPortal: (base: React.CSSProperties) => ({
+                                        ...base,
+                                        zIndex: 9999, 
+                                    }),
+                                }}
+                            />
+                        </FormItem>
+
                         <FormItem name="startTime" label="Hora de inicio" invalid={Boolean(errors.startTime && touched.startTime)} errorMessage={errors.startTime}>
                             <DatePicker
                                 mode="time"
@@ -93,26 +114,6 @@ export default function CreateScheduleForm({ setOpenModal, setSchedules }: { set
                                 onChange={(date: Date | Date[]) => {
                                     const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
                                     setFieldValue('endTime', selectedDate);
-                                }}
-                            />
-                        </FormItem>
-
-                        <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
-                            <Select
-                                name="weekday"
-                                options={weekOptions}
-                                value={weekOptions.find((opt) => opt.value === values.weekday)} 
-                                onChange={(option: WeekOption | null) => {
-                                    setFieldValue('weekday', option?.value ?? null); 
-                                }}
-                                isSearchable={false}
-                                placeholder="Selecciona un día"
-                                menuPortalTarget={document.body}
-                                styles={{
-                                    menuPortal: (base: React.CSSProperties) => ({
-                                        ...base,
-                                        zIndex: 9999, 
-                                    }),
                                 }}
                             />
                         </FormItem>

@@ -28,7 +28,7 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
     const handleSubmit = async (values: any) => {
         const formatTime = (isoTime: string): string => {
             const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/;
-            
+
             if (timeRegex.test(isoTime)) {
                 return isoTime;
             }
@@ -59,7 +59,7 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
 
     const stringToTime = (time: string | Date) => {
         if (time instanceof Date) {
-            return time; 
+            return time;
         }
 
         if (typeof time === 'string') {
@@ -80,6 +80,26 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
             >
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
+
+                        <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
+                            <Select
+                                name="weekday"
+                                options={weekOptions}
+                                value={weekOptions.find((opt) => opt.value === values.weekday)}
+                                onChange={(option: WeekOption | null) => {
+                                    setFieldValue('weekday', option?.value ?? null);
+                                }}
+                                isSearchable={false}
+                                placeholder="Selecciona un día"
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    menuPortal: (base: React.CSSProperties) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </FormItem>
 
                         <FormItem name="startTime" label="Hora de inicio" invalid={Boolean(errors.startTime && touched.startTime)} errorMessage={errors.startTime}>
                             <DatePicker
@@ -102,27 +122,6 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
                                 }}
                             />
                         </FormItem>
-
-                        <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
-                            <Select
-                                name="weekday"
-                                options={weekOptions}
-                                value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                onChange={(option: WeekOption | null) => {
-                                    setFieldValue('weekday', option?.value ?? null);
-                                }}
-                                isSearchable={false}
-                                placeholder="Selecciona un día"
-                                menuPortalTarget={document.body}
-                                styles={{
-                                    menuPortal: (base: React.CSSProperties) => ({
-                                        ...base,
-                                        zIndex: 9999,
-                                    }),
-                                }}
-                            />
-                        </FormItem>
-
 
 
                         <div className="mt-6 flex justify-end gap-2">

@@ -11,6 +11,63 @@ export function convertToAmPm(time: string): string {
     return `${hour12}:${minute} ${period}`;
 }
 
+export function getHoursDifference(startTime: string, endTime: string): number {
+    // Convertir las horas a minutos para facilitar el cálculo
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    
+    // Calcular total de minutos para cada hora
+    const startTotalMinutes = startHours * 60 + startMinutes;
+    const endTotalMinutes = endHours * 60 + endMinutes;
+    
+    // Calcular la diferencia en minutos
+    let diffMinutes = endTotalMinutes - startTotalMinutes;
+    
+    // Si la diferencia es negativa, asumimos que pasa al día siguiente
+    if (diffMinutes < 0) {
+        diffMinutes += 24 * 60; // Agregar 24 horas en minutos
+    }
+    
+    // Convertir a horas con decimales
+    const diffHours = diffMinutes / 60;
+    
+    return diffHours;
+}
+
+export function hoursToText(hours: number): string {
+    // Obtener las horas enteras
+    const fullHours = Math.floor(hours);
+    // Obtener los minutos (parte decimal * 60)
+    const minutes = Math.round((hours - fullHours) * 60);
+    
+    let result = '';
+    
+    // Construir la parte de las horas
+    if (fullHours > 0) {
+        result += `${fullHours} ${fullHours === 1 ? 'hora' : 'horas'}`;
+    }
+    
+    // Agregar la parte de los minutos si existen
+    if (minutes > 0) {
+        if (fullHours > 0) {
+            result += ' y ';
+        }
+        result += `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
+    }
+    
+    // Caso especial: si es 0 horas y 0 minutos
+    if (fullHours === 0 && minutes === 0) {
+        result = '0 horas';
+    }
+    
+    return result;
+}
+
+export function getHoursDifferenceText(startTime: string, endTime: string): string {
+    const hours = getHoursDifference(startTime, endTime);
+    return hoursToText(hours);
+}
+
 /**
  * Convierte una fecha en formato Date a una nueva fecha local (a las 00:00:00)
  * usando sus componentes (año, mes y día).

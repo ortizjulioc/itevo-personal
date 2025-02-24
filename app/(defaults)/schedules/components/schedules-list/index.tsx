@@ -6,7 +6,7 @@ import Tooltip from "@/components/ui/tooltip";
 import Skeleton from "@/components/common/Skeleton";
 import { useState } from "react";
 import { Schedule } from "@prisma/client";
-import { convertToAmPm } from "@/utils/date";
+import { convertToAmPm, getHoursDifferenceText } from "@/utils/date";
 import { TbPlus } from "react-icons/tb";
 import { deleteSchedule } from "../../lib/request";
 import useFetchSchedule from "../../lib/use-fetch-schedules";
@@ -78,9 +78,10 @@ export default function ScheduleList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
+                            <th>DIA DE LA SEMANA</th>
                             <th>FECHA INICIO</th>
                             <th>FECHA FIN</th>
-                            <th>DIA DE LA SEMANA</th>
+                            <th>DURACIÓN</th>
                             <th />
                         </tr>
                     </thead>
@@ -92,9 +93,10 @@ export default function ScheduleList({ className, query = '' }: Props) {
                         )}
                         {schedules?.map((schedule) => (
                             <tr key={schedule.id}>
+                                <td>{WEEKDAY[schedule.weekday]}</td>
                                 <td>{convertToAmPm(schedule.startTime)}</td>
                                 <td>{convertToAmPm(schedule.endTime)}</td>
-                                <td>{WEEKDAY[schedule.weekday]}</td>
+                                <td>{getHoursDifferenceText(schedule.startTime, schedule.endTime)}</td>
                                 <td>
                                     <div className="flex gap-2 justify-end">
                                         <Tooltip title="Eliminar">

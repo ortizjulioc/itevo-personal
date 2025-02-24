@@ -6,6 +6,7 @@ import ViewTitle from "@/components/common/ViewTitle";
 // import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
 import ScheduleList from "./components/schedules-list";
+import SchedulesCalendar from "./components/schedules-calendar";
 
 export const metadata: Metadata = {
     title: 'Horario de clases',
@@ -22,7 +23,11 @@ export default function Users({ searchParams }: UsersProps) {
     const query = objectToQueryString(searchParams || {});
     return (
         <div>
-            <ViewTitle className='mb-6' title="Horario de clases"/>
+            <div>
+               <ViewTitle className='mb-6' title="Horario de clases"/>
+            </div>
+
+            {/* <SchedulesCalendar /> */}
             <ScheduleList />
         </div>
     );
