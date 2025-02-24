@@ -11,13 +11,17 @@ import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
-import { MODALITIES } from "@/constants/modality.constant";
 
 
 
 interface Props {
     className?: string;
     query?: string;
+}
+const MODALITIES ={
+    PRESENTIAL: 'Presencial',
+    VIRTUAL: 'Virtual',
+    HYBRID: 'Hibrido',
 }
 
 export default function CourseBranchList({ className, query = '' }: Props) {
@@ -26,6 +30,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
+    
 
 
     const onDelete = async (id: string) => {
