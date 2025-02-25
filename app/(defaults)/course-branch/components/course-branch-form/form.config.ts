@@ -16,8 +16,8 @@ export const updateValidationSchema = Yup.object().shape({
     courseId: Yup.string().required('El curso es obligatorio'),
     amount: Yup.number().required('El monto es obligatorio'),
     modality: Yup.string().required('La modalidad es obligatoria'),
-    startDate: Yup.string().required('La fecha de inicio es obligatoria'), // Cambiado a Yup.date()
-    endDate: Yup.string().required('La fecha de fin es obligatoria'), // Cambiado a Yup.date()
+    startDate: Yup.string().required('La fecha de inicio es obligatoria').nullable(), // Cambiado a Yup.date()
+    endDate: Yup.string().required('La fecha de fin es obligatoria').nullable(), // Cambiado a Yup.date()
     commissionRate: Yup.number()
         .typeError('La comisión debe ser un número')
         .min(0, 'La comisión no puede ser menor a 0')

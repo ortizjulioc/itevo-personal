@@ -69,4 +69,34 @@ export const useFetchScheduleById = (id: string) => {
     return { Schedule, loading, error, setSchedule };
 }
 
+export const useFetchScheduleByCourseId = (courseId: string) => {
+    const [schedules, setSchedules] = useState<Schedule[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchSchedulesData = async (courseId: string) => {
+            try {
+                const response = await apiRequest.get<ScheduleResponse>(`/courses/${courseId}/schedules`);
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                setSchedules(response.data?.schedules || []);
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('Ha ocurrido un error al obtener los horarios');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSchedulesData(courseId);
+    }, [courseId]);
+
+    return { schedules, loading, error, setSchedules };
+};
+
 export default useFetchSchedule;

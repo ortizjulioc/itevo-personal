@@ -12,3 +12,7 @@ export const updateCourseBranch = async (id: string, courseBranch: CourseBranch)
 export const deleteCourseBranch = async (id: string) => {
   return await apiRequest.remove<string>(`/course-branch/${id}`);
 };
+
+export const assignScheduleToCourseBranch = async (courseId: string, scheduleId: string) => {
+  return await apiRequest.post(`/courses/${courseId}/schedules`, { scheduleId });
+};

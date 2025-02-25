@@ -1,12 +1,10 @@
 import 'server-only';
 import { PrismaClient } from "@prisma/client";
-import { getClassSessions } from '@/utils/date';
 const Prisma = new PrismaClient();
 
 export const getCourseSchedules = async (filters: any) => {
 
-    const { page, top, courseId, scheduleId } = filters;
-    const skip = (page - 1) * top;
+    const {courseId, scheduleId } = filters;
     const courseSchedules = await Prisma.courseSchedule.findMany({
         orderBy: [
             { courseId: 'asc' },
@@ -19,8 +17,6 @@ export const getCourseSchedules = async (filters: any) => {
             courseId,
             scheduleId
         },
-        skip: skip,
-        take: top,
     });
 
     const totalCourseSchedules = await Prisma.courseSchedule.count({
@@ -33,22 +29,38 @@ export const getCourseSchedules = async (filters: any) => {
     return { courseSchedules, totalCourseSchedules };
 };
 
+export const getCourseSchedulesByIds = async (courseId: any, scheduleId: any) => {
+    const courseSchedule = await Prisma.courseSchedule.findFirst({
+        where: {
+            courseId,
+            scheduleId
+        },
+    });
+
+    return courseSchedule;
+}
+
 export const createCourseSchedule = async (data: any) => {
     const courseSchedule = await Prisma.courseSchedule.create({ data: data });
     return courseSchedule;
 };
 
 export const getCourseSchedulesByCourseId = async (courseId: any) => {
+    return await Prisma.courseSchedule.findMany({
+        where: { courseId },
+        include: { schedule: true },
+    });
+};
 
-    console.log("Este es el courseId que llego a la funcion SchedulesByCourseId: ", courseId);
-    const courseSchedules = await Prisma.courseSchedule.findMany({
+export const deleteCourseSchedule = async (courseId: any, scheduleId: any) => {
+    const courseSchedule = await Prisma.courseSchedule.delete({
         where: {
-            courseId: courseId.courseId
+            courseId_scheduleId: {
+                courseId,
+                scheduleId
+            }
         },
-        select: {
-            schedule: true
-        }
     });
 
-    return {courseSchedules};
-};
+    return courseSchedule;
+}
