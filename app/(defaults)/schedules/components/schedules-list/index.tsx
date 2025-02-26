@@ -33,7 +33,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
     const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | undefined>(undefined); // State for the schedule being edited
 
     const { loading, error, schedules, setSchedules, totalSchedules } = useFetchSchedule(query);
-    
+
     if (error) {
         openNotification('error', error);
     }
@@ -61,19 +61,6 @@ export default function ScheduleList({ className, query = '' }: Props) {
 
     return (
         <div className={className}>
-            <div className="flex justify-end mb-4">
-                <Button
-                    variant="default"
-                    icon={<TbPlus className="size-4" />}
-                    onClick={() => {
-                        setScheduleToEdit(undefined); // Clear schedule when adding a new one
-                        setOpenModal(true);
-                    }}
-                    size="sm"
-                >
-                    Agregar Horario
-                </Button>
-            </div>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
                 <table className="table-hover">
                     <thead>
@@ -104,7 +91,7 @@ export default function ScheduleList({ className, query = '' }: Props) {
                                         </Tooltip>
                                         <Tooltip title="Editar">
                                             <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} onClick={() => {
-                                                setScheduleToEdit(schedule); 
+                                                setScheduleToEdit(schedule);
                                                 setOpenModal(true);
                                             }} />
                                         </Tooltip>

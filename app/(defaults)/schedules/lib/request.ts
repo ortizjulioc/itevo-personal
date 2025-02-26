@@ -6,8 +6,8 @@ export interface ScheduleResponse {
     totalSchedules: number;
 }
 
-export const createSchedule = async (schedule: Schedule) => {
-    return await apiRequest.post<Schedule>('/schedules', schedule);
+export const createSchedule = async (schedule: Omit<Schedule, 'id' | 'createdAt'| 'updatedAt' | 'deleted'>) => {
+    return await apiRequest.post<Omit<Schedule, 'id' | 'createdAt'| 'updatedAt' | 'deleted'>>('/schedules', schedule);
 }
 
 export const updateSchedule = async (id: string, schedule: Schedule) => {
