@@ -1,20 +1,15 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
-import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconPlusCircle, IconTrashLines } from "@/components/icon";
-import Tooltip from "@/components/ui/tooltip";
-import Skeleton from "@/components/common/Skeleton";
-import { useState } from "react";
+import { SvgSpinner } from "@/assets/svgs/loading-1.";
+import Loading from "@/components/layouts/loading";
+import { confirmDialog } from "@/utils";
+import { convertTimeFrom24To12Format, getHoursDifferenceText } from "@/utils/date";
 import { Schedule } from "@prisma/client";
-import { convertToAmPm, getHoursDifferenceText } from "@/utils/date";
-import { TbPlus } from "react-icons/tb";
-import { deleteSchedule } from "../../lib/request";
-import useFetchSchedule from "../../lib/use-fetch-schedules";
-import ScheduleModal from "../schedules-modal";
 
 interface Props {
     className?: string;
-    query?: string;
+    onDeleted?: (id: string) => void;
+    schedules: Schedule[];
+    loading?: boolean;
 }
 
 const WEEKDAY = [
@@ -27,96 +22,79 @@ const WEEKDAY = [
     'Sábado',
 ]
 
-export default function ScheduleList({ className, query = '' }: Props) {
-    const params = queryStringToObject(query);
-    const [openModal, setOpenModal] = useState(false);
-    const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | undefined>(undefined); // State for the schedule being edited
+function groupSchedulesByWeekday(schedules: Schedule[]): { [key: number]: Omit<Schedule, 'weekday' | 'deleted'>[] } {
+    const groupedByWeekday: { [key: number]: Omit<Schedule, 'weekday' | 'deleted'>[] } = {};
 
-    const { loading, error, schedules, setSchedules, totalSchedules } = useFetchSchedule(query);
+    schedules.forEach(schedule => {
+        if (!schedule.deleted) {
+            const weekday = schedule.weekday;
+            if (!groupedByWeekday[weekday]) {
+                groupedByWeekday[weekday] = [];
+            }
+            groupedByWeekday[weekday].push({
+                id: schedule.id,
+                startTime: schedule.startTime,
+                endTime: schedule.endTime,
+                createdAt: schedule.createdAt,
+                updatedAt: schedule.updatedAt
+            });
+        }
+    });
 
-    if (error) {
-        openNotification('error', error);
-    }
+    return groupedByWeekday;
+}
 
-    const onDelete = async (id: string) => {
+export default function ScheduleList({ className, schedules, onDeleted, loading }: Props) {
+    const groupedSchedules = groupSchedulesByWeekday(schedules);
 
+    const handleDeleteSchedule = (id: string) => {
         confirmDialog({
-            title: 'Eliminar Horario',
+            title: 'Eliminar horario',
             text: '¿Seguro que quieres eliminar este horario?',
             confirmButtonText: 'Sí, eliminar',
             icon: 'error'
-        }, async () => {
-            const resp = await deleteSchedule(id);
-            if (resp.success) {
-                setSchedules(schedules?.filter((schedule) => schedule.id !== id));
-                openNotification('success', 'Horario eliminado correctamente');
-                return;
-            } else {
-                openNotification('error', resp.message);
-            }
-        });
-    }
-
-    if (loading) return <Skeleton rows={6} columns={['FECHA INICIO', 'FECHA FIN', 'DIA DE LA SEMANA', '']} />;
+        }, async () => onDeleted?.(id));
+    };
 
     return (
-        <div className={className}>
-            <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
-                <table className="table-hover">
-                    <thead>
-                        <tr>
-                            <th>DIA DE LA SEMANA</th>
-                            <th>FECHA INICIO</th>
-                            <th>FECHA FIN</th>
-                            <th>DURACIÓN</th>
-                            <th />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {schedules?.length === 0 && (
-                            <tr>
-                                <td colSpan={5} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron horarios registrados</td>
-                            </tr>
-                        )}
-                        {schedules?.map((schedule) => (
-                            <tr key={schedule.id}>
-                                <td>{WEEKDAY[schedule.weekday]}</td>
-                                <td>{convertToAmPm(schedule.startTime)}</td>
-                                <td>{convertToAmPm(schedule.endTime)}</td>
-                                <td>{getHoursDifferenceText(schedule.startTime, schedule.endTime)}</td>
-                                <td>
-                                    <div className="flex gap-2 justify-end">
-                                        <Tooltip title="Eliminar">
-                                            <Button onClick={() => onDelete(schedule.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                                        </Tooltip>
-                                        <Tooltip title="Editar">
-                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} onClick={() => {
-                                                setScheduleToEdit(schedule);
-                                                setOpenModal(true);
-                                            }} />
-                                        </Tooltip>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <Pagination
-                    currentPage={parseInt(params?.page || '1')}
-                    total={totalSchedules}
-                    top={parseInt(params?.top || '10')}
-                />
-            </div>
+        <div className={`panel ${className}`}>
+            {loading && (
+                <div className="flex items-center justify-center">
+                    <SvgSpinner className="size-14" />
+                </div>
+            )}
 
-            {/* Schedule Modal for editing/creating */}
-            <ScheduleModal
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                value={scheduleToEdit}
-                setSchedules={setSchedules}
-            />
+            {/* Visualización de horarios por día */}
+            <div className="">
+                {WEEKDAY.map((day, index) => {
+                    const daySchedules = groupedSchedules[index] || [];
+                    if (daySchedules.length === 0) return null;
+
+                    return (
+                        <div key={index} className="border-b pb-2">
+                            <h3 className="text-lg font-medium text-gray-700">{day}</h3>
+                            <div className="mt-2 space-y-2">
+                                {daySchedules.map((schedule) => (
+                                    <div
+                                        key={schedule.id}
+                                        className="flex items-center justify-between p-2 bg-gray-100 hover:bg-gray-200 rounded-md"
+                                    >
+                                        <span className="text-gray-800">
+                                            {convertTimeFrom24To12Format(schedule.startTime)} - {convertTimeFrom24To12Format(schedule.endTime)} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
+                                        </span>
+                                        <button
+                                            onClick={() => handleDeleteSchedule(schedule.id)}
+                                            className="text-red-500 hover:text-red-700 font-medium"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }

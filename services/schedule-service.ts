@@ -2,8 +2,7 @@ import 'server-only';
 import { PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
-export const getSchedules = async (page: number, top: number, weekday: number | null, startTime: string | null, endTime: string | null) => {
-    const skip = (page - 1) * top;
+export const getSchedules = async (weekday: number | null, startTime: string | null, endTime: string | null) => {
     const whereCondition: any = { deleted: false };
 
     if (weekday !== null) {
@@ -19,8 +18,6 @@ export const getSchedules = async (page: number, top: number, weekday: number | 
             { id: 'asc' },
         ],
         where: whereCondition,
-        skip: skip,
-        take: top,
     });
 
     const totalSchedules = await Prisma.schedule.count({

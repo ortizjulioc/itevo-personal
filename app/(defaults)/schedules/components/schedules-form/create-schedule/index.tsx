@@ -24,7 +24,7 @@ const weekOptions: WeekOption[] = [
 
 ];
 
-export default function CreateScheduleForm() {
+export default function CreateScheduleForm({ onCreated }: { onCreated?: (schedule: any) => void }) {
 
     const handleSubmit = async (values: ScheduleFormType, { setSubmitting }: any) => {
         setSubmitting(true);
@@ -32,6 +32,7 @@ export default function CreateScheduleForm() {
 
         if (resp.success) {
             openNotification('success', 'Horario creado correctamente');
+            onCreated?.(resp.data);
         } else {
             openNotification('error', resp.message);
         }
@@ -40,6 +41,7 @@ export default function CreateScheduleForm() {
 
     return (
         <div className='panel px-4'>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de creacion de horario</h4>
             <Formik
                 initialValues={initialValues}
                 validationSchema={createValidationSchema}
@@ -85,14 +87,14 @@ export default function CreateScheduleForm() {
 
                             <FormItem
                                 name="endTime"
-                                label="Hora de fin"
+                                label="Hora de finalización"
                                 invalid={Boolean(errors.endTime && touched.endTime)}
                                 errorMessage={errors.endTime}
                             >
                                 <Field
                                     type="time"
                                     name="endTime"
-                                    placeholder="Hora de fin"
+                                    placeholder="Hora de finalización"
                                     className="min-w-[200px]"
                                     component={Input}
                                 />

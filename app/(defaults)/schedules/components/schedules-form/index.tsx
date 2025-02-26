@@ -5,41 +5,20 @@ import { TbPlus, TbX } from "react-icons/tb";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function SchedulesForm({ className }: { className?: string }) {
-    const [isFormVisible, setIsFormVisible] = useState(false);
+interface SchedulesFormProps {
+    isFormVisible: boolean;
+    className?: string;
+    onCreated?: (schedule: any) => void;
+}
 
-    const toggleForm = () => {
-        setIsFormVisible(prev => !prev);
-        console.log('New schedule toggled');
-    };
+export default function SchedulesForm({
+    onCreated,
+    isFormVisible,
+    className
+}: SchedulesFormProps) {
 
     return (
         <div className={`space-y-4 ${className}`}>
-            <div className="flex justify-end">
-                {isFormVisible && (
-                    <Button
-                        color="danger"
-                        variant="default"
-                        icon={<TbX className="size-4" />}
-                        onClick={toggleForm}
-                        size="sm"
-                        className="transition-all duration-200 hover:shadow-md"
-                    >
-                        Cerrar
-                    </Button>
-                )}
-                {!isFormVisible && (
-                    <Button
-                        variant="default"
-                        icon={<TbPlus className="size-4" />}
-                        onClick={toggleForm}
-                        size="sm"
-                        className="transition-all duration-200 hover:shadow-md"
-                    >
-                        Agregar Horario
-                    </Button>
-                )}
-            </div>
             <AnimatePresence>
                 {isFormVisible && (
                     <motion.div
@@ -50,7 +29,7 @@ export default function SchedulesForm({ className }: { className?: string }) {
                         style={{ position: "relative", zIndex: 50 }}
                     >
                         <div className="">
-                            <CreateScheduleForm />
+                            <CreateScheduleForm onCreated={onCreated} />
                         </div>
                     </motion.div>
                 )}

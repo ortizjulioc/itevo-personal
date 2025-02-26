@@ -1,4 +1,4 @@
-export function convertToAmPm(time: string): string {
+export function convertTimeFrom24To12Format(time: string): string {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!timeRegex.test(time)) {
         throw new Error("Formato de hora inválido. Debe ser 'HH:mm'.");

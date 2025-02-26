@@ -1,12 +1,11 @@
 'use client';
 
-import { Button, FormItem } from '@/components/ui';
-import { Form, Formik } from 'formik';
+import { Button, FormItem, Input } from '@/components/ui';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
-import { updateValidationSchema } from '../form.config';
+import { ScheduleFormType, updateValidationSchema } from '../form.config';
 import { Schedule } from '@prisma/client';
 import Select from 'react-select';
-import DatePicker from '@/components/ui/date-picker';
 import { updateSchedule } from '../../../lib/request';
 interface WeekOption {
     value: number;
@@ -25,111 +24,81 @@ const weekOptions: WeekOption[] = [
 
 export default function UpdateScheduleForm({ initialValues, setOpenModal, setSchedules }: { initialValues: Schedule, setOpenModal: (value: boolean) => void, setSchedules: any }) {
 
-    const handleSubmit = async (values: any) => {
-        const formatTime = (isoTime: string): string => {
-            const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/;
-
-            if (timeRegex.test(isoTime)) {
-                return isoTime;
-            }
-            const date = new Date(isoTime);
-            return date.toTimeString().slice(0, 5);
-        };
-
-        const data = {
-            ...values,
-            startTime: formatTime(values.startTime),
-            endTime: formatTime(values.endTime),
-            weekday: values.weekday,
-        };
-        const resp = await updateSchedule(initialValues.id, data); // Asegúrate de tener la función de actualización
+    const handleSubmit = async (values: ScheduleFormType) => {
+        const resp = await updateSchedule(initialValues.id, values); // Asegúrate de tener la función de actualización
 
         if (resp.success) {
             openNotification('success', 'Horario actualizado correctamente');
-            setSchedules((prev: any) => {
-                const index = prev.findIndex((schedule: any) => schedule.id === initialValues.id);
-                prev[index] = resp.data;
-                return [...prev];
-            });
-            setOpenModal(false);
         } else {
             openNotification('error', resp.message);
         }
     };
 
-    const stringToTime = (time: string | Date) => {
-        if (time instanceof Date) {
-            return time;
-        }
-
-        if (typeof time === 'string') {
-            const [hours, minutes] = time.split(':');
-            return new Date(new Date().setHours(Number(hours), Number(minutes), 0, 0));
-        }
-
-        throw new Error("Invalid time format: must be a string in 'HH:mm' format or a Date object");
-    };
-
     return (
         <div >
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Actualización de Horario</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de actualización de horario</h4>
             <Formik
                 initialValues={initialValues}
                 validationSchema={updateValidationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ isSubmitting, values, errors, touched, setFieldValue }) => (
+                {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
+                        <div className='flex items-start gap-4'>
+                            <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
+                                <Field>
+                                    {({ field, form }: FieldProps<ScheduleFormType>) => (
+                                        <Select
+                                            field={field}
+                                            form={form}
+                                            name="weekday"
+                                            placeholder="Selecciona un día"
+                                            className="min-w-[200px]"
+                                            options={weekOptions}
+                                            value={weekOptions.find((opt) => opt.value === values.weekday)}
+                                            onChange={(option: WeekOption | null) => {
+                                                form.setFieldValue('weekday', option?.value ?? null);
+                                            }}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
 
-                        <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
-                            <Select
-                                name="weekday"
-                                options={weekOptions}
-                                value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                onChange={(option: WeekOption | null) => {
-                                    setFieldValue('weekday', option?.value ?? null);
-                                }}
-                                isSearchable={false}
-                                placeholder="Selecciona un día"
-                                menuPortalTarget={document.body}
-                                styles={{
-                                    menuPortal: (base: React.CSSProperties) => ({
-                                        ...base,
-                                        zIndex: 9999,
-                                    }),
-                                }}
-                            />
-                        </FormItem>
+                            <FormItem
+                                name="startTime"
+                                label="Hora de inicio"
+                                invalid={Boolean(errors.startTime && touched.startTime)}
+                                errorMessage={errors.startTime}
 
-                        <FormItem name="startTime" label="Hora de inicio" invalid={Boolean(errors.startTime && touched.startTime)} errorMessage={errors.startTime}>
-                            <DatePicker
-                                value={values.startTime ? stringToTime(values.startTime) : undefined}
-                                mode="time"
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('startTime', selectedDate);
-                                }}
-                            />
-                        </FormItem>
+                            >
+                                <Field
+                                    type="time"
+                                    name="startTime"
+                                    placeholder="Hora de inicio"
+                                    className="min-w-[200px]"
+                                    component={Input}
+                                />
+                            </FormItem>
 
-                        <FormItem name="endTime" label="Hora de fin" invalid={Boolean(errors.endTime && touched.endTime)} errorMessage={errors.endTime}>
-                            <DatePicker
-                                value={values.endTime ? stringToTime(values.endTime) : undefined}
-                                mode="time"
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('endTime', selectedDate);
-                                }}
-                            />
-                        </FormItem>
+                            <FormItem
+                                name="endTime"
+                                label="Hora de fin"
+                                invalid={Boolean(errors.endTime && touched.endTime)}
+                                errorMessage={errors.endTime}
+                            >
+                                <Field
+                                    type="time"
+                                    name="endTime"
+                                    placeholder="Hora de fin"
+                                    className="min-w-[200px]"
+                                    component={Input}
+                                />
+                            </FormItem>
 
-
-                        <div className="mt-6 flex justify-end gap-2">
-                            <Button type="button" color="danger" onClick={() => setOpenModal(false)}>
-                                Cancelar
-                            </Button>
+                        </div>
+                        <div className='mb-4'>
                             <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Actualizando...' : 'Actualizar'}
+                                {isSubmitting ? 'Guardando...' : 'Guardar'}
                             </Button>
                         </div>
                     </Form>

@@ -57,6 +57,6 @@ export const confirmDialog = async (
 
     // If confirmed, execute the callback function
     if (result.isConfirmed) {
-        console.log('Confirmed');
+        // cb?.();
     }
 };
