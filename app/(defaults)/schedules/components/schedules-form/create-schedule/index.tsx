@@ -1,15 +1,12 @@
 'use client';
-
 import { Button, FormItem, Input } from '@/components/ui';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
 import { initialValues, ScheduleFormType } from '../form.config'
 import Select from 'react-select';
-
-import DatePicker from '@/components/ui/date-picker';
-import { getFormattedTime } from '@/utils/date';
 import { createValidationSchema } from "../form.config"
 import { createSchedule } from '../../../lib/request';
+import { useEffect } from 'react';
 
 interface WeekOption {
     value: number;
@@ -26,20 +23,8 @@ const weekOptions: WeekOption[] = [
     { value: 6, label: 'Sábado' },
 
 ];
-const stringToTime = (time: string | Date) => {
-    if (time instanceof Date) {
-        return time; // Si ya es un objeto Date, retornarlo
-    }
 
-    if (typeof time === 'string') {
-        const [hours, minutes] = time.split(':');
-        return new Date(new Date().setHours(Number(hours), Number(minutes), 0, 0));
-    }
-
-    throw new Error("Invalid time format: must be a string in 'HH:mm' format or a Date object");
-};
 export default function CreateScheduleForm() {
-
 
     const handleSubmit = async (values: ScheduleFormType, { setSubmitting }: any) => {
         setSubmitting(true);
@@ -62,7 +47,7 @@ export default function CreateScheduleForm() {
             >
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-                        <div className='flex items-center gap-4'>
+                        <div className='flex items-start gap-4'>
                             <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
                                 <Field>
                                     {({ field, form }: FieldProps<ScheduleFormType>) => (
@@ -71,7 +56,7 @@ export default function CreateScheduleForm() {
                                             form={form}
                                             name="weekday"
                                             placeholder="Selecciona un día"
-                                            className="min-w-[200px"
+                                            className="min-w-[200px]"
                                             options={weekOptions}
                                             value={weekOptions.find((opt) => opt.value === values.weekday)}
                                             onChange={(option: WeekOption | null) => {
@@ -87,11 +72,13 @@ export default function CreateScheduleForm() {
                                 label="Hora de inicio"
                                 invalid={Boolean(errors.startTime && touched.startTime)}
                                 errorMessage={errors.startTime}
+                                
                             >
                                 <Field
                                     type="time"
                                     name="startTime"
                                     placeholder="Hora de inicio"
+                                    className="min-w-[200px]"
                                     component={Input}
                                 />
                             </FormItem>
@@ -106,6 +93,7 @@ export default function CreateScheduleForm() {
                                     type="time"
                                     name="endTime"
                                     placeholder="Hora de fin"
+                                    className="min-w-[200px]"
                                     component={Input}
                                 />
                             </FormItem>

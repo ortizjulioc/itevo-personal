@@ -20,7 +20,7 @@ export default function Users({ searchParams }: UsersProps) {
             <div>
                 <ViewTitle className='' title="Horario de clases" />
             </div>
-            <SchedulesForm className="mb-2" />
+            <SchedulesForm className="mb-6" />
 
             <ScheduleList className="z-30" />
         </div>

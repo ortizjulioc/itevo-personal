@@ -3,6 +3,7 @@ import { Button } from "@/components/ui";
 import CreateScheduleForm from "./create-schedule";
 import { TbPlus, TbX } from "react-icons/tb";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function SchedulesForm({ className }: { className?: string }) {
     const [isFormVisible, setIsFormVisible] = useState(false);
@@ -11,6 +12,7 @@ export default function SchedulesForm({ className }: { className?: string }) {
         setIsFormVisible(prev => !prev);
         console.log('New schedule toggled');
     };
+
     return (
         <div className={`space-y-4 ${className}`}>
             <div className="flex justify-end">
@@ -38,17 +40,21 @@ export default function SchedulesForm({ className }: { className?: string }) {
                     </Button>
                 )}
             </div>
-            <div
-                className={`transition-all duration-300 ease-in-out transform ${
-                    isFormVisible
-                        ? "translate-y-0 opacity-100 h-auto z-50"
-                        : "-translate-y-4 opacity-0 h-0 overflow-hidden z-0"
-                }`}
-            >
-                <div className="pt-2">
-                    <CreateScheduleForm />
-                </div>
-            </div>
+            <AnimatePresence>
+                {isFormVisible && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: "auto" }}
+                        exit={{ opacity: 0, y: -20, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        style={{ position: "relative", zIndex: 50 }}
+                    >
+                        <div className="">
+                            <CreateScheduleForm />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
