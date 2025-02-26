@@ -1,4 +1,4 @@
-import { createCourseSchedule, getCourseSchedules, getCourseSchedulesByCourseId } from "@/services/course-schedule-service";
+import { createCourseSchedule, getCourseSchedules, getCourseSchedulesByCourseId, getCourseSchedulesByIds } from "@/services/course-schedule-service";
 import { validateObject } from "@/utils";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
@@ -7,14 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try { 
     const { id } = params;
-    console.log("Estos son los parametros de busqueda: ", params);
-    // Filtros de búsqueda
 
     const courseSchedules = await getCourseSchedulesByCourseId(id);
 
     return NextResponse.json(
       {
-        courseSchedules,
+        schedules: courseSchedules,
       },
       { status: 200 }
     );
@@ -39,6 +37,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const { isValid, message } = validateObject(body, ['scheduleId']);
     if (!isValid) {
       return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
+    }
+
+    // Verificar si ya existe la relación
+    const courseSchedules = await getCourseSchedulesByIds(id, body.scheduleId);
+    if (courseSchedules) {
+      return NextResponse.json({
+        error: 'La relación ya existe',
+        code: 'E_COURSE_SCHEDULE_ALREADY_EXISTS',
+      }, { status: 400 });
     }
 
     const courseSchedule = await createCourseSchedule({

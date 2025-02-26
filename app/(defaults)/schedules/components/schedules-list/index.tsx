@@ -64,7 +64,6 @@ export default function ScheduleList({ className, schedules, onDeleted, loading 
                 </div>
             )}
 
-            {/* Visualización de horarios por día */}
             <div className="">
                 {WEEKDAY.map((day, index) => {
                     const daySchedules = groupedSchedules[index] || [];

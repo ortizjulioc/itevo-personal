@@ -1,5 +1,5 @@
 // components/CourseScheduleAssigner.tsx
-import { getHoursDifferenceText } from '@/utils/date';
+import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
 import { Schedule } from '@prisma/client';
 import React from 'react';
 
@@ -37,7 +37,7 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
                 if (!schedule) return null;
                 return (
                   <li key={id}>
-                    {weekdayNames[schedule.weekday]}: {schedule.startTime} - {schedule.endTime} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
+                    {weekdayNames[schedule.weekday]}: {convertTimeFrom24To12Format(schedule.startTime)} - {convertTimeFrom24To12Format(schedule.endTime)} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
                   </li>
                 );
               })}
@@ -74,7 +74,7 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
                       onClick={() => handleToggleSchedule(schedule.id)}
                     >
                       <span className="text-gray-800">
-                        {schedule.startTime} - {schedule.endTime} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
+                        {convertTimeFrom24To12Format(schedule.startTime)} - {convertTimeFrom24To12Format(schedule.endTime)} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
                       </span>
                       <span className={`font-medium ${isAssigned ? 'text-primary' : 'text-gray-500'
                         }`}>

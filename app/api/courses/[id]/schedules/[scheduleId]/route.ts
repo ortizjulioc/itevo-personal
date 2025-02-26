@@ -31,9 +31,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function DELETE (request: NextRequest, params: { id: string, scheduleId: string}) {
+export async function DELETE (request: NextRequest, { params }: { params: { id: string, scheduleId: string}}) {
   try {
     const { id, scheduleId } = params;
+    if (!id || !scheduleId) {
+      return NextResponse.json({
+        message: "Missing id or scheduleId",
+        code: "E_MISSING_FIELDS",
+      }, { status: 400 });
+    }
+
     const courseSchedule = await getCourseSchedulesByIds(id, scheduleId);
 
     if (!courseSchedule) {

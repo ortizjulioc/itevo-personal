@@ -45,11 +45,13 @@ export const createCourseSchedule = async (data: any) => {
     return courseSchedule;
 };
 
-export const getCourseSchedulesByCourseId = async (courseId: any) => {
-    return await Prisma.courseSchedule.findMany({
+export const getCourseSchedulesByCourseId = async (courseId: string) => {
+    const courseSchedules = await Prisma.courseSchedule.findMany({
         where: { courseId },
         include: { schedule: true },
     });
+
+    return courseSchedules.map(cs => cs.schedule);
 };
 
 export const deleteCourseSchedule = async (courseId: any, scheduleId: any) => {
