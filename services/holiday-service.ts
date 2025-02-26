@@ -28,6 +28,10 @@ export const getHolidays = async (page: number, top: number, search: string) => 
     return { holidays, totalHolidays };
 };
 
+export const getAllHolidays = async () => {
+    return Prisma.holiday.findMany();
+};
+
 export const createHoliday = async (data: any) => {
     const { name, date,isRecurring } = data;
 

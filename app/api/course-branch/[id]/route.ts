@@ -4,7 +4,7 @@ import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { getClassSessions } from '@/utils/date';
-import { getHolidays } from '@/services/holiday-service';
+import { getAllHolidays, getHolidays } from '@/services/holiday-service';
 import { getCourseSchedulesByCourseId } from '@/services/course-schedule-service';
 
 // Obtener courseBranch por ID
@@ -40,10 +40,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         // Traer los horarios de los cursos para calcular las sesiones
-        const { courseSchedules } = await getCourseSchedulesByCourseId({ courseId: id});
+        const courseSchedules = await getCourseSchedulesByCourseId(id);
 
         // Traer holidays con el api de holidays
-        const { holidays } = await getHolidays(page, top, '');
+        const holidays = await getAllHolidays();
 
         // Calculando las fechas de las sesiones
         const { startDate, endDate } = body;
