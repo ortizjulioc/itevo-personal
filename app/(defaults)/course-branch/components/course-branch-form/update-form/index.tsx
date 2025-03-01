@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
 import { usePathname, useRouter } from 'next/navigation';
-import { openNotification } from '@/utils';
+import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
 import { updateCourseBranch } from '../../../lib/request';
@@ -12,6 +12,8 @@ import GeneralInformationFields from './general-information-fields';
 import FinancialConfigFields from './financial-config-fields';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 import ScheduleAssignmentFields from './schedule-assignment-fields';
+import Swal from 'sweetalert2';
+import ConfirmationFields from './confirmation-fields';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -48,6 +50,18 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
             openNotification('error', resp.message);
         }
         setSubmitting(false);
+    };
+
+    const askForNewCourseBranch = () => {
+        confirmDialog({
+            title: 'Crear nueva oferta académica',
+            text: '¿Le gustaría crear una nueva oferta académica?',
+            confirmButtonText: 'Sí, crear',
+            cancelButtonText: 'Salir',
+            icon: 'question',
+        }, async () => {
+            console.log('Crear nueva oferta academica');
+        });
     };
 
     useEffect(() => {
@@ -94,8 +108,14 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                         </button>
                                     )}
                                 </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Confirmación
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Confirmación
+                                        </button>
+                                    )}
                                 </Tab>
                             </Tab.List>
                             <Tab.Panels>
@@ -109,6 +129,10 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
                                 <Tab.Panel>
                                     <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
+
+                                <Tab.Panel>
+                                    <ConfirmationFields className='p-4' values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

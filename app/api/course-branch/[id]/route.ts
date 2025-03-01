@@ -29,9 +29,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     try {
         const { id } = params;
         const body = await request.json();
-        const { searchParams } = new URL(request.url);
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
@@ -40,20 +37,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         // Traer los horarios de los cursos para calcular las sesiones
-        const courseSchedules = await getCourseSchedulesByCourseId(id);
+        // const courseSchedules = await getCourseSchedulesByCourseId(id);
 
-        // Traer holidays con el api de holidays
-        const holidays = await getAllHolidays();
+        // // Traer holidays con el api de holidays
+        // const holidays = await getAllHolidays();
 
-        // Calculando las fechas de las sesiones
-        const { startDate, endDate } = body;
-        const schedules = courseSchedules.map((schedule: any) => schedule.schedule);
+        // // Calculando las fechas de las sesiones
+        // const { startDate, endDate } = body;
+        // const schedules = courseSchedules.map((schedule: any) => schedule.schedule);
 
-        if (startDate && endDate && schedules && holidays) {
-            const { count } = getClassSessions(startDate, endDate, schedules, holidays);
+        // if (startDate && endDate && schedules && holidays) {
+        //     const { count } = getClassSessions(startDate, endDate, schedules, holidays);
 
-            body.sessionCount = count;
-        }
+        //     body.sessionCount = count;
+        // }
 
         // Verificar si el course existe
         const courseBranch = await findCourseBranchById(id);
