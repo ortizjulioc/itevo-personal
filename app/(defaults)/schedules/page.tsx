@@ -8,6 +8,6 @@ export const metadata: Metadata = {
     title: 'Horario de clases',
 };
 
-const Users = () => <Schedule />; 
+const Users = () => <Schedule />;
 
 export default Users;

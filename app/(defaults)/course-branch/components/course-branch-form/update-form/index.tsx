@@ -14,6 +14,7 @@ import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 import ScheduleAssignmentFields from './schedule-assignment-fields';
 import Swal from 'sweetalert2';
 import ConfirmationFields from './confirmation-fields';
+import StickyFooter from '@/components/common/sticky-footer';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -74,7 +75,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Oferta academica</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta academica</h4>
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
@@ -132,45 +133,48 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                 </Tab.Panel>
 
                                 <Tab.Panel>
-                                    <ConfirmationFields className='p-4' values={values} errors={errors} touched={touched} />
+                                    <ConfirmationFields className='p-4' values={values} errors={errors} touched={touched} onChangeTab={changeTab} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
 
-                        <div className="mt-6 flex justify-between gap-2">
-                            <Button type="button" color="danger" onClick={() => route.back()}>
-                                Cancelar
-                            </Button>
 
-                            <div className="flex gap-2">
-                                {selectedIndex > 0 && (
-                                    <Button
-                                        type="button"
-                                        color="secondary"
-                                        onClick={() => changeTab(selectedIndex - 1)}
-                                        icon={<TbArrowLeft />}
-                                    >
-                                        Anterior
-                                    </Button>
-                                )}
+                        <StickyFooter className='-mx-11 px-8 py-4' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
+                            <div className="mt-6 flex justify-between gap-2">
+                                <Button type="button" color="danger" onClick={() => route.back()}>
+                                    Cancelar
+                                </Button>
 
-                                {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
-                                    <Button
-                                        type="button"
-                                        color="secondary"
-                                        onClick={() => changeTab(selectedIndex + 1)}
-                                        icon={<TbArrowRight />}
-                                    >
-                                        Siguiente
-                                    </Button>
-                                )}
-                                {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
-                                    <Button loading={isSubmitting} type="submit">
-                                        {isSubmitting ? 'Guardando...' : 'Finalizar'}
-                                    </Button>
-                                )}
+                                <div className="flex gap-2">
+                                    {selectedIndex > 0 && (
+                                        <Button
+                                            type="button"
+                                            color="secondary"
+                                            onClick={() => changeTab(selectedIndex - 1)}
+                                            icon={<TbArrowLeft />}
+                                        >
+                                            Anterior
+                                        </Button>
+                                    )}
+
+                                    {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
+                                        <Button
+                                            type="button"
+                                            color="secondary"
+                                            onClick={() => changeTab(selectedIndex + 1)}
+                                            icon={<TbArrowRight />}
+                                        >
+                                            Siguiente
+                                        </Button>
+                                    )}
+                                    {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
+                                        <Button loading={isSubmitting} type="submit">
+                                            {isSubmitting ? 'Guardando...' : 'Finalizar'}
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        </StickyFooter>
                     </Form>
                 )}
             </Formik>
