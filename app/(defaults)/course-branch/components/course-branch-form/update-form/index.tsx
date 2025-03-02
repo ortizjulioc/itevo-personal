@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
@@ -15,6 +15,7 @@ import ScheduleAssignmentFields from './schedule-assignment-fields';
 import Swal from 'sweetalert2';
 import ConfirmationFields from './confirmation-fields';
 import StickyFooter from '@/components/common/sticky-footer';
+import { useURLSearchParams } from '@/utils/hooks';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -26,6 +27,8 @@ const COURSE_BRANCH_TABS = [
 export default function UpdateCourseBranchForm({ initialValues }: { initialValues: CourseBranch }) {
     const route = useRouter();
     const pathname = usePathname();
+    const params = useURLSearchParams();
+    const isANewCourseBranch = params.get('new') === 'true';
     const [selectedIndex, setSelectedIndex] = useState(0);
     console.log(initialValues);
 
@@ -46,23 +49,28 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
         if (resp.success) {
             openNotification('success', 'Oferta academica  creado correctamente');
-            route.push('/course-branch');
+            if (isANewCourseBranch) {
+                await askForNewCourseBranch();
+            } else {
+                route.push('/course-branch');
+            }
         } else {
             openNotification('error', resp.message);
         }
         setSubmitting(false);
     };
 
-    const askForNewCourseBranch = () => {
-        confirmDialog({
+    const askForNewCourseBranch = async () => {
+        await confirmDialog({
             title: 'Crear nueva oferta académica',
             text: '¿Le gustaría crear una nueva oferta académica?',
             confirmButtonText: 'Sí, crear',
             cancelButtonText: 'Salir',
             icon: 'question',
-        }, async () => {
-            console.log('Crear nueva oferta academica');
-        });
+        }, () => route.push('/course-branch/new'),
+            () => route.push('/course-branch')
+        );
+
     };
 
     useEffect(() => {

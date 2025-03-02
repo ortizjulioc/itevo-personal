@@ -33,30 +33,29 @@ const defaultConfigConfirm = {
 
 export const confirmDialog = async (
     config: SweetAlertOptions = {},
-    cb: Function
+    onConfirm?: () => Promise<void> | void,
+    onCancel?: () => void
 ): Promise<void> => {
-    // Merge default config with user-provided config
     const finalConfig: SweetAlertOptions = {
         ...defaultConfigConfirm,
         ...config,
+        showCancelButton: true, // Asegurar que siempre haya botón de cancelar
         preConfirm: async () => {
-            try {
-                await cb(); // Ejecuta el callback asíncrono
-            } catch (error) {
-                if (error instanceof Error) {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
-                } else {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
+            if (onConfirm) {
+                try {
+                    await onConfirm(); // Ejecuta la acción de confirmación
+                } catch (error) {
+                    Swal.showValidationMessage(`Error: ${error instanceof Error ? error.message : error}`);
                 }
             }
         }
     };
 
-    // Show confirmation dialog with merged config
     const result: SweetAlertResult = await Swal.fire(finalConfig);
 
-    // If confirmed, execute the callback function
-    if (result.isConfirmed) {
-        // cb?.();
+    // Si el usuario cancela, ejecuta onCancel si se proporcionó
+    if (result.dismiss === Swal.DismissReason.cancel && onCancel) {
+        onCancel();
     }
 };
+

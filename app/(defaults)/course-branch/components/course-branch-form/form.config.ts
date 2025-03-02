@@ -1,4 +1,5 @@
 import { MODALITIES } from '@/constants/modality.constant';
+import { CourseBranchStatus, Modality } from '@prisma/client';
 import * as Yup from 'yup';
 
 export const createValidationSchema = Yup.object().shape({
@@ -15,7 +16,9 @@ export const updateValidationSchema = Yup.object().shape({
     teacherId: Yup.string().required('El profesor es obligatorio'),
     courseId: Yup.string().required('El curso es obligatorio'),
     amount: Yup.number().required('El monto es obligatorio'),
-    modality: Yup.string().required('La modalidad es obligatoria'),
+    modality: Yup.string()
+        .oneOf(Object.values(MODALITIES), 'La modalidad no es válida')
+        .required('La modalidad es obligatoria'),
     startDate: Yup.string().required('La fecha de inicio es obligatoria').nullable(), // Cambiado a Yup.date()
     endDate: Yup.string().required('La fecha de fin es obligatoria').nullable(), // Cambiado a Yup.date()
     commissionRate: Yup.number()
@@ -24,6 +27,10 @@ export const updateValidationSchema = Yup.object().shape({
         .max(100, 'La comisión no puede ser mayor a 100')
         .required('La comisión es obligatoria'),
     capacity: Yup.number().required('La capacidad es obligatoria'),
+    status: Yup.string()
+        .oneOf(Object.values(CourseBranchStatus), 'El estado no es válido')
+        .required('El estado es obligatorio'),
+    sessionCount: Yup.number().required('El número de sesiones es obligatorio'),
 });
 
 export const updateInitialValues = {
@@ -37,6 +44,7 @@ export const updateInitialValues = {
     endDate: null,
     commissionRate: '',
     capacity: '',
+    status: '',
 };
 
 export const createInitialValues = {
@@ -46,19 +54,28 @@ export const createInitialValues = {
     courseId: '',
     capacity: '',
     modality: MODALITIES.PRESENTIAL,
-    startDate: null,
-    endDate: null,
 };
+
+export type CreateCourseBranchFormType = {
+    promotionId: string;
+    branchId: string;
+    teacherId: string;
+    courseId: string;
+    modality: Modality;
+    capacity: number;
+}
 
 export type CourseBranchFormType = {
     promotionId: string;
     branchId: string;
     teacherId: string;
     courseId: string;
-    amount?: number | string;
-    modality?: string;
+    amount: number | string;
+    modality: Modality;
     startDate: Date | null;
     endDate: Date | null;
-    commissionRate?: number | string;
+    commissionRate: number | string;
     capacity: number | string;
+    status: CourseBranchStatus;
+    sessionCount: number | string;
 }

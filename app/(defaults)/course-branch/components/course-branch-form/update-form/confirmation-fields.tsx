@@ -1,6 +1,13 @@
 import React from 'react'
 import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
+import { useParams } from 'next/navigation';
+import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
+import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
+import PromotionLabel from '@/components/common/info-labels/promotion-label';
+import CourseLabel from '@/components/common/info-labels/course-label';
+import BranchLabel from '@/components/common/info-labels/branch-label';
+import TeacherLabel from '@/components/common/info-labels/teacher-label';
 
 interface ConfirmationFieldsProps {
   values: CourseBranchFormType;
@@ -34,8 +41,17 @@ const data = {
   accountPayable: []
 };
 
+const weekdayNames = [
+    'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+  ];
+
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
   console.log(values)
+  const { id } = useParams();
+  const courseBranchId = Array.isArray(id) ? id[0] : id;
+  const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
+
+  console.log(courseSchedules)
   return (
     <div className={className}>
       <div className="max-w-3xl p-6">
@@ -47,27 +63,27 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-medium text-gray-600">Promoción:</p>
-              <p className="text-gray-800">{data.promotionId}</p>
+              <p className="text-gray-800"><PromotionLabel promotionId={values.promotionId} /></p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Curso:</p>
-              <p className="text-gray-800">{data.courseId}</p>
+              <p className="text-gray-800"><CourseLabel courseId={values.courseId} /></p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Sucursal:</p>
-              <p className="text-gray-800">{data.branchId}</p>
+              <p className="text-gray-800"><BranchLabel branchId={values.branchId} /></p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Profesor:</p>
-              <p className="text-gray-800">{data.teacherId}</p>
+              <p className="text-gray-800"><TeacherLabel teacherId={values.teacherId} /></p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Estado:</p>
-              <p className="text-gray-800">{data.status}</p>
+              <p className="text-gray-800">{values.status}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Capacidad:</p>
-              <p className="text-gray-800">{data.capacity}</p>
+              <p className="text-gray-800">{values.capacity}</p>
             </div>
           </div>
           <button type='button' onClick={() => onChangeTab(0)} className="mt-2 text-blue-600 hover:underline">
@@ -81,28 +97,28 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-medium text-gray-600">Modalidad:</p>
-              <p className="text-gray-800">{data.modality}</p>
+              <p className="text-gray-800">{values.modality}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Sesiones:</p>
-              <p className="text-gray-800">{data.sessionCount}</p>
+              <p className="text-gray-800">{values.sessionCount}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
-              <p className="text-gray-800">{new Date(data.startDate).toLocaleDateString()}</p>
+              <p className="text-gray-800">{values?.startDate ? new Date(values.startDate).toLocaleDateString() : ''}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Fin:</p>
-              <p className="text-gray-800">{new Date(data.endDate).toLocaleDateString()}</p>
+              <p className="text-gray-800">{values?.endDate ? new Date(values.endDate).toLocaleDateString() : ''}</p>
             </div>
           </div>
-          {data.schedules && data.schedules.length > 0 && (
+          {courseSchedules && courseSchedules.length > 0 && (
             <div className="mt-4">
               <p className="font-medium text-gray-600">Horarios:</p>
               <ul className="list-disc ml-6 text-gray-800">
-                {data.schedules.map((schedule, index) => (
+                {courseSchedules.map((schedule, index) => (
                   <li key={index}>
-                    {schedule.day}: {schedule.startTime} - {schedule.endTime}
+                    {weekdayNames[schedule.weekday]}: {convertTimeFrom24To12Format(schedule.startTime)} - {convertTimeFrom24To12Format(schedule.endTime)} ({getHoursDifferenceText(schedule.startTime, schedule.endTime)})
                   </li>
                 ))}
               </ul>
@@ -119,11 +135,11 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-medium text-gray-600">Monto:</p>
-              <p className="text-gray-800">RD${data.amount.toFixed(2)}</p>
+              <p className="text-gray-800">RD${values?.amount}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Comisión:</p>
-              <p className="text-gray-800">{data.commissionRate}%</p>
+              <p className="text-gray-800">{values.commissionRate}%</p>
             </div>
           </div>
           <button type='button' onClick={() => onChangeTab(2)} className="mt-2 text-blue-600 hover:underline">
