@@ -11,7 +11,8 @@ import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
-import { MODALITIES } from "@/constants/modality.constant";
+import { Modality } from "@prisma/client";
+import ModalityTag from "../modality";
 
 
 
@@ -19,6 +20,10 @@ interface Props {
     className?: string;
     query?: string;
 }
+
+const Tag = ({ text, color }: { text: string; color: string }) => (
+    <span className={`px-3 py-1 rounded-full text-white ${color}`}>{text}</span>
+);
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
@@ -79,8 +84,13 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
                                     <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
                                     <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
-                                    <td>{MODALITIES[courseBranch.modality]}</td>
-                                    <td>{courseBranch.status}</td>
+                                    <td>
+                                        {/* {MODALITIES[courseBranch.modality]} */}
+                                        <ModalityTag modality={courseBranch.modality} />
+                                    </td>
+                                    <td>
+                                        <Tag text="Presencial" color="bg-blue-500" />
+                                    </td>
                                     {/* <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
                                     <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td> */}
                                     <td>
