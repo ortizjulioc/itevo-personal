@@ -24,6 +24,12 @@ const COURSE_BRANCH_TABS = [
     'confirmation',
 ];
 
+const TABS_FIELDS = [
+    ['promotionId', 'branchId', 'teacherId', 'courseId', 'capacity'],
+    ['modality', 'startDate', 'endDate', 'schedules'],
+    ['amount', 'commissionRate'],
+]
+
 export default function UpdateCourseBranchForm({ initialValues }: { initialValues: CourseBranch }) {
     const route = useRouter();
     const pathname = usePathname();
@@ -59,6 +65,18 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
         }
         setSubmitting(false);
     };
+
+    const handleErrors = (errors: any) => {
+        const errorKeys = Object.keys(errors);
+        if (errorKeys.length) {
+            changeTab(TABS_FIELDS.findIndex((tabFields) => tabFields.some((field) => errorKeys.includes(field))));
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor revisa los campos con errores',
+                icon: 'error',
+            });
+        }
+    }
 
     const askForNewCourseBranch = async () => {
         await confirmDialog({
@@ -176,7 +194,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                         </Button>
                                     )}
                                     {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
-                                        <Button loading={isSubmitting} type="submit">
+                                        <Button onClick={() => handleErrors(errors)} loading={isSubmitting} type="submit">
                                             {isSubmitting ? 'Guardando...' : 'Finalizar'}
                                         </Button>
                                     )}
