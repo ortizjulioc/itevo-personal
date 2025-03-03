@@ -36,7 +36,6 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const params = useURLSearchParams();
     const isANewCourseBranch = params.get('new') === 'true';
     const [selectedIndex, setSelectedIndex] = useState(0);
-    console.log(initialValues);
 
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);
@@ -50,7 +49,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        const data = { ...values };
+        const data = { ...values, commissionRate: Number(values.commissionRate) / 100 };
         const resp = await updateCourseBranch(initialValues.id, data);
 
         if (resp.success) {

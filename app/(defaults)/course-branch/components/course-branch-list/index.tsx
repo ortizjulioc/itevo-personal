@@ -60,8 +60,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                             <th>PROFESOR</th>
                             <th>CURSO</th>
                             <th>MODALIDAD</th>
-                            <th>F. INICIO</th>
-                            <th>F. FIN</th>
+                            <th>ESTADO</th>
+                            {/* <th>F. INICIO</th>
+                            <th>F. FIN</th> */}
                             <th />
                         </tr>
                     </thead>
@@ -79,8 +80,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
                                     <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
                                     <td>{MODALITIES[courseBranch.modality]}</td>
-                                    <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
-                                    <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td>
+                                    <td>{courseBranch.status}</td>
+                                    {/* <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
+                                    <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td> */}
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">

@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         body.status = CourseBranchStatus.DRAFT;
+        body.modality = Modality.PRESENTIAL;
 
         // Validate the request body
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);

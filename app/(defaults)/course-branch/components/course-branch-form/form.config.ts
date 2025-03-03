@@ -53,7 +53,6 @@ export const createInitialValues = {
     teacherId: '',
     courseId: '',
     capacity: '',
-    modality: MODALITIES.PRESENTIAL,
 };
 
 export type CreateCourseBranchFormType = {
@@ -61,8 +60,7 @@ export type CreateCourseBranchFormType = {
     branchId: string;
     teacherId: string;
     courseId: string;
-    modality: Modality;
-    capacity: number;
+    capacity: number | string;
 }
 
 export type CourseBranchFormType = {

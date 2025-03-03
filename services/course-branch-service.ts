@@ -1,5 +1,5 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
+import { CourseBranch, PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
 export const getCourseBranch = async (filters: any) => {
@@ -10,18 +10,18 @@ export const getCourseBranch = async (filters: any) => {
         orderBy: [
             { courseId: 'asc' },
         ],
-        select: {
-            id: true,
-            promotionId: true,
-            branchId: true,
-            teacherId: true,
-            courseId: true,
-            amount: true,
-            modality: true,
-            startDate: true,
-            endDate: true,
-            commissionRate: true,
-        },
+        // select: {
+        //     id: true,
+        //     promotionId: true,
+        //     branchId: true,
+        //     teacherId: true,
+        //     courseId: true,
+        //     amount: true,
+        //     modality: true,
+        //     startDate: true,
+        //     endDate: true,
+        //     commissionRate: true,
+        // },
         where: {
             promotionId,
             branchId,
@@ -117,7 +117,7 @@ export const findCourseBranchById = async (id: string) => {
 };
 
 // Actualizar courseBranch por ID
-export const updateCourseBranchById = async (id: string, data: any) => {
+export const updateCourseBranchById = async (id: string, data: CourseBranch) => {
 
     return Prisma.courseBranch.update({
         where: { id },
@@ -132,6 +132,8 @@ export const updateCourseBranchById = async (id: string, data: any) => {
             endDate: data.endDate,
             commissionRate: data.commissionRate,
             sessionCount: data.sessionCount,
+            capacity: data.capacity,
+            status: data.status,
         },
     });
 };

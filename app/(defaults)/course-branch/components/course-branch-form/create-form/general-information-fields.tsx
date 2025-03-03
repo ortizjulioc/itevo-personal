@@ -1,15 +1,15 @@
 import SelectPromotion, { SelectPromotionType } from "@/components/common/selects/select-promotion";
 import { FormItem, Input } from "@/components/ui";
 import { Field, FormikErrors, FormikTouched } from "formik";
-import { CourseBranchFormType } from "../form.config";
 import SelectBranch, { SelectBranchType } from "@/components/common/selects/select-branch";
 import SelectTeacher, { SelectTeacherType } from "@/components/common/selects/select-teacher";
 import SelectCourse from "@/components/common/selects/select-course";
+import { CreateCourseBranchFormType } from "../form.config";
 
 interface GeneralInformationFieldsProps {
-    values: CourseBranchFormType;
-    errors: FormikErrors<CourseBranchFormType>;
-    touched: FormikTouched<CourseBranchFormType>;
+    values: CreateCourseBranchFormType;
+    errors: FormikErrors<CreateCourseBranchFormType>;
+    touched: FormikTouched<CreateCourseBranchFormType>;
 }
 
 export default function GeneralInformationFields({ values, errors, touched }: GeneralInformationFieldsProps) {

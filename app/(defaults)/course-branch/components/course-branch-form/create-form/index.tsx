@@ -7,7 +7,6 @@ import { createValidationSchema, createInitialValues as initialValues } from '..
 import { Tab } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
-import FinancialConfigFields from './financial-config-fields';
 import { createCourseBranch } from '../../../lib/request';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 
@@ -72,15 +71,6 @@ export default function CreateCourseBranchForm() {
                                         </button>
                                     )}
                                 </Tab>
-                                {/* <Tab as={Fragment}>
-                                    {({ selected }) => (
-                                        <button
-                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
-                                        >
-                                            Configuración financiera
-                                        </button>
-                                    )}
-                                </Tab> */}
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
                                     Modalidad y horarios
                                 </Tab>
@@ -94,10 +84,6 @@ export default function CreateCourseBranchForm() {
                             <Tab.Panels>
                                 <Tab.Panel>
                                     <GeneralInformationFields values={values} errors={errors} touched={touched} />
-                                </Tab.Panel>
-
-                                <Tab.Panel>
-                                    <FinancialConfigFields values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

@@ -6,6 +6,8 @@ import { createLog } from '@/utils/log';
 import { getClassSessions } from '@/utils/date';
 import { getAllHolidays, getHolidays } from '@/services/holiday-service';
 import { getCourseSchedulesByCourseId } from '@/services/course-schedule-service';
+import { CourseBranchStatus } from '@prisma/client';
+import { COURSE_BRANCH_STATUS } from '@/constants/status.constant';
 
 // Obtener courseBranch por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -30,27 +32,28 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const { id } = params;
         const body = await request.json();
 
+        if (body.status === COURSE_BRANCH_STATUS.DRAFT) {
+            body.status = CourseBranchStatus.WAITING;
+        }
+
         // Validar el cuerpo de la solicitud (usando la validación existente)
         const { isValid, message } = validateObject(body, ['promotionId', 'branchId', 'teacherId', 'courseId']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
+        if (body.startDate && body.endDate && body.startDate > body.endDate) {
+            return NextResponse.json({ code: 'E_INVALID_DATE_RANGE', message: 'La fecha de inicio no puede ser mayor a la fecha de fin' }, { status: 400 });
+        }
+
         // Traer los horarios de los cursos para calcular las sesiones
-        // const courseSchedules = await getCourseSchedulesByCourseId(id);
-
-        // // Traer holidays con el api de holidays
-        // const holidays = await getAllHolidays();
-
-        // // Calculando las fechas de las sesiones
-        // const { startDate, endDate } = body;
-        // const schedules = courseSchedules.map((schedule: any) => schedule.schedule);
-
-        // if (startDate && endDate && schedules && holidays) {
-        //     const { count } = getClassSessions(startDate, endDate, schedules, holidays);
-
-        //     body.sessionCount = count;
-        // }
+        const courseSchedules = await getCourseSchedulesByCourseId(id);
+        if (body.startDate && body.endDate && courseSchedules) {
+            // // Traer holidays con el api de holidays
+            const holidays = await getAllHolidays();
+            const { count } = getClassSessions(body.startDate, body.endDate, courseSchedules, holidays);
+            body.sessionCount = count;
+        }
 
         // Verificar si el course existe
         const courseBranch = await findCourseBranchById(id);
