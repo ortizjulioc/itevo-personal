@@ -1,19 +1,18 @@
 'use client';
-import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconEye, IconTrashLines } from "@/components/icon";
+import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
 import PromotionLabel from "@/components/common/info-labels/promotion-label";
-import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
-import ModalityTag from "../modality";
 import StatusCourseBranch from "../status";
 import { getFormattedDate } from "@/utils/date";
+import { TbDetails } from "react-icons/tb";
 
 interface Props {
     className?: string;
@@ -57,9 +56,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         <tr>
                             <th>PROMOCION</th>
                             <th>CURSO</th>
-                            <th>SUCURSAL</th>
+                            {/* <th>SUCURSAL</th> */}
                             <th>PROFESOR</th>
-                            <th>MODALIDAD</th>
+                            {/* <th>MODALIDAD</th> */}
                             <th>F. INICIO</th>
                             <th>F. FIN</th>
                             <th>CAPACIDAD</th>
@@ -78,11 +77,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                 <tr key={courseBranch.id}>
                                     <td><PromotionLabel promotionId={courseBranch.promotionId} /></td>
                                     <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
-                                    <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
+                                    {/* <td>{<BranchLabel branchId={courseBranch.branchId} />}</td> */}
                                     <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
-                                    <td>
-                                        <ModalityTag modality={courseBranch.modality} />
-                                    </td>
+                                    {/* <td><ModalityTag modality={courseBranch.modality} /></td> */}
                                     <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''}</td>
                                     <td>{courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
                                     <td>{courseBranch.capacity}</td>
@@ -90,18 +87,22 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                         <StatusCourseBranch status={courseBranch.status} />
                                     </td>
                                     <td>
-                                        <div className="flex gap-2 justify-end">
+                                        <div className="flex items-center gap-2 justify-end">
                                             <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(courseBranch.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                {/* <Button onClick={() => onDelete(courseBranch.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} /> */}
+                                                <button onClick={() => onDelete(courseBranch.id)}>
+                                                    <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                                                </button>
                                             </Tooltip>
                                             <Tooltip title="Editar">
                                                 <Link href={`/course-branch/${courseBranch.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                    {/* <Button variant="outline" size="sm" icon={<IconEdit className="size-5" />} /> */}
+                                                    <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                                                 </Link>
                                             </Tooltip>
-                                            <Tooltip title="Ver">
+                                            <Tooltip title="Detalles">
                                                 <Link href={`/course-branch/view/${courseBranch.id}`}>
-                                                    <Button variant="outline" color='success' size="sm" icon={<IconEye className="size-4" />} />
+                                                    <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                                                 </Link>
                                             </Tooltip>
                                             {/* ALTERNATIVA */}
