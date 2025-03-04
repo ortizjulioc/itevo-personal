@@ -11,19 +11,13 @@ import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
-import { Modality } from "@prisma/client";
 import ModalityTag from "../modality";
-
-
+import Tag from "@/components/ui/tag";
 
 interface Props {
     className?: string;
     query?: string;
 }
-
-const Tag = ({ text, color }: { text: string; color: string }) => (
-    <span className={`px-3 py-1 rounded-full text-white ${color}`}>{text}</span>
-);
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
@@ -89,7 +83,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                         <ModalityTag modality={courseBranch.modality} />
                                     </td>
                                     <td>
-                                        <Tag text="Presencial" color="bg-blue-500" />
+                                        {/* <Tag text="Presencial" color="gray" /> */}
                                     </td>
                                     {/* <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
                                     <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td> */}
