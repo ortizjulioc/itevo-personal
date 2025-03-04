@@ -12,7 +12,8 @@ import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
 import ModalityTag from "../modality";
-import Tag from "@/components/ui/tag";
+import StatusCourseBranch from "../status";
+import { getFormattedDate } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -55,13 +56,14 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                     <thead>
                         <tr>
                             <th>PROMOCION</th>
+                            <th>CURSO</th>
                             <th>SUCURSAL</th>
                             <th>PROFESOR</th>
-                            <th>CURSO</th>
                             <th>MODALIDAD</th>
+                            <th>F. INICIO</th>
+                            <th>F. FIN</th>
+                            <th>CAPACIDAD</th>
                             <th>ESTADO</th>
-                            {/* <th>F. INICIO</th>
-                            <th>F. FIN</th> */}
                             <th />
                         </tr>
                     </thead>
@@ -75,18 +77,18 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                             return (
                                 <tr key={courseBranch.id}>
                                     <td><PromotionLabel promotionId={courseBranch.promotionId} /></td>
+                                    <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
                                     <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
                                     <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
-                                    <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
                                     <td>
-                                        {/* {MODALITIES[courseBranch.modality]} */}
                                         <ModalityTag modality={courseBranch.modality} />
                                     </td>
+                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''}</td>
+                                    <td>{courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
+                                    <td>{courseBranch.capacity}</td>
                                     <td>
-                                        {/* <Tag text="Presencial" color="gray" /> */}
+                                        <StatusCourseBranch status={courseBranch.status} />
                                     </td>
-                                    {/* <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
-                                    <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td> */}
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">

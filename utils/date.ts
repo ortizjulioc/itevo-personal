@@ -160,3 +160,27 @@ export function getFormattedTime(fecha: Date): string {
         hour12: false         // Usa el formato de 24 horas (ej. 14:30 en vez de 2:30 PM).
     });
 }
+
+export function getFormattedDate(fecha: Date): string {
+    // Verificamos que la fecha proporcionada sea válida.
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
+        return 'fecha inválida';
+    }
+
+    // Convertimos la fecha a una cadena de texto con formato de fecha (DD/MM/YYYY).
+    return fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',       // Asegura que el día siempre tenga dos dígitos (ej. 01, 31).
+        month: '2-digit',     // Asegura que el mes siempre tenga dos dígitos (ej. 01, 12).
+        year: 'numeric'       // Usa el formato de año completo (ej. 2022 en vez de 22).
+    });
+}
+
+export function getFormattedDateTime(fecha: Date): string {
+    // Verificamos que la fecha proporcionada sea válida.
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
+        return 'fecha inválida';
+    }
+
+    // Convertimos la fecha a una cadena de texto con formato de fecha y hora.
+    return `${getFormattedDate(fecha)} ${getFormattedTime(fecha)}`;
+}
