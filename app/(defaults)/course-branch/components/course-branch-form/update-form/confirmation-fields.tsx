@@ -139,7 +139,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Comisión:</p>
-              <p className="text-gray-800">{values.commissionRate}%</p>
+              <p className="text-gray-800">{values.commissionRate * 100}%</p>
             </div>
           </div>
           <button type='button' onClick={() => onChangeTab(2)} className="mt-2 text-blue-600 hover:underline">

@@ -1,4 +1,4 @@
-import { Field, FormikErrors, FormikTouched } from "formik";
+import { Field, FieldProps, FormikErrors, FormikTouched } from "formik";
 import { CourseBranchFormType } from "../form.config";
 import { FormItem, Input } from "@/components/ui";
 import Tooltip from "@/components/ui/tooltip";
@@ -10,7 +10,8 @@ interface FinancialConfigFieldsProps {
     className?: string;
 }
 
-export default function FinancialConfigFields({ errors, touched, className }: FinancialConfigFieldsProps) {
+export default function FinancialConfigFields({ values, errors, touched, className }: FinancialConfigFieldsProps) {
+
     return (
         <div className={className}>
             <FormItem
@@ -43,9 +44,19 @@ export default function FinancialConfigFields({ errors, touched, className }: Fi
                 errorMessage={errors.commissionRate}
             >
                 <Field name='commissionRate'>
-                    {({ field }: any) => (
+                    {({ field, form }: FieldProps<CourseBranchFormType>) => (
                         <div className="flex">
-                            <Input {...field} step={1} type="number" placeholder="" className="form-input rounded-r-none" />
+                            <Input
+                                field={field}
+                                value={values.commissionRate !== 0 ? values.commissionRate * 100 : ''}
+                                onChange={(e) => {
+                                    form.setFieldValue('commissionRate', e.target.value !== '' ? Number(e.target.value) / 100 : 0);
+                                }}
+                                step={1}
+                                type="number"
+                                placeholder=""
+                                className="form-input rounded-r-none"
+                            />
                             <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                 %
                             </div>

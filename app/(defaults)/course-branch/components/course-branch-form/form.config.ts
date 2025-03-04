@@ -68,12 +68,12 @@ export type CourseBranchFormType = {
     branchId: string;
     teacherId: string;
     courseId: string;
-    amount: number | string;
+    amount: number;
     modality: Modality;
     startDate: Date | null;
     endDate: Date | null;
-    commissionRate: number | string;
-    capacity: number | string;
+    commissionRate: number;
+    capacity: number;
     status: CourseBranchStatus;
-    sessionCount: number | string;
+    sessionCount: number;
 }
