@@ -75,6 +75,9 @@ export default function CreateCourseBranchForm() {
                                     Modalidad y horarios
                                 </Tab>
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
+                                    Prerrequisitos 
+                                </Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
                                     Configuración financiera
                                 </Tab>
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">

@@ -1,5 +1,5 @@
 'use client';
-import { Button, FormItem, Input, Checkbox, Select } from '@/components/ui';
+import { Button, FormItem, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -9,9 +9,6 @@ import { createEnrollment } from '../../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
-
-
-
 
 export default function CreateEnrollmentForm({ courseBranchId,studentId }: { courseBranchId?: string,studentId?:string }) {
     const route = useRouter();
@@ -54,18 +51,22 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Inscripcion</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de inscripción</h4>
             <Formik initialValues={{...initialValues, courseBranchId: courseBranchId || initialValues.courseBranchId, studentId: studentId || initialValues.studentId}} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-
                         <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
-                            <SelectCourseBranch
-                                value={values.courseBranchId}
-                                onChange={(option: CourseBranchSelect | null) => {
-                                    setFieldValue('courseBranchId', option?.value || '');
-                                }}
-                            />
+                            <Field>
+                                {({ form, field }: any) => (
+                                    <SelectCourseBranch
+                                        {...field}
+                                        value={values.courseBranchId}
+                                        onChange={(option: CourseBranchSelect | null) => {
+                                            form.setFieldValue('courseBranchId', option?.value || '');
+                                        }}
+                                    />
+                                )}
+                            </Field>
                         </FormItem>
 
                         <FormItem name="studentId" label="Estudiante" invalid={Boolean(errors.studentId && touched.studentId)} errorMessage={errors.studentId}>
@@ -89,7 +90,6 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
                                 placeholder="Selecciona un estado"
                             />
                         </FormItem>
-
 
                         <FormItem name="enrollmentDate" label="Fecha de Inscripcion" invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)} errorMessage={errors.enrollmentDate ? String(errors.enrollmentDate) : undefined}>
                             <DatePicker

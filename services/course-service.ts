@@ -142,6 +142,15 @@ export const findPrerequisitesByCourseId = async (courseId: string) => {
         where: {
             courseId: courseId,
         },
+        include: {
+            prerequisite: {
+                select: {
+                    id: true,
+                    name: true,
+                    code: true,
+                },
+            },
+        },
     });
 };
 

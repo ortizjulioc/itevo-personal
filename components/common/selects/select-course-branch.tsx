@@ -3,10 +3,6 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { CourseBranch } from '@prisma/client';
 import { Select } from '@/components/ui';
-import BranchLabel from '../info-labels/branch-label';
-import PromotionLabel from '../info-labels/promotion-label';
-import CourseLabel from '../info-labels/course-label';
-import TeacherLabel from '../info-labels/teacher-label';
 
 interface CourseBranchSelect {
     value: string;
@@ -24,15 +20,7 @@ interface SelectCourseBranchProps {
 }
 
 const CourseBranchLabel = ({ courseBranch }: { courseBranch: CourseBranch }) => (
-    <>
-        <CourseLabel courseId={courseBranch.courseId} /> {' || '}
-        <TeacherLabel teacherId={courseBranch.teacherId} /> {' || '}
-        <BranchLabel branchId={courseBranch.branchId} /> {' || '}
-        <PromotionLabel promotionId={courseBranch.promotionId} /> 
-
-
-
-    </>
+    <span>{courseBranch.id} {courseBranch.teacherId}</span>
 );
 
 export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranchProps) {
@@ -41,6 +29,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
             const response = await apiRequest.get<CourseBranchsResponse>(`/course-branch?search=${inputValue}`);
+            console.log('response', response);
             if (!response.success) {
                 throw new Error(response.message);
             }

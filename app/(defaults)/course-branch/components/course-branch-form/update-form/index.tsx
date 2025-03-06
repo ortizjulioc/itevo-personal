@@ -16,10 +16,12 @@ import Swal from 'sweetalert2';
 import ConfirmationFields from './confirmation-fields';
 import StickyFooter from '@/components/common/sticky-footer';
 import { useURLSearchParams } from '@/utils/hooks';
+import PrerequisitesFields from './prerequisites-fields';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
     'schedule-assignment',
+    'prerequisites',
     'financial-config',
     'confirmation',
 ];
@@ -27,6 +29,7 @@ const COURSE_BRANCH_TABS = [
 const TABS_FIELDS = [
     ['promotionId', 'branchId', 'teacherId', 'courseId', 'capacity'],
     ['modality', 'startDate', 'endDate', 'schedules'],
+    ['prerequisites'],
     ['amount', 'commissionRate'],
 ]
 
@@ -130,6 +133,15 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                         <button
                                             className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
                                         >
+                                            Prerrequisitos
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
                                             Configuración financiera
                                         </button>
                                     )}
@@ -154,6 +166,10 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                 </Tab.Panel>
 
                                 <Tab.Panel>
+                                    <PrerequisitesFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
+
+                                <Tab.Panel>
                                     <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} />
                                 </Tab.Panel>
 
@@ -165,7 +181,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
 
                         <StickyFooter className='-mx-11 px-8 py-4' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
-                            <div className="mt-6 flex justify-between gap-2">
+                            <div className="flex justify-between gap-2 px-3">
                                 <Button type="button" color="danger" onClick={() => route.back()}>
                                     Cancelar
                                 </Button>

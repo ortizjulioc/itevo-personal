@@ -129,6 +129,8 @@ model Course {
 model Prerequisite {
     courseId       String @map("course_id") // ID del curso
     prerequisiteId String @map("prerequisite_id") // ID del curso pre-requisito
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
 
     course       Course @relation("CoursePrerequisite", fields: [courseId], references: [id])
     prerequisite Course @relation("PrerequisiteCourse", fields: [prerequisiteId], references: [id])

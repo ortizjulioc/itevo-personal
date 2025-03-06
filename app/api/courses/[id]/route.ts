@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findCourseById, updateCourseById, deleteCourseById, addPrerequisite } from '@/services/course-service';
+import { findCourseById, updateCourseById, deleteCourseById } from '@/services/course-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
