@@ -1,10 +1,10 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
-import Skeleton from "@/components/common/Skeleton";
+import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
 import StatusCourseBranch from "../status";
@@ -45,7 +45,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <Skeleton rows={8} columns={['PROMOCION', 'SUCURSAL', 'PROFESOR', 'CURSO', 'MODALIDAD', 'F. INICIO', 'F. FIN']} />;
+    if (loading) return <TableSkeleton rows={8} columns={['CURSO', 'FECHAS', 'MODALIDAD', 'CAPACIDAD', 'COSTO', 'ESTADO' ]} />;
 
     return (
         <div className={className}>
@@ -57,6 +57,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                             <th>FECHAS</th>
                             <th>MODALIDAD</th>
                             <th>CAPACIDAD</th>
+                            <th>COSTO</th>
                             <th>ESTADO</th>
                             <th />
                         </tr>
@@ -81,6 +82,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
                                     <td><ModalityTag modality={courseBranch.modality} /></td>
                                     <td>{courseBranch.capacity}</td>
+                                    <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
                                     <td>
                                         <StatusCourseBranch status={courseBranch.status} />
                                     </td>
