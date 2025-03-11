@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { CourseBranch } from "@prisma/client";
+import { Branch, Course, CourseBranch as CourseBranchPrisma, Teacher } from "@prisma/client";
+
+export interface CourseBranch extends CourseBranchPrisma {
+  course: Course;
+  branch: Branch;
+  teacher: Teacher;
+}
 
 export interface CourseBranchResponse {
   courseBranches: CourseBranch[];
@@ -14,7 +20,7 @@ const useFetchCourseBranch = (query: string) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchrolesData = async (query: string) => {
+    const fetchCourseBranch = async (query: string) => {
       try {
         const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?${query}`);
         if (!response.success) {
@@ -33,21 +39,21 @@ const useFetchCourseBranch = (query: string) => {
       }
     };
 
-    fetchrolesData(query);
+    fetchCourseBranch(query);
   }, [query]);
 
   return { courseBranches, totalCourseBranches, loading, error, setCourseBranches };
 };
 
 export const useFetchCourseBranchById = (id: string) => {
-  const [courseBranch, seCourseBranch] = useState<CourseBranch | null>(null);
+  const [courseBranch, seCourseBranch] = useState<CourseBranchPrisma | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourseData = async (id: string) => {
       try {
-        const response = await apiRequest.get<CourseBranch>(`/course-branch/${id}`);
+        const response = await apiRequest.get<CourseBranchPrisma>(`/course-branch/${id}`);
         if (!response.success) {
           throw new Error(response.message);
         }

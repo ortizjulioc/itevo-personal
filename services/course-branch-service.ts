@@ -18,7 +18,6 @@ export const getCourseBranch = async (filters: any) => {
             modality,
         },
         include: {
-            promotion: { select: { id: true, description: true } },
             branch: { select: { id: true, name: true } },
             teacher: { select: { id: true, firstName: true, lastName: true  } },
             course: { select: { id: true, name: true } },

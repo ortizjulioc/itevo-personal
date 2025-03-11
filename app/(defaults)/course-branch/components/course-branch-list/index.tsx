@@ -7,12 +7,10 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
-import PromotionLabel from "@/components/common/info-labels/promotion-label";
-import TeacherLabel from "@/components/common/info-labels/teacher-label";
-import CourseLabel from "@/components/common/info-labels/course-label";
 import StatusCourseBranch from "../status";
 import { getFormattedDate } from "@/utils/date";
 import { TbDetails } from "react-icons/tb";
+import ModalityTag from "../modality";
 
 interface Props {
     className?: string;
@@ -22,6 +20,7 @@ interface Props {
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
     const { loading, error, courseBranches, totalCourseBranches, setCourseBranches } = useFetchCourseBranch(query);
+    console.log('courseBranches', courseBranches);
     if (error) {
         openNotification('error', error);
     }
@@ -54,13 +53,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
-                            <th>PROMOCION</th>
                             <th>CURSO</th>
-                            {/* <th>SUCURSAL</th> */}
-                            <th>PROFESOR</th>
-                            {/* <th>MODALIDAD</th> */}
-                            <th>F. INICIO</th>
-                            <th>F. FIN</th>
+                            <th>FECHAS</th>
+                            <th>MODALIDAD</th>
                             <th>CAPACIDAD</th>
                             <th>ESTADO</th>
                             <th />
@@ -75,13 +70,16 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         {courseBranches?.map((courseBranch) => {
                             return (
                                 <tr key={courseBranch.id}>
-                                    <td><PromotionLabel promotionId={courseBranch.promotionId} /></td>
-                                    <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
-                                    {/* <td>{<BranchLabel branchId={courseBranch.branchId} />}</td> */}
-                                    <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
-                                    {/* <td><ModalityTag modality={courseBranch.modality} /></td> */}
-                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''}</td>
-                                    <td>{courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
+                                    <td>
+                                        <div className='flex flex-col'>
+                                            <span className='font-semibold'>{courseBranch.course.name}</span>
+                                            <span className="">
+                                                {courseBranch.teacher.firstName} {courseBranch.teacher.lastName}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
+                                    <td><ModalityTag modality={courseBranch.modality} /></td>
                                     <td>{courseBranch.capacity}</td>
                                     <td>
                                         <StatusCourseBranch status={courseBranch.status} />
@@ -89,14 +87,12 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>
                                         <div className="flex items-center gap-2 justify-end">
                                             <Tooltip title="Eliminar">
-                                                {/* <Button onClick={() => onDelete(courseBranch.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} /> */}
                                                 <button onClick={() => onDelete(courseBranch.id)}>
                                                     <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
                                                 </button>
                                             </Tooltip>
                                             <Tooltip title="Editar">
                                                 <Link href={`/course-branch/${courseBranch.id}`}>
-                                                    {/* <Button variant="outline" size="sm" icon={<IconEdit className="size-5" />} /> */}
                                                     <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                                                 </Link>
                                             </Tooltip>
@@ -105,11 +101,6 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                                     <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                                                 </Link>
                                             </Tooltip>
-                                            {/* ALTERNATIVA */}
-                                            {/* <Button onClick={() => onDelete(Courset.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/courses/${Courset.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
                                         </div>
                                     </td>
                                 </tr>
