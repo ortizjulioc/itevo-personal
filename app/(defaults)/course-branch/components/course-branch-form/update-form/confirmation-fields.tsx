@@ -42,8 +42,8 @@ const data = {
 };
 
 const weekdayNames = [
-    'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
-  ];
+  'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+];
 
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
   console.log(values)
@@ -102,6 +102,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             <div>
               <p className="font-medium text-gray-600">Sesiones:</p>
               <p className="text-gray-800">{values.sessionCount}</p>
+              <p className="text-xs text-gray-500 italic mt-1">
+                Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
+              </p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>

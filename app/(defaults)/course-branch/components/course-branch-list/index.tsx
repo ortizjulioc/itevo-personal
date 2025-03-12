@@ -45,7 +45,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <TableSkeleton rows={8} columns={['CURSO', 'FECHAS', 'MODALIDAD', 'CAPACIDAD', 'COSTO', 'ESTADO' ]} />;
+    if (loading) return <TableSkeleton rows={8} columns={['CURSO', 'FECHAS', 'MODALIDAD', 'SESIONES', 'CAPACIDAD', 'COSTO', 'ESTADO' ]} />;
 
     return (
         <div className={className}>
@@ -56,6 +56,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                             <th>CURSO</th>
                             <th>FECHAS</th>
                             <th>MODALIDAD</th>
+                            <th>SESIONES</th>
                             <th>CAPACIDAD</th>
                             <th>COSTO</th>
                             <th>ESTADO</th>
@@ -82,6 +83,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
                                     <td><ModalityTag modality={courseBranch.modality} /></td>
                                     <td>{courseBranch.capacity}</td>
+                                    <td>{courseBranch.sessionCount}</td>
                                     <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
                                     <td>
                                         <StatusCourseBranch status={courseBranch.status} />
