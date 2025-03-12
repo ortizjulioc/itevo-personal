@@ -59,7 +59,7 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
                     className="form-input"
                     value={values.identification}
                     onValueChange={(value: any) => {
-                      console.log(value);
+                  
                       form.setFieldValue('identification', value.value);
                     }}
                   />
@@ -96,7 +96,10 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
                 )}
               </Field>
             </FormItem>
-            <FormItem name="email" label="Correo electrónico" invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
+            <FormItem
+                name="email" 
+                label="Correo electrónico" 
+                invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
               <Field type="email" name="email" component={Input} />
             </FormItem>
 

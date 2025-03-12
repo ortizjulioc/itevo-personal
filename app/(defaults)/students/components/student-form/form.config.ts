@@ -8,7 +8,7 @@ export const createValidationSchema = Yup.object().shape({
     identification: Yup.string().required('La identificación es obligatoria'),
     address: Yup.string(),
     phone: Yup.string().required('El teléfono es obligatorio'),
-    email: Yup.string().email('El correo electrónico no es válido').required('El correo electrónico es obligatorio'),
+    email: Yup.string().email('El correo electrónico no es válido'),
     hasTakenCourses: Yup.boolean().required('Este campo es obligatorio'),
    
 });
@@ -19,7 +19,7 @@ export const updateValidationSchema = Yup.object().shape({
     identification: Yup.string().required('La identificación es obligatoria'),
     address: Yup.string(),
     phone: Yup.string().required('El teléfono es obligatorio'),
-    email: Yup.string().email('El correo electrónico no es válido').required('El correo electrónico es obligatorio'),
+    email: Yup.string().email('El correo electrónico no es válido'),
     hasTakenCourses: Yup.boolean().required('Este campo es obligatorio'),
 });
 

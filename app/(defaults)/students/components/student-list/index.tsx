@@ -2,7 +2,7 @@
 import Avatar from "@/components/common/Avatar";
 import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
+import { IconEdit, IconEye, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
@@ -23,10 +23,10 @@ export default function StudentList({ className, query = '' }: Props) {
   if (error) {
     openNotification('error', error);
   }
-  console.log('students', students);
+
 
   const onDelete = async (id: string) => {
-    console.log('delete', id);
+
     confirmDialog({
       title: 'Eliminar Estudiante',
       text: '¿Seguro que quieres eliminar este Estudiante?',
@@ -90,6 +90,11 @@ export default function StudentList({ className, query = '' }: Props) {
                       <Tooltip title="Editar">
                         <Link href={`/students/${student.id}`}>
                           <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                        </Link>
+                      </Tooltip>
+                      <Tooltip title="Ver">
+                        <Link href={`/students/view/${student.id}`}>
+                          <Button variant="outline" color='success' size="sm" icon={<IconEye className="size-4" />} />
                         </Link>
                       </Tooltip>
                       {/* ALTERNATIVA */}

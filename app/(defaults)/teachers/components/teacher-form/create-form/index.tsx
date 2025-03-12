@@ -55,7 +55,7 @@ export default function CreateTeacherForm() {
                     className="form-input"
                     value={values.identification}
                     onValueChange={(value: any) => {
-                      console.log(value);
+                   
                       form.setFieldValue('identification', value.value);
                     }}
                   />

@@ -1,6 +1,5 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["omitApi"] // Add this line
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -23,6 +22,8 @@ model User {
     updatedAt DateTime @updatedAt @map("updated_at")
 
     roleBranch UserRoleBranch[]
+
+    @@map("users")
 }
 
 model Role {
@@ -34,6 +35,8 @@ model Role {
     updatedAt      DateTime @updatedAt @map("updated_at")
 
     userRole UserRoleBranch[]
+
+    @@map("roles")
 }
 
 model Branch {
@@ -47,6 +50,8 @@ model Branch {
 
     userRole     UserRoleBranch[]
     courseBranch CourseBranch[]
+
+    @@map("branches")
 }
 
 model UserRoleBranch {
@@ -60,7 +65,7 @@ model UserRoleBranch {
     branch Branch @relation(fields: [branchId], references: [id])
 
     @@unique([userId, roleId, branchId])
-    @@map("user_role_branch")
+    @@map("users_roles_branches")
 }
 
 model Teacher {
@@ -79,6 +84,8 @@ model Teacher {
     deleted        Boolean          @default(false)
     courseBranch   CourseBranch[]
     accountPayable AccountPayable[]
+
+    @@map("teachers")
 }
 
 model Student {
@@ -87,7 +94,7 @@ model Student {
     firstName         String              @map("first_name") // Nombres
     lastName          String              @map("last_name") // Apellidos
     identification    String? // En estudiates puede estar vacio
-    phone             String // Telefono
+    phone             String? // Telefono
     email             String?             @unique // Correo
     address           String? // Direccion
     hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
@@ -97,6 +104,8 @@ model Student {
     enrollment        Enrollment[]
     graduation        Graduation[]
     accountReceivable AccountReceivable[]
+
+    @@map("students")
 }
 
 model Course {
@@ -113,16 +122,21 @@ model Course {
     requiredBy         Prerequisite[] @relation("PrerequisiteCourse")
     courseBranch       CourseBranch[]
     graduation         Graduation[]
+
+    @@map("courses")
 }
 
 model Prerequisite {
     courseId       String @map("course_id") // ID del curso
     prerequisiteId String @map("prerequisite_id") // ID del curso pre-requisito
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
 
     course       Course @relation("CoursePrerequisite", fields: [courseId], references: [id])
     prerequisite Course @relation("PrerequisiteCourse", fields: [prerequisiteId], references: [id])
 
     @@id([courseId, prerequisiteId]) // Llave compuesta
+    @@map("prerequisites")
 }
 
 model Promotion {
@@ -135,23 +149,26 @@ model Promotion {
 
     courseBranch CourseBranch[]
     graduation   Graduation[]
+
+    @@map("promotions")
 }
 
 model CourseBranch {
-    id             String   @id @default(uuid())
-    promotionId    String   @map("promotion_id") // ID de la promoción
-    branchId       String   @map("branch_id") // ID de la sucursal
-    teacherId      String   @map("teacher_id") // ID del profesor
-    courseId       String   @map("course_id") // ID del curso
-    amount         Float // Monto
-    modality       String // Modalidad (presencial, virtual, híbrida)
-    startDate      DateTime @map("start_date") // Fecha de inicio
-    endDate        DateTime @map("end_date") // Fecha de fin
-    commissionRate Float    @map("commission_rate") // Porcentaje de comisión
-    capacity       Int      @default(0) // Capacidad
+    id             String             @id @default(uuid())
+    promotionId    String             @map("promotion_id") // ID de la promoción
+    branchId       String             @map("branch_id") // ID de la sucursal
+    teacherId      String             @map("teacher_id") // ID del profesor
+    courseId       String             @map("course_id") // ID del curso
+    amount         Float              @default(0) // Monto
+    modality       Modality // Modalidad: presencial, virtual, hibrido
+    startDate      DateTime?          @map("start_date") // Fecha de inicio
+    endDate        DateTime?          @map("end_date") // Fecha de fin
+    commissionRate Float              @default(0) @map("commission_rate") // Porcentaje de comisión
+    capacity       Int                @default(0) // Capacidad
+    sessionCount   Int                @default(0) @map("session_count") // Cantidad de sesiones
     status         CourseBranchStatus // Estado
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+    createdAt      DateTime           @default(now()) @map("created_at")
+    updatedAt      DateTime           @updatedAt @map("updated_at")
 
     promotion         Promotion           @relation(fields: [promotionId], references: [id])
     branch            Branch              @relation(fields: [branchId], references: [id])
@@ -162,27 +179,38 @@ model CourseBranch {
     accountReceivable AccountReceivable[]
     accountPayable    AccountPayable[]
 
-    @@map("course_branch")
+    @@map("courses_branches")
+}
+
+enum Modality {
+    PRESENTIAL @map("presential")
+    VIRTUAL    @map("virtual")
+    HYBRID     @map("hybrid")
 }
 
 enum CourseBranchStatus {
-    WAITING             @map("waiting") // A la espera de alcanzar el limite de estudiantes
-    CONFIRMED           @map("confirmed") // Confirmado (alcanzó el limite de estudiantes) y listo para iniciar
-    IN_PROGRESS         @map("in_progress") // En progreso (ya inició)
-    COMPLETED           @map("completed") // Completado (ya finalizó)
-    CANCELED            @map("canceled") // Cancelado (no se inició o se canceló antes de finalizar)
+    DRAFT       @map("draft") // Borrador (aun no se ha terminado de configurar)
+    WAITING     @map("waiting") // A la espera de alcanzar el limite de estudiantes
+    CONFIRMED   @map("confirmed") // Confirmado (alcanzó el limite de estudiantes) y listo para iniciar
+    IN_PROGRESS @map("in_progress") // En progreso (ya inició)
+    COMPLETED   @map("completed") // Completado (ya finalizó)
+    CANCELED    @map("canceled") // Cancelado (no se inició o se canceló antes de finalizar)
 }
 
 model Schedule {
-    id        String   @id @default(uuid())
-    startTime String   @map("start_time") // Hora de inicio
-    endTime   String   @map("end_time") // Hora de fin
+    id        String @id @default(uuid())
+    startTime String @map("start_time") // Hora de inicio
+    endTime   String @map("end_time") // Hora de fin
     weekday   Int // Día de la semana (0 = Domingo, 6 = Sábado)
+
+    deleted   Boolean  @default(false)
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
     courses    CourseSchedule[] // Relación con cursos
     attendance Attendance[]
+
+    @@map("schedules")
 }
 
 model CourseSchedule {
@@ -195,6 +223,7 @@ model CourseSchedule {
     schedule Schedule     @relation(fields: [scheduleId], references: [id])
 
     @@id([courseId, scheduleId]) // Combinación de claves primarias
+    @@map("courses_schedules")
 }
 
 enum EnrollmentStatus {
@@ -216,6 +245,8 @@ model Enrollment {
     student      Student      @relation(fields: [studentId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
     attendance   Attendance[]
+
+    @@map("enrollments")
 }
 
 enum AttendanceStatus {
@@ -235,6 +266,8 @@ model Attendance {
 
     enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
     schedule   Schedule   @relation(fields: [scheduleId], references: [id])
+
+    @@map("attendances")
 }
 
 enum GraduationType {
@@ -263,6 +296,8 @@ model Graduation {
     student   Student   @relation(fields: [studentId], references: [id])
     promotion Promotion @relation(fields: [promotionId], references: [id])
     course    Course    @relation(fields: [courseId], references: [id])
+
+    @@map("graduations")
 }
 
 model GraduationPrice {
@@ -273,6 +308,8 @@ model GraduationPrice {
     discountForMultipleEnrollments Float          @map("discount_for_multiple_enrollments") // Descuento por múltiples matriculaciones
     createdAt                      DateTime       @default(now()) @map("created_at")
     updatedAt                      DateTime       @updatedAt @map("updated_at")
+
+    @@map("graduation_prices")
 }
 
 enum AccountStatus {
@@ -285,7 +322,6 @@ model AccountReceivable {
     id             String        @id @default(uuid())
     studentId      String        @map("student_id") // ID del estudiante
     courseBranchId String        @map("course_branch_id") // ID del CursoSucursal
-    installment    Int // Número de la cuota (1, 2, 3, ...)
     amount         Float // Monto de la cuota
     dueDate        DateTime      @map("due_date") // Fecha de vencimiento
     status         AccountStatus // Estado (pendiente, pagado, etc.)
@@ -295,7 +331,7 @@ model AccountReceivable {
     student      Student      @relation(fields: [studentId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
 
-    @@map("account_receivable")
+    @@map("accounts_receivable")
 }
 
 enum PaymentStatus {
@@ -317,7 +353,7 @@ model AccountPayable {
     teacher      Teacher      @relation(fields: [teacherId], references: [id])
     courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
 
-    @@map("account_payable")
+    @@map("accounts_payable")
 }
 
 model Setting {
@@ -332,4 +368,17 @@ model Setting {
     deleted         Boolean  @default(false)
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
+
+    @@map("settings")
+}
+
+model Holiday {
+    id          String   @id @default(cuid())
+    name        String // Nombre del feriado (Ejemplo: "Navidad")
+    date        DateTime // Fecha completa (Ejemplo: "2025-12-25")
+    isRecurring Boolean  @default(false) // Si el feriado es recurrente
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@map("holidays")
 }

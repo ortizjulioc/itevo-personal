@@ -14,7 +14,7 @@ export default function UpdateRoleForm({ initialValues }: { initialValues: Role 
       
 
         const resp = await updateRole(initialValues.id, data);
-        console.log(resp);
+       
 
         if (resp.success) {
             openNotification('success', 'Rol editado correctamente');

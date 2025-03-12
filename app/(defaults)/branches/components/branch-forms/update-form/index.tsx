@@ -15,7 +15,7 @@ export default function UpdateBranchForm({ initialValues }: { initialValues: Bra
         delete data.confirmPassword;
 
         const resp = await updateBranch(initialValues.id, data);
-        console.log(resp);
+     
 
         if (resp.success) {
             openNotification('success', 'Sucursal editada correctamente');

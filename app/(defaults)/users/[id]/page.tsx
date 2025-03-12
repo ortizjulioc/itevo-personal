@@ -146,9 +146,7 @@ export default function EditUser({ params }: { params: { id: string } }) {
       }
     };
 
-      useEffect(() => {
-        console.log('BRANCHES', user?.branches);
-      }, [user]);
+    
 
 
     return (

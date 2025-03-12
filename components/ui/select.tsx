@@ -7,6 +7,7 @@ import ReactSelect, { Props as ReactSelectProps, StylesConfig } from 'react-sele
 
 type CustomSelectProps<Option, IsMulti extends boolean> = ReactSelectProps<Option, IsMulti> & {
   mode?: 'light' | 'dark'; // Modo claro u oscuro
+  asComponent?: React.ElementType; // Componente personalizado
 };
 
 // Define el tipo para opciones
@@ -91,11 +92,11 @@ export default function Select<Option = OptionType, IsMulti extends boolean = fa
 ) {
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-  const { mode, styles, ...restProps } = props;
+  const { mode, styles, asComponent: Component = ReactSelect, ...restProps } = props;
   const isDarkMode = Boolean(mode) ? mode === 'dark' ? true : false : themeConfig.isDarkMode
 
   return (
-    <ReactSelect
+    <Component
       {...restProps}
       styles={{
         ...getCustomStyles(isDarkMode),

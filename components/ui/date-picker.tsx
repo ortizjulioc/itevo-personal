@@ -8,9 +8,10 @@ interface DatePickerProps {
   mode?: 'single' | 'datetime' | 'range' | 'time';
   value?: Date | Date[];
   onChange?: (date: Date | Date[]) => void;
+  placeholder?: string;
 }
 
-const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 'single', value, onChange, field, form }) => {
+const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 'single', value, onChange, field, form, ...rest }) => {
   const handleChange = (dates: Date[] | Date) => {
     let formattedDate: Date | Date[];
 
@@ -32,9 +33,9 @@ const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 's
     }
     return {
       mode: mode as 'single' | 'range' | 'time' | 'multiple', // Forzamos el tipo correcto
-      dateFormat: 'Y-m-d',
       enableTime: mode === 'time',
       noCalendar: mode === 'time',
+      dateFormat: mode === 'time' ? 'H:i' : 'Y-m-d',
     };
   };
 
@@ -44,6 +45,7 @@ const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({ mode = 's
       options={getOptions()}
       className="form-input"
       onChange={handleChange}
+      {...rest}
     />
   );
 };

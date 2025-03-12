@@ -2,9 +2,8 @@ import 'server-only';
 import { PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
-export const getSchedules = async (page: number, top: number, weekday: number | null, startTime: string | null, endTime: string | null) => {
-    const skip = (page - 1) * top;
-    const whereCondition: any = {};
+export const getSchedules = async (weekday: number | null, startTime: string | null, endTime: string | null) => {
+    const whereCondition: any = { deleted: false };
 
     if (weekday !== null) {
         whereCondition.weekday = weekday;
@@ -19,8 +18,6 @@ export const getSchedules = async (page: number, top: number, weekday: number | 
             { id: 'asc' },
         ],
         where: whereCondition,
-        skip: skip,
-        take: top,
     });
 
     const totalSchedules = await Prisma.schedule.count({
@@ -45,7 +42,7 @@ export const createSchedule = async (data: any) => {
 
 export const findScheduleById = async (id: string) => {
     const schedule = await Prisma.schedule.findUnique({
-        where: { id },
+        where: { id, deleted: false },
     });
     return schedule;
 };
@@ -64,7 +61,10 @@ export const updateScheduleById = async (id: string, data: any) => {
 };
 
 export const deleteScheduleById = async (id: string) => {
-    return Prisma.schedule.delete({
+    return Prisma.schedule.update({
         where: { id },
+        data: {
+            deleted: true,
+        },
     });
 };

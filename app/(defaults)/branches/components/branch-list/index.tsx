@@ -22,7 +22,7 @@ export default function BranchList({ className, query = '' }: Props) {
     }
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+    
         confirmDialog({
             title: 'Eliminar Sucursal',
             text: '¿Seguro que quieres eliminar esta Sucursal?',

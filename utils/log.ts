@@ -63,7 +63,6 @@ export const createLog = async (logData: LogData): Promise<void> => {
         }
 
         logs.push(logEntry);
-        console.log(logEntry);
 
         await fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), "utf-8");
     } catch (error) {

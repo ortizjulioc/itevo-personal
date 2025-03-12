@@ -21,7 +21,7 @@ export default function RoleList({ className, query = '' }: Props) {
     }
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+        
         confirmDialog({
             title: 'Eliminar rol',
             text: '¿Seguro que quieres eliminar este rol?',

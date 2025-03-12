@@ -21,7 +21,7 @@ export default function PromotionList({ className, query = '' }: Props) {
     }
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+    
         confirmDialog({
             title: 'Eliminar promoción',
             text: '¿Seguro que quieres eliminar este promoción?',
@@ -37,7 +37,7 @@ export default function PromotionList({ className, query = '' }: Props) {
             openNotification('error', resp.message);
         });
     }
-    console.log('promotions', promotions);
+ 
     if (loading) return <Skeleton rows={4} columns={['NOMBRE', 'NOMBRE NORMALIZADO']} />;
 
     return (

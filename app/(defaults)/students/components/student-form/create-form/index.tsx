@@ -55,7 +55,7 @@ export default function CreateStudentForm() {
                     className="form-input"
                     value={values.identification}
                     onValueChange={(value: any) => {
-                      console.log(value);
+           
                       form.setFieldValue('identification', value.value);
                     }}
                   />
@@ -92,7 +92,13 @@ export default function CreateStudentForm() {
                 )}
               </Field>
             </FormItem>
-            <FormItem name="email" label="Correo electrónico" invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
+            <FormItem 
+              name="email"
+              label="Correo electrónico"
+              invalid={Boolean(errors.email && touched.email)} 
+              errorMessage={errors.email}
+              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
+              >
               <Field type="email" name="email" component={Input} />
             </FormItem>
             <FormItem name="hasTakenCourses" label="" invalid={Boolean(errors.hasTakenCourses && touched.hasTakenCourses)} errorMessage={errors.hasTakenCourses}>

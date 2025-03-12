@@ -47,6 +47,7 @@ export const useFetchStudentById = (id: string) => {
   useEffect(() => {
     const fetchStudentData = async (id: string) => {
       try {
+        setLoading(true)
         const response = await apiRequest.get<Student>(`/students/${id}`);
         if (!response.success) {
           throw new Error(response.message);

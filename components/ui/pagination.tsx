@@ -25,7 +25,6 @@ const Pagination: React.FC<PaginationProps> = ({
     total,
     top,
 }) => {
-    console.log('total', total);
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
