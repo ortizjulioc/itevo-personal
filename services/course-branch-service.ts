@@ -21,6 +21,7 @@ export const getCourseBranch = async (filters: any) => {
             branch: { select: { id: true, name: true } },
             teacher: { select: { id: true, firstName: true, lastName: true  } },
             course: { select: { id: true, name: true } },
+            schedules: { select: { schedule: true } },
         },
         skip: skip,
         take: top,
@@ -36,7 +37,10 @@ export const getCourseBranch = async (filters: any) => {
         },
     });
 
-    return { courseBranches, totalCourseBranches };
+    return {
+        courseBranches: courseBranches.map((courseBranch) => ({ ...courseBranch, schedules: courseBranch.schedules.map((schedule) => schedule.schedule) })),
+        totalCourseBranches
+    };
 };
 
 export const createCourseBranch = async (data: any) => {
