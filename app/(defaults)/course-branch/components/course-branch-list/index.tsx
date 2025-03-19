@@ -1,16 +1,17 @@
 'use client';
-import { confirmDialog, formatPhoneNumber, getInitials, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconEye, IconTrashLines } from "@/components/icon";
+import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
-import Skeleton from "@/components/common/Skeleton";
+import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
 import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
+import { MODALITIES } from "@/constants/modality.constant";
 
 
 
@@ -27,6 +28,7 @@ const MODALITIES ={
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
     const { loading, error, courseBranches, totalCourseBranches, setCourseBranches } = useFetchCourseBranch(query);
+    console.log('courseBranches', courseBranches);
     if (error) {
         openNotification('error', error);
     }
@@ -52,21 +54,21 @@ export default function CourseBranchList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <Skeleton rows={8} columns={['PROMOCION', 'SUCURSAL', 'PROFESOR', 'CURSO', 'MODALIDAD', 'F. INICIO', 'F. FIN']} />;
+    if (loading) return <TableSkeleton rows={8} columns={['CURSO', 'FECHAS', 'MODALIDAD', 'SESIONES', 'CAPACIDAD', 'COSTO', 'ESTADO' ]} />;
 
     return (
         <div className={className}>
-            <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+            <div className="table-responsive mb-5 panel p-0 border-0">
                 <table className="table-hover">
                     <thead>
                         <tr>
-                            <th>PROMOCION</th>
-                            <th>SUCURSAL</th>
-                            <th>PROFESOR</th>
                             <th>CURSO</th>
+                            <th>FECHAS</th>
                             <th>MODALIDAD</th>
-                            <th>F. INICIO</th>
-                            <th>F. FIN</th>
+                            <th>SESIONES</th>
+                            <th>CAPACIDAD</th>
+                            <th>COSTO</th>
+                            <th>ESTADO</th>
                             <th />
                         </tr>
                     </thead>
@@ -79,33 +81,39 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         {courseBranches?.map((courseBranch) => {
                             return (
                                 <tr key={courseBranch.id}>
-                                    <td><PromotionLabel promotionId={courseBranch.promotionId} /></td>
-                                    <td>{<BranchLabel branchId={courseBranch.branchId} />}</td>
-                                    <td>{<TeacherLabel teacherId={courseBranch.teacherId} />}</td>
-                                    <td>{<CourseLabel courseId={courseBranch.courseId} />}</td>
-                                    <td>{MODALITIES[courseBranch.modality]}</td>
-                                    <td>{new Date(courseBranch.startDate).toLocaleDateString()}</td>
-                                    <td>{new Date(courseBranch.endDate).toLocaleDateString()}</td>
                                     <td>
-                                        <div className="flex gap-2 justify-end">
+                                        <div className='flex flex-col'>
+                                            <span className='font-semibold'>{courseBranch.course.name}</span>
+                                            <span className="">
+                                                {courseBranch.teacher.firstName} {courseBranch.teacher.lastName}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
+                                    <td><ModalityTag modality={courseBranch.modality} /></td>
+                                    <td>{courseBranch.capacity}</td>
+                                    <td>{courseBranch.sessionCount}</td>
+                                    <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
+                                    <td>
+                                        <StatusCourseBranch status={courseBranch.status} />
+                                    </td>
+                                    <td>
+                                        <div className="flex items-center gap-2 justify-end">
                                             <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(courseBranch.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                <button onClick={() => onDelete(courseBranch.id)}>
+                                                    <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                                                </button>
                                             </Tooltip>
                                             <Tooltip title="Editar">
                                                 <Link href={`/course-branch/${courseBranch.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                    <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                                                 </Link>
                                             </Tooltip>
-                                            <Tooltip title="Ver">
+                                            <Tooltip title="Detalles">
                                                 <Link href={`/course-branch/view/${courseBranch.id}`}>
-                                                    <Button variant="outline" color='success' size="sm" icon={<IconEye className="size-4" />} />
+                                                    <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                                                 </Link>
                                             </Tooltip>
-                                            {/* ALTERNATIVA */}
-                                            {/* <Button onClick={() => onDelete(Courset.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/courses/${Courset.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
                                         </div>
                                     </td>
                                 </tr>

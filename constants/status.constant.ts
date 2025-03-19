@@ -1,4 +1,5 @@
-export const STATUS = {
+export const COURSE_BRANCH_STATUS = {
+    DRAFT: 'DRAFT',
     WAITING: 'WAITING',
     CONFIRMED: 'CONFIRMED',
     IN_PROGRESS: 'IN_PROGRESS',

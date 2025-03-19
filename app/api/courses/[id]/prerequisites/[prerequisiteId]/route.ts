@@ -10,7 +10,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         const { prerequisiteId } = params;
 
         // Verificar si el prerequisito existe en el curso
-
         const prerequisite = await findPrerequisiteById(id, prerequisiteId);
         if (!prerequisite) {
             return NextResponse.json({ code: 'E_PREREQUISITE_NOT_FOUND', message: 'Prerequisito no encontrado' }, { status: 404 });

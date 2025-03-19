@@ -5,10 +5,6 @@ import { useFetchCourseBranchById } from "../../lib/use-fetch-course-branch";
 import CourseBranchDetails from "../../components/course-branch-details/course-branch-details";
 import CourseBranchEnrollments from "../../components/course-branch-details/course-branch-enrollments";
 
-
-
-
-
 export default function CourseBranchView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
 
     const id = params?.id; // Extraer el ID de params

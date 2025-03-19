@@ -34,15 +34,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY QUE SE ENVIÓ PARA CREAR: ', body);
-
         // Validate the request body
         const { isValid, message } = validateObject(body, ['courseId', 'scheduleId']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
-
-        console.log('HASTA AQUÍ TODO BIEN');
 
         const courseSchedule = await createCourseSchedule(body);
         await createLog({

@@ -25,3 +25,12 @@ export const getInitials = (name?: string | null, lastName?: string | null): str
   
   return `${firstInitial}${lastInitial}`;
 }
+
+
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('es-DO', {
+    style: 'currency',
+    currency: 'DOP',
+    minimumFractionDigits: 2,
+  }).format(amount);
+}

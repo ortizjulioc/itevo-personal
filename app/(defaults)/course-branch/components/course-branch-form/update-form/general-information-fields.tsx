@@ -4,20 +4,18 @@ import { Field, FormikErrors, FormikTouched } from "formik";
 import SelectBranch, { SelectBranchType } from "@/components/common/selects/select-branch";
 import SelectTeacher, { SelectTeacherType } from "@/components/common/selects/select-teacher";
 import SelectCourse from "@/components/common/selects/select-course";
-import { CreateCourseBranchFormType } from "../form.config";
+import { CourseBranchFormType } from "../form.config";
 
 interface GeneralInformationFieldsProps {
-    values: CreateCourseBranchFormType;
-    errors: FormikErrors<CreateCourseBranchFormType>;
-    touched: FormikTouched<CreateCourseBranchFormType>;
+    values: CourseBranchFormType;
+    errors: FormikErrors<CourseBranchFormType>;
+    touched: FormikTouched<CourseBranchFormType>;
+    className?: string;
 }
 
-export default function GeneralInformationFields({ values, errors, touched }: GeneralInformationFieldsProps) {
-    console.log('values', values);
-    console.log('errors', errors);
-    console.log('touched', touched);
+export default function GeneralInformationFields({ values, errors, touched, className }: GeneralInformationFieldsProps) {
     return (
-        <div className="mt-6">
+        <div className={className}>
             <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
                 <Field>
                     {({ form, field }: any) => (

@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { CourseBranch } from "@prisma/client";
+import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher } from "@prisma/client";
+
+export interface CourseBranch extends CourseBranchPrisma {
+  course: Course;
+  branch: Branch;
+  teacher: Teacher;
+  schedules: Schedule[];
+}
 
 export interface CourseBranchResponse {
   courseBranches: CourseBranch[];
@@ -14,7 +21,7 @@ const useFetchCourseBranch = (query: string) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchrolesData = async (query: string) => {
+    const fetchCourseBranch = async (query: string) => {
       try {
         const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?${query}`);
         if (!response.success) {
@@ -33,7 +40,7 @@ const useFetchCourseBranch = (query: string) => {
       }
     };
 
-    fetchrolesData(query);
+    fetchCourseBranch(query);
   }, [query]);
 
   return { courseBranches, totalCourseBranches, loading, error, setCourseBranches };

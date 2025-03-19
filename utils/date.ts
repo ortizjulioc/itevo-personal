@@ -1,4 +1,4 @@
-export function convertToAmPm(time: string): string {
+export function convertTimeFrom24To12Format(time: string): string {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!timeRegex.test(time)) {
         throw new Error("Formato de hora inválido. Debe ser 'HH:mm'.");
@@ -9,6 +9,63 @@ export function convertToAmPm(time: string): string {
     const period = hour < 12 ? "AM" : "PM";
     const hour12 = hour % 12 || 12;
     return `${hour12}:${minute} ${period}`;
+}
+
+export function getHoursDifference(startTime: string, endTime: string): number {
+    // Convertir las horas a minutos para facilitar el cálculo
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    
+    // Calcular total de minutos para cada hora
+    const startTotalMinutes = startHours * 60 + startMinutes;
+    const endTotalMinutes = endHours * 60 + endMinutes;
+    
+    // Calcular la diferencia en minutos
+    let diffMinutes = endTotalMinutes - startTotalMinutes;
+    
+    // Si la diferencia es negativa, asumimos que pasa al día siguiente
+    if (diffMinutes < 0) {
+        diffMinutes += 24 * 60; // Agregar 24 horas en minutos
+    }
+    
+    // Convertir a horas con decimales
+    const diffHours = diffMinutes / 60;
+    
+    return diffHours;
+}
+
+export function hoursToText(hours: number): string {
+    // Obtener las horas enteras
+    const fullHours = Math.floor(hours);
+    // Obtener los minutos (parte decimal * 60)
+    const minutes = Math.round((hours - fullHours) * 60);
+    
+    let result = '';
+    
+    // Construir la parte de las horas
+    if (fullHours > 0) {
+        result += `${fullHours} ${fullHours === 1 ? 'hora' : 'horas'}`;
+    }
+    
+    // Agregar la parte de los minutos si existen
+    if (minutes > 0) {
+        if (fullHours > 0) {
+            result += ' y ';
+        }
+        result += `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
+    }
+    
+    // Caso especial: si es 0 horas y 0 minutos
+    if (fullHours === 0 && minutes === 0) {
+        result = '0 horas';
+    }
+    
+    return result;
+}
+
+export function getHoursDifferenceText(startTime: string, endTime: string): string {
+    const hours = getHoursDifference(startTime, endTime);
+    return hoursToText(hours);
 }
 
 /**
@@ -102,4 +159,28 @@ export function getFormattedTime(fecha: Date): string {
         minute: '2-digit',    // Asegura que los minutos siempre tengan dos dígitos (ej. 05, 45).
         hour12: false         // Usa el formato de 24 horas (ej. 14:30 en vez de 2:30 PM).
     });
+}
+
+export function getFormattedDate(fecha: Date): string {
+    // Verificamos que la fecha proporcionada sea válida.
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
+        return 'fecha inválida';
+    }
+
+    // Convertimos la fecha a una cadena de texto con formato de fecha (DD/MM/YYYY).
+    return fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',       // Asegura que el día siempre tenga dos dígitos (ej. 01, 31).
+        month: '2-digit',     // Asegura que el mes siempre tenga dos dígitos (ej. 01, 12).
+        year: 'numeric'       // Usa el formato de año completo (ej. 2022 en vez de 22).
+    });
+}
+
+export function getFormattedDateTime(fecha: Date): string {
+    // Verificamos que la fecha proporcionada sea válida.
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
+        return 'fecha inválida';
+    }
+
+    // Convertimos la fecha a una cadena de texto con formato de fecha y hora.
+    return `${getFormattedDate(fecha)} ${getFormattedTime(fecha)}`;
 }

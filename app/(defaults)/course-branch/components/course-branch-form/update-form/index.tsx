@@ -1,180 +1,221 @@
 'use client';
-import { Button,  FormItem, Input, Select } from '@/components/ui';
-import { Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
-import { openNotification } from '@/utils';
+import { Button } from '@/components/ui';
+import { Form, Formik } from 'formik';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
 import { updateCourseBranch } from '../../../lib/request';
-import DatePicker from '@/components/ui/date-picker';
-import SelectPromotion from '@/components/common/selects/select-promotion';
-import { MODALITIES } from '@/constants/modality.constant';
-import SelectBranch from '@/components/common/selects/select-branch';
-import SelectTeacher from '@/components/common/selects/select-teacher';
-import SelectCourse from '@/components/common/selects/select-course';
+import { Tab } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
+import GeneralInformationFields from './general-information-fields';
+import FinancialConfigFields from './financial-config-fields';
+import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
+import ScheduleAssignmentFields from './schedule-assignment-fields';
+import Swal from 'sweetalert2';
+import ConfirmationFields from './confirmation-fields';
+import StickyFooter from '@/components/common/sticky-footer';
+import { useURLSearchParams } from '@/utils/hooks';
+import PrerequisitesFields from './prerequisites-fields';
 
-
-
-interface OptionSelect {
-  value: string;
-  label: string;
-}
-
-interface ModalityOption {
-  value: string;
-  label: string;
-}
-
-const modalities: ModalityOption[] = [
-  { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
-  { value: MODALITIES.VIRTUAL, label: 'Virtual' },
-  { value: MODALITIES.HYBRID, label: 'Hibrido' },
+const COURSE_BRANCH_TABS = [
+    'general-information',
+    'schedule-assignment',
+    'prerequisites',
+    'financial-config',
+    'confirmation',
 ];
 
-const stringToTime = (time: string | Date) => {
-  if (time instanceof Date) {
-    return time; // Si ya es un objeto Date, retornarlo
-  }
-
-  if (typeof time === 'string') {
-    const [hours, minutes] = time.split(':');
-    return new Date(new Date().setHours(Number(hours), Number(minutes), 0, 0));
-  }
-
-  return new Date();
-};
-
+const TABS_FIELDS = [
+    ['promotionId', 'branchId', 'teacherId', 'courseId', 'capacity'],
+    ['modality', 'startDate', 'endDate', 'schedules'],
+    ['prerequisites'],
+    ['amount', 'commissionRate'],
+]
 
 export default function UpdateCourseBranchForm({ initialValues }: { initialValues: CourseBranch }) {
     const route = useRouter();
-    
+    const pathname = usePathname();
+    const params = useURLSearchParams();
+    const isANewCourseBranch = params.get('new') === 'true';
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
+    const handleTabChange = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
+    };
 
+    const changeTab = (index: number) => {
+        setSelectedIndex(index);
+        window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
+    };
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        const data = { ...values };
-       
-
-
+        const data = { ...values, commissionRate: Number(values.commissionRate) / 100 };
         const resp = await updateCourseBranch(initialValues.id, data);
 
         if (resp.success) {
             openNotification('success', 'Oferta academica  creado correctamente');
-            route.push('/course-branch');
+            if (isANewCourseBranch) {
+                await askForNewCourseBranch();
+            } else {
+                route.push('/course-branch');
+            }
         } else {
             openNotification('error', resp.message);
         }
         setSubmitting(false);
     };
-    const formattedInitialValues = {
-        ...initialValues,
-        startDate: new Date(initialValues.startDate),
-        endDate: new Date(initialValues.endDate),
+
+    const handleErrors = (errors: any) => {
+        const errorKeys = Object.keys(errors);
+        if (errorKeys.length) {
+            changeTab(TABS_FIELDS.findIndex((tabFields) => tabFields.some((field) => errorKeys.includes(field))));
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor revisa los campos con errores',
+                icon: 'error',
+            });
+        }
+    }
+
+    const askForNewCourseBranch = async () => {
+        await confirmDialog({
+            title: 'Crear nueva oferta académica',
+            text: '¿Le gustaría crear una nueva oferta académica?',
+            confirmButtonText: 'Sí, crear',
+            cancelButtonText: 'Salir',
+            icon: 'question',
+        }, () => route.push('/course-branch/new'),
+            () => route.push('/course-branch')
+        );
+
     };
-    
+
+    useEffect(() => {
+        const hash = window.location.hash.replace('#', '');
+        const tabIndex = COURSE_BRANCH_TABS.indexOf(hash);
+        if (tabIndex !== -1) {
+            setSelectedIndex(tabIndex);
+        }
+    }, []);
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Oferta academica</h4>
-            <Formik initialValues={formattedInitialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta academica</h4>
+            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+                {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
 
+                        <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
+                            <Tab.List className=" flex flex-wrap">
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Información general
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Modalidad y horarios
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Prerrequisitos
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Configuración financiera
+                                        </button>
+                                    )}
+                                </Tab>
+                                <Tab as={Fragment}>
+                                    {({ selected }) => (
+                                        <button
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                        >
+                                            Confirmación
+                                        </button>
+                                    )}
+                                </Tab>
+                            </Tab.List>
+                            <Tab.Panels>
+                                <Tab.Panel>
+                                    <GeneralInformationFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
 
-                        <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
-                            <SelectPromotion
-                                value={values.promotionId}
-                                onChange={(option: OptionSelect | null) => {
-                                    setFieldValue('promotionId', option?.value || '');
-                                }}
-                            />
-                        </FormItem>
-                        <FormItem name="branchId" label="Sucursal" invalid={Boolean(errors.branchId && touched.branchId)} errorMessage={errors.branchId}>
-                            <SelectBranch
-                                value={values.branchId}
-                                onChange={(option: OptionSelect | null) => {
-                                    setFieldValue('branchId', option?.value || '');
-                                }}
-                            />
-                        </FormItem>
+                                <Tab.Panel>
+                                    <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
 
-                        <FormItem name="teacherId" label="Profesor" invalid={Boolean(errors.teacherId && touched.teacherId)} errorMessage={errors.teacherId}>
-                            <SelectTeacher
-                                value={values.teacherId}
-                                onChange={(option: OptionSelect | null) => {
-                                    setFieldValue('teacherId', option?.value || '');
-                                }}
-                            />
-                        </FormItem>
+                                <Tab.Panel>
+                                    <PrerequisitesFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
 
-                        <FormItem name="courseId" label="Curso" invalid={Boolean(errors.courseId && touched.courseId)} errorMessage={errors.courseId}>
-                            <SelectCourse
-                                value={values.courseId}
-                                onChange={(option: OptionSelect | null) => {
-                                    setFieldValue('courseId', option?.value || '');
-                                }}
-                            />
-                        </FormItem>
+                                <Tab.Panel>
+                                    <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} />
+                                </Tab.Panel>
 
-                        <FormItem name='amount' label='Monto' invalid={Boolean(errors.amount && touched.amount)} errorMessage={errors.amount}>
-                            <Field type='number' name='amount' component={Input} />
-                        </FormItem>
-
-                        <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
-                            <Select
-                                name="modality"
-                                options={modalities}
-                                value={modalities.find((modality) => modality.value === values.modality)}
-                                onChange={(option: ModalityOption | null) => {
-                                    setFieldValue('modality', option?.value ?? null);
-                                }}
-                                isSearchable={false}
-                                placeholder="Selecciona una modalidad"
-                            />
-                        </FormItem>
-
-                        <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate ? String(errors.startDate) : undefined}>
-                            <DatePicker
-                                value={values.startDate ? stringToTime(values.startDate) : undefined}
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('startDate', selectedDate);
-                                }}
-                            />
-                        </FormItem>
-
-                        <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate ? String(errors.endDate) : undefined}>
-                            <DatePicker
-                                value={values.endDate ? stringToTime(values.endDate) : undefined}
-                                onChange={(date: Date | Date[]) => {
-                                    const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                    setFieldValue('endDate', selectedDate);
-                                }}
-                            />
-                        </FormItem>
-
-                        <FormItem name='commissionRate' label='Comision' invalid={Boolean(errors.commissionRate && touched.commissionRate)} errorMessage={errors.commissionRate}>
-                            <Field type='number' name='commissionRate' component={Input} />
-                        </FormItem>
+                                <Tab.Panel>
+                                    <ConfirmationFields className='p-4' values={values} errors={errors} touched={touched} onChangeTab={changeTab} />
+                                </Tab.Panel>
+                            </Tab.Panels>
+                        </Tab.Group>
 
 
+                        <StickyFooter className='-mx-11 px-8 py-4' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
+                            <div className="flex justify-between gap-2 px-3">
+                                <Button type="button" color="danger" onClick={() => route.back()}>
+                                    Cancelar
+                                </Button>
 
+                                <div className="flex gap-2">
+                                    {selectedIndex > 0 && (
+                                        <Button
+                                            type="button"
+                                            color="secondary"
+                                            onClick={() => changeTab(selectedIndex - 1)}
+                                            icon={<TbArrowLeft />}
+                                        >
+                                            Anterior
+                                        </Button>
+                                    )}
 
-                        <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
-                            <Field type="number" name="capacity" component={Input} />
-                        </FormItem>
-
-
-
-                        <div className="mt-6 flex justify-end gap-2">
-                            <Button type="button" color="danger" onClick={() => route.back()}>
-                                Cancelar
-                            </Button>
-                            <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Guardando...' : 'Guardar'}
-                            </Button>
-                        </div>
+                                    {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
+                                        <Button
+                                            type="button"
+                                            color="secondary"
+                                            onClick={() => changeTab(selectedIndex + 1)}
+                                            icon={<TbArrowRight />}
+                                        >
+                                            Siguiente
+                                        </Button>
+                                    )}
+                                    {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
+                                        <Button onClick={() => handleErrors(errors)} loading={isSubmitting} type="submit">
+                                            {isSubmitting ? 'Guardando...' : 'Finalizar'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </StickyFooter>
                     </Form>
                 )}
             </Formik>
