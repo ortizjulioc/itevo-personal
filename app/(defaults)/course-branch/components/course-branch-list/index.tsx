@@ -7,22 +7,16 @@ import Link from "next/link";
 import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
-import PromotionLabel from "@/components/common/info-labels/promotion-label";
-import BranchLabel from "@/components/common/info-labels/branch-label";
-import TeacherLabel from "@/components/common/info-labels/teacher-label";
-import CourseLabel from "@/components/common/info-labels/course-label";
-import { MODALITIES } from "@/constants/modality.constant";
-
+import { getFormattedDate } from "@/utils/date";
+import ModalityTag from "../modality";
+import StatusCourseBranch from "../status";
+import { TbDetails } from "react-icons/tb";
+import { CourseBranchStatus } from '@prisma/client';
 
 
 interface Props {
     className?: string;
     query?: string;
-}
-const MODALITIES ={
-    PRESENTIAL: 'Presencial',
-    VIRTUAL: 'Virtual',
-    HYBRID: 'Hibrido',
 }
 
 export default function CourseBranchList({ className, query = '' }: Props) {
@@ -95,7 +89,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{courseBranch.sessionCount}</td>
                                     <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
                                     <td>
-                                        <StatusCourseBranch status={courseBranch.status} />
+                                        <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} />
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-2 justify-end">

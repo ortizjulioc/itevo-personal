@@ -4,11 +4,11 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { Enrollment } from '@prisma/client';
+import { CourseBranch, Enrollment } from '@prisma/client';
 import DatePicker from '@/components/ui/date-picker';
 import { updateEnrollment } from '../../../lib/request';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
-import SelectCourseBranch from '@/components/common/selects/select-course-branch';
+import SelectCourseBranch,{} from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
 
 
@@ -24,6 +24,11 @@ interface CourseBranchSelect {
 interface statusOption {
     value: string;
     label: string;
+}
+export interface CourseBranchSelectOption {
+    value: string;
+    label: string;
+    courseBranch?: CourseBranch;
 }
 
 
@@ -65,7 +70,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                        <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
                             <SelectCourseBranch
                                 value={values.courseBranchId}
-                                onChange={(option: CourseBranchSelect | null) => {
+                                onChange={(option:CourseBranchSelectOption  | null) => {
                                     setFieldValue('courseBranchId', option?.value || '');
                                 }}
                             />
