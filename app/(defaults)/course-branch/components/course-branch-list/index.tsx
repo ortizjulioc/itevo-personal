@@ -7,10 +7,12 @@ import Link from "next/link";
 import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
-import StatusCourseBranch from "../status";
 import { getFormattedDate } from "@/utils/date";
-import { TbDetails } from "react-icons/tb";
 import ModalityTag from "../modality";
+import StatusCourseBranch from "../status";
+import { TbDetails } from "react-icons/tb";
+import { CourseBranchStatus } from '@prisma/client';
+
 
 interface Props {
     className?: string;
@@ -24,6 +26,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
+    
 
 
     const onDelete = async (id: string) => {
@@ -86,7 +89,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     <td>{courseBranch.sessionCount}</td>
                                     <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
                                     <td>
-                                        <StatusCourseBranch status={courseBranch.status} />
+                                        <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} />
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-2 justify-end">

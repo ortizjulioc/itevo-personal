@@ -2,7 +2,6 @@
 import { openNotification, queryStringToObject } from "@/utils";
 
 import Skeleton from "@/components/common/Skeleton";
-import StudentLabel from "@/components/common/info-labels/student-label";
 import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enrollments";
