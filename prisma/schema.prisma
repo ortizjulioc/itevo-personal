@@ -498,14 +498,20 @@ model CashRegisterClosure {
 model NcfRange {
     id              String   @id @default(uuid())
     prefix          String // Ejemplo: "B01" (crédito fiscal)
-    startSequence   Int // Inicio del rango, ej. 1
-    endSequence     Int // Fin del rango, ej. 1000
-    currentSequence Int      @default(0) // Último número usado
-    isActive        Boolean  @default(true)
+    startSequence   Int      @map("start_sequence") // Inicio del rango, ej. 1
+    endSequence     Int      @map("end_sequence") // Fin del rango, ej. 1000
+    currentSequence Int      @map("current_sequence") // Secuencia actual, ej. 1
+    isActive        Boolean  @default(true) @map("is_active") // Activo o inactivo
     createdAt       DateTime @default(now()) @map("created_at")
     updatedAt       DateTime @updatedAt @map("updated_at")
 
     @@map("ncf_ranges")
+}
+
+enum InvoiceStatus {
+    DRAFT     @map("draft")     // Factura en proceso, editable (con o sin ítems)
+    PAID      @map("paid")      // Factura pagada y completada, registrada en caja
+    CANCELED  @map("canceled")  // Factura cancelada antes de pagarse
 }
 
 model Invoice {
@@ -518,7 +524,8 @@ model Invoice {
     itbis         Float
     paymentDate   DateTime?     @map("payment_date")
     paymentMethod String?       @map("payment_method")
-    paymentStatus PaymentStatus @default(PENDING) @map("payment_status")
+    paymentDetails Json?         @map("payment_details") // Detalles adicionales
+    status        InvoiceStatus @default(DRAFT) // "draft", "paid", "canceled"
 
     createdBy String   @map("created_by") // Auditoría
     createdAt DateTime @default(now()) @map("created_at")
