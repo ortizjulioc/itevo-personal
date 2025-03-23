@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2025-03-23T19:18:20.739Z",
+    "action": "POST",
+    "description": "Se creó un usuario con los siguientes datos: {\n  \"id\": \"1bde6044-2a5f-445e-b961-98d636d87cac\",\n  \"username\": \"juanito\",\n  \"email\": \"juanito@gmail.com\",\n  \"name\": \"JUANITO\",\n  \"lastName\": \"JUANITO\",\n  \"phone\": \"1564655646\",\n  \"password\": \"$2b$10$fYQ9VttlERnGElpZc5j.OuLuHqxtc8tJLFq2VlwBoUx1CKEeYYJ0G\",\n  \"search\": \"juanito juanito juanito juanito@gmailcom\",\n  \"inactive\": false,\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-23T19:18:20.655Z\",\n  \"updatedAt\": \"2025-03-23T19:18:20.655Z\"\n}",
+    "origin": "users",
+    "elementId": "1bde6044-2a5f-445e-b961-98d636d87cac",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-23T19:18:34.495Z",
+    "action": "POST",
+    "description": "Inicio de sesión de usuario juanito",
+    "origin": "auth",
+    "elementId": "1bde6044-2a5f-445e-b961-98d636d87cac",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-23T19:18:46.647Z",
+    "action": "POST",
+    "description": "Inicio de sesión de usuario wilbergalvez",
+    "origin": "auth",
+    "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
+    "authorId": "anonymous"
+  }
+]

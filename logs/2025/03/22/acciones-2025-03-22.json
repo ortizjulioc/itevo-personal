@@ -1,0 +1,154 @@
+[
+  {
+    "date": "2025-03-22T22:36:36.590Z",
+    "action": "POST",
+    "description": "Se creó un usuario con los siguientes datos: {\n  \"id\": \"12ed9526-770b-44eb-87ec-b926a24085c8\",\n  \"username\": \"wilbergalvez\",\n  \"email\": \"galvezwilber22@gmail.com\",\n  \"name\": \"WILBER GALVEZ\",\n  \"lastName\": \"GALVEZ\",\n  \"phone\": \"6515313515\",\n  \"password\": \"$2b$10$4xhIc4K6jfCF1OxLX2O.UumD4KBE/eDmEo7S4dri/j6JjC9i7B/Yi\",\n  \"search\": \"wilber galvez galvez wilbergalvez galvezwilber22@gmailcom\",\n  \"inactive\": false,\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:36:36.562Z\",\n  \"updatedAt\": \"2025-03-22T22:36:36.562Z\"\n}",
+    "origin": "users",
+    "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:37:03.541Z",
+    "action": "POST",
+    "description": "Se creó un rol con los siguientes datos: {\n  \"id\": \"ad663dd0-1f12-4bd6-8b70-168f12a8337d\",\n  \"name\": \"user\",\n  \"normalizedName\": \"user\",\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:37:03.520Z\",\n  \"updatedAt\": \"2025-03-22T22:37:03.520Z\"\n}",
+    "origin": "roles",
+    "elementId": "ad663dd0-1f12-4bd6-8b70-168f12a8337d",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:37:08.713Z",
+    "action": "POST",
+    "description": "Se creó un rol con los siguientes datos: {\n  \"id\": \"4377aabf-f682-49c5-80f5-7f4d5dbe06c3\",\n  \"name\": \"admin\",\n  \"normalizedName\": \"admin\",\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:37:08.701Z\",\n  \"updatedAt\": \"2025-03-22T22:37:08.701Z\"\n}",
+    "origin": "roles",
+    "elementId": "4377aabf-f682-49c5-80f5-7f4d5dbe06c3",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:37:38.602Z",
+    "action": "POST",
+    "description": "Se creó la sucursal con la siguiente información: \n{\n  \"id\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"name\": \"Nagua\",\n  \"address\": \"Esquina, C. 27 de Febrero &, San Francisco de Macorís\",\n  \"phone\": \"3\",\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:37:38.585Z\",\n  \"updatedAt\": \"2025-03-22T22:37:38.585Z\"\n}",
+    "origin": "branches",
+    "elementId": "103563b1-42e2-47df-b781-7293beeb5fe9",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:37:56.537Z",
+    "action": "PUT",
+    "description": "Se actualizó la sucursal.\nInformación anterior: {\n  \"id\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"name\": \"Nagua\",\n  \"address\": \"Esquina, C. 27 de Febrero &, San Francisco de Macorís\",\n  \"phone\": \"3\"\n}\nInformación actualizada: {\n  \"id\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"name\": \"Nagua\",\n  \"address\": \"Esquina, C. 27 de Febrero &, San Francisco de Macorís\",\n  \"phone\": \"3344343434\",\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:37:38.585Z\",\n  \"updatedAt\": \"2025-03-22T22:37:56.509Z\"\n}",
+    "origin": "branches/[id]",
+    "elementId": "103563b1-42e2-47df-b781-7293beeb5fe9",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:38:24.180Z",
+    "action": "POST",
+    "description": "Se asignó un rol a un usuario con los siguientes datos: {\n  \"userId\": \"12ed9526-770b-44eb-87ec-b926a24085c8\",\n  \"branchId\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"roleId\": \"4377aabf-f682-49c5-80f5-7f4d5dbe06c3\"\n}",
+    "origin": "authorization/assign-role",
+    "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:40:53.291Z",
+    "action": "POST",
+    "description": "Inicio de sesión de usuario wilbergalvez",
+    "origin": "auth",
+    "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-22T22:42:25.234Z",
+    "action": "POST",
+    "description": "Se creó un holiday con los siguientes datos: {\n  \"id\": \"cm8kso3000000jazgwkqy3wkn\",\n  \"name\": \"Cumpleanos de WIlber\",\n  \"date\": \"2025-03-22T04:00:00.000Z\",\n  \"isRecurring\": false,\n  \"createdAt\": \"2025-03-22T22:42:25.200Z\",\n  \"updatedAt\": \"2025-03-22T22:42:25.200Z\"\n}",
+    "origin": "holidays",
+    "elementId": "cm8kso3000000jazgwkqy3wkn",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:42:55.462Z",
+    "action": "POST",
+    "description": "Se creó un schedule con los siguientes datos: {\n  \"id\": \"44039a9c-4364-4578-b841-a87d00a0ed88\",\n  \"startTime\": \"10:00\",\n  \"endTime\": \"12:00\",\n  \"weekday\": 0,\n  \"deleted\": false,\n  \"createdAt\": \"2025-03-22T22:42:55.438Z\",\n  \"updatedAt\": \"2025-03-22T22:42:55.438Z\"\n}",
+    "origin": "schedules",
+    "elementId": "44039a9c-4364-4578-b841-a87d00a0ed88",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:43:28.979Z",
+    "action": "POST",
+    "description": "Se creó una promoción con los siguientes datos: {\n  \"id\": \"8f4a470f-0ad1-4baa-80fc-208d4a7207f1\",\n  \"description\": \"01-2025\",\n  \"startDate\": \"2025-03-22T04:00:00.000Z\",\n  \"endDate\": \"2025-04-24T04:00:00.000Z\",\n  \"createdAt\": \"2025-03-22T22:43:28.964Z\",\n  \"updatedAt\": \"2025-03-22T22:43:28.964Z\"\n}",
+    "origin": "promotions",
+    "elementId": "8f4a470f-0ad1-4baa-80fc-208d4a7207f1",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:44:09.990Z",
+    "action": "POST",
+    "description": "Se creó un curso con los siguientes datos: {\n  \"code\": \"0001\",\n  \"name\": \"Introduccion a la informatica\",\n  \"description\": \"Introduccion a la informatica\",\n  \"duration\": 21,\n  \"requiresGraduation\": true\n}",
+    "origin": "courses",
+    "elementId": "c912acac-f204-45cc-8e4a-d2d9e7095cb9",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:44:44.104Z",
+    "action": "POST",
+    "description": "Se creó un student con los siguientes datos: {\n  \"id\": \"8cbe8739-3423-4262-b2fe-3b644447e6ba\",\n  \"code\": \"2025-0001\",\n  \"firstName\": \"WILBER\",\n  \"lastName\": \"GALVEZ\",\n  \"identification\": \"40235664656\",\n  \"phone\": \"5156156165\",\n  \"email\": \"galvezwilber22@gmail.com\",\n  \"address\": \"Cenovi Calle Principal #64\",\n  \"hasTakenCourses\": true,\n  \"createdAt\": \"2025-03-22T22:44:44.062Z\",\n  \"updatedAt\": \"2025-03-22T22:44:44.062Z\",\n  \"deleted\": false\n}",
+    "origin": "students",
+    "elementId": "8cbe8739-3423-4262-b2fe-3b644447e6ba",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:45:14.983Z",
+    "action": "POST",
+    "description": "Se creó un teacher con los siguientes datos: {\n  \"id\": \"5d547f79-323c-4b8f-b83e-3dd2ccb3c10e\",\n  \"code\": 1,\n  \"firstName\": \"ANDERSON\",\n  \"lastName\": \"FRIASS\",\n  \"identification\": \"51561651616\",\n  \"prefix\": \"P\",\n  \"address\": \"Cenovi Calle Principal #64\",\n  \"phone\": \"6546516516\",\n  \"email\": \"jeffrycoder@gmail.com\",\n  \"commissionRate\": null,\n  \"createdAt\": \"2025-03-22T22:45:14.966Z\",\n  \"updatedAt\": \"2025-03-22T22:45:14.966Z\",\n  \"deleted\": false\n}",
+    "origin": "teachers",
+    "elementId": "5d547f79-323c-4b8f-b83e-3dd2ccb3c10e",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:45:52.468Z",
+    "action": "POST",
+    "description": "Se creó un curso con los siguientes datos: {\n  \"capacity\": 50,\n  \"status\": \"DRAFT\",\n  \"modality\": \"PRESENTIAL\"\n}",
+    "origin": "course-branch",
+    "elementId": "174c4e57-4324-45df-8c63-bc0b5c87ed91",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:46:22.799Z",
+    "action": "POST",
+    "description": "Se una nueva relacion de curso con horario con los siguientes datos: {\n  \"scheduleId\": \"44039a9c-4364-4578-b841-a87d00a0ed88\"\n}",
+    "origin": "course-schedules",
+    "elementId": "174c4e57-4324-45df-8c63-bc0b5c87ed91 & 44039a9c-4364-4578-b841-a87d00a0ed88",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:46:32.389Z",
+    "action": "POST",
+    "description": "Se agregó un prerequisito al curso con id: c912acac-f204-45cc-8e4a-d2d9e7095cb9. Prerequisito: c912acac-f204-45cc-8e4a-d2d9e7095cb9",
+    "origin": "courses/[id]/prerequisite",
+    "elementId": "c912acac-f204-45cc-8e4a-d2d9e7095cb9",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:47:03.657Z",
+    "action": "PUT",
+    "description": "Se actualizó un courseBranch. Información anterior: {\n  \"id\": \"174c4e57-4324-45df-8c63-bc0b5c87ed91\",\n  \"promotionId\": \"8f4a470f-0ad1-4baa-80fc-208d4a7207f1\",\n  \"branchId\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"teacherId\": \"5d547f79-323c-4b8f-b83e-3dd2ccb3c10e\",\n  \"courseId\": \"c912acac-f204-45cc-8e4a-d2d9e7095cb9\",\n  \"amount\": 0,\n  \"modality\": \"PRESENTIAL\",\n  \"startDate\": null,\n  \"endDate\": null,\n  \"commissionRate\": 0,\n  \"capacity\": 50,\n  \"sessionCount\": 0,\n  \"status\": \"DRAFT\",\n  \"createdAt\": \"2025-03-22T22:45:52.421Z\",\n  \"updatedAt\": \"2025-03-22T22:45:52.421Z\"\n}. Información actualizada: {\n  \"id\": \"174c4e57-4324-45df-8c63-bc0b5c87ed91\",\n  \"promotionId\": \"8f4a470f-0ad1-4baa-80fc-208d4a7207f1\",\n  \"branchId\": \"103563b1-42e2-47df-b781-7293beeb5fe9\",\n  \"teacherId\": \"5d547f79-323c-4b8f-b83e-3dd2ccb3c10e\",\n  \"courseId\": \"c912acac-f204-45cc-8e4a-d2d9e7095cb9\",\n  \"amount\": 22210,\n  \"modality\": \"PRESENTIAL\",\n  \"startDate\": \"2025-03-13T04:00:00.000Z\",\n  \"endDate\": \"2025-03-28T04:00:00.000Z\",\n  \"commissionRate\": 0.0002,\n  \"capacity\": 50,\n  \"sessionCount\": 2,\n  \"status\": \"WAITING\",\n  \"createdAt\": \"2025-03-22T22:45:52.421Z\",\n  \"updatedAt\": \"2025-03-22T22:47:03.560Z\"\n}",
+    "origin": "course-branch/[id]",
+    "elementId": "174c4e57-4324-45df-8c63-bc0b5c87ed91",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:48:04.182Z",
+    "action": "POST",
+    "description": "Se creó un enrollment con los siguientes datos: {\n  \"id\": \"d97c0d79-a82c-4808-a508-a04da8759013\",\n  \"studentId\": \"8cbe8739-3423-4262-b2fe-3b644447e6ba\",\n  \"courseBranchId\": \"174c4e57-4324-45df-8c63-bc0b5c87ed91\",\n  \"enrollmentDate\": \"2025-03-22T04:00:00.000Z\",\n  \"status\": \"WAITING\",\n  \"createdAt\": \"2025-03-22T22:48:04.151Z\",\n  \"updatedAt\": \"2025-03-22T22:48:04.151Z\"\n}",
+    "origin": "enrollments",
+    "elementId": "d97c0d79-a82c-4808-a508-a04da8759013",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  },
+  {
+    "date": "2025-03-22T22:50:36.076Z",
+    "action": "POST",
+    "description": "Se creó un enrollment con los siguientes datos: {\n  \"id\": \"7acb6f63-a841-4716-bb64-a51b326a8805\",\n  \"studentId\": \"8cbe8739-3423-4262-b2fe-3b644447e6ba\",\n  \"courseBranchId\": \"174c4e57-4324-45df-8c63-bc0b5c87ed91\",\n  \"enrollmentDate\": \"2025-03-22T04:00:00.000Z\",\n  \"status\": \"WAITING\",\n  \"createdAt\": \"2025-03-22T22:50:36.065Z\",\n  \"updatedAt\": \"2025-03-22T22:50:36.065Z\"\n}",
+    "origin": "enrollments",
+    "elementId": "7acb6f63-a841-4716-bb64-a51b326a8805",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
+  }
+]
