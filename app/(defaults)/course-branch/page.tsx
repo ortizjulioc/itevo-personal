@@ -7,6 +7,7 @@ import { objectToQueryString } from "@/utils";
 import CourseBranchList from "./components/course-branch-list";
 import Dropdown from "@/components/dropdown";
 import { IoMdArrowDropdown } from "react-icons/io";
+import SearchCourseBranch from "./components/search-course-branch";
 
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function Coursets({ searchParams }: CoursetListProps) {
     <div>
       <ViewTitle className='mb-6' title="Oferta  Academica" rightComponent={
         <>
-          <SearchInput placeholder="Buscar Oferta " />
+        
 
           <div className="inline-flex">
             <Link href="/course-branch/new">
@@ -53,6 +54,10 @@ export default function Coursets({ searchParams }: CoursetListProps) {
 
         </>
       } />
+
+      <div>
+        <SearchCourseBranch />
+      </div>
       <CourseBranchList query={query} />
     </div>
   )

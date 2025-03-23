@@ -22,9 +22,13 @@ const weekOptions: WeekOption[] = [
     { value: 5, label: 'Viernes' },
     { value: 6, label: 'Sábado' },
 
-];
+];// Por ejemplo, en CreateScheduleForm.tsx
+interface CreateScheduleFormProps {
+  onCreated?: (schedule: any) => void;
+}
 
-export default function CreateScheduleForm({ onCreated }: { onCreated?: (schedule: any) => void }) {
+
+export default function CreateScheduleForm({  onCreated }: CreateScheduleFormProps) {
 
     const handleSubmit = async (values: ScheduleFormType, { setSubmitting }: any) => {
         setSubmitting(true);
