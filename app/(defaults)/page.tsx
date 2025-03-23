@@ -1,38 +1,21 @@
-'use client';
+import { Metadata } from 'next';
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { IconCaretDown } from '@/components/icon';
-;
+import { getServerSession } from "next-auth/next";
+import ViewTitle from "@/components/common/ViewTitle";
+import { authOptions } from '../api/auth/[...nextauth]/auth-options';
 
-interface ViewTitleProps {
-    title: string;
-    showBackPage?: boolean;
-    rightComponent?: React.ReactNode;
-    className?: string;
-}
+export const metadata: Metadata = {
+    title: 'Inicio',
+};
 
-const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, rightComponent, className = '' }) => {
-    const router = useRouter();
-
-    const handleBackClick = () => {
-        router.back();
-    };
-
+const Sales = async () => {
+    const session = await getServerSession(authOptions);
+  
     return (
-        <div className={`flex items-center justify-between flex-wrap gap-4 ${className}`}>
-            <h2 className="text-2xl font-semibold flex items-center">
-                {showBackPage && (
-                    <button onClick={handleBackClick}>
-                        <IconCaretDown className='rotate-90 size-5 cursor-pointer' />
-                    </button>
-                )}
-                {title}
-            </h2>
-            <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
-                {rightComponent}
-            </div>
+        <div>
+            <ViewTitle title={`¡Bienvenido ${session?.user?.name} ${session?.user?.lastName}!`} />
         </div>
     );
 };
 
-export default ViewTitle;
+export default Sales;
