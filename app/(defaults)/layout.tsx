@@ -7,8 +7,11 @@ import ScrollToTop from '@/components/layouts/scroll-to-top';
 import Setting from '@/components/layouts/setting';
 import Sidebar from '@/components/layouts/sidebar';
 import Portals from '@/components/portals';
+import {getServerSession} from 'next-auth/next';
+import { authOptions } from '../api/auth/[...nextauth]/auth-options';
 
-export default function DefaultLayout({ children }: { children: React.ReactNode }) {
+export default async function DefaultLayout({ children }: { children: React.ReactNode }) {
+    const session = await getServerSession(authOptions);
     return (
         <>
             {/* BEGIN MAIN CONTAINER */}
@@ -26,7 +29,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                     {/* END SIDEBAR */}
                     <div className="main-content flex min-h-screen flex-col">
                         {/* BEGIN TOP NAVBAR */}
-                        <Header />
+                        <Header user={session?.user} />
                         {/* END TOP NAVBAR */}
 
                         {/* BEGIN CONTENT AREA */}

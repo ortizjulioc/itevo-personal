@@ -22,5 +22,21 @@
     "origin": "auth",
     "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
     "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-23T19:41:52.303Z",
+    "action": "POST",
+    "description": "Inicio de sesión de usuario wilbergalvez",
+    "origin": "auth",
+    "elementId": "12ed9526-770b-44eb-87ec-b926a24085c8",
+    "authorId": "anonymous"
+  },
+  {
+    "date": "2025-03-23T19:58:29.374Z",
+    "action": "POST",
+    "description": "Se creó un student con los siguientes datos: {\n  \"id\": \"da6f39d6-0741-4aac-81ab-cd1d3e7c7c22\",\n  \"code\": \"2025-0002\",\n  \"firstName\": \"RICARDO\",\n  \"lastName\": \"GALVEZ\",\n  \"identification\": \"35656565656\",\n  \"phone\": \"6595956564\",\n  \"email\": \"wilbergalvez@gmail.com\",\n  \"address\": \"\",\n  \"hasTakenCourses\": false,\n  \"createdAt\": \"2025-03-23T19:58:29.330Z\",\n  \"updatedAt\": \"2025-03-23T19:58:29.330Z\",\n  \"deleted\": false\n}",
+    "origin": "students",
+    "elementId": "da6f39d6-0741-4aac-81ab-cd1d3e7c7c22",
+    "authorId": "12ed9526-770b-44eb-87ec-b926a24085c8"
   }
 ]

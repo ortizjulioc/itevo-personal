@@ -1,0 +1,21 @@
+
+import * as Yup from 'yup';
+
+
+export const createValidationSchema = Yup.object().shape({
+    description: Yup.string().required('El nombre es obligatorio'),
+    startDate: Yup.date().required('La fecha de inicio es obligatoria'),
+    endDate: Yup.date().required('La fecha fin es obligatoria'),
+});
+
+export const updateValidationSchema = Yup.object().shape({
+    description: Yup.string().required('El nombre es obligatorio'),
+    startDate: Yup.date().required('La fecha de inicio es obligatoria'),
+    endDate: Yup.date().required('La fecha fin es obligatoria'),
+});
+
+export const initialValues = {
+    description: '',
+    startDate: undefined,
+    endDate: undefined,
+};

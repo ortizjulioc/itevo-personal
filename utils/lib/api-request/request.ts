@@ -1,3 +1,4 @@
+'use client';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { URL_API } from 'constants/api.constant';
 import ERRORS_CODE from 'assets/maps/errors-code.json';
@@ -20,36 +21,40 @@ async function apiRequest<T>(params: AxiosRequestConfig): Promise<ApiResponse<T>
 }
 
 async function get<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-    const { url = URL_API } = options;
+    const { url = URL_API, ...rest } = options;
     return await apiRequest<T>({
         url: `${url}${path}`,
         method: 'GET',
+        ...rest
     });
 }
 
-async function post<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-    const { data, url = URL_API } = options;
+async function post<T>(path: string, data: T, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const { url = URL_API, ...rest } = options;
     return await apiRequest<T>({
         url: `${url}${path}`,
         method: 'POST',
         data,
+        ...rest,
     });
 }
 
-async function put<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-    const { data, url = URL_API } = options;
+async function put<T>(path: string, data: T, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const { url = URL_API, ...rest } = options;
     return await apiRequest<T>({
         url: `${url}${path}`,
         method: 'PUT',
         data,
+        ...rest
     });
 }
 
 async function remove<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-    const { url = URL_API } = options;
+    const { url = URL_API, ...rest } = options;
     return await apiRequest<T>({
         url: `${url}${path}`,
         method: 'DELETE',
+        ...rest
     });
 }
 

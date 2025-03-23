@@ -4,6 +4,7 @@ import '../styles/tailwind.css';
 import '../styles/global.css';
 import { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
+import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
     title: {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
             <body className={nunito.variable}>
+                <NextTopLoader showSpinner={false} color='#4361ee' />
                 <ProviderComponent>{children}</ProviderComponent>
             </body>
         </html>

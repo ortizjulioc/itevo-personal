@@ -1,0 +1,5 @@
+export const MODALITIES = {
+    PRESENTIAL: 'PRESENTIAL',
+    VIRTUAL: 'VIRTUAL',
+    HYBRID: 'HYBRID',
+};
