@@ -23,6 +23,7 @@ model User {
 
     roleBranch          UserRoleBranch[]
     CashMovement        CashMovement[]
+    CashRegister        CashRegister[]
     CashRegisterClosure CashRegisterClosure[]
     Invoice             Invoice[]
     Quotation           Quotation[]
@@ -437,6 +438,7 @@ model CashRegister {
     updatedAt DateTime           @updatedAt @map("updated_at")
 
     branch    Branch                @relation(fields: [branchId], references: [id])
+    user      User                  @relation(fields: [userId], references: [id])
     movements CashMovement[]
     closures  CashRegisterClosure[]
 
@@ -493,11 +495,27 @@ model CashRegisterClosure {
     @@map("cash_register_closures")
 }
 
+model NcfRange {
+    id              String   @id @default(uuid())
+    prefix          String // Ejemplo: "B01" (crédito fiscal)
+    startSequence   Int // Inicio del rango, ej. 1
+    endSequence     Int // Fin del rango, ej. 1000
+    currentSequence Int      @default(0) // Último número usado
+    isActive        Boolean  @default(true)
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
+
+    @@map("ncf_ranges")
+}
+
 model Invoice {
     id            String        @id @default(uuid())
     invoiceNumber String        @unique @map("invoice_number")
+    ncf           String        @unique
     studentId     String?       @map("student_id")
     date          DateTime
+    subtotal      Float
+    itbis         Float
     paymentDate   DateTime?     @map("payment_date")
     paymentMethod String?       @map("payment_method")
     paymentStatus PaymentStatus @default(PENDING) @map("payment_status")
@@ -527,6 +545,8 @@ model InvoiceItem {
     accountReceivableId String?         @map("account_receivable_id")
     quantity            Int?            @default(1) @map("quantity")
     unitPrice           Float           @map("unit_price")
+    subtotal            Float           @default(0)
+    itbis               Float           @default(0)
     createdAt           DateTime        @default(now()) @map("created_at")
     updatedAt           DateTime        @updatedAt @map("updated_at")
 
@@ -588,6 +608,8 @@ model QuotationItem {
     courseBranchId String?         @map("course_branch_id")
     quantity       Int             @default(1)
     unitPrice      Float           @map("unit_price")
+    subtotal       Float           @default(0)
+    itbis          Float           @default(0)
     createdAt      DateTime        @default(now()) @map("created_at")
     updatedAt      DateTime        @updatedAt @map("updated_at")
 
