@@ -11,7 +11,11 @@ import PromotionLabel from "@/components/common/info-labels/promotion-label";
 import BranchLabel from "@/components/common/info-labels/branch-label";
 import TeacherLabel from "@/components/common/info-labels/teacher-label";
 import CourseLabel from "@/components/common/info-labels/course-label";
-import { MODALITIES } from "@/constants/modality.constant";
+import ModalityTag from "../modality";
+import StatusCourseBranch from "../status";
+import { getFormattedDate } from "@/utils/date";
+import { TbDetails } from "react-icons/tb";
+
 
 
 

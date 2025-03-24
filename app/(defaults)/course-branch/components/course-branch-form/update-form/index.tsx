@@ -52,8 +52,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        const data = { ...values, commissionRate: Number(values.commissionRate) / 100 };
-        const resp = await updateCourseBranch(initialValues.id, data);
+        const resp = await updateCourseBranch(initialValues.id, values);
 
         if (resp.success) {
             openNotification('success', 'Oferta academica  creado correctamente');
