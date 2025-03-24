@@ -441,6 +441,7 @@ model CashRegister {
     user      User                  @relation(fields: [userId], references: [id])
     movements CashMovement[]
     closures  CashRegisterClosure[]
+    invoices  Invoice[]             @relation("CashRegisterInvoices") // Nueva relación
 
     @@map("cash_registers")
 }
@@ -509,29 +510,31 @@ model NcfRange {
 }
 
 enum InvoiceStatus {
-    DRAFT     @map("draft")     // Factura en proceso, editable (con o sin ítems)
-    PAID      @map("paid")      // Factura pagada y completada, registrada en caja
-    CANCELED  @map("canceled")  // Factura cancelada antes de pagarse
+    DRAFT    @map("draft") // Factura en proceso, editable (con o sin ítems)
+    PAID     @map("paid") // Factura pagada y completada, registrada en caja
+    CANCELED @map("canceled") // Factura cancelada antes de pagarse
 }
 
 model Invoice {
-    id            String        @id @default(uuid())
-    invoiceNumber String        @unique @map("invoice_number")
-    ncf           String        @unique
-    studentId     String?       @map("student_id")
-    date          DateTime
-    subtotal      Float
-    itbis         Float
-    paymentDate   DateTime?     @map("payment_date")
-    paymentMethod String?       @map("payment_method")
-    paymentDetails Json?         @map("payment_details") // Detalles adicionales
-    status        InvoiceStatus @default(DRAFT) // "draft", "paid", "canceled"
+    id             String        @id @default(uuid())
+    invoiceNumber  String        @unique @map("invoice_number")
+    ncf            String        @unique
+    studentId      String?       @map("student_id")
+    cashRegisterId String        @map("cash_register_id")
+    date           DateTime      @default(now())
+    subtotal       Float         @default(0)
+    itbis          Float         @default(0)
+    paymentDate    DateTime?     @map("payment_date")
+    paymentMethod  String?       @default("") @map("payment_method")
+    paymentDetails Json?         @default("{}") @map("payment_details") // Detalles adicionales
+    status         InvoiceStatus @default(DRAFT) // "draft", "paid", "canceled"
 
     createdBy String   @map("created_by") // Auditoría
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
     student Student?      @relation(fields: [studentId], references: [id])
+    cashRegister CashRegister  @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
     items   InvoiceItem[]
     user    User          @relation(fields: [createdBy], references: [id])
 
