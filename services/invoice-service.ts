@@ -97,3 +97,85 @@ export const addNewItemToInvoice = async (invoiceId: string, data: InvoiceItemCr
         return { invoiceUpdated, itemCreated: newItem };
     });
 }
+
+export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentData): Promise<Invoice> => {
+    return await Prisma.$transaction(async (tx) => {
+        // Buscar la factura
+        const invoice = await tx.invoice.findUnique({
+            where: { id: invoiceId },
+            include: { cashRegister: true, items: true },
+        });
+        if (!invoice) {
+            throw new Error(`Factura con ID ${invoiceId} no encontrada`);
+        }
+        if (invoice.status !== 'DRAFT') {
+            throw new Error(`Solo se pueden pagar facturas en estado DRAFT (actual: ${invoice.status})`);
+        }
+        if (invoice.items.length === 0) {
+            throw new Error('No se puede pagar una factura sin ítems');
+        }
+        if (invoice.subtotal + invoice.itbis <= 0) {
+            throw new Error('El monto total de la factura debe ser mayor a 0');
+        }
+
+        // Verificar que la caja está abierta
+        if (invoice.cashRegister.status !== 'OPEN') {
+            throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
+        }
+
+        // Obtener un NCF activo y verificar que currentSequence < endSequence
+        const ncfRange = await tx.ncfRange.findFirst({
+            where: { isActive: true },
+            orderBy: { currentSequence: 'asc' }, // Tomamos el rango con menor secuencia disponible
+        });
+        if (!ncfRange) {
+            throw new Error('No hay rangos de NCF activos disponibles');
+        }
+        if (ncfRange.currentSequence >= ncfRange.endSequence) {
+            throw new Error(`El rango de NCF ${ncfRange.prefix} ha alcanzado su límite (${ncfRange.endSequence})`);
+        }
+
+        const newSequence = ncfRange.currentSequence + 1;
+        const ncf = `${ncfRange.prefix}${newSequence.toString().padStart(8, '0')}`;
+
+        // Verificar unicidad del NCF
+        const ncfExists = await tx.invoice.findUnique({ where: { ncf } });
+        if (ncfExists) {
+            throw new Error(`El NCF ${ncf} ya está en uso`);
+        }
+
+        // Actualizar el rango de NCF
+        await tx.ncfRange.update({
+            where: { id: ncfRange.id },
+            data: { currentSequence: newSequence },
+        });
+
+        // Crear el movimiento de caja
+        const cashMovement = await tx.cashMovement.create({
+            data: {
+                cashRegisterId: invoice.cashRegisterId,
+                type: 'INCOME',
+                amount: invoice.subtotal + invoice.itbis,
+                description: `Pago de factura ${invoice.invoiceNumber}`,
+                referenceType: 'INVOICE',
+                referenceId: invoiceId,
+                createdBy: invoice.createdBy,
+            },
+        });
+
+        // Actualizar la factura a PAID
+        const invoiceUpdated = await tx.invoice.update({
+            where: { id: invoiceId },
+            data: {
+                ncf,
+                status: 'PAID',
+                paymentDate: new Date(),
+                paymentMethod: paymentData.paymentMethod,
+                paymentDetails: paymentData.paymentDetails || {},
+            },
+            include: { items: true, cashRegister: true },
+        });
+
+        return invoiceUpdated;
+    });
+};

@@ -515,6 +515,13 @@ enum InvoiceStatus {
     CANCELED @map("canceled") // Factura cancelada antes de pagarse
 }
 
+enum InvoiceType {
+    CREDITO_FISCAL @map("credito_fiscal")
+    CONSUMIDOR_FINAL @map("consumidor_final")
+    NOTA_DE_CREDITO @map("nota_de_credito")
+    NOTA_DE_DEBITO @map("nota_de_debito")
+}
+
 model Invoice {
     id             String        @id @default(uuid())
     invoiceNumber  String        @unique @map("invoice_number")
