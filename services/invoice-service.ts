@@ -1,6 +1,9 @@
-import { InvoiceItemType, PrismaClient } from "@prisma/client";
+import { Invoice, InvoiceItem, InvoiceItemType, PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
+interface InvoiceWithItems extends Invoice {
+    items: InvoiceItem[];
+}
 export interface InvoiceCreateDataType {
     invoiceNumber: string;
     ncf: string;
@@ -22,7 +25,12 @@ export interface InvoiceItemCreateData {
     itbis: number;
 }
 
-export const getLastInvoice = async (prefix: string) => {
+export interface InvoicePaymentData {
+    paymentMethod: string;
+    paymentDetails?: any; // JSON con detalles adicionales
+}
+
+export const getLastInvoice = async (prefix: string) : Promise<Invoice | null> => {
     return await Prisma.invoice.findFirst({
         where: { invoiceNumber: { startsWith: prefix } },
         orderBy: { invoiceNumber: 'desc' },
@@ -30,7 +38,7 @@ export const getLastInvoice = async (prefix: string) => {
 }
 
 
-export const createInvoice = async (data: InvoiceCreateDataType) => {
+export const createInvoice = async (data: InvoiceCreateDataType) : Promise<Invoice> => {
     const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId } = data;
 
     const invoice = await Prisma.invoice.create({
@@ -46,14 +54,14 @@ export const createInvoice = async (data: InvoiceCreateDataType) => {
     return invoice;
 }
 
-export const findInvoiceById = async (id: string) => {
+export const findInvoiceById = async (id: string): Promise<InvoiceWithItems | null> => {
     return await Prisma.invoice.findUnique({
         where: { id },
         include: { items: true },
     });
 }
 
-export const addNewItemToInvoice = async (invoiceId: string, data: InvoiceItemCreateData) => {
+export const addNewItemToInvoice = async (invoiceId: string, data: InvoiceItemCreateData): Promise<{ invoiceUpdated: Invoice, itemCreated: InvoiceItem }> => {
     return await Prisma.$transaction(async (tx) => {
         // Crear el ítem
         const newItem = await tx.invoiceItem.create({
