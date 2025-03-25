@@ -1,8 +1,10 @@
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType } from '@prisma/client';
+import { InvoiceItemType, PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+const Prisma = new PrismaClient();
+
 
 // Tipo para los datos de entrada del ítem
 interface InvoiceItemInput {
@@ -33,44 +35,49 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
         // Validar y calcular impuestos según el tipo de ítem
         if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-            // TODO: Implementar findProductById
-            throw new Error('findProductById no implementado');
-            // const product = await findProductById
-            // if (!product) {
-            //     throw new Error(`Producto ${body.productId} no encontrado`);
-            // }
-            // if (product.stock < body.quantity) {
-            //     throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
-            // }
+            // TODO: cambiar implementacion por la version con servicios, cuando este disponible
+            const product = await Prisma.product.findUnique({
+                where: { id: body.productId },
+            });
 
-            // if (product.isTaxIncluded) {
-            //     const total = subtotal;
-            //     subtotal = total / (1 + product.taxRate);
-            //     itbis = total - subtotal;
-            // } else {
-            //     itbis = subtotal * product.taxRate;
-            // }
+            if (!product) {
+                throw new Error(`Producto ${body.productId} no encontrado`);
+            }
+            if (product.stock < body.quantity) {
+                throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
+            }
+
+            if (product.isTaxIncluded) {
+                const total = subtotal;
+                subtotal = total / (1 + product.taxRate);
+                itbis = total - subtotal;
+            } else {
+                itbis = subtotal * product.taxRate;
+            }
         } else if (body.type === 'RECEIVABLE' && body.accountReceivableId) {
-            // TODO: Implementar findAccountReceivableById
-            throw new Error('findAccountReceivableById no implementado');
-            // const receivable = await findAccountReceivableById(body.accountReceivableId);
-            // if (!receivable) {
-            //     throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
-            // }
-            // if (receivable.status !== 'PENDING') {
-            //     throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
-            // }
+            // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
+            const receivable = await Prisma.accountReceivable.findUnique({
+                where: { id: body.accountReceivableId },
+                include: { courseBranch: true },
+            });
 
-            // const taxRate = receivable.courseBranch.taxRate;
-            // const isTaxIncluded = receivable.courseBranch.isTaxIncluded;
+            if (!receivable) {
+                throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
+            }
+            if (receivable.status !== 'PENDING') {
+                throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
+            }
 
-            // if (isTaxIncluded) {
-            //     const total = subtotal;
-            //     subtotal = total / (1 + taxRate);
-            //     itbis = total - subtotal;
-            // } else {
-            //     itbis = subtotal * taxRate;
-            // }
+            const taxRate = receivable.courseBranch.taxRate;
+            const isTaxIncluded = receivable.courseBranch.isTaxIncluded;
+
+            if (isTaxIncluded) {
+                const total = subtotal;
+                subtotal = total / (1 + taxRate);
+                itbis = total - subtotal;
+            } else {
+                itbis = subtotal * taxRate;
+            }
         } else if (body.type === 'CUSTOM' && (!body.unitPrice || body.quantity <= 0)) {
             throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
         }

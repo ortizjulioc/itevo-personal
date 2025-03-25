@@ -1,3 +1,4 @@
+import { generateNcf } from "@/utils/ncf";
 import { Invoice, InvoiceItem, InvoiceItemType, NcfType, PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
@@ -27,6 +28,7 @@ export interface InvoiceItemCreateData {
 
 export interface InvoicePaymentData {
     paymentMethod: string;
+    studentId?: string;
     paymentDetails?: any; // JSON con detalles adicionales
     type?: NcfType;
 }
@@ -114,32 +116,8 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
         if (invoice.cashRegister.status !== 'OPEN') throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
 
         const finalType = paymentData.type || invoice.type;
-        // Verificar que la caja está abierta
-        if (invoice.cashRegister.status !== 'OPEN') {
-            throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
-        }
 
-        // Obtener un NCF activo y verificar que currentSequence < endSequence
-        const ncfRange = await tx.ncfRange.findFirst({
-            where: { isActive: true, type: finalType },
-            orderBy: { currentSequence: 'asc' }, // Tomamos el rango con menor secuencia disponible
-        });
-
-        if (!ncfRange) throw new Error(`No hay rangos de NCF activos disponibles para el tipo ${finalType}`);
-        if (ncfRange.currentSequence >= ncfRange.endSequence) throw new Error(`El rango de NCF ${ncfRange.prefix} para ${ncfRange.type} ha alcanzado su límite`);
-
-        const newSequence = ncfRange.currentSequence + 1;
-        const ncf = `${ncfRange.prefix}${ncfRange.type}${newSequence.toString().padStart(8, '0')}`;
-
-        // Verificar unicidad del NCF
-        const ncfExists = await tx.invoice.findUnique({ where: { ncf } });
-        if (ncfExists) throw new Error(`El NCF ${ncf} ya está en uso`);
-
-        // Actualizar el rango de NCF
-        await tx.ncfRange.update({
-            where: { id: ncfRange.id },
-            data: { currentSequence: newSequence },
-        });
+        const ncf = await generateNcf(tx, finalType);
 
         // Crear el movimiento de caja
         await tx.cashMovement.create({
@@ -161,6 +139,7 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
                 ncf,
                 type: finalType,
                 status: 'PAID',
+                studentId: paymentData.studentId || invoice.studentId,
                 paymentDate: new Date(),
                 paymentMethod: paymentData.paymentMethod,
                 paymentDetails: paymentData.paymentDetails || {},
