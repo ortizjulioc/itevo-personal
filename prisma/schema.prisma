@@ -496,9 +496,24 @@ model CashRegisterClosure {
     @@map("cash_register_closures")
 }
 
+enum NcfType {
+    FACTURA_CREDITO_FISCAL  @map("01") // Factura de Crédito Fiscal
+    FACTURA_CONSUMO         @map("02") // Factura de Consumo
+    NOTA_DEBITO             @map("03") // Nota de Débito
+    NOTA_CREDITO            @map("04") // Nota de Crédito
+    COMPROBANTE_COMPRAS     @map("11") // Comprobante de Compras
+    REGISTRO_UNICO_INGRESOS @map("12") // Registro Único de Ingresos
+    GASTOS_MENORES          @map("13") // Comprobante para Gastos Menores
+    REGIMENES_ESPECIALES    @map("14") // Comprobante para Regímenes Especiales
+    GUBERNAMENTAL           @map("15") // Comprobante Gubernamental
+    EXPORTACION             @map("16") // Comprobante para Exportaciones
+    PAGO_EXTERIOR           @map("17") // Comprobante para Pagos al Exterior
+}
+
 model NcfRange {
     id              String   @id @default(uuid())
-    prefix          String // Ejemplo: "B01" (crédito fiscal)
+    prefix          String   @default("B")
+    type            NcfType
     startSequence   Int      @map("start_sequence") // Inicio del rango, ej. 1
     endSequence     Int      @map("end_sequence") // Fin del rango, ej. 1000
     currentSequence Int      @map("current_sequence") // Secuencia actual, ej. 1
@@ -515,17 +530,11 @@ enum InvoiceStatus {
     CANCELED @map("canceled") // Factura cancelada antes de pagarse
 }
 
-enum InvoiceType {
-    CREDITO_FISCAL @map("credito_fiscal")
-    CONSUMIDOR_FINAL @map("consumidor_final")
-    NOTA_DE_CREDITO @map("nota_de_credito")
-    NOTA_DE_DEBITO @map("nota_de_debito")
-}
-
 model Invoice {
     id             String        @id @default(uuid())
     invoiceNumber  String        @unique @map("invoice_number")
     ncf            String        @unique
+    type           NcfType       @default(FACTURA_CONSUMO) // Tipo de comprobante
     studentId      String?       @map("student_id")
     cashRegisterId String        @map("cash_register_id")
     date           DateTime      @default(now())
@@ -540,10 +549,10 @@ model Invoice {
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
 
-    student Student?      @relation(fields: [studentId], references: [id])
+    student      Student?      @relation(fields: [studentId], references: [id])
     cashRegister CashRegister  @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
-    items   InvoiceItem[]
-    user    User          @relation(fields: [createdBy], references: [id])
+    items        InvoiceItem[]
+    user         User          @relation(fields: [createdBy], references: [id])
 
     @@map("invoices")
 }

@@ -1,4 +1,4 @@
-import { Invoice, InvoiceItem, InvoiceItemType, PrismaClient } from "@prisma/client";
+import { Invoice, InvoiceItem, InvoiceItemType, NcfType, PrismaClient } from "@prisma/client";
 const Prisma = new PrismaClient();
 
 interface InvoiceWithItems extends Invoice {
@@ -28,6 +28,7 @@ export interface InvoiceItemCreateData {
 export interface InvoicePaymentData {
     paymentMethod: string;
     paymentDetails?: any; // JSON con detalles adicionales
+    type?: NcfType;
 }
 
 export const getLastInvoice = async (prefix: string) : Promise<Invoice | null> => {
@@ -105,19 +106,14 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
             where: { id: invoiceId },
             include: { cashRegister: true, items: true },
         });
-        if (!invoice) {
-            throw new Error(`Factura con ID ${invoiceId} no encontrada`);
-        }
-        if (invoice.status !== 'DRAFT') {
-            throw new Error(`Solo se pueden pagar facturas en estado DRAFT (actual: ${invoice.status})`);
-        }
-        if (invoice.items.length === 0) {
-            throw new Error('No se puede pagar una factura sin ítems');
-        }
-        if (invoice.subtotal + invoice.itbis <= 0) {
-            throw new Error('El monto total de la factura debe ser mayor a 0');
-        }
 
+        if (!invoice) throw new Error(`Factura con ID ${invoiceId} no encontrada`);
+        if (invoice.status !== 'DRAFT') throw new Error(`Solo se pueden pagar facturas en estado DRAFT (actual: ${invoice.status})`);
+        if (invoice.items.length === 0) throw new Error('No se puede pagar una factura sin ítems');
+        if (invoice.subtotal + invoice.itbis <= 0) throw new Error('El monto total de la factura debe ser mayor a 0');
+        if (invoice.cashRegister.status !== 'OPEN') throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
+
+        const finalType = paymentData.type || invoice.type;
         // Verificar que la caja está abierta
         if (invoice.cashRegister.status !== 'OPEN') {
             throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
@@ -125,24 +121,19 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
 
         // Obtener un NCF activo y verificar que currentSequence < endSequence
         const ncfRange = await tx.ncfRange.findFirst({
-            where: { isActive: true },
+            where: { isActive: true, type: finalType },
             orderBy: { currentSequence: 'asc' }, // Tomamos el rango con menor secuencia disponible
         });
-        if (!ncfRange) {
-            throw new Error('No hay rangos de NCF activos disponibles');
-        }
-        if (ncfRange.currentSequence >= ncfRange.endSequence) {
-            throw new Error(`El rango de NCF ${ncfRange.prefix} ha alcanzado su límite (${ncfRange.endSequence})`);
-        }
+
+        if (!ncfRange) throw new Error(`No hay rangos de NCF activos disponibles para el tipo ${finalType}`);
+        if (ncfRange.currentSequence >= ncfRange.endSequence) throw new Error(`El rango de NCF ${ncfRange.prefix} para ${ncfRange.type} ha alcanzado su límite`);
 
         const newSequence = ncfRange.currentSequence + 1;
-        const ncf = `${ncfRange.prefix}${newSequence.toString().padStart(8, '0')}`;
+        const ncf = `${ncfRange.prefix}${ncfRange.type}${newSequence.toString().padStart(8, '0')}`;
 
         // Verificar unicidad del NCF
         const ncfExists = await tx.invoice.findUnique({ where: { ncf } });
-        if (ncfExists) {
-            throw new Error(`El NCF ${ncf} ya está en uso`);
-        }
+        if (ncfExists) throw new Error(`El NCF ${ncf} ya está en uso`);
 
         // Actualizar el rango de NCF
         await tx.ncfRange.update({
@@ -151,12 +142,12 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
         });
 
         // Crear el movimiento de caja
-        const cashMovement = await tx.cashMovement.create({
+        await tx.cashMovement.create({
             data: {
                 cashRegisterId: invoice.cashRegisterId,
                 type: 'INCOME',
                 amount: invoice.subtotal + invoice.itbis,
-                description: `Pago de factura ${invoice.invoiceNumber}`,
+                description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
                 referenceType: 'INVOICE',
                 referenceId: invoiceId,
                 createdBy: invoice.createdBy,
@@ -168,6 +159,7 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
             where: { id: invoiceId },
             data: {
                 ncf,
+                type: finalType,
                 status: 'PAID',
                 paymentDate: new Date(),
                 paymentMethod: paymentData.paymentMethod,
