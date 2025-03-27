@@ -1,6 +1,7 @@
 import { Student } from '@prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
+import { formatPhoneNumber } from '@/utils';
 
 export default function StudentLabel({ StudentId }: { StudentId: string }) {
     const [student, setStudent] = useState<Student | null>(null);
@@ -8,7 +9,7 @@ export default function StudentLabel({ StudentId }: { StudentId: string }) {
     const fetchStudentById = async () => {
         try {
             const response = await apiRequest.get<Student>(`/students/${StudentId}`);
-           
+
             if (response.success && response.data) {
                 setStudent(response.data);
             }
@@ -22,6 +23,10 @@ export default function StudentLabel({ StudentId }: { StudentId: string }) {
     }, []);
 
     return (
-        <span >{student ?  `${student.firstName} ${student.lastName}`  : '...'}</span>
+        <span>
+            {student
+                ? `${student.firstName} ${student.lastName} ${student.phone ? `     ${formatPhoneNumber(student.phone)}` : ''}`
+                : '...'}
+        </span>
     )
 }
