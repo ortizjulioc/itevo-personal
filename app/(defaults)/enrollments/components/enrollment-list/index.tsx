@@ -10,6 +10,7 @@ import { deleteEnrollment } from "../../lib/request";
 import StudentLabel from "@/components/common/info-labels/student-label";
 import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
+import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
 
 
 
@@ -52,6 +53,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
           { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
           { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
       ];
+      console.log('enrollments', enrollments);
   
     if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE','OFERTA ACADEMICA','FECHA DE INSCRIPCION']} />;
 
@@ -87,7 +89,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                         {new Date(enrollment.enrollmentDate).toLocaleDateString()}
                                     </td>
                                     <td>
-                                       {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}
+                                       <StatusEnrollment status={enrollment.status as any} />
                                     </td>
                                    
                                     <td>
