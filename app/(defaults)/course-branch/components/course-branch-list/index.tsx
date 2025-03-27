@@ -7,15 +7,10 @@ import Link from "next/link";
 import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
-import PromotionLabel from "@/components/common/info-labels/promotion-label";
-import BranchLabel from "@/components/common/info-labels/branch-label";
-import TeacherLabel from "@/components/common/info-labels/teacher-label";
-import CourseLabel from "@/components/common/info-labels/course-label";
-import { MODALITIES } from "@/constants/modality.constant";
 import { TbDetails } from "react-icons/tb";
 import { getFormattedDate } from "@/utils/date";
 import ModalityTag from "../modality";
-import StatusCourseBranch from "../status";
+import StatusCourseBranch from "@/components/common/info-labels/status/status-course-branch";
 import { CourseBranchStatus } from "@prisma/client";
 
 
