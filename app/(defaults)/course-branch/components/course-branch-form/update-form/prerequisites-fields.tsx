@@ -4,7 +4,7 @@ import { FormikErrors, FormikTouched } from 'formik';
 import useFetchcourses, { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { SearchInput } from '@/components/common';
 import { useURLSearchParams } from '@/utils/hooks';
-import { assignPrerequisiteToCourseBranch } from '../../../lib/request';
+import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch } from '../../../lib/request';
 import Tooltip from '@/components/ui/tooltip';
 import { TbX } from 'react-icons/tb';
 import { openNotification } from '@/utils';
@@ -39,9 +39,16 @@ export default function PrerequisitesFields({ className, values, touched, errors
   };
 
   // Función para eliminar un prerrequisito
-  const handleRemovePrerequisite = (courseId: string) => {
+  const handleRemovePrerequisite = async (courseId: string)  => {
     console.log(`Eliminar prerrequisito: ${courseId}`);
-    // Aquí puedes agregar la lógica para actualizar la base de datos
+    const response = await unassignPrerequisiteToCourseBranch(values.courseId, courseId);
+    console.log(response);
+    if (response.success) {
+      openNotification('success', 'Prerrequisito eliminado correctamente');
+    }
+    else {
+      openNotification('error', response.message);
+    }
   };
 
 
