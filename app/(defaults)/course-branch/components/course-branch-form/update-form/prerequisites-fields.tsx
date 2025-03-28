@@ -64,7 +64,7 @@ export default function PrerequisitesFields({ className, values, touched, errors
 
       {/* Lista de cursos filtrados */}
       <div className="mt-2 max-h-40 overflow-y-auto border rounded-md p-2">
-        {courses.length > 0 ? (
+        {courses.length > 0 && (
           <ul>
             {courses.filter(
               course =>
@@ -84,8 +84,6 @@ export default function PrerequisitesFields({ className, values, touched, errors
                 </li>
               ))}
           </ul>
-        ) : (
-          <p className="text-gray-500 text-sm">No hay resultados</p>
         )}
         {
           courses.filter(
