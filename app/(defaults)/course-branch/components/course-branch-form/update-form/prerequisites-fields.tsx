@@ -4,10 +4,10 @@ import { FormikErrors, FormikTouched } from 'formik';
 import useFetchcourses, { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { SearchInput } from '@/components/common';
 import { useURLSearchParams } from '@/utils/hooks';
-import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch } from '../../../lib/request';
 import Tooltip from '@/components/ui/tooltip';
 import { TbX } from 'react-icons/tb';
-import { openNotification } from '@/utils';
+import { useCourseBranch } from './course-branch-provider';
+import { Course } from '@prisma/client';
 
 interface ScheduleAssignmentProps {
   values: CourseBranchFormType;
@@ -16,40 +16,18 @@ interface ScheduleAssignmentProps {
   className?: string;
 }
 
+
 export default function PrerequisitesFields({ className, values, touched, errors }: ScheduleAssignmentProps) {
   console.log('values', values);
+  const { handleAddPrerequisite, handleRemovePrerequisite,preRequisites} = useCourseBranch();
   const params = useURLSearchParams();
   console.log('params', params.get('prerequisite'));
-  const { preRequisites } = useFetchPreRequisites(values.courseId);
+
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}`  : '');
-  console.log('courses', courses);
-  console.log('preRequisites', preRequisites);
+
 
   // Función para agregar un prerrequisito
-  const handleAddPrerequisite = async (courseId: string) => {
-    console.log(`Agregar prerrequisito: ${courseId}`);
-    const response = await assignPrerequisiteToCourseBranch(values.courseId, courseId);
-    console.log(response);
-    if (response.success) {
-      openNotification('success', 'Prerrequisito agregado correctamente');
 
-    } else {
-      openNotification('error', response.message);
-    }
-  };
-
-  // Función para eliminar un prerrequisito
-  const handleRemovePrerequisite = async (courseId: string)  => {
-    console.log(`Eliminar prerrequisito: ${courseId}`);
-    const response = await unassignPrerequisiteToCourseBranch(values.courseId, courseId);
-    console.log(response);
-    if (response.success) {
-      openNotification('success', 'Prerrequisito eliminado correctamente');
-    }
-    else {
-      openNotification('error', response.message);
-    }
-  };
 
 
   return (
@@ -62,7 +40,7 @@ export default function PrerequisitesFields({ className, values, touched, errors
           {preRequisites.length === 0 && (
             <p className="text-gray-500 text-sm italic">Este curso no tiene prerrequisitos</p>
           )}
-          {preRequisites.map(({ prerequisite }) => (
+          {preRequisites.map(({ prerequisite }: { prerequisite: Course }) => (
             <span key={prerequisite.id} className="badge bg-primary text-white flex items-center">
               {prerequisite.code} {prerequisite.name}
               <button
@@ -96,7 +74,7 @@ export default function PrerequisitesFields({ className, values, touched, errors
                 <button
                   type="button"
                   className="bg-primary text-white px-2 py-1 rounded-md text-xs"
-                  onClick={() => handleAddPrerequisite(course.id)}
+                  onClick={() => handleAddPrerequisite(course)}
                 >
                   Agregar
                 </button>
