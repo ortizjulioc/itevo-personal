@@ -87,6 +87,15 @@ export default function PrerequisitesFields({ className, values, touched, errors
         ) : (
           <p className="text-gray-500 text-sm">No hay resultados</p>
         )}
+        {
+          courses.filter(
+            course =>
+              course.id !== values.courseId && 
+              !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id) // Excluir los prerrequisitos seleccionados
+          ).length === 0 && (
+            <p className="text-gray-500 text-sm italic">No hay cursos disponibles</p>
+          )
+        }
       </div>
     </div >
   )
