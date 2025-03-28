@@ -93,7 +93,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                         <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} />
                                     </td>
                                     <td>
-                                        <div className="flex items-center gap-2 justify-end">
+                                        <div className="flex items-center gap-4 justify-end">
                                             <Tooltip title="Eliminar">
                                                 <button onClick={() => onDelete(courseBranch.id)}>
                                                     <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />

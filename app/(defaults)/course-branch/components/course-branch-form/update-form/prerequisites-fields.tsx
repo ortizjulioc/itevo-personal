@@ -19,14 +19,12 @@ interface ScheduleAssignmentProps {
 
 export default function PrerequisitesFields({ className, values, touched, errors }: ScheduleAssignmentProps) {
   console.log('values', values);
-  const { handleAddPrerequisite, handleRemovePrerequisite,preRequisites} = useCourseBranch();
+  const { handleAddPrerequisite, handleRemovePrerequisite, preRequisites } = useCourseBranch();
   const params = useURLSearchParams();
   console.log('params', params.get('prerequisite'));
 
-  const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}`  : '');
+  const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
 
-
-  // Función para agregar un prerrequisito
 
 
 
@@ -48,7 +46,7 @@ export default function PrerequisitesFields({ className, values, touched, errors
                 className="ml-2 text-white hover:cursor-pointer"
                 onClick={() => handleRemovePrerequisite(prerequisite.id)}
               >
-                <Tooltip   title='Eliminar prerrequisito'>
+                <Tooltip title='Eliminar prerrequisito'>
                   <span><TbX className='' /></span>
                 </Tooltip>
               </button>
@@ -61,25 +59,30 @@ export default function PrerequisitesFields({ className, values, touched, errors
       <div className='flex justify-between items-center '>
         <label className="block text-lg font-bold min-w-max">Agregar prerrequisitos</label>
         {/* Campo de búsqueda */}
-        <SearchInput searchKey='prerequisite' placeholder='Buscar curso...'  />
+        <SearchInput searchKey='prerequisite' placeholder='Buscar curso...' />
       </div>
 
       {/* Lista de cursos filtrados */}
       <div className="mt-2 max-h-40 overflow-y-auto border rounded-md p-2">
         {courses.length > 0 ? (
           <ul>
-            {courses.map((course) => (
-              <li key={course.id} className="flex justify-between items-center py-1">
-                <span className="text-sm">{course.code} {course.name}</span>
-                <button
-                  type="button"
-                  className="bg-primary text-white px-2 py-1 rounded-md text-xs"
-                  onClick={() => handleAddPrerequisite(course)}
-                >
-                  Agregar
-                </button>
-              </li>
-            ))}
+            {courses.filter(
+              course =>
+                course.id !== values.courseId && // Excluir el curso actual
+                !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id) // Excluir los prerrequisitos seleccionados
+            )
+              .map((course) => (
+                <li key={course.id} className="flex justify-between items-center py-1">
+                  <span className="text-sm">{course.code} {course.name}</span>
+                  <button
+                    type="button"
+                    className="bg-primary text-white px-2 py-1 rounded-md text-xs"
+                    onClick={() => handleAddPrerequisite(course)}
+                  >
+                    Agregar
+                  </button>
+                </li>
+              ))}
           </ul>
         ) : (
           <p className="text-gray-500 text-sm">No hay resultados</p>
