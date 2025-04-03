@@ -589,6 +589,7 @@ model Product {
     name          String
     description   String?
     price         Float
+    cost         Float
     stock         Int      @default(0)
     taxRate       Float    @default(0) @map("tax_rate")
     isTaxIncluded Boolean  @default(true) @map("is_tax_included")
