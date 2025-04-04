@@ -38,7 +38,7 @@ export default function ProductList({ className, query = '' }: Props) {
         });
     }
 
-    if (loading) return <Skeleton rows={6} columns={['CODIGO', 'NOMBRE', 'DESCRIPCION', 'COSTO', 'PRECIO', 'STOCK']} />;
+    if (loading) return <Skeleton rows={7} columns={['CODIGO', 'NOMBRE', 'DESCRIPCION', 'COSTO', 'PRECIO', 'STOCK']} />;
 
     return (
         <div className={className}>
@@ -60,7 +60,7 @@ export default function ProductList({ className, query = '' }: Props) {
                     <tbody>
                         {products?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron promociones registrados</td>
+                                <td colSpan={7} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron productos registrados</td>
                             </tr>
                         )}
                         {products?.map((product) => {
