@@ -104,10 +104,10 @@ const navigationConfig = [
         subItems: [],
     },
     {
-        key: 'nfc',
+        key: 'ncf',
         title: 'Rangos de NCF',
         icon: TbReceiptTax,
-        url: '/products',
+        url: '/ncfranges',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
     },
