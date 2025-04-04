@@ -1,5 +1,5 @@
 import { NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE } from '@/constants/navigation.constant';
-import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield,TbSchool, TbEdit, TbSettings } from 'react-icons/tb';
+import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield,TbSchool, TbEdit, TbSettings, TbShoppingCart, TbReceiptTax } from 'react-icons/tb';
 
 const navigationConfig = [
     {
@@ -88,6 +88,28 @@ const navigationConfig = [
                 subItems: [],
             },
         ],
+    },
+    {
+        key: 'billing',
+        title: 'Facturación',
+        type: NAV_ITEM_TYPE_TITLE,
+        subItems: [],
+    },
+    {
+        key: 'products',
+        title: 'Productos',
+        icon: TbShoppingCart,
+        url: '/products',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+    },
+    {
+        key: 'nfc',
+        title: 'Rangos de NCF',
+        icon: TbReceiptTax,
+        url: '/products',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
     },
     {
         key: 'auth',
