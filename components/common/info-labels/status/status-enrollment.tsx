@@ -5,7 +5,7 @@ interface StatusEnrollmentProps {
   status: EnrollmentStatus;
 }
 
-enum EnrollmentStatus {
+export enum EnrollmentStatus {
   WAITING = "WAITING",
   ENROLLED = "ENROLLED",
   COMPLETED = "COMPLETED",
