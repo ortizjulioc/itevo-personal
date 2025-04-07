@@ -26,7 +26,7 @@ export default function Product({ searchParams }: ProductProps) {
                 <>
                     <SearchInput placeholder="Buscar Productos" />
                     <Link href="/products/new">
-                        <Button icon={<IconPlusCircle />}>Crear promoción</Button>
+                        <Button icon={<IconPlusCircle />}>Crear Producto</Button>
                     </Link>
                 </>
             } />
