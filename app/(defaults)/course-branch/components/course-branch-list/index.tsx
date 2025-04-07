@@ -70,7 +70,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                     <tbody>
                         {courseBranches?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron ofertas academicas registradas</td>
+                                <td colSpan={8} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron ofertas academicas registradas</td>
                             </tr>
                         )}
                         {courseBranches?.map((courseBranch) => {
