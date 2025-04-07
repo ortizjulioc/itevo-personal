@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { objectToQueryString } from "@/utils";
 import EnrollmentList from "./components/enrollment-list";
+import SearchEnrollments from "./components/search-enrollment";
 
 
 
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
 };
 interface EnrollmentListProps {
   searchParams?: {
-      search?: string;
-      page?: string;
+    search?: string;
+    page?: string;
   };
 }
 export default function Enrollment({ searchParams }: EnrollmentListProps) {
@@ -23,15 +24,18 @@ export default function Enrollment({ searchParams }: EnrollmentListProps) {
     <div>
       <ViewTitle className='mb-6' title="Inscripciones" rightComponent={
         <>
-          <SearchInput placeholder="Buscar Cursos" />
+        
           <Link href="/enrollments/new">
             <Button icon={<IconUserPlus />}>Crear inscripcion</Button>
           </Link>
 
-         
+
         </>
       } />
-       <EnrollmentList query={query} />
+      <div>
+        <SearchEnrollments />
+      </div>
+      <EnrollmentList query={query} />
     </div>
   )
 }
