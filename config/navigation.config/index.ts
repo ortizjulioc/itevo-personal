@@ -1,5 +1,5 @@
 import { NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE } from '@/constants/navigation.constant';
-import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield,TbSchool, TbEdit, TbSettings, TbShoppingCart, TbReceiptTax } from 'react-icons/tb';
+import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield,TbSchool, TbEdit, TbSettings, TbShoppingCart, TbReceiptTax, TbBrandCashapp } from 'react-icons/tb';
 
 const navigationConfig = [
     {
@@ -93,6 +93,15 @@ const navigationConfig = [
         key: 'billing',
         title: 'Facturación',
         type: NAV_ITEM_TYPE_TITLE,
+        subItems: [],
+    }
+    ,
+    {
+        key: 'invoices',
+        title: 'Facturar',
+        icon: TbBrandCashapp ,
+        url: '/invoices',
+        type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
     },
     {
