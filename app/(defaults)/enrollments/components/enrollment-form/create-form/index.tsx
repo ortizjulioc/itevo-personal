@@ -9,6 +9,7 @@ import { createEnrollment } from '../../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
+import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
 
 export default function CreateEnrollmentForm({ courseBranchId,studentId }: { courseBranchId?: string,studentId?:string }) {
     const route = useRouter();
@@ -41,13 +42,13 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
         label: string;
     }
 
-    const enrollmentStatus = [
-        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-    ];
-
+    const statusOptions = [
+        { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },
+        { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} />  },
+        { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} />  },
+        { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} />  },
+    ]
+    
 
     return (
         <div className="panel">
@@ -81,8 +82,8 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
                         <FormItem name='status' label='Estado' invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
                             <Select
                                 name="status"
-                                options={enrollmentStatus}
-                                value={enrollmentStatus.find((status) => status.value === values.status)}
+                                options={statusOptions}
+                                value={statusOptions.find((status) => status.value === values.status)}
                                 onChange={(option: statusOption | null) => {
                                     setFieldValue('status', option?.value ?? null);
                                 }}

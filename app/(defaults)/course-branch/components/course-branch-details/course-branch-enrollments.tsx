@@ -6,6 +6,8 @@ import StudentLabel from "@/components/common/info-labels/student-label";
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enrollments";
 import { Pagination } from "@/components/ui";
+import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
+import { EnrollmentStatus } from "@prisma/client";
 
 
 
@@ -24,13 +26,13 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
     }
 
     const enrollmentStatus = [
-          { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-          { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-          { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-          { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-      ];
-  
-    if (loading) return <Skeleton rows={3} columns={['ESTUDIANTE','FECHA DE INSCRIPCION','ESTADO']} />;
+        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
+        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
+        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
+        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
+    ];
+
+    if (loading) return <Skeleton rows={3} columns={['ESTUDIANTE', 'FECHA DE INSCRIPCION', 'ESTADO']} />;
 
     return (
         <div className='col-span-2'>
@@ -42,7 +44,7 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
                             <th>ESTUDIANTE</th>
                             <th>FECHA DE INSCRIPCION</th>
                             <th>ESTADO</th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -55,15 +57,15 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
                             return (
                                 <tr key={enrollment.id}>
                                     <td>
-                                        <StudentLabel StudentId={enrollment.studentId}/>
+                                        <StudentLabel StudentId={enrollment.studentId} />
                                     </td>
                                     <td>
                                         {new Date(enrollment.enrollmentDate).toLocaleDateString()}
                                     </td>
                                     <td>
-                                       {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}
+                                        <StatusEnrollment status={enrollment.status as any} />
                                     </td>
-                                   
+
                                 </tr>
                             );
                         })}

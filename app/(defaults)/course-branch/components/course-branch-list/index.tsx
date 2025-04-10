@@ -7,11 +7,12 @@ import Link from "next/link";
 import TableSkeleton from "@/components/common/Skeleton";
 import useFetchCourseBranch from "../../lib/use-fetch-course-branch";
 import { deleteCourseBranch } from "../../lib/request";
+import { TbDetails } from "react-icons/tb";
 import { getFormattedDate } from "@/utils/date";
 import ModalityTag from "../modality";
-import StatusCourseBranch from "../status";
-import { TbDetails } from "react-icons/tb";
-import { CourseBranchStatus } from '@prisma/client';
+import StatusCourseBranch from "@/components/common/info-labels/status/status-course-branch";
+import { CourseBranchStatus } from "@prisma/client";
+
 
 
 interface Props {
@@ -69,7 +70,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                     <tbody>
                         {courseBranches?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron ofertas academicas registradas</td>
+                                <td colSpan={8} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron ofertas academicas registradas</td>
                             </tr>
                         )}
                         {courseBranches?.map((courseBranch) => {
@@ -92,7 +93,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                         <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} />
                                     </td>
                                     <td>
-                                        <div className="flex items-center gap-2 justify-end">
+                                        <div className="flex items-center gap-4 justify-end">
                                             <Tooltip title="Eliminar">
                                                 <button onClick={() => onDelete(courseBranch.id)}>
                                                     <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />

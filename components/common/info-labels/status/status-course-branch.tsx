@@ -36,6 +36,6 @@ const StatusColors = {
 export default function StatusCourseBranch({ status }: StatusCourseBranchProps) {
 
   return (
-    <span className={`flex items-center gap-1 font-bold ${StatusColors[status]}`}><TbPointFilled />{StatusLabels[status]}</span>
+    <span className={`flex items-center gap-1 font-bold min-w-max ${StatusColors[status]}`}><TbPointFilled />{StatusLabels[status]}</span>
   )
 }

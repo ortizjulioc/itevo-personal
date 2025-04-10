@@ -42,12 +42,32 @@ export const getEnrollments = async (filters: any) => {
         orderBy: [
             { enrollmentDate: 'asc' },
         ],
-        select: {
-            id: true,
-            studentId: true,
-            courseBranchId: true,
-            enrollmentDate: true,
-            status: true,
+        include: {
+            student: {
+                select: {
+                    id: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                },
+            },
+            courseBranch: {
+                select: {
+                    id: true,
+                    courseId: true,
+                    branchId: true,
+                    course: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    branch: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+            },
         },
         where,
         skip: skip,
@@ -81,17 +101,33 @@ export const findEnrollmentById = async (id: string) => {
             id: id,
             // deleted: false,
         },
-        // include: {
-        //     prerequisites: {
-        //         select: {
-        //             prerequisite: {
-        //                 select: {
-        //                     id: true,
-        //                 },
-        //             },
-        //         },
-        //     },
-        // },
+        include: {
+            student: {
+                select: {
+                    id: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                },
+            },
+            courseBranch: {
+                select: {
+                    id: true,
+                    courseId: true,
+                    branchId: true,
+                    course: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    branch: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+            },
+        },
     });
 
     // Devolviendo prerequisites como un arreglo de IDs

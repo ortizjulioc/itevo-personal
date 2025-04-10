@@ -76,9 +76,17 @@ export const createCourseBranch = async (data: any) => {
 };
 
 export const findCourseBranchById = async (id: string) => {
-    return await Prisma.courseBranch.findUnique({
+    const courseBranch = await Prisma.courseBranch.findUnique({
         where: { id },
+        include: {
+            branch: { select: { id: true, name: true } },
+            teacher: { select: { id: true, firstName: true, lastName: true  } },
+            course: { select: { id: true, name: true } },
+            schedules: { select: { schedule: true } },
+        }
     });
+
+    return { ...courseBranch, schedules: courseBranch?.schedules.map((schedule) => schedule.schedule) };
 };
 
 // Actualizar courseBranch por ID
