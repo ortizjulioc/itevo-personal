@@ -429,13 +429,17 @@ enum CashRegisterStatus {
 }
 
 model CashRegister {
-    id        String             @id @default(uuid())
-    name      String
-    branchId  String             @map("branch_id")
-    status    CashRegisterStatus @default(OPEN) // "open", "closed"
-    userId    String             @map("user_id")
-    createdAt DateTime           @default(now()) @map("created_at")
-    updatedAt DateTime           @updatedAt @map("updated_at")
+    id             String             @id @default(uuid())
+    name           String
+    branchId       String             @map("branch_id")
+    status         CashRegisterStatus @default(OPEN) // "open", "closed"
+    userId         String             @map("user_id")
+    initialBalance Float              @default(0) @map("initial_balance")
+    cashBreakdown  Json?              @map("cash_breakdown") // Desglose de efectivo
+    openingDate    DateTime           @map("opening_date") // Fecha de apertura
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     branch    Branch                @relation(fields: [branchId], references: [id])
     user      User                  @relation(fields: [userId], references: [id])
@@ -486,9 +490,10 @@ model CashRegisterClosure {
     totalIncome    Float    @default(0) @map("total_income")
     totalExpense   Float    @default(0) @map("total_expense")
     cashBreakdown  Json?    @map("cash_breakdown") // Desglose de efectivo
-    closedBy       String   @map("closed_by") // Usuario que cerró la caja
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    closedBy  String   @map("closed_by") // Usuario que cerró la caja
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     cashRegister CashRegister @relation(fields: [cashRegisterId], references: [id])
     user         User         @relation(fields: [closedBy], references: [id])
@@ -511,17 +516,17 @@ enum NcfType {
 }
 
 model NcfRange {
-    id              String   @id @default(uuid())
-    prefix          String   @default("B")
-    type            NcfType
-    startSequence   Int      @map("start_sequence") // Inicio del rango, ej. 1
-    endSequence     Int      @map("end_sequence") // Fin del rango, ej. 1000
-    currentSequence Int      @map("current_sequence") // Secuencia actual, ej. 1
-    dueDate         DateTime @map("dueDate") // Fecha de expiración del rango
-    authorizationNumber String @map("authorization_number") // Número de autorización
-    isActive        Boolean  @default(true) @map("is_active") // Activo o inactivo
-    createdAt       DateTime @default(now()) @map("created_at")
-    updatedAt       DateTime @updatedAt @map("updated_at")
+    id                  String   @id @default(uuid())
+    prefix              String   @default("B")
+    type                NcfType
+    startSequence       Int      @map("start_sequence") // Inicio del rango, ej. 1
+    endSequence         Int      @map("end_sequence") // Fin del rango, ej. 1000
+    currentSequence     Int      @map("current_sequence") // Secuencia actual, ej. 1
+    dueDate             DateTime @map("dueDate") // Fecha de expiración del rango
+    authorizationNumber String   @map("authorization_number") // Número de autorización
+    isActive            Boolean  @default(true) @map("is_active") // Activo o inactivo
+    createdAt           DateTime @default(now()) @map("created_at")
+    updatedAt           DateTime @updatedAt @map("updated_at")
 
     @@map("ncf_ranges")
 }

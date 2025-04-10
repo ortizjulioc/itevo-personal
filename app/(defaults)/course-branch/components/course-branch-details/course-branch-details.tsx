@@ -5,12 +5,12 @@ import TeacherLabel from '@/components/common/info-labels/teacher-label';
 import { IconEdit, IconTrashLines, IconUserPlus } from '@/components/icon';
 import { Button } from '@/components/ui';
 import Tooltip from '@/components/ui/tooltip';
-import { confirmDialog, openNotification } from '@/utils';
-import { CourseBranch } from '@prisma/client';
+import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import Link from 'next/link';
 import React from 'react';
 import { deleteCourseBranch } from '../../lib/request';
 import { useRouter } from 'next/navigation';
+import { CourseBranch } from '@prisma/client';
 
 const modalities = {
     PRESENTIAL: 'Presencial',
@@ -49,11 +49,15 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
             {[
                 { label: "Sucursal", value: <BranchLabel branchId={courseBranch.branchId} /> },
                 { label: "Profesor", value: <TeacherLabel teacherId={courseBranch.teacherId} /> },
-                { label: "Monto", value: courseBranch.amount },
-                { label: "Modalidad", value: modalities[courseBranch.modality] },
-                { label: "Fecha de inicio", value: new Date(courseBranch.startDate).toLocaleDateString() },
-                { label: "Fecha de finalizacion", value: new Date(courseBranch.endDate).toLocaleDateString() },
-                { label: "Comision", value: `${courseBranch.commissionRate} %` },
+                { label: "Monto", value: formatCurrency(courseBranch.amount) },
+                { label: "Modalidad", value: modalities[courseBranch.modality as keyof typeof modalities] || "No especificado" },
+                { label: "Fecha de inicio", value: courseBranch.startDate ? new Date(courseBranch.startDate).toLocaleDateString() : "No especificado" },
+                { label: "Fecha de finalizacion", value: courseBranch.endDate ? new Date(courseBranch.endDate).toLocaleDateString() : "No especificado" },
+                {
+                    label: "Comision", value: courseBranch.commissionRate != null
+                        ? `${courseBranch.commissionRate * 100} %`
+                        : "N/A"
+                },
                 { label: "Capacidad", value: `${courseBranch.capacity} Personas` },
 
             ].map(({ label, value }) => (
