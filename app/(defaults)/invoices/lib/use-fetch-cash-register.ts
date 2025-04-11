@@ -16,7 +16,7 @@ const useFetchCashRegisters = (query: string) => {
     useEffect(() => {
         const fetchCashRegistersData = async (query: string) => {
             try {
-                const response = await apiRequest.get<CashRegistersResponse>(`/cashregisters?search=${query}`);
+                const response = await apiRequest.get<CashRegistersResponse>(`/cashregister?search=${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
@@ -47,7 +47,7 @@ export const useFetchCashRegistersById = (id: string) => {
     useEffect(() => {
         const fetchCashRegisterData = async (id: string) => {
             try {
-                const response = await apiRequest.get<CashRegister>(`/cashregisters/${id}`);
+                const response = await apiRequest.get<CashRegister>(`/cashregister/${id}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
