@@ -39,7 +39,6 @@ export default function CreateCashRegisterForm() {
             branchId: user.branches[0].id,
             userId: user.id,
             initialBalance: Number(values.initialBalance),
-            cashBreakdown: [],
 
         };
         const resp = await createCashRegister(valuesToSend);

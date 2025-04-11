@@ -5,9 +5,11 @@ export interface CashRegisterResponse {
     cashRegisters: CashRegister[];
     totalCashRegisters: number;
 }
+type CashRegisterInput = Omit<CashRegister, 'id' | 'createdAt' | 'updatedAt' | 'deleted' | 'status' | "cashBreakdown"| "openingDate">;
 
-export const createCashRegister = async (cashRegister: CashRegister) => {
-    return await apiRequest.post<CashRegister>('/cashregister', cashRegister);
+
+export const createCashRegister = async (cashRegister: CashRegisterInput) => {
+    return await apiRequest.post<CashRegisterInput>('/cashregister', cashRegister);
 }
 
 export const updateCashRegister = async (id: string, cashRegister: CashRegister) => {
