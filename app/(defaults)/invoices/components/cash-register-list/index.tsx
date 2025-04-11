@@ -7,6 +7,7 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchCashRegisters from "../../lib/use-fetch-cash-register";
 import { deleteCashRegister } from "../../lib/cash-register-request";
+import { TbPointFilled } from "react-icons/tb";
 
 
 
@@ -69,9 +70,21 @@ export default function CashRegisterList({ className, query = '' }: Props) {
                                     <td className="text-left">{CashRegister.name}</td>
                                     <td className="text-left">{CashRegister.user.name}</td>
                                     <td className="text-left">{new Date(CashRegister.openingDate).toLocaleDateString()}</td>
-                                    <td className="text-left">{CashRegister.status}</td>
-                                    
-                                   
+                                    <td className="text-left">
+                                        {CashRegister.status === 'OPEN' ? (
+                                               <span className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>
+                                               <TbPointFilled />
+                                               Abierto
+                                           </span>
+                                        ) : (
+                                            <span className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                                <TbPointFilled />
+                                                Cerrado
+                                            </span>
+                                        )}
+                                    </td>
+
+
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
@@ -96,7 +109,7 @@ export default function CashRegisterList({ className, query = '' }: Props) {
                 </table>
 
             </div>
-            
+
             <div className="">
                 <Pagination
                     currentPage={Number.parseInt(params?.page || '1')}
