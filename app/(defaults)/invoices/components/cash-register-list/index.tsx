@@ -25,7 +25,7 @@ export default function CashRegisterList({ className, query = '' }: Props) {
     const onDelete = async (id: string) => {
 
         confirmDialog({
-            title: 'Eliminar CashRegistero',
+            title: 'Eliminar Cash',
             text: '¿Seguro que quieres eliminar este CashRegistero?',
             confirmButtonText: 'Sí, eliminar',
             icon: 'error'
@@ -39,6 +39,7 @@ export default function CashRegisterList({ className, query = '' }: Props) {
             openNotification('error', resp.message);
         });
     }
+    console.log('cashRegisters', cashRegisters);
 
     if (loading) return <Skeleton rows={7} columns={['CODIGO', 'NOMBRE', 'DESCRIPCION', 'COSTO', 'PRECIO', 'STOCK']} />;
 
@@ -66,7 +67,7 @@ export default function CashRegisterList({ className, query = '' }: Props) {
                             return (
                                 <tr key={CashRegister.id}>
                                     <td className="text-left">{CashRegister.name}</td>
-                                    <td className="text-left">{CashRegister.userId}</td>
+                                    <td className="text-left">{CashRegister.user.name}</td>
                                     <td className="text-left">{new Date(CashRegister.openingDate).toLocaleDateString()}</td>
                                     <td className="text-left">{CashRegister.status}</td>
                                     

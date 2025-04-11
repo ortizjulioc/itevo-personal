@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashRegister } from "@prisma/client";
+import type { CashRegister as CashRegisterPrima, User } from "@prisma/client";
 
+
+export interface CashRegister extends CashRegisterPrima {
+    user: Omit<User, 'password' | 'email'>;
+}
 export interface CashRegistersResponse {
     cashRegisters: CashRegister[];
     totalCashRegisters: number;
@@ -16,7 +20,7 @@ const useFetchCashRegisters = (query: string) => {
     useEffect(() => {
         const fetchCashRegistersData = async (query: string) => {
             try {
-                const response = await apiRequest.get<CashRegistersResponse>(`/cashregister?search=${query}`);
+                const response = await apiRequest.get<CashRegistersResponse>(`/cash-register?search=${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
@@ -47,7 +51,7 @@ export const useFetchCashRegistersById = (id: string) => {
     useEffect(() => {
         const fetchCashRegisterData = async (id: string) => {
             try {
-                const response = await apiRequest.get<CashRegister>(`/cashregister/${id}`);
+                const response = await apiRequest.get<CashRegister>(`/cash-register/${id}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

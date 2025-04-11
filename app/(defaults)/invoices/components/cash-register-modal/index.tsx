@@ -3,7 +3,7 @@
 import { IconPlusCircle } from '@/components/icon';
 import { Button } from '@/components/ui';
 import { Dialog, Transition, Tab } from '@headlessui/react';
-import { useState, Fragment, useEffect, use } from 'react';
+import { useState, Fragment } from 'react';
 import CreateCashRegisterForm from '../cash-register-form/create-form';
 
 

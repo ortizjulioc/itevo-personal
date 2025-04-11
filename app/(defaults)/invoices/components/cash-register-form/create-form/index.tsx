@@ -27,29 +27,41 @@ export default function CreateCashRegisterForm() {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
+     
+        console.log('user', user);
 
-        if (!user?.branches || user.branches.length === 0) {
+        if ( !user?.branches || user.branches.length === 0) {
             openNotification('error', 'No se encontró una sucursal asociada al usuario');
             setSubmitting(false);
             return;
         }
+        if(!user.id) {
+            openNotification('error', 'No se encontró el usuario asociado al registro de caja');
+            setSubmitting(false);
+            return;
+        }
+        
         
         const valuesToSend = {
+            id: '',
             name: values.name,
             branchId: user.branches[0].id,
             userId: user.id,
             initialBalance: Number(values.initialBalance),
+            openingDate: new Date(),
 
         };
         const resp = await createCashRegister(valuesToSend);
 
         if (resp.success) {
-            openNotification('success', 'CashRegistero creado correctamente');
-            route.push(`/invoices/${resp.data}`);
+            openNotification('success', 'CashRegister creado correctamente');
+            const cashRegister = resp.data;
+            if (cashRegister?.id) {
+                route.push(`/invoices/${cashRegister.id}`);
+            }
         } else {
             openNotification('error', resp.message);
         }
-        setSubmitting(false);
     };
 
     return (
