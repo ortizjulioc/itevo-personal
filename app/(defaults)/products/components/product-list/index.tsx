@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchProducts from "../../lib/use-fetch-products";
 import { deleteProduct } from "../../lib/request";
+import { TbPointFilled } from "react-icons/tb";
 
 interface Props {
     className?: string;
@@ -47,13 +48,11 @@ export default function ProductList({ className, query = '' }: Props) {
                     <thead>
                         <tr>
                             <th className="text-left">CODIGO</th>
-                            <th className="text-left">Nombre</th>
                             <th className="text-left">NOMBRE</th>
                             <th className="text-left">DESCRIPCION</th>
                             <th className="text-left">COSTO</th>
                             <th className="text-left">PRECIO</th>
                             <th className="text-left">EXISTENCIA</th>
-
                             <th />
                         </tr>
                     </thead>
@@ -76,18 +75,20 @@ export default function ProductList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{product.description}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{product.cost}</div>
+                                        <div className="whitespace-nowrap">{formatCurrency(product.cost)}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{product.price}</div>
+                                        <div className="whitespace-nowrap">{formatCurrency(product.price)}</div>
                                     </td>
-
                                     <td>
                                         <div className="whitespace-nowrap">
-                                            {product.stock === 0 ? (
-                                                <span className="text-red-500">Sin stock</span>
+                                            {product.stock === 0 || product.stock <0 ? (
+                                                <span className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                                    <TbPointFilled />
+                                                    Sin existencia
+                                                </span>
                                             ) : (
-                                                <span className="text-green-500">{product.stock}</span>
+                                                <span>{product.stock}</span>
                                             )}
 
                                         </div>
