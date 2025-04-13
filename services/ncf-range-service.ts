@@ -10,6 +10,7 @@ export async function getNcfRanges(search = '', page = 1, top = 10) {
       { prefix: { contains: search } },
       { authorizationNumber: { contains: search } },
     ],
+    deleted: false,
   };
 
   const [ncfRanges, totalNcfRanges] = await Promise.all([
@@ -32,7 +33,7 @@ export async function createNcfRange(data: PrismaTypes.NcfRangeCreateInput) {
 
 // Buscar un rango de NCF por ID
 export async function findNcfRangeById(id: string) {
-  return await Prisma.ncfRange.findUnique({ where: { id } });
+  return await Prisma.ncfRange.findUnique({ where: { id, deleted: false } });
 }
 
 // Actualizar un rango de NCF por ID
@@ -44,6 +45,6 @@ export async function updateNcfRangeById(id: string, data: PrismaTypes.NcfRangeU
 export async function deleteNcfRangeById(id: string) {
   return await Prisma.ncfRange.update({
     where: { id },
-    data: { isActive: false },
+    data: { deleted: true },
   });
 }
