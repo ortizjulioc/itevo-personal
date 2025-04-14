@@ -436,7 +436,7 @@ model CashRegister {
     userId         String             @map("user_id")
     initialBalance Float              @default(0) @map("initial_balance")
     cashBreakdown  Json?              @map("cash_breakdown") // Desglose de efectivo
-    openingDate    DateTime           @map("opening_date") // Fecha de apertura
+    openingDate    DateTime           @default(now()) @map("opening_date") // Fecha de apertura
     deleted        Boolean            @default(false)
 
     createdAt DateTime @default(now()) @map("created_at")
@@ -526,6 +526,8 @@ model NcfRange {
     dueDate             DateTime @map("dueDate") // Fecha de expiración del rango
     authorizationNumber String   @map("authorization_number") // Número de autorización
     isActive            Boolean  @default(true) @map("is_active") // Activo o inactivo
+
+    deleted              Boolean  @default(false)
     createdAt           DateTime @default(now()) @map("created_at")
     updatedAt           DateTime @updatedAt @map("updated_at")
 

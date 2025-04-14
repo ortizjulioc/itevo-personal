@@ -1,67 +1,52 @@
-import { NextResponse, NextRequest } from "next/server";
-import { validateObject } from "@/utils";
-import { getProducts, createProduct, findProductByCode } from "@/services/product-service";
-import { formatErrorMessage } from "@/utils/error-to-string";
-import { createLog } from "@/utils/log";
+import { NextRequest, NextResponse } from 'next/server';
+import { getProducts, createProduct } from '@/services/product-service';
+import { createLog } from '@/utils/log';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
+// Obtener todos los productos con búsqueda y paginación
 export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
+  try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') ?? '';
+    const page = parseInt(searchParams.get('page') ?? '1');
+    const top = parseInt(searchParams.get('top') ?? '10');
 
-        const { products, totalProducts } = await getProducts(search, page, top);
-
-        return NextResponse.json({
-            products,
-            totalProducts,
-        }, { status: 200 });
-    } catch (error) {
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
-    }
+    const { products, totalProducts } = await getProducts(search, page, top);
+    return NextResponse.json({ products, totalProducts }, { status: 200 });
+  } catch (error) {
+    await createLog({
+      action: 'GET',
+      description: formatErrorMessage(error),
+      origin: 'products',
+      success: false,
+    });
+    return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+  }
 }
 
-export async function POST(request: Request) {
-    try {
-        const body = await request.json();
-        console.log('BODY: ',body);
+// Crear un nuevo producto
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
 
-        // Validate the request body
-        const {isValid, message} = validateObject(body, ['name', 'code']);
-        if (!isValid) {
-            return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
-        }
+    const newProduct = await createProduct(body);
 
+    await createLog({
+      action: 'POST',
+      description: `Se creó un nuevo producto:\n${JSON.stringify(newProduct, null, 2)}`,
+      origin: 'products',
+      elementId: newProduct.id,
+      success: true,
+    });
 
-        const productCodeExists = await findProductByCode(body);
-        if (productCodeExists) {
-            return NextResponse.json({ error: 'Este codigo de producto ya esta registrado' }, { status: 400 });
-        }
-        const product = await createProduct(body);
-
-        // Enviar log de auditoría
-
-        await createLog({
-            action: "POST",
-            description: `Se creó un producto con los siguientes datos: ${JSON.stringify(body, null, 2)}`,
-            origin: "products",
-            elementId: product.id,
-            success: true,
-        });
-
-        return NextResponse.json(product, { status: 201 });
-    } catch (error) {
-        // Enviar log de auditoría
-
-        await createLog({
-            action: "POST",
-            description: `Error al crear un product: ${formatErrorMessage(error)}`,
-            origin: "products",
-            elementId: request.headers.get("origin") || "",
-            success: false,
-        });
-
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
-    }
+    return NextResponse.json(newProduct, { status: 201 });
+  } catch (error) {
+    await createLog({
+      action: 'POST',
+      description: formatErrorMessage(error),
+      origin: 'products',
+      success: false,
+    });
+    return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+  }
 }

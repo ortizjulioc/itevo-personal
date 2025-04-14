@@ -1,104 +1,56 @@
-import 'server-only';
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { prisma as Prisma } from '@/utils/lib/prisma';
+import { Prisma as PrismaTypes } from '@prisma/client';
 
-export const getProducts = async (search: string, page: number, top: number) => {
-    const skip = (page - 1) * top;
-    const products = await Prisma.product.findMany({
-        orderBy: [
-            { name: 'asc' },
-        ],
-        select: {
-            id: true,
-            code: true,
-            name: true,
-            description: true,
-            cost: true,
-            price: true,
-            stock: true,
-            createdAt: true,
-            updatedAt: true,
+// Obtener todos los productos con búsqueda y paginación
+export async function getProducts(search = '', page = 1, top = 10) {
+  const skip = (page - 1) * top;
 
-        },
-        where: {
-            deleted: false,
-            name: { contains: search },
-        },
-        skip: skip,
-        take: top,
-    });
+  const where: PrismaTypes.ProductWhereInput = {
+    deleted: false,
+    OR: [
+      { name: { contains: search } },
+      { code: { contains: search } },
+      { description: { contains: search } },
+    ],
+  };
 
-    const totalProducts = await Prisma.product.count({
-        where: {
-            deleted: false,
-            name: { contains: search },
-        },
-    });
+  const [products, totalProducts] = await Promise.all([
+    Prisma.product.findMany({
+      where,
+      skip,
+      take: top,
+      orderBy: { createdAt: 'desc' },
+    }),
+    Prisma.product.count({ where }),
+  ]);
 
-    return { products, totalProducts };
-};
+  return { products, totalProducts };
+}
 
-export const createProduct = async (data: any) => {
-    const product = await Prisma.product.create({ data: data });
-    return product;
-};
+// Crear un producto
+export async function createProduct(data: PrismaTypes.ProductCreateInput) {
+  return await Prisma.product.create({ data });
+}
 
-export const findProductByCode= async (data: any) => {
-    const courseProductExists = await Prisma.product.findUnique({
-        where: { code: data.code },
-    });
-    return courseProductExists;
-};
+// Buscar producto por ID
+export async function findProductById(id: string) {
+  return await Prisma.product.findUnique({ where: { id, deleted: false } });
+}
 
-// Obtener product por ID
-export const findProductById = async (id: string) => {
+// Buscar producto por código
+export async function findProductByCode(code: string) {
+  return await Prisma.product.findUnique({ where: { code, deleted: false } });
+}
 
-    const product = await Prisma.product.findUnique({
-        where: {
-            id: id,
-            deleted: false,
-        },
-        // include: {
-        //     prerequisites: {
-        //         select: {
-        //             prerequisite: {
-        //                 select: {
-        //                     id: true,
-        //                 },
-        //             },
-        //         },
-        //     },
-        // },
-    });
+// Actualizar producto por ID
+export async function updateProductById(id: string, data: PrismaTypes.ProductUpdateInput) {
+  return await Prisma.product.update({ where: { id }, data });
+}
 
-    // Devolviendo prerequisites como un arreglo de IDs
-
-    // if (course) {
-    //     course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite.id);
-    // }
-
-    return product;
-
-};
-
-// Actualizar product por ID
-export const updateProductById = async (id: string, data: any) => {
-
-    return Prisma.product.update({
-        where: { id },
-        data: {
-            name: data.name,
-            code: data.code,
-            description: data.description,
-            deleted: false,
-        },
-    });
-};
-
-// Eliminar product por ID (soft delete)
-export const deleteProductById = async (id: string) => {
-    return Prisma.product.update({
-        where: { id },
-        data: { deleted: true },
-    });
-};
+// Eliminar producto por ID (soft delete)
+export async function deleteProductById(id: string) {
+  return await Prisma.product.update({
+    where: { id },
+    data: { deleted: true },
+  });
+}
