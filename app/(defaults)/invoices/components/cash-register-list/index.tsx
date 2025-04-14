@@ -87,19 +87,7 @@ export default function CashRegisterList({ className, query = '' }: Props) {
 
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(CashRegister.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/CashRegisters/${CashRegister.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                                                </Link>
-                                            </Tooltip>
-                                            {/* ALTERNATIVA */}
-                                            {/* <Button onClick={() => onDelete(Role.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/Roles/${Role.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
+                                          
                                         </div>
                                     </td>
                                 </tr>
