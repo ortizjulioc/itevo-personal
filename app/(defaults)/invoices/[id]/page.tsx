@@ -1,6 +1,7 @@
 'use client';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { useFetchCashRegistersById } from "../lib/use-fetch-cash-register";
+import CashRegisterDetails from "../components/cash-register/cash-register-details";
 
 
 
@@ -18,7 +19,12 @@ export default function EditCashRegister({ params }: { params: { id: string } })
             
 
             {loading && <FormSkeleton />}
-            {/* {CashRegister && <UpdateCashRegisterForm initialValues={CashRegister} />} */}
+            
+            {CashRegister && (
+                <>
+                <CashRegisterDetails CashRegister={CashRegister} />
+                </>
+            ) }
         </div>
     )
 }
