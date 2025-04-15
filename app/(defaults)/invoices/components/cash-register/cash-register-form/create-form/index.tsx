@@ -4,8 +4,9 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
-import { createCashRegister } from '../../../lib/cash-register-request';
+
 import { useSession } from 'next-auth/react';
+import { createCashRegister } from '@/app/(defaults)/invoices/lib/cash-register-request';
 
 
 export default function CreateCashRegisterForm() {
