@@ -7,8 +7,9 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import { TbPointFilled } from "react-icons/tb";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
-import { deleteCashRegister } from "../../../lib/cash-register-request";
-import useFetchCashRegisters from "../../../lib/use-fetch-cash-register";
+import { deleteCashRegister } from "../../../lib/cash-register/cash-register-request";
+import useFetchCashRegisters from "../../../lib/cash-register/use-fetch-cash-register";
+
 
 
 interface Props {

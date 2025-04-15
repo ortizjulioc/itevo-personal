@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import ViewTitle from "@/components/common/ViewTitle";
 import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
-import CashRegisterList from "./components/cash-register-list";
-import CashRegisterModal from "./components/cash-register-modal";
+import CashRegisterModal from "./components/cash-register/cash-register-modal";
+import CashRegisterList from "./components/cash-register/cash-register-list";
 
 
 
@@ -26,12 +26,6 @@ export default function CashRegister({ searchParams }: CashRegisterProps) {
         <div>
             <ViewTitle className='mb-6' title="Facturacion" rightComponent={
                 <>
-                    <SearchInput 
-                        placeholder="Buscar cajas"
-                       
-                         />
-
-                   
                     <CashRegisterModal  />
                 </>
             } />

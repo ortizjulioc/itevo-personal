@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 
 import { useSession } from 'next-auth/react';
-import { createCashRegister } from '@/app/(defaults)/invoices/lib/cash-register-request';
+import { createCashRegister } from '@/app/(defaults)/invoices/lib/cash-register/cash-register-request';
 
 
 export default function CreateCashRegisterForm() {
