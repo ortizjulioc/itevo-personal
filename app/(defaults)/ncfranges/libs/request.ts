@@ -7,13 +7,13 @@ export interface NcfRangeResponse {
 }
 
 export const createNcfRange = async (ncfRange: NcfRange) => {
-    return await apiRequest.post<NcfRange>('/ncfranges', ncfRange);
+    return await apiRequest.post<NcfRange>('/ncf-ranges', ncfRange);
 }
 
 export const updateNcfRange = async (id: string, ncfRange: NcfRange) => {
-    return await apiRequest.put<NcfRange>(`/ncfranges/${id}`, ncfRange);
+    return await apiRequest.put<NcfRange>(`/ncf-ranges/${id}`, ncfRange);
 }
 
 export const deleteNcfRange = async (id: string) => {
-    return await apiRequest.remove<string>(`/ncfranges/${id}`);
+    return await apiRequest.remove<string>(`/ncf-ranges/${id}`);
 }

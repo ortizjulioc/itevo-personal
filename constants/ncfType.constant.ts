@@ -1,46 +1,50 @@
+import { NcfType } from "@prisma/client";
+
+
+
 export const NCF_TYPES = {
     FACTURA_CREDITO_FISCAL: {
-      code: "01",
+      code: NcfType.FACTURA_CREDITO_FISCAL,
       label: "Factura de Crédito Fiscal"
     },
     FACTURA_CONSUMO: {
-      code: "02",
+      code: NcfType.FACTURA_CONSUMO,
       label: "Factura de Consumo"
     },
     NOTA_DEBITO: {
-      code: "03",
+      code: NcfType.NOTA_DEBITO,
       label: "Nota de Débito"
     },
     NOTA_CREDITO: {
-      code: "04",
+      code: NcfType.NOTA_CREDITO,
       label: "Nota de Crédito"
     },
     COMPROBANTE_COMPRAS: {
-      code: "11",
+      code: NcfType.COMPROBANTE_COMPRAS,
       label: "Comprobante de Compras"
     },
     REGISTRO_UNICO_INGRESOS: {
-      code: "12",
+      code: NcfType.REGISTRO_UNICO_INGRESOS,
       label: "Registro Único de Ingresos"
     },
     GASTOS_MENORES: {
-      code: "13",
+      code: NcfType.GASTOS_MENORES,
       label: "Comprobante para Gastos Menores"
     },
     REGIMENES_ESPECIALES: {
-      code: "14",
+      code: NcfType.REGIMENES_ESPECIALES,
       label: "Comprobante para Regímenes Especiales"
     },
     GUBERNAMENTAL: {
-      code: "15",
+      code: NcfType.GUBERNAMENTAL,
       label: "Comprobante Gubernamental"
     },
     EXPORTACION: {
-      code: "16",
+      code: NcfType.EXPORTACION,
       label: "Comprobante para Exportaciones"
     },
     PAGO_EXTERIOR: {
-      code: "17",
+      code: NcfType.PAGO_EXTERIOR,
       label: "Comprobante para Pagos al Exterior"
     }
   } as const;

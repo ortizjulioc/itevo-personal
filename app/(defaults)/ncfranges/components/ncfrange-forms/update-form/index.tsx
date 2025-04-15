@@ -7,6 +7,7 @@ import { updateValidationSchema } from '../form.config';
 import type { NcfRange } from '@prisma/client';
 import { updateNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
+import DatePicker from '@/components/ui/date-picker';
 
  
 
@@ -76,6 +77,22 @@ export default function UpdateNcfRangeForm({ initialValues }: { initialValues: N
                             <Field type="number" name="endSequence" component={Input} placeholder="Secuencia final" />
                         </FormItem>
 
+                        <FormItem name='dueDate' label='Fecha de vencimiento' invalid={Boolean(errors.dueDate && touched.dueDate)}    errorMessage={typeof errors.dueDate === 'string' ? errors.dueDate : undefined}>
+                            <Field name='dueDate'>
+                                {({ form, field }: any) => (
+                                    <DatePicker
+                                        field={field}
+                                        form={form}
+                                        placeholder='Selecciona una fecha'
+                                        value={values.dueDate ? new Date(values.dueDate) : undefined}
+                                        onChange={(date: Date | Date[]) => {
+                                            const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
+                                            form.setFieldValue('dueDate', selectedDate);
+                                        }}
+                                    />
+                                )}
+                            </Field>
+                        </FormItem>
 
 
                         <div className="mt-6 flex justify-end gap-2">

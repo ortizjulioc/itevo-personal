@@ -16,7 +16,7 @@ const useFetchNcfRanges = (query: string) => {
     useEffect(() => {
         const fetchNcfRangesData = async (query: string) => {
             try {
-                const response = await apiRequest.get<NcfRangesResponse>(`/ncfranges?search=${query}`);
+                const response = await apiRequest.get<NcfRangesResponse>(`/ncf-ranges?search=${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
@@ -47,7 +47,7 @@ export const useFetchNcfRangesById = (id: string) => {
     useEffect(() => {
         const fetchNcfRangeData = async (id: string) => {
             try {
-                const response = await apiRequest.get<NcfRange>(`/ncfranges/${id}`);
+                const response = await apiRequest.get<NcfRange>(`/ncf-ranges/${id}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

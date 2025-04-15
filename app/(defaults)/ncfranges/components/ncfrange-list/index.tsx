@@ -78,9 +78,11 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                                     <td>
                                         <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfRange.endSequence}`}</div>
                                     </td>
+                                    <td>
                                     <div className="whitespace-nowrap">
                                         {Math.max(0, ncfRange.endSequence - ncfRange.currentSequence + 1)}
                                     </div>
+                                    </td>
                                     <td>
                                         <div className="whitespace-nowrap">
                                             <NcfStatus isActive={ncfRange.isActive} />

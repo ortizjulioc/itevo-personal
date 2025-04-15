@@ -1,4 +1,5 @@
 import React from 'react';
+import { TbPointFilled } from 'react-icons/tb';
 
 interface NcfStatusProps {
   isActive: boolean;
@@ -7,12 +8,13 @@ interface NcfStatusProps {
 export default function NcfStatus({ isActive }: NcfStatusProps) {
   return (
     <span
-      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+      className={`flex items-center gap-1 font-bold min-w-max italic ${
         isActive
-          ? 'bg-green-100 text-green-800'
-          : 'bg-red-100 text-red-800'
+          ? ' text-green-600'
+          : ' text-red-600'
       }`}
     >
+      <TbPointFilled />
       {isActive ? 'Activo' : 'Inactivo'}
     </span>
   );

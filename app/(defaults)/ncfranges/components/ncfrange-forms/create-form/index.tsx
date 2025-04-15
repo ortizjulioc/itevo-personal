@@ -6,6 +6,8 @@ import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
+import DatePicker from '@/components/ui/date-picker';
+import { current } from '@reduxjs/toolkit';
 
 
 
@@ -22,8 +24,14 @@ export default function CreateNcfRangeForm() {
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
 
+        const valuesToSend = 
+        {
+            ...values,
+            currentSequence: values.startSequence,
+        };
 
-        const resp = await createNcfRange(values);
+
+        const resp = await createNcfRange(valuesToSend);
 
         if (resp.success) {
             openNotification('success', 'Rango NCF creado correctamente');
@@ -74,7 +82,24 @@ export default function CreateNcfRangeForm() {
                             <Field type="number" name="endSequence" component={Input} placeholder="Secuencia final" />
                         </FormItem>
 
-                    
+                        <FormItem name='dueDate' label='Fecha de vencimiento' invalid={Boolean(errors.dueDate && touched.dueDate)} errorMessage={errors.dueDate}>
+                            <Field name='dueDate'>
+                                {({ form, field }: any) => (
+                                    <DatePicker
+                                        field={field}
+                                        form={form}
+                                        placeholder='Selecciona una fecha'
+                                        value={values.dueDate ? new Date(values.dueDate) : undefined}
+                                        onChange={(date: Date | Date[]) => {
+                                            const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
+                                            form.setFieldValue('dueDate', selectedDate);
+                                        }}
+                                    />
+                                )}
+                            </Field>
+                        </FormItem>
+
+
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
