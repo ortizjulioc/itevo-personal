@@ -5,7 +5,7 @@ export interface CashRegisterResponse {
     cashRegisters: CashRegister[];
     totalCashRegisters: number;
 }
-type CashRegisterInput = Omit<CashRegister,  'createdAt' | 'updatedAt' | 'deleted' | 'status' | "cashBreakdown">;
+type CashRegisterInput = Omit<CashRegister,   'id' |'createdAt' | 'updatedAt' | 'deleted' | 'status' | "cashBreakdown">;
 
 
 export const createCashRegister = async (cashRegister: CashRegisterInput) => {

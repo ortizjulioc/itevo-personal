@@ -43,7 +43,6 @@ export default function CreateCashRegisterForm() {
         
         
         const valuesToSend = {
-            id: '',
             name: values.name,
             branchId: user.branches[0].id,
             userId: user.id,
@@ -55,7 +54,7 @@ export default function CreateCashRegisterForm() {
 
         if (resp.success) {
             openNotification('success', 'CashRegister creado correctamente');
-            const cashRegister = resp.data;
+            const cashRegister = resp.data as any;
             if (cashRegister?.id) {
                 route.push(`/invoices/${cashRegister.id}`);
             }

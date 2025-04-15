@@ -8,7 +8,7 @@ import Skeleton from "@/components/common/Skeleton";
 import useFetchCashRegisters from "../../lib/use-fetch-cash-register";
 import { deleteCashRegister } from "../../lib/cash-register-request";
 import { TbPointFilled } from "react-icons/tb";
-
+import { HiOutlinePaperAirplane } from "react-icons/hi";
 
 
 interface Props {
@@ -87,7 +87,13 @@ export default function CashRegisterList({ className, query = '' }: Props) {
 
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                          
+                                            
+                                            <Tooltip title="Facturar">
+                                                <Link href={`/invoices/${CashRegister.id}`}>
+                                                    <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                </Link>
+                                            </Tooltip>
+                                         
                                         </div>
                                     </td>
                                 </tr>
