@@ -1,13 +1,11 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
+import {  openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import { TbPointFilled } from "react-icons/tb";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
-import { deleteCashRegister } from "../../../lib/cash-register/cash-register-request";
 import useFetchCashRegisters from "../../../lib/cash-register/use-fetch-cash-register";
 
 
@@ -15,35 +13,19 @@ import useFetchCashRegisters from "../../../lib/cash-register/use-fetch-cash-reg
 interface Props {
     className?: string;
     query?: string;
+    cashRegisterId?: string;
 }
 
-export default function CashRegisterList({ className, query = '' }: Props) {
+export default function CashRegisterList({ className, query = '',cashRegisterId }: Props) {
     const params = queryStringToObject(query);
     const { loading, error, cashRegisters, totalCashRegisters, setCashRegisters } = useFetchCashRegisters(query);
     if (error) {
         openNotification('error', error);
     }
 
-    const onDelete = async (id: string) => {
+    ;
 
-        confirmDialog({
-            title: 'Eliminar Cash',
-            text: '¿Seguro que quieres eliminar este CashRegistero?',
-            confirmButtonText: 'Sí, eliminar',
-            icon: 'error'
-        }, async () => {
-            const resp = await deleteCashRegister(id);
-            if (resp.success) {
-                setCashRegisters(cashRegisters?.filter((cashRegister) => cashRegister.id !== id));
-                openNotification('success', 'Caja eliminada correctamente');
-                return;
-            }
-            openNotification('error', resp.message);
-        });
-    }
-    console.log('cashRegisters', cashRegisters);
-
-    if (loading) return <Skeleton rows={7} columns={['CODIGO', 'NOMBRE', 'DESCRIPCION', 'COSTO', 'PRECIO', 'STOCK']} />;
+    if (loading) return <Skeleton rows={4} columns={['CAJA', 'USUARIO', 'FECHA DE CREACION', 'ESTADO']} />;
 
     return (
         <div className={className}>
