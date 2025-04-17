@@ -1,6 +1,7 @@
-import { getLastInvoice, createInvoice, InvoiceCreateDataType } from '@/services/invoice-service';
+import { getLastInvoice, createInvoice, InvoiceCreateDataType, findInvoices } from '@/services/invoice-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { InvoiceStatus, NcfType } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Tipo para los datos de entrada del endpoint
@@ -68,5 +69,34 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+    }
+}
+
+export async function GET(req: NextRequest) {
+    try {
+        const { searchParams } = req.nextUrl;
+
+        const filters = {
+            search: searchParams.get('search') || undefined,
+            type: searchParams.get('type') as NcfType | undefined,
+            status: searchParams.get('status') as InvoiceStatus | undefined,
+            fromDate: searchParams.get('fromDate') ? new Date(searchParams.get('fromDate')!) : undefined,
+            toDate: searchParams.get('toDate') ? new Date(searchParams.get('toDate')!) : undefined,
+            studentId: searchParams.get('studentId') || undefined,
+            createdBy: searchParams.get('createdBy') || undefined,
+            page: Number(searchParams.get('page') || '1'),
+            pageSize: Number(searchParams.get('pageSize') || '10'),
+        };
+
+        const result = await findInvoices(filters);
+        return NextResponse.json(result, { status: 200 });
+    } catch (error) {
+        await createLog({
+            action: "GET",
+            description: `Error al obtener las facturas: ${formatErrorMessage(error)}`,
+            origin: "invoices",
+            success: false,
+        });
+        return NextResponse.json({ message: 'Error al obtener las facturas', error: formatErrorMessage(error) }, { status: 500 });
     }
 }

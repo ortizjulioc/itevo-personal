@@ -1,6 +1,6 @@
+import { Prisma } from "@/utils/lib/prisma";
 import { generateNcf } from "@/utils/ncf";
-import { Invoice, InvoiceItem, InvoiceItemType, NcfType, PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Invoice, InvoiceItem, InvoiceItemType, InvoiceStatus, NcfType } from "@prisma/client";
 
 interface InvoiceWithItems extends Invoice {
     items: InvoiceItem[];
@@ -33,7 +33,79 @@ export interface InvoicePaymentData {
     type?: NcfType;
 }
 
-export const getLastInvoice = async (prefix: string) : Promise<Invoice | null> => {
+interface InvoiceFilter {
+    search?: string; // puede ser número de factura o nombre de estudiante
+    type?: NcfType;
+    status?: InvoiceStatus;
+    fromDate?: Date;
+    toDate?: Date;
+    studentId?: string;
+    createdBy?: string;
+    page?: number;
+    pageSize?: number;
+}
+
+export const findInvoices = async (filter: InvoiceFilter): Promise<{
+    invoices: Invoice[];
+    totalInvoices: number,
+    currentPage: number,
+    totalPages: number,
+}> => {
+    const {
+        search,
+        type,
+        status,
+        fromDate,
+        toDate,
+        studentId,
+        createdBy,
+        page = 1,
+        pageSize = 10,
+    } = filter;
+
+    const where: any = {};
+
+    if (type) where.type = type;
+    if (status) where.status = status;
+    if (studentId) where.studentId = studentId;
+    if (createdBy) where.createdBy = createdBy;
+
+    if (fromDate || toDate) {
+        where.date = {};
+        if (fromDate) where.date.gte = fromDate;
+        if (toDate) where.date.lte = toDate;
+    }
+
+    if (search) {
+        where.OR = [
+            { invoiceNumber: { contains: search, mode: "insensitive" } },
+            {
+                student: {
+                    name: { contains: search, mode: "insensitive" },
+                },
+            },
+        ];
+    }
+
+    const [data, total] = await Prisma.$transaction([
+        Prisma.invoice.findMany({
+            where,
+            orderBy: { date: "desc" },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+        }),
+        Prisma.invoice.count({ where }),
+    ]);
+
+    return {
+        invoices: data,
+        totalInvoices: total,
+        currentPage: page,
+        totalPages: Math.ceil(total / pageSize),
+    };
+}
+
+export const getLastInvoice = async (prefix: string): Promise<Invoice | null> => {
     return await Prisma.invoice.findFirst({
         where: { invoiceNumber: { startsWith: prefix } },
         orderBy: { invoiceNumber: 'desc' },
@@ -41,7 +113,7 @@ export const getLastInvoice = async (prefix: string) : Promise<Invoice | null> =
 }
 
 
-export const createInvoice = async (data: InvoiceCreateDataType) : Promise<Invoice> => {
+export const createInvoice = async (data: InvoiceCreateDataType): Promise<Invoice> => {
     const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId } = data;
 
     const invoice = await Prisma.invoice.create({

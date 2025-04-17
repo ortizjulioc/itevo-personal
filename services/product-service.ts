@@ -1,4 +1,4 @@
-import { prisma as Prisma } from '@/utils/lib/prisma';
+import { Prisma as Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from '@prisma/client';
 
 // Obtener todos los productos con búsqueda y paginación
