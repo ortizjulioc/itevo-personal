@@ -11,7 +11,11 @@ export default function Bill({ params }: { params: { id: string, billid: string 
     return (
         <div>
             {loading && <FormSkeleton />}
-             <AddItemsInvoices Invoice={invoice } />
+            {!loading &&
+            <AddItemsInvoices
+                InvoiceId={billid}
+                Invoice={invoice}
+            />}
         </div>
     )
 }

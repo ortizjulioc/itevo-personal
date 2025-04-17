@@ -1,4 +1,3 @@
-
 'use client';
 import React from 'react'
 import { useFetchCashRegistersById } from '../lib/cash-register/use-fetch-cash-register';
@@ -12,28 +11,25 @@ export default function layout({ children, params }: { children: React.ReactNode
     console.log(CashRegister, 'CashRegister')
 
     return (
-        <div>
-
+        <div className="px-2 md:px-6">
             <>
-                <ViewTitle title="Facturacion" className='mb-6' />
+                <ViewTitle title="Facturación" className="mb-6" />
 
+                {CashRegister && (
+                    <CashRegisterDetails CashRegister={CashRegister} />
+                )}
 
-                {CashRegister && (<CashRegisterDetails CashRegister={CashRegister} />
- )}
-
-                <div className='mt-6'>
-                    <h2 className='text-2xl font-bold mb-3'>Facturas</h2>
-                    <div className='grid grid-cols-12 gap-4'>
-
-                        <div className='col-span-2 '>
-                            <InvoiceList  
-                            cashRegisterId ={id}
-                            userId={CashRegister?.user.id}
+                <div className="mt-6">
+                    <h2 className="text-2xl font-bold mb-3">Facturas</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div className="md:col-span-2">
+                            <InvoiceList
+                                cashRegisterId={id}
+                                userId={CashRegister?.user.id}
                             />
-
                         </div>
 
-                        <div className='col-span-10' >
+                        <div className="md:col-span-10">
                             {children}
                         </div>
                     </div>

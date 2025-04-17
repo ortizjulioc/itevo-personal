@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Invoice , User } from "@prisma/client";
+import type { Invoice , InvoiceItem, User } from "@prisma/client";
 
 
 
@@ -8,6 +8,12 @@ export interface InvoicesResponse {
     invoices: Invoice[];
     totalInvoices: number;
 }
+
+export interface ItemsResponse {
+    items: InvoiceItem[];
+    totalItems: number;
+}
+
 
 const useFetchInvoices = (query: string) => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -71,4 +77,39 @@ export const useFetchInvoicesById = (id: string) => {
     return { invoice, loading, error, setInvoice };
 }
 
+export const useFetchItemInvoices= (id: string) => {
+    const [items, setItems] = useState<InvoiceItem[]>([]);
+    const [totalItems, setTotalItems] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchItemsData = async (id: string) => {
+            try {
+                const response = await apiRequest.get<ItemsResponse>(`/invoices/${id}/items`);
+                if (!response.success) {
+                    throw new Error(response.message);
+                }
+                setItems(response.data?.items || []);
+
+                setTotalItems(response.data?.totalItems || 0);
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('Ha ocurrido un error al obtener las facturas');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItemsData(id);
+    }, [id]);
+
+    return { items, setTotalItems, loading, error, setItems, totalItems };
+};
+
 export default useFetchInvoices;
+
+

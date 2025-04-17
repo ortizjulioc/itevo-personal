@@ -7,7 +7,7 @@ import { Select } from '@/components/ui';
 
 interface ProductSelect {
   value: string;
-  label: string;
+  label: JSX.Element;
 }
 
 export interface ProductsResponse {
@@ -30,7 +30,22 @@ export default function SelectProduct({ value, ...rest }: SelectProductProps) {
         throw new Error(response.message);
       }
    
-      return response.data?.products.map(Product => ({ value: Product.id, label: Product.name })) || [];
+      return response.data?.products.map(
+          product => 
+            ({
+              value: product.id,
+              label: (
+                <div className="flex flex-col">
+                  <span className="font-medium">{product.code} - {product.name}</span>
+                  <span className="text-sm text-gray-500">
+                    Precio: RD${product.price.toFixed(2)} | 
+                    <span className={product.stock <= 0 ? 'text-red-600 font-bold ml-1' : 'ml-1'}>
+                      Stock: {product.stock}
+                    </span>
+                  </span>
+                </div>
+              )
+            })) || [];
     } catch (error) {
       console.error('Error fetching Products data:', error);
       return [];
@@ -51,7 +66,20 @@ export default function SelectProduct({ value, ...rest }: SelectProductProps) {
         try {
           const response = await apiRequest.get<Product>(`/products/${value}`);
           if (response.success && response.data) {
-            const newOption = { value: response.data.id, label: response.data.name };
+            const newOption = 
+              { value: response.data.id, 
+                label:(
+                  <div className="flex flex-col">
+                    <span className="font-medium">{response.data.code} - {response.data.name}</span>
+                    <span className="text-sm text-gray-500">
+                      Precio: RD${response.data.price.toFixed(2)} | 
+                      <span className={response.data.stock <= 0 ? 'text-red-600 font-bold ml-1' : 'ml-1'}>
+                        Stock: {response.data.stock}
+                      </span>
+                    </span>
+                  </div>
+                )
+               };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
         } catch (error) {
