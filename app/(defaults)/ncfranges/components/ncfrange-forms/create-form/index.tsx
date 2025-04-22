@@ -7,7 +7,7 @@ import { createValidationSchema, initialValues } from '../form.config';
 import { createNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker from '@/components/ui/date-picker';
-import { current } from '@reduxjs/toolkit';
+
 
 
 
@@ -68,7 +68,7 @@ export default function CreateNcfRangeForm() {
                                             form.setFieldValue('type', option?.value ?? null);
                                         }}
                                         isSearchable={false}
-                                        placeholder="Selecciona una modalidad"
+                                        placeholder="Selecciona un tipo de comprobante"
                                     />
                                 )}
                             </Field>
