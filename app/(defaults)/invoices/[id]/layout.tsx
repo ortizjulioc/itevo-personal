@@ -1,14 +1,15 @@
 'use client';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFetchCashRegistersById } from '../lib/cash-register/use-fetch-cash-register';
 import CashRegisterDetails from '../components/cash-register/cash-register-details';
 import { ViewTitle } from '@/components/common';
 import InvoiceList from '../components/invoice/invoices-list';
 
-export default function layout({ children, params }: { children: React.ReactNode, params: { id: string } }) {
-    const { id } = params;
+export default function layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
+    const { id, billid } = params;
     const { loading, CashRegister } = useFetchCashRegistersById(id);
     console.log(CashRegister, 'CashRegister')
+
 
     return (
         <div className="px-2 md:px-6">

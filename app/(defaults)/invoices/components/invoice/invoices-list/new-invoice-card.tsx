@@ -42,9 +42,7 @@ export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegiste
 
     return (
         <Button
-            className="justify-items-center flex-row max-w-[20rem] w-full
-         bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] 
-         dark:bg-[#191e3a] dark:shadow-none p-5 "
+            className="mb-4 flex flex-col items-center justify-between max-w-[22rem] w-full bg-white shadow-md rounded-lg border border-gray-200 dark:border-[#1b2e4b] dark:bg-[#191e3a] p-4 transition hover:scale-[1.01] hover:shadow-lg duration-150"
             variant='outline'
             onClick={handleCreateInvoice}
             loading={loading}

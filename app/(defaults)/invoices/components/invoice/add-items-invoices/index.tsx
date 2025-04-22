@@ -3,31 +3,78 @@ import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import type { Invoice, InvoiceItem } from '@prisma/client';
-import { payInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
+import { addItemsInvoice, payInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useState } from 'react';
-import SelectProduct from '@/components/common/selects/select-product';
-import { useFetchItemInvoices } from '../../../lib/invoice/use-fetch-cash-invoices';
+import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
+import { IvoicebyId, useFetchItemInvoices } from '../../../lib/invoice/use-fetch-cash-invoices';
 import { TbCancel, TbCheck, TbPrinter } from 'react-icons/tb';
+import ProductLabel from '@/components/common/info-labels/product-label';
+import PayInvoice from '../pay-invoice';
 
-export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: string, Invoice: Invoice | null }) {
+
+
+
+export default function AddItemsInvoices({
+    InvoiceId,
+    Invoice,
+    fetchInvoiceData,
+    setInvoice,
+    cashRegisterId,
+}: {
+    InvoiceId: string;
+    Invoice: IvoicebyId;
+    fetchInvoiceData: (id: string) => Promise<void>;
+    setInvoice:any,
+    cashRegisterId: string;
+}) {
     const route = useRouter();
     const [item, setItem] = useState<InvoiceItem | null>(null);
-    const { loading, items } = useFetchItemInvoices(InvoiceId);
+    const [itemLoading, setItemloading] = useState(false)
+    const [paymentLoading, setPaymentLoading] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
+
 
     const handleSubmit = async () => {
         if (!Invoice) {
             openNotification('error', 'No hay información de la factura');
             return;
         }
-
+        setPaymentLoading(true);
         const resp = await payInvoice(InvoiceId, Invoice);
 
         if (resp.success) {
-            route.push('/Invoicess');
+            openNotification("success", "Factura pagada correctamente");
+            route.push(`/invoices/${cashRegisterId}`);
+          
         } else {
             openNotification("error", resp.message);
+            console.log(resp);
         }
+        setPaymentLoading(false);
     }
+    const handleAddItem = async () => {
+        setItemloading(true);
+        if (!item?.productId || !item?.quantity) {
+            openNotification('error', 'datos faltantes');
+            return;
+        }
+        const itemWithType = {
+            ...item,
+            type: 'PRODUCT' as const,
+        };
+        const resp = await addItemsInvoice(InvoiceId, itemWithType);
+
+        if (resp.success) {
+            openNotification('success', 'Producto agregado correctamente');
+            setItem(null);
+            await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
+        } else {
+            openNotification('error', resp.message);
+            console.log(resp.message);
+        }
+        setItemloading(false);
+    };
+
 
     return (
         <div className="panel p-4">
@@ -37,12 +84,17 @@ export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: st
                         <div className="flex-1">
                             <SelectProduct
                                 value={item?.productId ?? undefined}
-                                onChange={(selected) => {
+                                onChange={(selected: ProductSelect | null) => {
+                                    if (!selected) return;
+
                                     setItem((prev) => ({
                                         ...prev!,
-                                        productId: selected?.value ?? null,
+                                        productId: selected.value,
+                                        unitPrice: selected.price, // ← aquí guardas el precio del producto
+                                        // puedes guardar más si necesitas (name, code, etc)
                                     }));
                                 }}
+                                disabled={itemLoading}
                             />
                         </div>
                         <div className="w-full md:w-1/4">
@@ -50,11 +102,18 @@ export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: st
                                 placeholder="Cantidad"
                                 type="number"
                                 value={item?.quantity ?? ''}
+                                disabled={itemLoading}
                                 onChange={(e) => {
                                     setItem((prev) => ({
                                         ...prev!,
                                         quantity: Number(e.target.value),
                                     }));
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault(); // evita que el form haga submit
+                                        handleAddItem();    // agrega el producto si los datos están listos
+                                    }
                                 }}
                             />
                         </div>
@@ -66,24 +125,28 @@ export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: st
                                 <tr className="bg-gray-100 dark:bg-gray-700 text-sm">
                                     <th className="text-left px-2 py-2">PRODUCTO</th>
                                     <th className="text-left px-2 py-2">CANTIDAD</th>
-                                    <th className="text-left px-2 py-2">PRECIO UNITARIO</th>
-                                    <th className="text-left px-2 py-2">COSTO</th>
+                                    <th className="text-left px-2 py-2">PRECIO</th>
                                     <th className="text-left px-2 py-2">SUBTOTAL</th>
                                     <th className="text-left px-2 py-2">ITBS</th>
                                     <th className="px-2 py-2"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {items?.length === 0 && (
+                                {Invoice?.items?.length === 0 && (
                                     <tr>
                                         <td colSpan={7} className="text-center text-gray-500 dark:text-gray-400 italic py-4">
                                             No se encontraron productos registrados
                                         </td>
                                     </tr>
                                 )}
-                                {items?.map((item) => (
+                                {Invoice?.items?.map((item) => (
                                     <tr key={item.id} className="border-t text-sm">
-                                        <td className="px-2 py-2">{item.productId}</td>
+                                        <td className="px-2 py-2">
+                                            <ProductLabel
+                                                ProductId={item.productId}
+                                            />
+
+                                        </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
                                         <td className="px-2 py-2">{item.unitPrice}</td>
                                         <td className="px-2 py-2">{item.subtotal}</td>
@@ -95,6 +158,24 @@ export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: st
                         </table>
                     </div>
                 </div>
+                <div className="md:col-span-4 col-span-12 space-y-2">
+                    <div className="flex justify-between text-sm">
+                        <span className="font-medium text-gray-600 dark:text-gray-300">Subtotal:</span>
+                        <span className="text-right">{Invoice?.subtotal?.toFixed(2) ?? '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                        <span className="font-medium text-gray-600 dark:text-gray-300">ITBS:</span>
+                        <span className="text-right">{Invoice?.itbis?.toFixed(2) ?? '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                        <span className="text-gray-800 dark:text-gray-100">Total:</span>
+                        <span className="text-right"
+                        >
+                            {((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)).toFixed(2)}
+                        </span>
+                    </div>
+                </div>
+
             </div>
 
             <div className="mt-6 flex flex-col md:flex-row justify-end gap-2">
@@ -106,11 +187,20 @@ export default function AddItemsInvoices({ InvoiceId, Invoice }: { InvoiceId: st
                     <TbPrinter className='mr-1 size-6' />
                     Imprimir
                 </Button>
-                <Button type="button" color="success" onClick={handleSubmit} className="w-full md:w-auto">
+                <Button type="button" color="success" onClick={()=>(setOpenModal(true))} className="w-full md:w-auto">
                     <TbCheck className='mr-1 size-6' />
                     Completar
                 </Button>
             </div>
+            <PayInvoice
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                Invoice={Invoice}
+                setInvoice={setInvoice}
+                handleSubmit={handleSubmit}
+                paymentLoading={paymentLoading}
+
+            />
         </div>
     );
 }
