@@ -5,11 +5,11 @@ import useFetchInvoices from '../../../lib/invoice/use-fetch-cash-invoices'
 import { usePathname } from 'next/navigation'
 
 export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
-    const { invoices, loading, fetchInvoicesData } = useFetchInvoices('')
+    const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
     const pathname = usePathname();
     useEffect(() => {
        
-        fetchInvoicesData('');
+        fetchInvoicesData('status=DRAFT');
     }, [pathname]);
 
 

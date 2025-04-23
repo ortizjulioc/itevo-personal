@@ -25,7 +25,7 @@ const useFetchInvoices = (query: string) => {
     const [error, setError] = useState<string | null>(null);
     const fetchInvoicesData = async (query: string) => {
         try {
-            const response = await apiRequest.get<InvoicesResponse>(`/invoices?search=${query}`);
+            const response = await apiRequest.get<InvoicesResponse>(`/invoices?${query}`);
             if (!response.success) {
                 throw new Error(response.message);
             }
