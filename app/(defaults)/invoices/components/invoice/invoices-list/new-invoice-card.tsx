@@ -27,7 +27,7 @@ export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegiste
         const invoice = resp.data as any
 
         if (resp.success) {
-            openNotification('success', 'Sucursal creada correctamente');
+            openNotification('success', 'Factura creada correctamente');
             route.push(`/invoices/${cashRegisterId}/bill/${invoice.id}`);
         } else {
             openNotification('error', resp.message);
