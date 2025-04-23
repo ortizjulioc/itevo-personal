@@ -47,8 +47,10 @@ export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegiste
             onClick={handleCreateInvoice}
             loading={loading}
         >
-
-            <CiCirclePlus className='size-10' />
+            {!loading && (
+                   <CiCirclePlus className='size-10' />
+            )}
+         
 
             <span className=''>Nueva Factura</span>
         </Button>
