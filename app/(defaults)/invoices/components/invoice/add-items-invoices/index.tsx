@@ -128,6 +128,7 @@ export default function AddItemsInvoices({
                                     <th className="text-left px-2 py-2">PRECIO</th>
                                     <th className="text-left px-2 py-2">SUBTOTAL</th>
                                     <th className="text-left px-2 py-2">ITBS</th>
+                                    <th className="text-left px-2 py-2">TOTAL</th>
                                     <th className="px-2 py-2"></th>
                                 </tr>
                             </thead>
@@ -149,8 +150,9 @@ export default function AddItemsInvoices({
                                         </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
                                         <td className="px-2 py-2">{item.unitPrice}</td>
-                                        <td className="px-2 py-2">{item.subtotal}</td>
-                                        <td className="px-2 py-2">{item.itbis}</td>
+                                        <td className="px-2 py-2">{item.subtotal.toFixed(2)}</td>
+                                        <td className="px-2 py-2">{item.itbis.toFixed(2)}</td>
+                                        <td className="px-2 py-2">{(item.subtotal + item.itbis).toFixed(2)}</td>
                                         <td className="px-2 py-2"></td>
                                     </tr>
                                 ))}
