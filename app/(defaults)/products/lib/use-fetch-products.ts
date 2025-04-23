@@ -16,7 +16,7 @@ const useFetchProducts = (query: string) => {
     useEffect(() => {
         const fetchProductsData = async (query: string) => {
             try {
-                const response = await apiRequest.get<ProductsResponse>(`/products?search=${query}`);
+                const response = await apiRequest.get<ProductsResponse>(`/products?${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

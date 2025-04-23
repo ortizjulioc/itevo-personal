@@ -9,6 +9,7 @@ export const createValidationSchema = Yup.object().shape({
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
     price: Yup.number().required('El precio es requerido').positive('El precio debe ser un número positivo'),
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
+    taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
 });
 
@@ -19,6 +20,7 @@ export const updateValidationSchema = Yup.object().shape({
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
     price: Yup.number().required('El precio es requerido').positive('El precio debe ser un número positivo'),
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
+    taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
 });
 
@@ -29,5 +31,6 @@ export const initialValues = {
     cost: 0,
     price: 0,
     stock: 0,
-    isTaxIncluded: false,
+    taxRate: 0.18,
+    isTaxIncluded: true,
 };

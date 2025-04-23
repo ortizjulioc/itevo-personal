@@ -78,7 +78,7 @@ export default function ProductList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{formatCurrency(product.cost)}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{formatCurrency(product.price)}</div>
+                                        <div className="whitespace-nowrap font-bold">{formatCurrency(product.price)}</div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">

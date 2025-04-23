@@ -1,5 +1,5 @@
 'use client';
-import { Button, Checkbox, FormItem, Input } from '@/components/ui';
+import { Button, Checkbox, FormItem, Input, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -24,6 +24,18 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
         } else {
             alert(resp.message);
         }
+    }
+
+    const TAX_RATE_OPTIONS = [
+        { value: 0, label: 'Exento de impuestos' },
+        { value: 0.16, label: 'Grabados con el 16%' },
+        { value: 0.18, label: 'Grabados con el 18%' },
+    ]
+
+    interface TaxRateOptions
+    {
+        value: number;
+        label: string;
     }
 
 
@@ -53,6 +65,20 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
 
                         <FormItem name="stock" label="Stock" invalid={Boolean(errors.stock && touched.stock)} errorMessage={errors.stock}>
                             <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock de la promoción" />
+                        </FormItem>
+                        <FormItem name="taxRate" label="Tasa de impuestos" invalid={Boolean(errors.taxRate && touched.taxRate)} errorMessage={errors.taxRate}>
+                            <Field name="taxRate">
+                                {({ field, form }: any) => (
+                                    <Select
+                                        {...field}
+                                        options={TAX_RATE_OPTIONS}
+                                        value={TAX_RATE_OPTIONS.find((option) => option.value === values.taxRate)}
+                                        onChange={(option:TaxRateOptions) => {
+                                            setFieldValue('taxRate', option?.value);
+                                        }}
+                                    />
+                                )}
+                            </Field>
                         </FormItem>
 
 
