@@ -10,7 +10,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     const { loading, product } = useFetchProductsById(id);
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
+            <ViewTitle className='mb-6' title="Editar Producto" showBackPage />
 
             {loading && <FormSkeleton />}
             {product && <UpdateProductForm initialValues={product} />}

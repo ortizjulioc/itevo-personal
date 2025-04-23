@@ -30,7 +30,7 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de promociones</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de productos</h4>
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
