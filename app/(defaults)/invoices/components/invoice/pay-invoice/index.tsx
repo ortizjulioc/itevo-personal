@@ -254,7 +254,7 @@ export default function PayInvoice({
                                         <div>
                                             <span className="block text-gray-500 dark:text-gray-400">Total</span>
                                             <span className="font-semibold">
-                                                RD$ {(Invoice.subtotal || 0 + Invoice.itbis || 0).toFixed(2)}
+                                                RD$ {((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)).toFixed(2)}
                                             </span>
                                         </div>
                                         <div>
@@ -268,7 +268,7 @@ export default function PayInvoice({
                                             <span className="font-semibold">
                                                 RD$ {Math.max(
                                                     parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0) -
-                                                    ((Invoice.subtotal || 0) + (Invoice.itbis || 0)),
+                                                    ((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)),
                                                     0
                                                 ).toFixed(2)}
                                             </span>
