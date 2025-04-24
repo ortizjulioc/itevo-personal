@@ -9,7 +9,7 @@ const InvoiceColor = {
 }
 
 const InvoiceLabel = {
-    DRAFT: 'Borrador',
+    DRAFT: 'En proceso',
     PAID: 'Pagado',
     CANCELED: 'Cancelado',
 }

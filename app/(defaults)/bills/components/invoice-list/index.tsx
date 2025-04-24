@@ -52,7 +52,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             return (
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
-                                    <td className="text-left">{invoice.ncf}</td>
+                                    <td className="text-left">{invoice.ncf.includes('TEMP' ) ? 'No disponible' : invoice.ncf}</td>
                                     <td className="text-left">{ NCF_TYPES[invoice.type].label}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
                                     <td className="text-left">{new Date(invoice.createdAt).toLocaleString()}</td>

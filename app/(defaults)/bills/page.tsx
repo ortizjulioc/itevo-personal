@@ -6,6 +6,7 @@ import { SearchInput } from "@/components/common";
 import { objectToQueryString } from "@/utils";
 import { IconPlusCircle } from "@/components/icon";
 import InvoiceList from "./components/invoice-list";
+import SearchInvoice from "./components/invoice-search";
 
 
 export const metadata: Metadata = {
@@ -23,11 +24,12 @@ export default function Invoice({ searchParams }: InvoiceProps) {
     const query = objectToQueryString(searchParams || {});
     return (
         <div>
-            <ViewTitle className='mb-6' title="Facturas" rightComponent={
-                <>
-                    <SearchInput placeholder="Buscar Facturas" />
-                </>
-            } />
+            <ViewTitle className='mb-6' title="Facturas" />
+
+            <div>
+                <SearchInvoice />
+            </div>
+
 
             <InvoiceList query={query} />
         </div>
