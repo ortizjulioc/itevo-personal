@@ -10,40 +10,59 @@ export type CashRegisterCreateInput = Omit<
 
 type CashRegisterUpdateInput = Partial<CashRegisterCreateInput>;
 
+interface GetCashRegisterParams {
+  search?: string;
+  page: number;
+  top: number;
+  branchId?: string;
+  userId?: string;
+  status?: CashRegisterStatus;
+}
 
-// Obtener lista paginada de cajas registradoras con búsqueda opcional por nombre
-export const getCashRegisters = async (search: string, page: number, top: number) => {
+export const getCashRegisters = async ({
+  search = '',
+  page,
+  top,
+  branchId,
+  userId,
+  status,
+}: GetCashRegisterParams) => {
   const skip = (page - 1) * top;
 
-  const cashRegisters = await Prisma.cashRegister.findMany({
-    orderBy: [{ openingDate: 'desc' }],
-    skip,
-    take: top,
-    where: {
-      deleted: false,
-      name: { contains: search },
+  const whereClause: any = {
+    deleted: false,
+    name: {
+      contains: search,
+      mode: 'insensitive',
     },
-    select: {
-      id: true,
-      name: true,
-      status: true,
-      openingDate: true,
-      initialBalance: true,
-      branch: {
-        select: { id: true, name: true }
-      },
-      user: {
-        select: { id: true, name: true }
-      }
-    }
-  });
+  };
 
-  const total = await Prisma.cashRegister.count({
-    where: {
-      deleted: false,
-      name: { contains: search },
-    }
-  });
+  if (branchId) whereClause.branchId = branchId;
+  if (userId) whereClause.userId = userId;
+  if (status) whereClause.status = status;
+
+  const [cashRegisters, total] = await Promise.all([
+    Prisma.cashRegister.findMany({
+      orderBy: [{ openingDate: 'desc' }],
+      skip,
+      take: top,
+      where: whereClause,
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        openingDate: true,
+        initialBalance: true,
+        branch: {
+          select: { id: true, name: true },
+        },
+        user: {
+          select: { id: true, name: true },
+        },
+      },
+    }),
+    Prisma.cashRegister.count({ where: whereClause }),
+  ]);
 
   return { cashRegisters, total };
 };

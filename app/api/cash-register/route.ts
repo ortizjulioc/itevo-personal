@@ -3,6 +3,7 @@ import { validateObject } from '@/utils';
 import { getCashRegisters, createCashRegister } from '@/services/cash-register-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { CashRegisterStatus } from '@prisma/client';
 
 // Obtener todas las cajas registradoras (GET)
 export async function GET(request: NextRequest) {
@@ -11,8 +12,21 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const top = parseInt(searchParams.get('top') || '10', 10);
+    const branchId = searchParams.get('branchId') || '';
+    const userId = searchParams.get('userId') || '';
+    const rawStatus = searchParams.get('status');
+    const status = rawStatus && Object.values(CashRegisterStatus).includes(rawStatus as CashRegisterStatus)
+      ? (rawStatus as CashRegisterStatus)
+      : undefined;
 
-    const { cashRegisters, total } = await getCashRegisters(search, page, top);
+    const { cashRegisters, total } = await getCashRegisters({
+      search,
+      page,
+      top,
+      branchId,
+      userId,
+      status
+    });
 
     return NextResponse.json({ cashRegisters, total }, { status: 200 });
   } catch (error) {
