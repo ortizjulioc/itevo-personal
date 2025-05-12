@@ -54,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             } else {
                 itbis = subtotal * product.taxRate;
             }
-        } else if (body.type === 'RECEIVABLE' && body.accountReceivableId) {
+        } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
             // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
             const receivable = await Prisma.accountReceivable.findUnique({
                 where: { id: body.accountReceivableId },
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             } else {
                 itbis = subtotal * taxRate;
             }
-        } else if (body.type === 'CUSTOM' && (!body.unitPrice || body.quantity <= 0)) {
+        } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
             throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
         }
 
