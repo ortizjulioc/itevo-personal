@@ -54,6 +54,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             } else {
                 itbis = subtotal * product.taxRate;
             }
+
+            // Actualizar el stock del producto
+            await Prisma.product.update({
+                where: { id: body.productId },
+                data: { stock: product.stock - body.quantity },
+            });
         } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
             // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
             const receivable = await Prisma.accountReceivable.findUnique({
