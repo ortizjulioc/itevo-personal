@@ -16,20 +16,18 @@ interface CashRegisterProps {
     searchParams?: {
         search?: string;
         page?: string;
+        userId: string;        
     };
 }
 
 export default function CashRegister({ searchParams }: CashRegisterProps) {
+
+    
     const query = objectToQueryString(searchParams || {});
    
     return (
         <div>
-            <ViewTitle className='mb-6' title="Facturacion" rightComponent={
-                <>
-                    <CashRegisterModal  />
-                </>
-            } />
-
+            
             <CashRegisterList query={query} />
         </div>
     );
