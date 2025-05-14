@@ -20,7 +20,7 @@ const useFetchCashRegisters = (query: string) => {
     useEffect(() => {
         const fetchCashRegistersData = async (query: string) => {
             try {
-                const response = await apiRequest.get<CashRegistersResponse>(`/cash-register?search=${query}`);
+                const response = await apiRequest.get<CashRegistersResponse>(`/cash-register?${query}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
