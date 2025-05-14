@@ -523,7 +523,7 @@ model NcfRange {
     startSequence       Int      @map("start_sequence") // Inicio del rango, ej. 1
     endSequence         Int      @map("end_sequence") // Fin del rango, ej. 1000
     currentSequence     Int      @map("current_sequence") // Secuencia actual, ej. 1
-    dueDate             DateTime @map("dueDate") // Fecha de expiración del rango
+    dueDate             DateTime @map("due_date") // Fecha de expiración del rango
     authorizationNumber String   @map("authorization_number") // Número de autorización
     isActive            Boolean  @default(true) @map("is_active") // Activo o inactivo
 
