@@ -3,6 +3,7 @@ import { useEffect, useState} from 'react';
 import { Promotion } from '@prisma/client';
 import Select from '@/components/ui/select';
 import AsyncSelect from 'react-select/async';
+import { GroupBase } from 'react-select';
 
 export type SelectPromotionType = {
   value: string;
@@ -88,7 +89,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
 
   return (
     <div>
-      <Select
+      <Select<SelectPromotionType, false, GroupBase<SelectPromotionType>>
         cacheOptions
         loadOptions={loadOptions}
         defaultOptions={options}

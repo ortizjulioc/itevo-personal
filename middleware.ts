@@ -61,6 +61,6 @@ export const config = {
     "/branches",               // Protege /branches
     "/branches/:path*",        // Protege subrutas de /branches
     "/settings",               // Protege /settings, solo admin tiene acceso
-    "/api/:path*",             // Protege todas las rutas de la API
+    // "/api/:path*",             // Protege todas las rutas de la API
   ],
 };

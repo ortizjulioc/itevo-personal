@@ -1,0 +1,26 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { findProductByCode } from '@/services/product-service';
+import { createLog } from '@/utils/log';
+import { formatErrorMessage } from '@/utils/error-to-string';
+
+export async function GET(request: NextRequest, { params }: { params: { code: string } }) {
+  try {
+    const { code } = params;
+
+    const product = await findProductByCode(code);
+
+    if (!product) {
+      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND', message: 'Producto no encontrado' }, { status: 404 });
+    }
+
+    return NextResponse.json(product, { status: 200 });
+  } catch (error) {
+    await createLog({
+      action: 'GET',
+      description: formatErrorMessage(error),
+      origin: 'products/code/[code]',
+      success: false,
+    });
+    return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+  }
+}

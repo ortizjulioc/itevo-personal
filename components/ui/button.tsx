@@ -10,7 +10,7 @@ interface ButtonProps {
     variant?: 'default' | 'rounded' | 'outline';
     color?: 'primary' | 'info' | 'success' | 'warning' | 'danger' | 'secondary' | 'dark'| 'outline';
     children?: React.ReactNode;
-    icon?: React.ReactNode;
+    icon?: React.ReactElement;
     loading?: boolean;
 }
 
