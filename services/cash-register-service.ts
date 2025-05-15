@@ -31,12 +31,13 @@ export const getCashRegisters = async ({
 
   const whereClause: any = {
     deleted: false,
-    name: {
-      contains: search,
-      mode: 'insensitive',
-    },
   };
 
+  if (search) {
+    whereClause.name = {
+      contains: search,
+    };
+  }
   if (branchId) whereClause.branchId = branchId;
   if (userId) whereClause.userId = userId;
   if (status) whereClause.status = status;

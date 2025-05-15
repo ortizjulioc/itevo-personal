@@ -1,9 +1,7 @@
-import { Invoice } from '@prisma/client'
 import React from 'react'
 import InvoiceStatusField from '../invoice-list/invoice-status'
 import UserLabel from '@/components/common/info-labels/user-label'
 import ProductLabel from '@/components/common/info-labels/product-label'
-import { IvoicebyId } from '@/app/(defaults)/invoices/lib/invoice/use-fetch-cash-invoices'
 import { Button } from '@/components/ui'
 import { TbCancel, TbPrinter } from 'react-icons/tb'
 
@@ -48,7 +46,7 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                         {invoice?.paymentDetails &&
                             Object.entries(invoice.paymentDetails).map(([key, value]) => (
 
-                                <p> <strong>{PAYMENT_PROPERTIES[key as keyof typeof PAYMENT_PROPERTIES]}:</strong> {String(value)} </p>
+                                <p key={key}> <strong>{PAYMENT_PROPERTIES[key as keyof typeof PAYMENT_PROPERTIES]}:</strong> {String(value)} </p>
 
                             ))}
 
@@ -124,16 +122,13 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                     </div>
                 </div>
 
-
             </div>
             <div className="panel sticky mt-5 bottom-0 bg-white dark:bg-gray-900 p-4 shadow-md z-10">
                 <div className="flex justify-between">
-                    <Button type="button" color="danger" className="w-full md:w-auto">
-                        <TbCancel className='mr-1 size-6' />
+                    <Button icon={<TbCancel />} type="button" color="danger" className="w-full md:w-auto"> 
                         Cancelar
                     </Button>
-                    <Button type="button" color="primary"  className="w-full md:w-auto">
-                        <TbPrinter className='mr-1 size-6' />
+                    <Button icon={<TbPrinter />} type="button" color="primary"  className="w-full md:w-auto">
                         Imprimir
                     </Button>
                 </div>
