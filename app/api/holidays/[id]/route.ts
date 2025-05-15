@@ -13,13 +13,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const holiday = await findHolidayById(id);
 
         if (!holiday) {
-            return NextResponse.json({ code: 'E_HOLIDAY_NOT_FOUND', message: 'Holiday no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_HOLIDAY_NOT_FOUND'}, { status: 404 });
         }
 
         return NextResponse.json(holiday, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el holiday', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR_HOLIDAY', message: 'Error buscando el holiday', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         return NextResponse.json(updatedHoliday, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error actualizando el holiday', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR_HOLIDAY', message: 'Error actualizando el holiday', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -98,7 +98,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         return NextResponse.json({ message: 'Holiday eliminado' }, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error eliminando el holiday', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR_HOLIDAY', message: 'Error eliminando el holiday', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const user = await findUserById(id);
 
         if (!user) {
-            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(user, { status: 200 });
@@ -36,7 +36,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Verificar si el usuario existe
         const user = await findUserById(id);
         if (!user) {
-            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND' }, { status: 404 });
         }
 
         // Actualizar el usuario
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Verificar si el usuario existe
         const user = await findUserById(id);
         if (!user) {
-            return NextResponse.json({ code: 'E_USER_NOT_FOUND', message: 'Usuario no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_USER_NOT_FOUND' }, { status: 404 });
         }
 
         // Eliminar el usuario

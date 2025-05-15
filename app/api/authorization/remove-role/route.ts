@@ -9,7 +9,7 @@ export async function DELETE(request: NextRequest) {
         const { userId, branchId, roleId } = body;
 
         if (!userId || !branchId || !roleId) {
-            return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS' ,message:'Los campos userId, branchId y roleId son obligatorios.' }, { status: 400 });
         }
 
         await removeRoleFromUserInBranch(userId, branchId, roleId);

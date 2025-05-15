@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         // Validate the request body
         const { isValid, message } = validateObject(body, ['name', 'address']);
         if (!isValid) {
-            return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
         const branch = await createBranch(body);
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
             origin: 'branches',
             success: false,
         });
-        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+        return NextResponse.json({  error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
