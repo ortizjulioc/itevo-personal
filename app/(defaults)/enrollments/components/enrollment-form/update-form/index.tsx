@@ -8,7 +8,7 @@ import { CourseBranch, Enrollment } from '@prisma/client';
 import DatePicker from '@/components/ui/date-picker';
 import { updateEnrollment } from '../../../lib/request';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
-import SelectCourseBranch,{} from '@/components/common/selects/select-course-branch';
+import SelectCourseBranch, { } from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
 import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
 
@@ -18,13 +18,10 @@ interface OptionSelect {
     value: string;
     label: string;
 }
-interface CourseBranchSelect {
-    value: string;
-    label: JSX.Element;
-}
+
 interface statusOption {
     value: string;
-    label: string;
+    label: JSX.Element;
 }
 export interface CourseBranchSelectOption {
     value: string;
@@ -41,7 +38,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-    
+
 
 
         const resp = await updateEnrollment(initialValues.id, data);
@@ -54,14 +51,14 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
         }
         setSubmitting(false);
     };
-   
-       const statusOptions = [
-           { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },
-           { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} />  },
-           { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} />  },
-           { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} />  },
-       ]
-       
+
+    const statusOptions = [
+        { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },
+        { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} /> },
+        { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} /> },
+        { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} /> },
+    ]
+
 
     return (
         <div className="panel">
@@ -69,10 +66,10 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-                       <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
+                        <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
                             <SelectCourseBranch
                                 value={values.courseBranchId}
-                                onChange={(option:CourseBranchSelectOption  | null) => {
+                                onChange={(option: CourseBranchSelectOption | null) => {
                                     setFieldValue('courseBranchId', option?.value || '');
                                 }}
                             />

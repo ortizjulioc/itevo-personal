@@ -4,6 +4,7 @@ import { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { Teacher } from '@prisma/client';
 import { Select } from '@/components/ui';
+import { GroupBase } from 'react-select';
 
 export type SelectTeacherType = {
   value: string;
@@ -37,9 +38,10 @@ export default function SelectTeacher({ value, ...rest }: SelectTeacherProps) {
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: SelectTeacherType[]) => void) => {
-    const options = await fetchTeacherData(inputValue);
-    callback(options);
+  const loadOptions = async (inputValue: string): Promise<SelectTeacherType[]> => {
+    // const options = await fetchTeacherData(inputValue);
+    // callback(options);
+    return fetchTeacherData(inputValue);
   };
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function SelectTeacher({ value, ...rest }: SelectTeacherProps) {
 
   return (
     <div>
-      <Select
+      <Select<SelectTeacherType, false, GroupBase<SelectTeacherType>>
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}

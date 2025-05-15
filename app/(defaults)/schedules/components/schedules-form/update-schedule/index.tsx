@@ -47,10 +47,8 @@ export default function UpdateScheduleForm({ initialValues, setOpenModal, setSch
                         <div className='flex items-start gap-4'>
                             <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
                                 <Field>
-                                    {({ field, form }: FieldProps<ScheduleFormType>) => (
+                                    {({ form }: FieldProps<ScheduleFormType>) => (
                                         <Select
-                                            field={field}
-                                            form={form}
                                             name="weekday"
                                             placeholder="Selecciona un día"
                                             className="min-w-[200px]"
