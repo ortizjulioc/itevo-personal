@@ -8,8 +8,20 @@ import DatePicker from '@/components/ui/date-picker';
 import { createEnrollment } from '../../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
-import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
+
+    interface OptionSelect {
+        value: string;
+        label: string;
+    }
+    interface CourseBranchSelect {
+        value: string;
+        label: JSX.Element;
+    }
+    interface statusOption {
+        value: string;
+        label: JSX.Element;
+    }
 
 export default function CreateEnrollmentForm({ courseBranchId,studentId }: { courseBranchId?: string,studentId?:string }) {
     const route = useRouter();
@@ -28,19 +40,6 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
         }
         setSubmitting(false);
     };
-
-    interface OptionSelect {
-        value: string;
-        label: string;
-    }
-    interface CourseBranchSelect {
-        value: string;
-        label: JSX.Element;
-    }
-    interface statusOption {
-        value: string;
-        label: string;
-    }
 
     const statusOptions = [
         { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },

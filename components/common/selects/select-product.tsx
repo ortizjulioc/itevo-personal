@@ -4,6 +4,7 @@ import { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { Product } from '@prisma/client';
 import { Select } from '@/components/ui';
+import { GroupBase } from 'react-select';
 
 export interface ProductSelect {
   value: string;
@@ -53,9 +54,10 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: ProductSelect[]) => void) => {
-    const options = await fetchProductData(inputValue);
-    callback(options);
+  const loadOptions = async (inputValue: string): Promise<ProductSelect[]> => {
+    // const options = await fetchProductData(inputValue);
+    // callback(options);
+    return fetchProductData(inputValue);
   };
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
 
   return (
     <div>
-      <Select
+      <Select<ProductSelect, false, GroupBase<ProductSelect>>
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
@@ -112,7 +114,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
             onChange?.(null);
           }
         }}
-        disabled={disabled}
+        isDisabled={disabled}
       />
     </div>
   );

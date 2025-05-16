@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const promotion = await findPromotionById(id);
 
         if (!promotion) {
-            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND', message: 'Promoción no encontrada' }, { status: 404 });
+            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND'}, { status: 404 });
         }
 
         return NextResponse.json(promotion, { status: 200 });
@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         const promotion = await findPromotionById(id);
         if (!promotion) {
-            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND', message: 'Promoción no encontrada' }, { status: 404 });
+            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND'}, { status: 404 });
         }
 
         const updatedPromotion = await updatePromotionById(id, body);
@@ -73,7 +73,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
         const promotion = await findPromotionById(id);
         if (!promotion) {
-            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND', message: 'Promoción no encontrada' }, { status: 404 });
+            return NextResponse.json({ code: 'E_PROMOTION_NOT_FOUND'}, { status: 404 });
         }
 
         await deletePromotionById(id);

@@ -129,7 +129,9 @@ export const createInvoice = async (data: InvoiceCreateDataType): Promise<Invoic
     return invoice;
 }
 
-export const findInvoiceById = async (id: string): Promise<InvoiceWithItems | null> => {
+export const findInvoiceById = async (
+    id: string,
+): Promise<InvoiceWithItems | null> => {
     return await Prisma.invoice.findUnique({
         where: { id },
         include: { items: true },

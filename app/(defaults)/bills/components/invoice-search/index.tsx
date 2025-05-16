@@ -1,13 +1,11 @@
 'use client';
-import SelectTeacher from '@/components/common/selects/select-teacher';
-import SelectCourse from '@/components/common/selects/select-course';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { MODALITIES } from '@/constants/modality.constant';
 import { Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import InvoiceStatusField from '../invoice-list/invoice-status';
 import DatePicker from '@/components/ui/date-picker';
+import { InvoiceStatus } from '@prisma/client';
 
 
 interface SelectOption {
@@ -27,9 +25,9 @@ export default function SearchInvoice() {
     }));
 
     const STATUS_OPTIONS = [
-        { value: 'DRAFT', label: <InvoiceStatusField status="DRAFT" /> },
-        { value: 'PAID', label: <InvoiceStatusField status="PAID" /> },
-        { value: 'CANCELED', label: <InvoiceStatusField status="CANCELED" /> },
+        { value: InvoiceStatus.DRAFT, label: 'En proceso' },
+        { value: InvoiceStatus.PAID, label: 'Pagada' },
+        { value: InvoiceStatus.CANCELED, label: 'Cancelada' },
     ];
 
 
