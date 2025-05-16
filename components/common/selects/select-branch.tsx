@@ -1,26 +1,28 @@
+'use client';
 
 import apiRequest from '@/utils/lib/api-request/request';
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Branch } from '@prisma/client';
 import { Select } from '@/components/ui';
+import { GroupBase, ActionMeta } from 'react-select';
 
 export type SelectBranchType = {
   value: string;
   label: string;
-}
+};
 
 export interface BranchesResponse {
   branches: Branch[];
   totalBranches: number;
-}
+};
 
 interface SelectBranchProps {
   value?: string;
-  onChange?: (selected: SelectBranchType | null) => void;
+  onChange?: (selected: SelectBranchType | null, actionMeta: ActionMeta<SelectBranchType>) => void;
 }
 
-export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
+export default function SelectBranch({ value, onChange, ...rest }: SelectBranchProps) {
   const [options, setOptions] = useState<SelectBranchType[]>([]);
 
   const fetchBranchData = async (inputValue: string): Promise<SelectBranchType[]> => {
@@ -29,7 +31,6 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
       if (!response.success) {
         throw new Error(response.message);
       }
-
       return response.data?.branches.map(branch => ({ value: branch.id, label: branch.name })) || [];
     } catch (error) {
       console.error('Error fetching Branches data:', error);
@@ -37,9 +38,8 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
     }
   };
 
-  const loadOptions = async (inputValue: string, callback: (options: SelectBranchType[]) => void) => {
-    const options = await fetchBranchData(inputValue);
-    callback(options);
+  const loadOptions = async (inputValue: string): Promise<SelectBranchType[]> => {
+    return fetchBranchData(inputValue);
   };
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
 
       if (value && !fetchedOptions.some(option => option.value === value)) {
         try {
-          const response = await apiRequest.get<Branch>(`/branchs/${value}`);
+          const response = await apiRequest.get<Branch>(`/branches/${value}`);
           if (response.success && response.data) {
             const newOption = { value: response.data.id, label: response.data.name };
             setOptions(prevOptions => [...prevOptions, newOption]);
@@ -61,20 +61,18 @@ export default function SelectBranch({ value, ...rest }: SelectBranchProps) {
     };
 
     fetchData();
-
   }, [value]);
-
-
 
   return (
     <div>
-      <Select
+      <Select<SelectBranchType, false, GroupBase<SelectBranchType>>
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
         placeholder="-Sucursales-"
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
+        onChange={onChange}
         isClearable
         asComponent={AsyncSelect}
         {...rest}

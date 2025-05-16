@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Select } from '@/components/ui';
 import { CourseBranch, CourseBranchResponse } from '@/app/(defaults)/course-branch/lib/use-fetch-course-branch';
-import { components } from 'react-select';
+import { ActionMeta, components, GroupBase } from 'react-select';
 import { TbCheck } from 'react-icons/tb';
 import { formatCurrency } from '@/utils';
 import ModalityTag from '@/app/(defaults)/course-branch/components/modality';
@@ -18,7 +18,7 @@ interface CourseBranchSelect {
 
 interface SelectCourseBranchProps {
     value?: string;
-    onChange?: (selected: CourseBranchSelect | null) => void;
+    onChange?: (selected: CourseBranchSelect | null, actionMeta: ActionMeta<CourseBranchSelect>) => void;
 }
 
 export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranchProps) {
@@ -43,9 +43,10 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
         }
     };
 
-    const loadOptions = async (inputValue: string, callback: (options: CourseBranchSelect[]) => void) => {
-        const options = await fetchCourseBranchData(inputValue);
-        callback(options);
+    const loadOptions = async (inputValue: string): Promise<CourseBranchSelect[]> => {
+        // const options = await fetchCourseBranchData(inputValue);
+        // callback(options);
+        return fetchCourseBranchData(inputValue);
     };
 
     const CustomSelectedOption = (props: any) => {
@@ -125,7 +126,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
 
     return (
         <div>
-            <Select
+            <Select<CourseBranchSelect, false, GroupBase<CourseBranchSelect>>
                 loadOptions={loadOptions}
                 cacheOptions
                 defaultOptions={options}

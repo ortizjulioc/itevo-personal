@@ -1,12 +1,10 @@
 'use client';
-import { Button, FormItem, Input } from '@/components/ui';
+import { Button, FormItem, Input, Select } from '@/components/ui';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
 import { initialValues, ScheduleFormType } from '../form.config'
-import Select from 'react-select';
 import { createValidationSchema } from "../form.config"
 import { createSchedule } from '../../../lib/request';
-import { useEffect } from 'react';
 
 interface WeekOption {
     value: number;
@@ -56,10 +54,8 @@ export default function CreateScheduleForm({  onCreated }: CreateScheduleFormPro
                         <div className='flex items-start gap-4'>
                             <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
                                 <Field>
-                                    {({ field, form }: FieldProps<ScheduleFormType>) => (
+                                    {({ form }: FieldProps<ScheduleFormType>) => (
                                         <Select
-                                            field={field}
-                                            form={form}
                                             name="weekday"
                                             placeholder="Selecciona un día"
                                             className="min-w-[200px]"

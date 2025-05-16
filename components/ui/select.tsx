@@ -3,11 +3,18 @@
 import { IRootState } from '@/store';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import ReactSelect, { Props as ReactSelectProps, StylesConfig } from 'react-select';
+import ReactSelect, { GroupBase, Props as ReactSelectProps, StylesConfig } from 'react-select';
+import AsyncSelect, { AsyncProps } from 'react-select/async';
 
-type CustomSelectProps<Option, IsMulti extends boolean> = ReactSelectProps<Option, IsMulti> & {
-  mode?: 'light' | 'dark'; // Modo claro u oscuro
-  asComponent?: React.ElementType; // Componente personalizado
+// Extend CustomSelectProps to support both ReactSelect and AsyncSelect props
+type CustomSelectProps<
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option> // Add Group type parameter
+> = (ReactSelectProps<Option, IsMulti, Group> | AsyncProps<Option, IsMulti, Group>) & {
+  mode?: 'light' | 'dark'; // Light or dark mode
+  asComponent?: React.ComponentType<ReactSelectProps<Option, IsMulti, Group> | AsyncProps<Option, IsMulti, Group>>;
+  styles?: StylesConfig<Option, IsMulti, Group>; // Optional override for styles
 };
 
 // Define el tipo para opciones
@@ -17,15 +24,17 @@ interface OptionType {
 }
 
 // Estilos personalizados para modo claro y oscuro
-const getCustomStyles = (isDarkMode: boolean): StylesConfig<OptionType, boolean> => ({
+const getCustomStyles = <Option, IsMulti extends boolean, Group extends GroupBase<Option>>(
+  isDarkMode: boolean
+): StylesConfig<Option, IsMulti, Group> => ({
   control: (provided, state) => ({
     ...provided,
     backgroundColor: isDarkMode ? '#121E32' : '#ffffff', // Dark o White
     borderColor: state.isFocused
       ? '#4361EE' // Activo (Primario)
       : isDarkMode
-      ? '#17263C' // Inactivo en oscuro
-      : '#E0E6ED', // Inactivo en claro
+        ? '#17263C' // Inactivo en oscuro
+        : '#E0E6ED', // Inactivo en claro
     boxShadow: 'none',
     '&:hover': {
       borderColor: '#4361EE', // Mantener color primario al pasar el mouse
@@ -87,9 +96,11 @@ const getCustomStyles = (isDarkMode: boolean): StylesConfig<OptionType, boolean>
   }),
 });
 
-export default function Select<Option = OptionType, IsMulti extends boolean = false>(
-  props: CustomSelectProps<Option, IsMulti>
-) {
+export default function Select<
+  Option = OptionType,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<Option> = GroupBase<Option> // Add Group type parameter
+>(props: CustomSelectProps<Option, IsMulti, Group>) {
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
   const { mode, styles, asComponent: Component = ReactSelect, ...restProps } = props;
@@ -99,7 +110,7 @@ export default function Select<Option = OptionType, IsMulti extends boolean = fa
     <Component
       {...restProps}
       styles={{
-        ...getCustomStyles(isDarkMode),
+        ...getCustomStyles<Option, IsMulti, Group>(isDarkMode),
         ...styles, // Permite sobrescribir estilos desde los props si es necesario
       }}
     />
