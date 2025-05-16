@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const branch = await findBranchById(id);
 
         if (!branch) {
-            return NextResponse.json({ code: 'E_BRANCH_NOT_FOUND', message: 'Sucural no encontrada' }, { status: 404 });
+            return NextResponse.json({ code: 'E_BRANCH_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(branch, { status: 200 });

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const enrollment = await findEnrollmentById(id);
 
         if (!enrollment) {
-            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND', message: 'enrollment no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND'}, { status: 404 });
         }
 
         return NextResponse.json(enrollment, { status: 200 });
@@ -30,13 +30,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Validar el cuerpo de la solicitud (usando la validación existente)
         const { isValid, message } = validateObject(body, ['studentId', 'courseBranchId', 'enrollmentDate', 'status']);
         if (!isValid) {
-            return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
+            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND', message }, { status: 400 });
         }
 
         // Verificar si el enrollment existe
         const enrollment = await findEnrollmentById(id);
         if (!enrollment) {
-            return NextResponse.json({ code: 'E_ENROLLMENT_NOT_FOUND', message: 'enrollment no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND'}, { status: 404 });
         }
 
         // Actualizar el enrollment
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Verificar si el rol existe
         const enrollment = await findEnrollmentById(id);
         if (!enrollment) {
-            return NextResponse.json({ code: 'E_ENROLLMENT_NOT_FOUND', message: 'Enrollment no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND' }, { status: 404 });
         }
 
         // Eliminar el enrollment

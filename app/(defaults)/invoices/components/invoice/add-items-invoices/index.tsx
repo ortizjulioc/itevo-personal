@@ -1,13 +1,13 @@
 'use client';
 import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
-import { openNotification } from '@/utils';
+import { confirmDialog, openNotification } from '@/utils';
 import type { Invoice, InvoiceItem } from '@prisma/client';
-import { addItemsInvoice, payInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
+import { addItemsInvoice, payInvoice, removeItemsInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 import { IvoicebyId, useFetchItemInvoices } from '../../../lib/invoice/use-fetch-cash-invoices';
-import { TbCancel, TbCheck, TbPrinter } from 'react-icons/tb';
+import { TbCancel, TbCheck, TbPrinter,TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
 
@@ -56,6 +56,7 @@ export default function AddItemsInvoices({
         setItemloading(true);
         if (!item?.productId || !item?.quantity) {
             openNotification('error', 'datos faltantes');
+            setItemloading(false);
             return;
         }
         const itemWithType = {
@@ -74,6 +75,28 @@ export default function AddItemsInvoices({
         }
         setItemloading(false);
     };
+
+    const handleDeteleItem = async (itemId: string) => {
+        setItemloading(true);
+        confirmDialog({
+            title: 'Eliminar producto',
+            text: '¿Seguro que quieres eliminar este producto?',
+            confirmButtonText: 'Sí, eliminar',
+            icon: 'error',
+        }, async () => {
+            console.log('item', itemId);
+            console.log('factura', InvoiceId);
+            const resp = await removeItemsInvoice(InvoiceId, itemId);
+            if (resp.success) {
+                openNotification('success', 'Producto eliminado correctamente');
+                await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
+                return;
+            }
+            openNotification('error', resp.message);
+        });
+        
+        setItemloading(false);
+    }
 
 
     return (
@@ -153,7 +176,16 @@ export default function AddItemsInvoices({
                                         <td className="px-2 py-2">{item.subtotal.toFixed(2)}</td>
                                         <td className="px-2 py-2">{item.itbis.toFixed(2)}</td>
                                         <td className="px-2 py-2">{(item.subtotal + item.itbis).toFixed(2)}</td>
-                                        <td className="px-2 py-2"></td>
+                                        <td className="px-2 py-2">
+                                            <Button
+                                                variant="outline"
+                                                color="danger"
+                                                size="sm"
+                                                onClick={() => { handleDeteleItem(item.id) }}
+                                            >
+                                                <TbX className='size-4' />
+                                            </Button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

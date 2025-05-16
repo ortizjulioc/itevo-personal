@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const ncfRange = await findNcfRangeById(id);
 
     if (!ncfRange) {
-      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND', message: 'Rango NCF no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND' }, { status: 404 });
     }
 
     return NextResponse.json(ncfRange, { status: 200 });
@@ -53,7 +53,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const existing = await findNcfRangeById(id);
     if (!existing) {
-      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND', message: 'Rango NCF no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND' }, { status: 404 });
     }
 
     const updated = await updateNcfRangeById(id, body);
@@ -85,7 +85,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const existing = await findNcfRangeById(id);
     if (!existing) {
-      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND', message: 'Rango NCF no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_NCF_RANGE_NOT_FOUND' }, { status: 404 });
     }
 
     await deleteNcfRangeById(id);
