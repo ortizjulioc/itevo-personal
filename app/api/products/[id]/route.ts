@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const product = await findProductById(id);
 
     if (!product) {
-      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND', message: 'Producto no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
     return NextResponse.json(product, { status: 200 });
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const existingProduct = await findProductById(id);
 
     if (!existingProduct) {
-      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND', message: 'Producto no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
     const updatedProduct = await updateProductById(id, body);
@@ -71,7 +71,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const product = await findProductById(id);
     if (!product) {
-      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND', message: 'Producto no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
     await deleteProductById(id);

@@ -12,13 +12,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const role = await findRoleById(id);
 
         if (!role) {
-            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND', message: 'Rol no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(role, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el rol', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR_ROLE', message: 'Error buscando el rol', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Verificar si el rol existe
         const role = await findRoleById(id);
         if (!role) {
-            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND', message: 'Rol no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND' }, { status: 404 });
         }
 
         // Actualizar el rol
@@ -81,7 +81,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Verificar si el rol existe
         const role = await findRoleById(id);
         if (!role) {
-            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND', message: 'Rol no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_ROLE_NOT_FOUND' }, { status: 404 });
         }
 
         // Eliminar el rol

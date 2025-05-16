@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: { code: st
     const product = await findProductByCode(code);
 
     if (!product) {
-      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND', message: 'Producto no encontrado' }, { status: 404 });
+      return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
     return NextResponse.json(product, { status: 200 });

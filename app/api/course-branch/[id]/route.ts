@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const courseBranch = await findCourseBranchById(id);
 
         if (!courseBranch) {
-            return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', message: 'Course branch no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(courseBranch, { status: 200 });
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         if (body.startDate && body.endDate && body.startDate > body.endDate) {
-            return NextResponse.json({ code: 'E_INVALID_DATE_RANGE', message: 'La fecha de inicio no puede ser mayor a la fecha de fin' }, { status: 400 });
+            return NextResponse.json({ code: 'E_INVALID_DATE_RANGE'}, { status: 400 });
         }
 
         // Traer los horarios de los cursos para calcular las sesiones
@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Verificar si el course existe
         const courseBranch = await findCourseBranchById(id);
         if (!courseBranch) {
-            return NextResponse.json({ code: 'E_COURSE_NOT_FOUND', message: 'Course branch no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_COURSE_NOT_FOUND' }, { status: 404 });
         }
 
         // Actualizar el course
