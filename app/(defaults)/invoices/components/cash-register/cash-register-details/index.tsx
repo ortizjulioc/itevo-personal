@@ -20,7 +20,8 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     return (
         <div className="mb-5 flex items-center justify-center">
             <div className=" w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none">
-                <div className="py-7 px-6 grid md:grid-cols-4 items-center gap-4">
+                {/* <div className="py-7 px-6 grid md:grid-cols-4 items-center gap-4"> */}
+                <div className="flex items-center justify-between gap-4 p-5">
                     <div className="flex items-center gap-2 mb-4 md:mb-0">
                         <span className="font-bold text-gray-800 dark:text-white"> Fecha de apertura:</span>
                         <span className=" text-gray-800 dark:text-white">{new Date(CashRegister.openingDate).toLocaleString()}</span>

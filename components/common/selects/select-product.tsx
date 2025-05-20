@@ -1,6 +1,5 @@
-
 import apiRequest from '@/utils/lib/api-request/request';
-import { useEffect, useState} from 'react';
+import { useEffect, useState, forwardRef } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Product } from '@prisma/client';
 import { Select } from '@/components/ui';
@@ -9,7 +8,7 @@ import { GroupBase } from 'react-select';
 export interface ProductSelect {
   value: string;
   label: JSX.Element;
-  price:number
+  price: number;
 }
 
 export interface ProductsResponse {
@@ -20,18 +19,17 @@ export interface ProductsResponse {
 interface SelectProductProps {
   value?: string;
   onChange?: (selected: ProductSelect | null) => void;
-  disabled?: boolean; 
+  disabled?: boolean;
 }
 
-export default function SelectProduct({ value, onChange, disabled }: SelectProductProps) {
+// 👇 Aquí usamos forwardRef
+const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, disabled }, ref) => {
   const [options, setOptions] = useState<ProductSelect[]>([]);
 
   const fetchProductData = async (inputValue: string): Promise<ProductSelect[]> => {
     try {
       const response = await apiRequest.get<ProductsResponse>(`/products?search=${inputValue}`);
-      if (!response.success) {
-        throw new Error(response.message);
-      }
+      if (!response.success) throw new Error(response.message);
 
       return response.data?.products.map(product => ({
         value: product.id,
@@ -46,7 +44,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
             </span>
           </div>
         ),
-        price: product.price, // Se añade el precio
+        price: product.price,
       })) || [];
     } catch (error) {
       console.error('Error fetching Products data:', error);
@@ -55,8 +53,6 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
   };
 
   const loadOptions = async (inputValue: string): Promise<ProductSelect[]> => {
-    // const options = await fetchProductData(inputValue);
-    // callback(options);
     return fetchProductData(inputValue);
   };
 
@@ -69,7 +65,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
         try {
           const response = await apiRequest.get<Product>(`/products/${value}`);
           if (response.success && response.data) {
-            const newOption = {
+            const newOption: ProductSelect = {
               value: response.data.id,
               label: (
                 <div className="flex flex-col">
@@ -82,7 +78,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
                   </span>
                 </div>
               ),
-              price: response.data.price, // Añadimos el precio
+              price: response.data.price,
             };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
@@ -98,6 +94,7 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
   return (
     <div>
       <Select<ProductSelect, false, GroupBase<ProductSelect>>
+        ref={ref} // ✅ Se pasa el ref correctamente
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
@@ -106,16 +103,12 @@ export default function SelectProduct({ value, onChange, disabled }: SelectProdu
         value={options.find(option => option.value === value) || null}
         isClearable
         asComponent={AsyncSelect}
-        onChange={(selected: ProductSelect | null) => {
-          if (selected) {
-            // Pasa tanto el `productId` como el `price` al componente padre
-            onChange?.(selected);
-          } else {
-            onChange?.(null);
-          }
-        }}
+        onChange={onChange}
         isDisabled={disabled}
       />
     </div>
   );
-}
+});
+
+SelectProduct.displayName = 'SelectProduct';
+export default SelectProduct;

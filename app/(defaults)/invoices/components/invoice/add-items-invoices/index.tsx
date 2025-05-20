@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation';
 import { confirmDialog, openNotification } from '@/utils';
 import type { Invoice, InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, payInvoice, removeItemsInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 import { IvoicebyId, useFetchItemInvoices } from '../../../lib/invoice/use-fetch-cash-invoices';
-import { TbCancel, TbCheck, TbPrinter,TbX } from 'react-icons/tb';
+import { TbCancel, TbCheck, TbPrinter, TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
 
@@ -24,14 +24,36 @@ export default function AddItemsInvoices({
     InvoiceId: string;
     Invoice: IvoicebyId;
     fetchInvoiceData: (id: string) => Promise<void>;
-    setInvoice:any,
+    setInvoice: any,
     cashRegisterId: string;
 }) {
+    const quantityRef = useRef<HTMLInputElement>(null);
+    const productRef = useRef<HTMLSelectElement>(null);
     const route = useRouter();
     const [item, setItem] = useState<InvoiceItem | null>(null);
     const [itemLoading, setItemloading] = useState(false)
     const [paymentLoading, setPaymentLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
+
+    const onSelectProduct = (selected: ProductSelect | null) => {
+        if (!selected) return;
+        setItem((prev) => ({
+            ...prev!,
+            productId: selected.value,
+            unitPrice: selected.price,
+
+        }));
+
+        console.log('quantityRef', quantityRef.current);
+        if (quantityRef.current) {
+            setItem((prev) => ({
+                ...prev!,
+                quantity: 1,
+            }));
+            quantityRef.current.select();
+            quantityRef.current.focus();
+        }
+    }
 
 
     const handleSubmit = async () => {
@@ -45,7 +67,7 @@ export default function AddItemsInvoices({
         if (resp.success) {
             openNotification("success", "Factura pagada correctamente");
             route.push(`/invoices/${cashRegisterId}`);
-          
+
         } else {
             openNotification("error", resp.message);
             console.log(resp);
@@ -69,6 +91,9 @@ export default function AddItemsInvoices({
             openNotification('success', 'Producto agregado correctamente');
             setItem(null);
             await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
+            if (productRef.current) {
+                productRef.current.focus();
+            }
         } else {
             openNotification('error', resp.message);
             console.log(resp.message);
@@ -94,7 +119,7 @@ export default function AddItemsInvoices({
             }
             openNotification('error', resp.message);
         });
-        
+
         setItemloading(false);
     }
 
@@ -106,22 +131,15 @@ export default function AddItemsInvoices({
                     <div className="flex flex-col md:flex-row items-stretch gap-4">
                         <div className="flex-1">
                             <SelectProduct
+                                ref={productRef}
                                 value={item?.productId ?? undefined}
-                                onChange={(selected: ProductSelect | null) => {
-                                    if (!selected) return;
-
-                                    setItem((prev) => ({
-                                        ...prev!,
-                                        productId: selected.value,
-                                        unitPrice: selected.price, // ← aquí guardas el precio del producto
-                                        // puedes guardar más si necesitas (name, code, etc)
-                                    }));
-                                }}
+                                onChange={onSelectProduct}
                                 disabled={itemLoading}
                             />
                         </div>
                         <div className="w-full md:w-1/4">
                             <Input
+                                ref={quantityRef}
                                 placeholder="Cantidad"
                                 type="number"
                                 value={item?.quantity ?? ''}
@@ -221,7 +239,7 @@ export default function AddItemsInvoices({
                     <TbPrinter className='mr-1 size-6' />
                     Imprimir
                 </Button>
-                <Button type="button" color="success" onClick={()=>(setOpenModal(true))} className="w-full md:w-auto">
+                <Button type="button" color="success" onClick={() => (setOpenModal(true))} className="w-full md:w-auto">
                     <TbCheck className='mr-1 size-6' />
                     Completar
                 </Button>
