@@ -56,7 +56,7 @@ const totalGeneral = Object.values(bills).reduce((acc, curr) => acc + curr.total
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-5xl my-8 text-black dark:text-white-dark">
+                            <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-screen max-w-5xl text-black dark:text-white-dark">
                                 <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                                     <h5 className="font-bold text-lg">Desgloce de efectivo</h5>
                                 </div>
@@ -103,7 +103,7 @@ const totalGeneral = Object.values(bills).reduce((acc, curr) => acc + curr.total
                                             Total general: RD${totalGeneral.toLocaleString()}
                                         </div>
                                     </div>
-                                    <div className="flex justify-end items-center mt-8 gap-3">
+                                    <div className="flex justify-end items-center mt-2 gap-3">
                                         <Button onClick={() => setOpenModal(false)} variant='outline' color='danger' >
                                             Cancelar
                                         </Button>

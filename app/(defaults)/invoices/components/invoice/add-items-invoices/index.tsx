@@ -164,7 +164,7 @@ export default function AddItemsInvoices({
                         <table className="min-w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-100 dark:bg-gray-700 text-sm">
-                                    <th className="text-left px-2 py-2">PRODUCTO</th>
+                                    <th className="text-left px-2 py-2">DESCRIPCION</th>
                                     <th className="text-left px-2 py-2">CANTIDAD</th>
                                     <th className="text-left px-2 py-2">PRECIO</th>
                                     <th className="text-left px-2 py-2">SUBTOTAL</th>

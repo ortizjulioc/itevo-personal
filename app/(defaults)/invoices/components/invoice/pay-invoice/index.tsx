@@ -29,26 +29,28 @@ interface CustomModalProps {
 }
 
 type CreditCardDetails = {
-    cardHolderName: string;
-    cardNumber: string;
+    verifone: string;
+    type: string;
+    reference: string;
 };
 
 type BankTransferDetails = {
+    TransferNumber?: string; // Solo si es transferencia bancaria
     bankName: string;
-    accountNumber: string;
+
 };
 
 type CheckDetails = {
-    checkNumber: string;
+    TransferNumber?: string;
     bankName: string;
 };
 
-export default function PayInvoice({ 
-    openModal, 
-    setOpenModal, 
-    Invoice, 
+export default function PayInvoice({
+    openModal,
+    setOpenModal,
+    Invoice,
     setInvoice,
-    handleSubmit ,
+    handleSubmit,
     paymentLoading
 }: CustomModalProps) {
     if (!Invoice) return null;
@@ -66,15 +68,21 @@ export default function PayInvoice({
         });
     };
 
-    const handlePaymentMethodChange = (option: any) => {
-        if (!Invoice) return;
+   const handlePaymentMethodChange = (option: any) => {
+    if (!Invoice) return;
 
-        setInvoice({
-            ...Invoice,
-            paymentMethod: option?.value || '',
-            paymentDetails: {}, // Reiniciar detalles
-        });
-    };
+    const isCash = option?.value === 'cash';
+    const total = (Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0);
+
+    setInvoice({
+        ...Invoice,
+        paymentMethod: option?.value || '',
+        paymentDetails: {
+            ...(isCash ? {} : { receivedAmount: total.toFixed(2) }),
+        },
+    });
+};
+
 
     const renderAmountInput = () => {
         return (
@@ -86,7 +94,9 @@ export default function PayInvoice({
                     min="0"
                     value={(Invoice.paymentDetails as any)?.receivedAmount || ''}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}
+                    disabled={Invoice.paymentMethod !== 'cash'} // 👈 opcional para bloquear edición
                 />
+
             </div>
         );
     };
@@ -100,15 +110,21 @@ export default function PayInvoice({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <Input
                                 className="Input"
-                                placeholder="Nombre en la tarjeta"
-                                value={creditDetails.cardHolderName || ''}
-                                onChange={(e) => handleDetailsChange('cardHolderName', e.target.value)}
+                                placeholder="Verifone"
+                                value={creditDetails.verifone || ''}
+                                onChange={(e) => handleDetailsChange('verifone', e.target.value)}
                             />
                             <Input
                                 className="Input"
-                                placeholder="Número de tarjeta"
-                                value={creditDetails.cardNumber || ''}
-                                onChange={(e) => handleDetailsChange('cardNumber', e.target.value)}
+                                placeholder="Tipo de tarjeta"
+                                value={creditDetails.type || ''}
+                                onChange={(e) => handleDetailsChange('type', e.target.value)}
+                            />
+                            <Input
+                                className="Input"
+                                placeholder="Referencia"
+                                value={creditDetails.reference || ''}
+                                onChange={(e) => handleDetailsChange('reference', e.target.value)}
                             />
                         </div>
                         {renderAmountInput()}
@@ -128,9 +144,9 @@ export default function PayInvoice({
                             />
                             <Input
                                 className="Input"
-                                placeholder="Número de cuenta"
-                                value={bankDetails.accountNumber || ''}
-                                onChange={(e) => handleDetailsChange('accountNumber', e.target.value)}
+                                placeholder="Número de transferencia"
+                                value={bankDetails.TransferNumber || ''}
+                                onChange={(e) => handleDetailsChange('TransferNumber', e.target.value)}
                             />
                         </div>
                         {renderAmountInput()}
@@ -144,16 +160,17 @@ export default function PayInvoice({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <Input
                                 className="Input"
-                                placeholder="Número de cheque"
-                                value={checkDetails.checkNumber || ''}
-                                onChange={(e) => handleDetailsChange('checkNumber', e.target.value)}
-                            />
-                            <Input
-                                className="Input"
                                 placeholder="Nombre del banco"
                                 value={checkDetails.bankName || ''}
                                 onChange={(e) => handleDetailsChange('bankName', e.target.value)}
                             />
+                            <Input
+                                className="Input"
+                                placeholder="Número de cheque"
+                                value={checkDetails.TransferNumber || ''}
+                                onChange={(e) => handleDetailsChange('TransferNumber', e.target.value)}
+                            />
+
                         </div>
                         {renderAmountInput()}
                     </>
@@ -167,11 +184,12 @@ export default function PayInvoice({
         }
     };
 
-    const NCF_TYPES_OPTIONS = Object.values(NCF_TYPES).map((type) => ({
-        value: type.code,
-        label: type.label,
-    }));
-
+    const NCF_TYPES_OPTIONS = [
+        { value: NCF_TYPES.FACTURA_CONSUMO.code, label: NCF_TYPES.FACTURA_CONSUMO.label },
+        { value: NCF_TYPES.FACTURA_CREDITO_FISCAL.code, label: NCF_TYPES.FACTURA_CREDITO_FISCAL.label },
+        { value: NCF_TYPES.GUBERNAMENTAL.code, label: NCF_TYPES.GUBERNAMENTAL.label },
+        { value: NCF_TYPES.REGIMENES_ESPECIALES.code, label: NCF_TYPES.REGIMENES_ESPECIALES.label },
+    ]
     const PAYMENT_METHODS_OPTIONS = [
         { value: 'cash', label: 'Efectivo' },
         { value: 'credit_card', label: 'Tarjeta de crédito' },
@@ -207,25 +225,24 @@ export default function PayInvoice({
                             <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-visible w-full max-w-5xl my-8 text-black dark:text-white-dark">
                                 <div className="p-5">
                                     <div className="grid grid-cols-12 gap-4">
-                                        <div className="col-span-6 md:col-span-4">
-                                            <span className="text-lg font-bold">Datos de factura</span>
-                                            <Select
-                                                options={NCF_TYPES_OPTIONS}
-                                                value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === Invoice?.type)}
-                                                onChange={(option: { value: string; label: string } | null) => {
-                                                    if (Invoice) {
-                                                        setInvoice({
-                                                            ...Invoice,
-                                                            type: option?.value as NcfType || '',
-                                                        });
-                                                    }
-                                                }}
-                                                isSearchable={false}
-                                                placeholder="Selecciona un tipo de comprobante"
-                                                styles={customStyles}
-                                            />
-                                        </div>
-                                        <div className="col-span-6 md:col-span-8">
+                                        {/* <div className="col-span-12 md:col-span-4">
+                                           
+                                            {/* {Invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
+                                                <Input
+                                                    className="Input mt-4"
+                                                    placeholder="RNC del cliente"
+                                                    value={(Invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
+                                                    onChange={(e) => setInvoice({
+                                                        ...Invoice,
+                                                        paymentDetails: {
+                                                            ...((Invoice.paymentDetails && typeof Invoice.paymentDetails === 'object') ? Invoice.paymentDetails : {}),
+                                                            customerRnc: e.target.value,
+                                                        },
+                                                    })}
+                                                />
+                                            
+                                        </div>  */}
+                                        <div className="col-span-12 ">
                                             <span className="text-lg font-bold">Datos de pago</span>
                                             <Select
                                                 options={PAYMENT_METHODS_OPTIONS}
@@ -234,6 +251,7 @@ export default function PayInvoice({
                                                 isSearchable={false}
                                                 placeholder="Selecciona un método de pago"
                                                 styles={customStyles}
+
                                             />
                                             {renderPaymentDetails()}
                                         </div>
@@ -276,7 +294,7 @@ export default function PayInvoice({
                                     </div>
 
                                     <div className="flex justify-end items-center gap-4 mt-8">
-                                        <Button type="button" color="danger" onClick={() => (setOpenModal(false))}  className="w-full md:w-auto">
+                                        <Button type="button" color="danger" onClick={() => (setOpenModal(false))} className="w-full md:w-auto">
                                             <TbCancel className='mr-1 size-6' />
                                             Cancelar
                                         </Button>

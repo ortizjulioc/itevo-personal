@@ -35,20 +35,24 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                         <span className=" text-gray-800 dark:text-white">{CashRegister.user.name}</span>
                     </div>
                     <div className="flex justify-end items-center gap-2 mb-4 md:mb-0">
-                        <Dropdown
-                            button={<HiOutlineDotsVertical size={'24'} />}
-                            btnClassName=""
-                            placement="bottom-end"
+                        <div className="dropdown">
+                            <Dropdown
+                                button={<HiOutlineDotsVertical size={'24'} />}
+                                btnClassName=""
+                                placement="bottom-end"
 
-                        >
-                            <div className="bg-white shadow-md rounded p-4 w-40">
-                                <ul>
-                                    <Button variant='outline' className='flex items-center w-full' onClick={() => setOpenModal(true)}>
-                                        Cerrar caja
-                                    </Button>
-                                </ul>
-                            </div>
-                        </Dropdown>
+                            >
+                                <div className="!min-w-[170px]">
+                                    <ul>
+                                        <li>
+                                            <button type="button" onClick={() => setOpenModal(true)} className="dropdown-item">
+                                                cerrar caja
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </Dropdown>
+                        </div>
                     </div>
 
                     <CashRegisterClose
