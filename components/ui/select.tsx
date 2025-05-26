@@ -1,7 +1,7 @@
 'use client';
 
 import { IRootState } from '@/store';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactSelect, { GroupBase, Props as ReactSelectProps, StylesConfig } from 'react-select';
 import AsyncSelect, { AsyncProps } from 'react-select/async';
@@ -96,11 +96,14 @@ const getCustomStyles = <Option, IsMulti extends boolean, Group extends GroupBas
   }),
 });
 
-export default function Select<
+const Select = forwardRef(function Select<
   Option = OptionType,
   IsMulti extends boolean = false,
-  Group extends GroupBase<Option> = GroupBase<Option> // Add Group type parameter
->(props: CustomSelectProps<Option, IsMulti, Group>) {
+  Group extends GroupBase<Option> = GroupBase<Option>
+>(
+  props: CustomSelectProps<Option, IsMulti, Group>,
+  ref: React.Ref<any> // You can replace `any` with the specific ref type if needed
+) {
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
   const { mode, styles, asComponent: Component = ReactSelect, ...restProps } = props;
@@ -115,4 +118,6 @@ export default function Select<
       }}
     />
   );
-}
+})
+
+export default Select;

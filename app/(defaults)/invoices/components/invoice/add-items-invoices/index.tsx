@@ -1,7 +1,7 @@
 'use client';
 import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
-import { confirmDialog, openNotification } from '@/utils';
+import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import type { Invoice, InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, payInvoice, removeItemsInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useRef, useState } from 'react';
@@ -10,6 +10,7 @@ import { IvoicebyId, useFetchItemInvoices } from '../../../lib/invoice/use-fetch
 import { TbCancel, TbCheck, TbPrinter, TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
+import { parse } from 'path';
 
 
 
@@ -127,7 +128,7 @@ export default function AddItemsInvoices({
     return (
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="md:col-span-8 col-span-12">
+                <div className="md:col-span-9 col-span-12">
                     <div className="flex flex-col md:flex-row items-stretch gap-4">
                         <div className="flex-1">
                             <SelectProduct
@@ -190,10 +191,10 @@ export default function AddItemsInvoices({
 
                                         </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
-                                        <td className="px-2 py-2">{item.unitPrice}</td>
-                                        <td className="px-2 py-2">{item.subtotal.toFixed(2)}</td>
-                                        <td className="px-2 py-2">{item.itbis.toFixed(2)}</td>
-                                        <td className="px-2 py-2">{(item.subtotal + item.itbis).toFixed(2)}</td>
+                                        <td className="px-2 py-2">{formatCurrency(item.unitPrice || 0)}</td>
+                                        <td className="px-2 py-2">{formatCurrency(item.subtotal)}</td>
+                                        <td className="px-2 py-2">{formatCurrency(item.itbis)}</td>
+                                        <td className="px-2 py-2">{formatCurrency((item.subtotal + item.itbis) || 0)}</td>
                                         <td className="px-2 py-2">
                                             <Button
                                                 variant="outline"
@@ -210,7 +211,7 @@ export default function AddItemsInvoices({
                         </table>
                     </div>
                 </div>
-                <div className="md:col-span-4 col-span-12 space-y-2">
+                <div className="md:col-span-3 col-span-12 space-y-2">
                     <div className="flex justify-between text-sm">
                         <span className="font-medium text-gray-600 dark:text-gray-300">Subtotal:</span>
                         <span className="text-right">{Invoice?.subtotal?.toFixed(2) ?? '0.00'}</span>

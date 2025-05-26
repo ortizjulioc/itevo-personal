@@ -1,6 +1,7 @@
 'use client';
 import { Button, Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
+import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
 import { Invoice, NcfType } from '@prisma/client';
 import { Fragment } from 'react';
@@ -68,20 +69,20 @@ export default function PayInvoice({
         });
     };
 
-   const handlePaymentMethodChange = (option: any) => {
-    if (!Invoice) return;
+    const handlePaymentMethodChange = (option: any) => {
+        if (!Invoice) return;
 
-    const isCash = option?.value === 'cash';
-    const total = (Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0);
+        const isCash = option?.value === 'cash';
+        const total = (Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0);
 
-    setInvoice({
-        ...Invoice,
-        paymentMethod: option?.value || '',
-        paymentDetails: {
-            ...(isCash ? {} : { receivedAmount: total.toFixed(2) }),
-        },
-    });
-};
+        setInvoice({
+            ...Invoice,
+            paymentMethod: option?.value || '',
+            paymentDetails: {
+                ...(isCash ? {} : { receivedAmount: total.toFixed(2) }),
+            },
+        });
+    };
 
 
     const renderAmountInput = () => {
@@ -257,38 +258,40 @@ export default function PayInvoice({
                                         </div>
                                     </div>
                                     <div className="mt-6 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4 text-lg">
-                                        <div>
+                                        <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Subtotal</span>
                                             <span className="font-semibold">
-                                                RD$ {Invoice.subtotal?.toFixed(2) || '0.00'}
+                                                {formatCurrency(Invoice.subtotal ?? 0)}
                                             </span>
                                         </div>
-                                        <div>
+                                        <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">ITBIS</span>
                                             <span className="font-semibold">
-                                                RD$ {Invoice.itbis?.toFixed(2) || '0.00'}
+                                                {formatCurrency(Invoice.itbis ?? 0)}
                                             </span>
                                         </div>
-                                        <div>
-                                            <span className="block text-gray-500 dark:text-gray-400">Total</span>
-                                            <span className="font-semibold">
-                                                RD$ {((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)).toFixed(2)}
+                                        <div className="flex flex-col items-center text-center bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg">
+                                            <span className="block  font-bold">Total</span>
+                                            <span className="font-bold">
+                                                {formatCurrency((Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0))}
                                             </span>
                                         </div>
-                                        <div>
+                                        <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Recibido</span>
                                             <span className="font-semibold">
-                                                RD$ {parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0).toFixed(2)}
+                                                {formatCurrency((Invoice.paymentDetails as any)?.receivedAmount || 0)}
                                             </span>
                                         </div>
-                                        <div>
+                                        <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Devuelta</span>
                                             <span className="font-semibold">
-                                                RD$ {Math.max(
-                                                    parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0) -
-                                                    ((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)),
-                                                    0
-                                                ).toFixed(2)}
+                                                {formatCurrency(
+                                                    Math.max(
+                                                        parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0) -
+                                                        ((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)),
+                                                        0
+                                                    )
+                                                )}
                                             </span>
                                         </div>
                                     </div>
