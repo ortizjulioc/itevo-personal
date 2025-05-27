@@ -1,6 +1,5 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getHolidays = async (page: number, top: number, search: string) => {
     const skip = (page - 1) * top;

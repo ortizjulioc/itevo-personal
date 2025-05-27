@@ -1,6 +1,5 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getCourseSchedules = async (filters: any) => {
 

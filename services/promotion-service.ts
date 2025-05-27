@@ -1,7 +1,5 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
 
 // Obtener promociones con paginación y búsqueda
 export const getPromotions = async (search: string, page: number, top: number) => {

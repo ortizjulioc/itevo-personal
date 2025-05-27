@@ -1,3 +1,4 @@
+import 'server-only';
 import { Prisma } from "@/utils/lib/prisma";
 import { generateNcf } from "@/utils/ncf";
 import { Invoice, InvoiceItem, InvoiceItemType, InvoiceStatus, NcfType, User } from "@prisma/client";

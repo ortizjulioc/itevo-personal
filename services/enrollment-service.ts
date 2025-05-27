@@ -1,6 +1,6 @@
 import 'server-only';
-import { PrismaClient, EnrollmentStatus } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { EnrollmentStatus } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {
     const { studentId, courseBranchId, status, enrollmentDate, page, top } = filters;

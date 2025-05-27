@@ -1,7 +1,6 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 const bcrypt = require('bcrypt');
-const Prisma = new PrismaClient();
 
 export const getSettings = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;

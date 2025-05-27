@@ -1,4 +1,5 @@
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
+import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { InvoiceItemType, PrismaClient } from '@prisma/client';
@@ -37,9 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         // Validar y calcular impuestos según el tipo de ítem
         if (body.type === InvoiceItemType.PRODUCT && body.productId) {
             // TODO: cambiar implementacion por la version con servicios, cuando este disponible
-            const product = await Prisma.product.findUnique({
-                where: { id: body.productId },
-            });
+            const product = await findProductById(body.productId);
 
             if (!product) {
                 throw new Error(`Producto ${body.productId} no encontrado`);
@@ -56,11 +55,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 itbis = subtotal * product.taxRate;
             }
 
-            // Actualizar el stock del producto
-            await Prisma.product.update({
-                where: { id: body.productId },
-                data: { stock: product.stock - body.quantity },
-            });
             body.concept = product.name;
         } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
             // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
