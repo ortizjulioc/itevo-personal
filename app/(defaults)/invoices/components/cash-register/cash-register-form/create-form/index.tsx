@@ -7,11 +7,13 @@ import { createValidationSchema, initialValues } from '../form.config';
 
 import { useSession } from 'next-auth/react';
 import { createCashRegister } from '@/app/(defaults)/invoices/lib/cash-register/cash-register-request';
+import { useState } from 'react';
 
 
 export default function CreateCashRegisterForm() {
     const route = useRouter();
     const { data: session, status } = useSession();
+    const [loading, setLoading] = useState(false);
     const user = session?.user as {
         id: string;
         name?: string | null;
@@ -21,48 +23,62 @@ export default function CreateCashRegisterForm() {
         lastName?: string;
         roles?: any[];
         branches?: any[];
-      };
-      
- 
+    };
+
+
     console.log(session, status);
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const handleSubmit = async (values: any, { setSubmitting }: any) => {
-        setSubmitting(true);
-     
+    const handleSubmit = async (values: any) => {
+
+        setLoading(true);
         console.log('user', user);
 
-        if ( !user?.branches || user.branches.length === 0) {
+        if (!user?.branches || user.branches.length === 0) {
             openNotification('error', 'No se encontró una sucursal asociada al usuario');
-            setSubmitting(false);
+            setLoading(false);
             return;
         }
-        if(!user.id) {
+
+        if (!user.id) {
             openNotification('error', 'No se encontró el usuario asociado al registro de caja');
-            setSubmitting(false);
+            setLoading(false);
             return;
         }
-        
-        
+
         const valuesToSend = {
             name: values.name,
             branchId: user.branches[0].id,
             userId: user.id,
             initialBalance: Number(values.initialBalance),
             openingDate: new Date(),
-
         };
-        const resp = await createCashRegister(valuesToSend);
 
-        if (resp.success) {
-            openNotification('success', 'CashRegister creado correctamente');
-            const cashRegister = resp.data as any;
-            if (cashRegister?.id) {
-                route.push(`/invoices/${cashRegister.id}`);
+        try {
+            const resp = await createCashRegister(valuesToSend);
+
+            if (resp.success) {
+                openNotification('success', 'CashRegister creado correctamente');
+                const cashRegister = resp.data as any;
+
+                if (cashRegister?.id) {
+                    await route.push(`/invoices/${cashRegister.id}`);
+                   
+                    return;
+                } else {
+                    openNotification('error', 'No se pudo obtener el ID de la caja creada');
+                }
+            } else {
+                openNotification('error', resp.message);
             }
-        } else {
-            openNotification('error', resp.message);
+        } catch (error) {
+            console.error(error);
+            openNotification('error', 'Ocurrió un error inesperado');
         }
+
+        // Si hubo algún fallo en todo el proceso, se permite volver a intentar
+        setLoading(false);
     };
+
 
     return (
         <div className="panel">
@@ -72,7 +88,7 @@ export default function CreateCashRegisterForm() {
                     <Form className="form">
 
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
-                            <Field type="text" name="name" component={Input}  />
+                            <Field type="text" name="name" component={Input} />
                         </FormItem>
                         <FormItem name="initialBalance" label="Saldo Inicial" invalid={Boolean(errors.initialBalance && touched.initialBalance)} errorMessage={errors.initialBalance}>
                             <Field type="number" name="initialBalance" component={Input} placeholder="Ingrese el saldo inicial" />
@@ -82,8 +98,8 @@ export default function CreateCashRegisterForm() {
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar
                             </Button>
-                            <Button loading={isSubmitting} type="submit">
-                                {isSubmitting ? 'Guardando...' : 'Guardar'}
+                            <Button loading={loading} type="submit">
+                                {loading ? 'Guardando...' : 'Guardar'}
                             </Button>
                         </div>
                     </Form>

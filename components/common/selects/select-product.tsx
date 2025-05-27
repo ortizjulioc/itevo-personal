@@ -22,7 +22,7 @@ interface SelectProductProps {
   disabled?: boolean;
 }
 
-// 👇 Aquí usamos forwardRef
+
 const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, disabled }, ref) => {
   const [options, setOptions] = useState<ProductSelect[]>([]);
 
@@ -93,7 +93,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
 
   return (
     <div>
-      <Select<ProductSelect, false, GroupBase<ProductSelect>>
+      <Select
         ref={ref} // ✅ Se pasa el ref correctamente
         loadOptions={loadOptions}
         cacheOptions
