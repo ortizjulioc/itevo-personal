@@ -1,9 +1,9 @@
 import { Prisma } from "@/utils/lib/prisma";
 import { generateNcf } from "@/utils/ncf";
-import { Invoice, InvoiceItem, InvoiceItemType, InvoiceStatus, NcfType } from "@prisma/client";
-
-interface InvoiceWithItems extends Invoice {
+import { Invoice, InvoiceItem, InvoiceItemType, InvoiceStatus, NcfType, User } from "@prisma/client";
+export interface InvoiceWithItems extends Invoice {
     items: InvoiceItem[];
+    user: Pick<User, 'id' | 'name' | 'email' | 'lastName'>;
 }
 export interface InvoiceCreateDataType {
     invoiceNumber: string;
@@ -24,6 +24,7 @@ export interface InvoiceItemCreateData {
     unitPrice: number;
     subtotal: number;
     itbis: number;
+    concept?: string;
 }
 
 export interface InvoicePaymentData {
@@ -134,7 +135,17 @@ export const findInvoiceById = async (
 ): Promise<InvoiceWithItems | null> => {
     return await Prisma.invoice.findUnique({
         where: { id },
-        include: { items: true },
+        include: {
+            items: true, 
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    lastName: true,
+                },
+            }
+        },
     });
 }
 
@@ -151,6 +162,7 @@ export const addNewItemToInvoice = async (invoiceId: string, data: InvoiceItemCr
                 unitPrice: data.unitPrice,
                 subtotal: data.subtotal,
                 itbis: data.itbis,
+                concept: data.concept,
             },
         });
 

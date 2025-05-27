@@ -13,6 +13,7 @@ interface InvoiceItemInput {
     accountReceivableId: string | null;
     quantity: number;
     unitPrice: number;
+    concept: string;
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 where: { id: body.productId },
                 data: { stock: product.stock - body.quantity },
             });
+            body.concept = product.name;
         } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
             // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
             const receivable = await Prisma.accountReceivable.findUnique({
@@ -84,6 +86,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             } else {
                 itbis = subtotal * taxRate;
             }
+            body.concept = 'Pago de cuota de curso';
         } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
             throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
         }
@@ -95,6 +98,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             accountReceivableId: body.accountReceivableId,
             quantity: body.quantity,
             unitPrice: body.unitPrice,
+            concept: body.concept,
             subtotal,
             itbis,
         });

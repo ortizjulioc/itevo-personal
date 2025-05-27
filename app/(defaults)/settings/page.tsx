@@ -7,9 +7,8 @@ import { Fragment } from "react";
 
 
 
-export default function EditSetting({ params }: { params: { id: string } }) {
-    const { id } = params;
-    const { loading, Setting } = useFetchSetting();
+export default function EditSetting() {
+    const { setting } = useFetchSetting();
     
     return (
         <>
@@ -34,7 +33,7 @@ export default function EditSetting({ params }: { params: { id: string } }) {
                 <Tab.Panels>
                     <Tab.Panel>
                         <div className="mt-6">
-                            {Setting && <UpdateSettingForm initialValues={Setting} />}
+                            {setting && <UpdateSettingForm initialValues={setting} />}
                         </div>
                     </Tab.Panel>
                 </Tab.Panels>
