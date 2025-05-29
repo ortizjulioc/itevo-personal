@@ -11,6 +11,8 @@ import { TbCancel, TbCheck, TbPrinter, TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
 import { parse } from 'path';
+import PrintInvoice from '@/components/common/print/invoice';
+import PrintInvoiceModal from '../print-invoice';
 
 
 
@@ -35,6 +37,7 @@ export default function AddItemsInvoices({
     const [itemLoading, setItemloading] = useState(false)
     const [paymentLoading, setPaymentLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
+    const [openPrintModal, setOpenPrintModal] = useState(false);
 
     const onSelectProduct = (selected: ProductSelect | null) => {
         if (!selected) return;
@@ -67,7 +70,8 @@ export default function AddItemsInvoices({
 
         if (resp.success) {
             openNotification("success", "Factura pagada correctamente");
-            route.push(`/invoices/${cashRegisterId}`);
+            setOpenModal(false);
+            setOpenPrintModal(true);
 
         } else {
             openNotification("error", resp.message);
@@ -236,10 +240,7 @@ export default function AddItemsInvoices({
                     <TbCancel className='mr-1 size-6' />
                     Cancelar
                 </Button>
-                <Button type="button" color="primary" onClick={() => route.push('/invoices')} className="w-full md:w-auto">
-                    <TbPrinter className='mr-1 size-6' />
-                    Imprimir
-                </Button>
+
                 <Button type="button" color="success" onClick={() => (setOpenModal(true))} className="w-full md:w-auto">
                     <TbCheck className='mr-1 size-6' />
                     Completar
@@ -253,6 +254,16 @@ export default function AddItemsInvoices({
                 handleSubmit={handleSubmit}
                 paymentLoading={paymentLoading}
 
+            />
+            <PrintInvoiceModal
+                invoiceId={Invoice.id}
+                returnedInvoice={Math.max(
+                    parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0) -
+                    ((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)),
+                    0
+                )}
+                openModal={openPrintModal}
+                setOpenModal={setOpenPrintModal}
             />
         </div>
     );

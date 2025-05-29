@@ -5,6 +5,7 @@ import { InvoicePDF } from '@/components/pdf/invoice';
 import { Button } from '@/components/ui';
 import { pdf } from '@react-pdf/renderer';
 import React, { useEffect } from 'react'
+import { IoMdPrint } from 'react-icons/io';
 
 type PrintInvoiceProps = {
   invoiceId: string;
@@ -86,7 +87,12 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
 
   return (
     <>
-      <Button onClick={onPrint} loading={loading}>
+      <Button 
+        onClick={onPrint} 
+        loading={loading}
+        icon={<IoMdPrint className='text-lg ' />}
+        >
+
         {loading ? 'Generando factura ...' : 'Imprimir'}
       </Button>
     </>

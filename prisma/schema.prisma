@@ -294,6 +294,7 @@ model AccountReceivable {
   status            PaymentStatus       @default(PENDING)
   createdAt         DateTime            @default(now()) @map("created_at")
   updatedAt         DateTime            @updatedAt @map("updated_at")
+  amountPaid        Float               @default(0) @map("amount_paid")
   courseBranch      CourseBranch        @relation(fields: [courseBranchId], references: [id])
   student           Student             @relation(fields: [studentId], references: [id])
   InvoiceItem       InvoiceItem[]
@@ -471,7 +472,7 @@ model Invoice {
   itbis          Float         @default(0)
   paymentDate    DateTime?     @map("payment_date")
   paymentMethod  String?       @default("") @map("payment_method")
-  paymentDetails Json?          @default("{}") @map("payment_details")
+  paymentDetails String?       @map("payment_details") @db.LongText
   status         InvoiceStatus @default(DRAFT)
   createdBy      String        @map("created_by")
   createdAt      DateTime      @default(now()) @map("created_at")

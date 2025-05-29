@@ -58,8 +58,8 @@ export const getAccountsReceivable = async (
       courseId: filters.courseId,
     };
   }
-  
-  const [ accountsReceivable, totalAccountsReceivable ] = await Promise.all([
+
+  const [accountsReceivable, totalAccountsReceivable] = await Promise.all([
     Prisma.accountReceivable.findMany({
       orderBy: [
         { createdAt: 'asc' },
@@ -156,9 +156,27 @@ export const updateAccountReceivableById = async (id: string, data: PrismaTypes.
   });
 };
 
-export const createAccountReceivable = async (data: PrismaTypes.AccountReceivableCreateInput) => {
+export const createAccountReceivable = async (data: {
+  studentId: string;
+  courseBranchId: string;
+  amount: number;
+  dueDate: Date;
+  status?: PaymentStatus;
+  amountPaid?: number;
+}) => {
   const accountReceivable = await Prisma.accountReceivable.create({
-    data: data,
+    data: {
+      student: {
+        connect: { id: data.studentId },
+      },
+      courseBranch: {
+        connect: { id: data.courseBranchId },
+      },
+      amount: data.amount,
+      dueDate: data.dueDate,
+      status: data.status || PaymentStatus.PENDING,
+      amountPaid: data.amountPaid || 0,
+    },
   });
   return accountReceivable;
 };

@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
     }
 
     const accountReceivable = await createAccountReceivable({
-      student: body.studentId,
-      courseBranch: body.courseBranchId,
+      studentId: body.studentId,
+      courseBranchId: body.courseBranchId,
       amount: parseFloat(body.amount),
       dueDate: new Date(body.dueDate),
       status: body.status || PaymentStatus.PENDING,
