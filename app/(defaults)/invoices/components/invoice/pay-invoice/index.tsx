@@ -1,12 +1,14 @@
 'use client';
+import PrintInvoice from '@/components/common/print/invoice';
 import { Button, Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
 import { Invoice, NcfType } from '@prisma/client';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { TbCancel, TbCheck } from 'react-icons/tb';
 import { StylesConfig } from 'react-select';
+import PrintInvoiceMpdal from '../print-invoice';
 
 type OptionType = {
     value: string;
@@ -56,6 +58,7 @@ export default function PayInvoice({
 }: CustomModalProps) {
     if (!Invoice) return null;
 
+    const [openPrintModal, setOpenPrintModal] = useState(false);
 
     const handleDetailsChange = (key: string, value: string) => {
         const currentDetails = (Invoice.paymentDetails || {}) as Record<string, any>;
@@ -251,7 +254,7 @@ export default function PayInvoice({
                                                 onChange={handlePaymentMethodChange}
                                                 isSearchable={false}
                                                 placeholder="Selecciona un método de pago"
-                                                styles={customStyles}
+                                            //styles={customStyles}
 
                                             />
                                             {renderPaymentDetails()}
@@ -301,11 +304,18 @@ export default function PayInvoice({
                                             <TbCancel className='mr-1 size-6' />
                                             Cancelar
                                         </Button>
-                                        <Button type="button" onClick={handleSubmit} className="w-full md:w-auto" loading={paymentLoading}>
+                                        <Button type="button" onClick={ async () => {
+                                            await handleSubmit(); 
+                                            setOpenPrintModal(true);
+                                            setOpenModal(false)
+                                        }
+
+                                        } className="w-full md:w-auto" loading={paymentLoading}>
                                             <TbCheck className='mr-1 size-6' />
                                             Pagar
                                         </Button>
                                     </div>
+                                    
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>
