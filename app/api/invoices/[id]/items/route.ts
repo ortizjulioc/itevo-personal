@@ -1,10 +1,10 @@
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType, PrismaClient } from '@prisma/client';
+import { AccountReceivable, CourseBranch, InvoiceItemType, PaymentStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-const Prisma = new PrismaClient();
 
 
 // Tipo para los datos de entrada del ítem
@@ -15,6 +15,10 @@ interface InvoiceItemInput {
     quantity: number;
     unitPrice: number;
     concept: string;
+}
+
+interface AccountReceivableWithCourseBranch extends AccountReceivable {
+    courseBranch: CourseBranch;
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -35,57 +39,53 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         let subtotal = body.unitPrice * body.quantity;
         let itbis = 0;
 
-        // Validar y calcular impuestos según el tipo de ítem
-        if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-            // TODO: cambiar implementacion por la version con servicios, cuando este disponible
-            const product = await findProductById(body.productId);
-
-            if (!product) {
-                throw new Error(`Producto ${body.productId} no encontrado`);
+        await Prisma.$transaction(async (prisma) => {
+            // Validar y calcular impuestos según el tipo de ítem
+            if (body.type === InvoiceItemType.PRODUCT && body.productId) {
+                // TODO: cambiar implementacion por la version con servicios, cuando este disponible
+                const product = await findProductById(body.productId);
+    
+                if (!product) {
+                    throw new Error(`Producto ${body.productId} no encontrado`);
+                }
+                if (product.stock < body.quantity) {
+                    throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
+                }
+    
+                if (product.isTaxIncluded) {
+                    const total = subtotal;
+                    subtotal = total / (1 + product.taxRate);
+                    itbis = total - subtotal;
+                } else {
+                    itbis = subtotal * product.taxRate;
+                }
+    
+                body.concept = product.name;
+                await updateProductById(body.productId, {
+                    stock: product.stock - body.quantity,
+                }, prisma);
+            } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
+                // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
+                const receivable = await Prisma.accountReceivable.findUnique({
+                    where: { id: body.accountReceivableId },
+                    include: { courseBranch: true },
+                });
+    
+                if (!receivable) {
+                    throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
+                }
+                if (receivable.status !== PaymentStatus.PENDING) {
+                    throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
+                }
+    
+                
+            } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
+                throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
             }
-            if (product.stock < body.quantity) {
-                throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
-            }
 
-            if (product.isTaxIncluded) {
-                const total = subtotal;
-                subtotal = total / (1 + product.taxRate);
-                itbis = total - subtotal;
-            } else {
-                itbis = subtotal * product.taxRate;
-            }
+            // Crear el ítem y actualizar la factura en una transacción
+        });
 
-            body.concept = product.name;
-        } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
-            // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
-            const receivable = await Prisma.accountReceivable.findUnique({
-                where: { id: body.accountReceivableId },
-                include: { courseBranch: true },
-            });
-
-            if (!receivable) {
-                throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
-            }
-            if (receivable.status !== 'PENDING') {
-                throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
-            }
-
-            const taxRate = receivable.courseBranch.taxRate;
-            const isTaxIncluded = receivable.courseBranch.isTaxIncluded;
-
-            if (isTaxIncluded) {
-                const total = subtotal;
-                subtotal = total / (1 + taxRate);
-                itbis = total - subtotal;
-            } else {
-                itbis = subtotal * taxRate;
-            }
-            body.concept = 'Pago de cuota de curso';
-        } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
-            throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
-        }
-
-        // Crear el ítem y actualizar la factura en una transacción
         const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
             type: body.type,
             productId: body.productId,
@@ -96,6 +96,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             subtotal,
             itbis,
         });
+
 
         // Registrar log de éxito
         await createLog({
