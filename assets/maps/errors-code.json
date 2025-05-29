@@ -22,6 +22,7 @@
   "E_SERVER_ERROR_SCHEDULE": "Error del servidor con el horario",
   "E_STUDENT_NOT_FOUND": "Estudiante no encontrado",
   "E_TEACHER_NOT_FOUND": "Profesor no encontrado",
-  "E_USER_NOT_FOUND": "Usuario no encontrado"
+  "E_USER_NOT_FOUND": "Usuario no encontrado",
+  "E_ATTENDANCE_NOT_FOUND": "Asistencia no encontrada"
 
 }
