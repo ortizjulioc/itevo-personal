@@ -52,7 +52,6 @@ export const createLog = async (logData: LogData): Promise<void> => {
             const existingLogs = await fs.readFile(logFilePath, "utf-8");
             logs = JSON.parse(existingLogs);
         } catch (err) {
-            console.error("Error leyendo el archivo de logs:", err);
             if (err instanceof Error && "code" in err && err.code === "ENOENT") {
                 // Si el error tiene la propiedad 'code' y es "ENOENT", lo ignoramos
                 logs = [];

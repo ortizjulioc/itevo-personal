@@ -472,7 +472,7 @@ model Invoice {
   itbis          Float         @default(0)
   paymentDate    DateTime?     @map("payment_date")
   paymentMethod  String?       @default("") @map("payment_method")
-  paymentDetails String?       @map("payment_details") @db.LongText
+  paymentDetails Json?         @default("{}") @map("payment_details")
   status         InvoiceStatus @default(DRAFT)
   createdBy      String        @map("created_by")
   createdAt      DateTime      @default(now()) @map("created_at")

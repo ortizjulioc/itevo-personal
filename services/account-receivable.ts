@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PaymentStatus, Prisma as PrismaTypes } from '@prisma/client';
+import { PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 export const getAccountsReceivable = async (
   filters: {
@@ -179,6 +179,33 @@ export const createAccountReceivable = async (data: {
     },
   });
   return accountReceivable;
+};
+
+export const createManyAccountsReceivable = async (
+  data: {
+    studentId: string;
+    courseBranchId: string;
+    amount: number;
+    dueDate: Date;
+    status?: PaymentStatus;
+    amountPaid?: number;
+  }[],
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  const formattedData = data.map(item => ({
+    studentId: item.studentId,
+    courseBranchId: item.courseBranchId,
+    amount: item.amount,
+    dueDate: item.dueDate,
+    status: item.status || PaymentStatus.PENDING,
+    amountPaid: item.amountPaid || 0,
+  }));
+
+  const result = await prisma.accountReceivable.createMany({
+    data: formattedData,
+  });
+
+  return { count: result.count };
 };
 
 export const cancelAccountReceivableById = async (id: string) => {
