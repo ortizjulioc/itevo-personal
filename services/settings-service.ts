@@ -28,9 +28,47 @@ export const getSettings = async (search: string, page: number, top: number) => 
 };
 
 export const createSetting = async (data: any) => {
-    const setting = await Prisma.setting.create({ data: data });
-    return setting;
+    // Verificar si ya existe un setting
+    const existingSetting = await Prisma.setting.findFirst({
+        where: { deleted: false },
+    });
+
+    // Si ya existe un setting, lo actualizamos
+    if (existingSetting) {
+        return Prisma.setting.update({
+            where: { id: existingSetting.id },
+            data: {
+                ...data,
+                defaultPassword: data.defaultPassword ? bcrypt.hashSync(data.defaultPassword, 10) : existingSetting.defaultPassword,
+            },
+        });
+    }
+
+    // Si no existe, creamos uno nuevo
+    return Prisma.setting.create({
+        data: {
+            ...data,
+            defaultPassword: data.defaultPassword ? bcrypt.hashSync(data.defaultPassword, 10) : undefined,
+        },
+    });
 };
+
+export const changeLogo = async (logo: string) => {
+    // Verificar si ya existe un setting
+    const existingSetting = await Prisma.setting.findFirst({
+        where: { deleted: false },
+    });
+
+    if (existingSetting) {
+        // Actualizar el logo del setting existente
+        return Prisma.setting.update({
+            where: { id: existingSetting.id },
+            data: { logo: logo },
+        });
+    } else {
+        throw new Error('No se encontró una configuracion existente para actualizar el logo.');
+    }
+}
 
 
 // Actualizar setting por ID
