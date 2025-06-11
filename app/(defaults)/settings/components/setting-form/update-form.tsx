@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Setting } from '@prisma/client';
 import { FormatPatterInput } from '@/components/common';
-import { updateSetting } from '../../lib/request';
+import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
 
@@ -25,13 +25,51 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
     }
 
+    const handleUploadLogo = async (file: File, setFieldValue:(path:string,value:any)=>void) => {
+
+        const resp = await uploadLogo(file);
+        
+       
+        if (resp.success) {
+            openNotification('success', 'Logo actualizado correctamente');
+             const url = (resp as any).data.url as string;
+            //const url = resp.data?.url as string;
+             console.log('Logo URL:', url);
+        if (!url) {
+            openNotification('error', 'No se pudo obtener la URL del logo');
+            return;
+        }
+            setFieldValue('logo', url);
+        } else {
+            openNotification('error', resp.message);
+        }
+    }
+
+    const handleDeleteLogo = async (file:string) => {
+        const fileName = file.split('/').pop();
+        if (!fileName) {
+            openNotification('error', 'No se pudo obtener el nombre del archivo');
+            return;
+        }
+    console.log('Deleting logo with file name:', fileName);
+        const resp = await deleteLogo(fileName);
+        if (resp.success) {
+            openNotification('success', 'Logo eliminado correctamente');
+        } else {
+            openNotification('error', resp.message);
+        }
+    }
+
+
+
+
 
     return (
         <div>
 
 
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched }) => (
+                {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
                         <Tab.Group>
                             <Tab.List className="flex flex-wrap">
@@ -69,7 +107,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             errorMessage={errors.phone}
                                         >
                                             <Field name="phone">
-                                                {({ form }: any) => (
+                                                {({ form,  setFieldValue }: any) => (
                                                     <FormatPatterInput
                                                         format="(###) ###-####"
                                                         placeholder="(___) ___-____"
@@ -99,9 +137,11 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                         <FormItem name="logo" label="Logo" invalid={Boolean(errors.logo && touched.logo)} errorMessage={errors.logo}>
                                             <ImageUploader
                                                 value={values.logo}
-                                                onChange={(value: string) => {
-                                                    values.logo = value;
-                                                }}
+                                                // onChange={(value: string) => {
+                                                //     setFieldValue('logo', value);
+                                                // }}
+                                                onUpload={(file: File) => handleUploadLogo(file, setFieldValue)}
+                                                onDelete={() => handleDeleteLogo(values.logo)}
                                             />
                                         </FormItem>
                                     </div>
@@ -110,7 +150,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                         </Tab.Group>
 
 
-                    
+
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
