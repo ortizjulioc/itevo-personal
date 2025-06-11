@@ -40,3 +40,6 @@ settings.json
 
 # LOGS
 logs
+
+# Uploaded files
+/public/uploads
