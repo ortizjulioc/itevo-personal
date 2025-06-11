@@ -13,6 +13,9 @@ import PayInvoice from '../pay-invoice';
 import { parse } from 'path';
 import PrintInvoice from '@/components/common/print/invoice';
 import PrintInvoiceModal from '../print-invoice';
+import { Tab } from '@headlessui/react';
+import { Fragment } from 'react';
+import SelectAccountsReceivable, { AccountsReceivableSelect } from '@/components/common/selects/select-accounts-receivable';
 
 
 
@@ -38,6 +41,7 @@ export default function AddItemsInvoices({
     const [paymentLoading, setPaymentLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
     const [openPrintModal, setOpenPrintModal] = useState(false);
+    
 
     const onSelectProduct = (selected: ProductSelect | null) => {
         if (!selected) return;
@@ -45,7 +49,8 @@ export default function AddItemsInvoices({
             ...prev!,
             productId: selected.value,
             unitPrice: selected.price,
-
+            accountReceivableId: null,
+            // Aseguramos que el concepto esté definido
         }));
 
         console.log('quantityRef', quantityRef.current);
@@ -58,6 +63,27 @@ export default function AddItemsInvoices({
             quantityRef.current.focus();
         }
     }
+    const onSelectAccountReceivable = (selected: AccountsReceivableSelect | null) => {
+        if (!selected) return;
+        setItem((prev) => ({
+            ...prev!,
+            accountReceivableId: selected.value,
+            unitPrice: selected.amount, 
+            productId: null,
+            concept: selected.concept || '' // Aseguramos que no haya producto seleccionado
+        }));
+
+        if (quantityRef.current) {
+            setItem((prev) => ({
+                ...prev!,
+                quantity: 1,
+            }));
+            quantityRef.current.select();
+            quantityRef.current.focus();
+        }
+        
+    }
+
 
 
     const handleSubmit = async () => {
@@ -81,7 +107,7 @@ export default function AddItemsInvoices({
     }
     const handleAddItem = async () => {
         setItemloading(true);
-        if (!item?.productId || !item?.quantity) {
+        if ( !item?.quantity) {
             openNotification('error', 'datos faltantes');
             setItemloading(false);
             return;
@@ -128,42 +154,106 @@ export default function AddItemsInvoices({
         setItemloading(false);
     }
 
-
+console.log('Item', item);
     return (
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-9 col-span-12">
-                    <div className="flex flex-col md:flex-row items-stretch gap-4">
-                        <div className="flex-1">
-                            <SelectProduct
-                                ref={productRef}
-                                value={item?.productId ?? undefined}
-                                onChange={onSelectProduct}
-                                disabled={itemLoading}
-                            />
-                        </div>
-                        <div className="w-full md:w-1/4">
-                            <Input
-                                ref={quantityRef}
-                                placeholder="Cantidad"
-                                type="number"
-                                value={item?.quantity ?? ''}
-                                disabled={itemLoading}
-                                onChange={(e) => {
-                                    setItem((prev) => ({
-                                        ...prev!,
-                                        quantity: Number(e.target.value),
-                                    }));
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault(); // evita que el form haga submit
-                                        handleAddItem();    // agrega el producto si los datos están listos
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <Tab.Group>
+                        <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
+                            <Tab as={Fragment}>
+                                {({ selected }) => (
+                                    <button
+                                        className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
+                        dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}>
+                                        Estudiantes
+                                    </button>
+                                )}
+                            </Tab>
+                            <Tab as={Fragment}>
+                                {({ selected }) => (
+                                    <button
+                                        className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
+                        dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}>
+                                        Productos
+                                    </button>
+                                )}
+                            </Tab>
+                           
+                        </Tab.List>
+
+                        <Tab.Panels>
+                            {/* Tab: Productos */}
+                            
+
+                            {/* Tab: Estudiantes */}
+                            <Tab.Panel>
+                                <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+                                    <div className="flex-1">
+                                        <SelectAccountsReceivable
+                                            value={item?.accountReceivableId ?? undefined}
+                                            onChange={onSelectAccountReceivable}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/4">
+                                        <Input
+                                            ref={quantityRef}
+                                            placeholder="Monto a pagar"
+                                            type="number"
+                                            value={item?.unitPrice ?? ''}
+                                            disabled={itemLoading}
+                                            onChange={(e) => {
+                                                setItem((prev) => ({
+                                                    ...prev!,
+                                                    unitPrice: Number(e.target.value),
+                                                }));
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleAddItem();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </Tab.Panel>
+                            <Tab.Panel>
+                                <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+                                    <div className="flex-1">
+                                        <SelectProduct
+                                            ref={productRef}
+                                            value={item?.productId ?? undefined}
+                                            onChange={onSelectProduct}
+                                            disabled={itemLoading}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/4">
+                                        <Input
+                                            ref={quantityRef}
+                                            placeholder="Cantidad"
+                                            type="number"
+                                            value={item?.quantity ?? ''}
+                                            disabled={itemLoading}
+                                            onChange={(e) => {
+                                                setItem((prev) => ({
+                                                    ...prev!,
+                                                    quantity: Number(e.target.value),
+                                                }));
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleAddItem();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </Tab.Panel>
+                        </Tab.Panels>
+                    </Tab.Group>
+
 
                     <div className="overflow-x-auto mt-4">
                         <table className="min-w-full table-auto">
@@ -182,17 +272,23 @@ export default function AddItemsInvoices({
                                 {Invoice?.items?.length === 0 && (
                                     <tr>
                                         <td colSpan={7} className="text-center text-gray-500 dark:text-gray-400 italic py-4">
-                                            No se encontraron productos registrados
+                                            No se han agregado items a esta factura.
                                         </td>
                                     </tr>
                                 )}
                                 {Invoice?.items?.map((item) => (
                                     <tr key={item.id} className="border-t text-sm">
                                         <td className="px-2 py-2">
-                                            <ProductLabel
+                                            {item.productId ? (
+                                                      <ProductLabel
                                                 ProductId={item.productId}
                                             />
 
+                                            ) : (
+                                                <span className="text-gray-500 dark:text-gray-400">
+                                                    {item.concept || 'Cuenta por cobrar'}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.unitPrice || 0)}</td>

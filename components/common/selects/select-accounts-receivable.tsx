@@ -13,6 +13,7 @@ export interface AccountsReceivableSelect {
   amount: number;
   label: JSX.Element | string;
   account?: AccountReceivable;
+  concept?: string;
 }
 
 export interface AccountsReceivablesResponse {
@@ -36,12 +37,19 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
       const response = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?search=${inputValue}`);
       if (!response.success) throw new Error(response.message);
 
+      console.log('Fetched AccountsReceivables:', response.data);
+      const courseName = (response.data as any)?.
+        courseBranch
+        ?.course?.name || 'N/A';
+
       return response.data?.accountsReceivable.map((account) => ({
         value: account.id,
         label: <StudentLabel StudentId={account.studentId} />,
         amount: account.amount,
         account,
+        concept: `Cuota curso: ${(account as any)?.courseBranch?.course?.name}`,
       })) || [];
+
     } catch (error) {
       console.error('Error fetching AccountsReceivables:', error);
       return [];
@@ -56,18 +64,21 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
     const { data, isSelected, innerRef, innerProps } = props;
     const { account } = data;
 
+
     return (
       <div
         ref={innerRef}
         {...innerProps}
-        className={`flex justify-between items-center px-4 py-2 rounded-md cursor-pointer transition ${
-          isSelected ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
-        }`}
+        className={`flex justify-between items-center px-4 py-2 rounded-md cursor-pointer transition ${isSelected ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+          }`}
       >
         <div className="flex flex-col">
-          <StudentLabel StudentId={account?.studentId} />
+
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {account?.student?.firstName}  {account?.student?.lastName}
+          </span>
           <span className="text-xs text-gray-500 dark:text-gray-400">
-            Fecha de vencimiento: {new Date(account?.dueDate!).toLocaleDateString()}
+            {account?.courseBranch?.course?.name}
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -82,10 +93,12 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
 
   const CustomSingleValue = (props: any) => {
     const { data } = props;
+    const { account } = data
+    console.log('CustomSingleValue data:', account);
     return (
       <components.SingleValue {...props}>
         <div className="flex justify-between items-center w-full">
-          <StudentLabel StudentId={data.account?.studentId} />
+          {account?.student?.firstName}  {account?.student?.lastName}
           <span className="text-sm font-semibold">{formatCurrency(data.amount)}</span>
         </div>
       </components.SingleValue>
@@ -101,10 +114,13 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
         try {
           const res = await apiRequest.get<AccountReceivable>(`/accounts-receivable/${value}`);
           if (res.success && res.data) {
+            const courseName =
+              (res.data as any)?.courseBranch?.course?.name || 'N/A';
             const option = {
               value: res.data.id,
               label: <StudentLabel StudentId={res.data.studentId} />,
               amount: res.data.amount,
+              concept: `Cuota curso: ${courseName}`,
               account: res.data,
             };
             setOptions((prev) => [...prev, option]);
