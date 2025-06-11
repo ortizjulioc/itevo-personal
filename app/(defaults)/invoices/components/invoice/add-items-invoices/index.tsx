@@ -154,7 +154,7 @@ export default function AddItemsInvoices({
         setItemloading(false);
     }
 
-console.log('Item', item);
+
     return (
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
