@@ -2,12 +2,12 @@
 import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
-import type { Invoice, InvoiceItem } from '@prisma/client';
+import type { AccountReceivable, Invoice, InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, payInvoice, removeItemsInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 import { IvoicebyId, useFetchItemInvoices } from '../../../lib/invoice/use-fetch-cash-invoices';
-import { TbCancel, TbCheck, TbPrinter, TbX } from 'react-icons/tb';
+import { TbCancel, TbCheck, TbPrinter, TbSearch, TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
 import { parse } from 'path';
@@ -15,8 +15,15 @@ import PrintInvoice from '@/components/common/print/invoice';
 import PrintInvoiceModal from '../print-invoice';
 import { Tab } from '@headlessui/react';
 import { Fragment } from 'react';
-import SelectAccountsReceivable, { AccountsReceivableSelect } from '@/components/common/selects/select-accounts-receivable';
 
+import SelectStudent from '@/components/common/selects/select-student';
+import apiRequest from '@/utils/lib/api-request/request';
+import AccountReceivableModal from '../account-receivable-modal';
+
+export interface AccountsReceivablesResponse {
+    accountsReceivable: AccountReceivable[];
+    totalAccountsReceivables: number;
+}
 
 
 
@@ -41,7 +48,12 @@ export default function AddItemsInvoices({
     const [paymentLoading, setPaymentLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
     const [openPrintModal, setOpenPrintModal] = useState(false);
-    
+    const [student, setStudent] = useState<string | null>(null);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [accountReceivables, setAccountReceivables] = useState<AccountReceivable[] | null>(null);
+
+
+
 
     const onSelectProduct = (selected: ProductSelect | null) => {
         if (!selected) return;
@@ -50,10 +62,10 @@ export default function AddItemsInvoices({
             productId: selected.value,
             unitPrice: selected.price,
             accountReceivableId: null,
-            // Aseguramos que el concepto esté definido
+
         }));
 
-        console.log('quantityRef', quantityRef.current);
+       
         if (quantityRef.current) {
             setItem((prev) => ({
                 ...prev!,
@@ -63,26 +75,7 @@ export default function AddItemsInvoices({
             quantityRef.current.focus();
         }
     }
-    const onSelectAccountReceivable = (selected: AccountsReceivableSelect | null) => {
-        if (!selected) return;
-        setItem((prev) => ({
-            ...prev!,
-            accountReceivableId: selected.value,
-            unitPrice: selected.amount, 
-            productId: null,
-            concept: selected.concept || '' // Aseguramos que no haya producto seleccionado
-        }));
 
-        if (quantityRef.current) {
-            setItem((prev) => ({
-                ...prev!,
-                quantity: 1,
-            }));
-            quantityRef.current.select();
-            quantityRef.current.focus();
-        }
-        
-    }
 
 
 
@@ -105,9 +98,9 @@ export default function AddItemsInvoices({
         }
         setPaymentLoading(false);
     }
-    const handleAddItem = async () => {
+    const handleAddItem = async (item:any) => {
         setItemloading(true);
-        if ( !item?.quantity) {
+        if (!item?.quantity) {
             openNotification('error', 'datos faltantes');
             setItemloading(false);
             return;
@@ -119,7 +112,7 @@ export default function AddItemsInvoices({
         const resp = await addItemsInvoice(InvoiceId, itemWithType);
 
         if (resp.success) {
-            openNotification('success', 'Producto agregado correctamente');
+            openNotification('success', 'Item agregado correctamente');
             setItem(null);
             await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
             if (productRef.current) {
@@ -135,17 +128,16 @@ export default function AddItemsInvoices({
     const handleDeteleItem = async (itemId: string) => {
         setItemloading(true);
         confirmDialog({
-            title: 'Eliminar producto',
-            text: '¿Seguro que quieres eliminar este producto?',
+            title: 'Eliminar Item',
+            text: '¿Seguro que quieres eliminar este Item?',
             confirmButtonText: 'Sí, eliminar',
             icon: 'error',
         }, async () => {
-            console.log('item', itemId);
-            console.log('factura', InvoiceId);
+           
             const resp = await removeItemsInvoice(InvoiceId, itemId);
             if (resp.success) {
-                openNotification('success', 'Producto eliminado correctamente');
-                await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
+                openNotification('success', 'Item eliminado correctamente');
+                await fetchInvoiceData(InvoiceId);
                 return;
             }
             openNotification('error', resp.message);
@@ -153,6 +145,33 @@ export default function AddItemsInvoices({
 
         setItemloading(false);
     }
+
+    const handleSearchAccountReceivables = async (studentId :string | null) => {
+        if (!studentId) {
+            openNotification('error', 'Por favor, selecciona un estudiante');
+            return;
+        }
+        setSearchLoading(true);
+        try {
+            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}`);
+            if (!res.success) {
+                openNotification('error', res.message);
+                return;
+            }
+            const accounts = res.data?.accountsReceivable || [];
+            if (accounts) {
+                setAccountReceivables(accounts);
+              
+            }
+        } catch (error) {
+            console.error('Error fetching accounts receivable:', error);
+            openNotification('error', 'Error al buscar cuentas por cobrar');
+        } finally {
+            setSearchLoading(false);
+        }
+    };
+
+  
 
 
     return (
@@ -179,43 +198,43 @@ export default function AddItemsInvoices({
                                     </button>
                                 )}
                             </Tab>
-                           
+
                         </Tab.List>
 
                         <Tab.Panels>
-                            {/* Tab: Productos */}
-                            
-
-                            {/* Tab: Estudiantes */}
                             <Tab.Panel>
-                                <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
-                                    <div className="flex-1">
-                                        <SelectAccountsReceivable
-                                            value={item?.accountReceivableId ?? undefined}
-                                            onChange={onSelectAccountReceivable}
-                                        />
-                                    </div>
-                                    <div className="w-full md:w-1/4">
-                                        <Input
-                                            ref={quantityRef}
-                                            placeholder="Monto a pagar"
-                                            type="number"
-                                            value={item?.unitPrice ?? ''}
-                                            disabled={itemLoading}
-                                            onChange={(e) => {
-                                                setItem((prev) => ({
-                                                    ...prev!,
-                                                    unitPrice: Number(e.target.value),
+                                <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 mt-4">
+                                    <div className="flex-2 w-full ">
+                                        <SelectStudent
+                                            value={student ?? undefined}
+                                            loading={searchLoading}
+                                            onChange={async (selected) => {
+                                                const studentId = selected?.value ?? null;
+
+                                                setStudent(studentId);
+                                                setInvoice((prev: IvoicebyId) => ({
+                                                    ...prev,
+                                                    studentId: studentId,
                                                 }));
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleAddItem();
-                                                }
+
+                                                await handleSearchAccountReceivables(studentId); // <-- pásalo directamente
                                             }}
                                         />
                                     </div>
+                                    {/* <div className="w-full md:w-1/3  flex items-center justify-center mr-2">
+                                        <Button
+                                            type="button"
+                                            color="primary"
+                                            size='sm'
+                                            className="h-9 w-full md:w-auto"
+                                            onClick={handleSearchAccountReceivables}
+                                            loading={searchLoading}
+                                            disabled={!student}
+                                        >
+                                            <TbSearch className='mr-1 size-5' />
+                                            Buscar
+                                        </Button>
+                                    </div> */}
                                 </div>
                             </Tab.Panel>
                             <Tab.Panel>
@@ -244,7 +263,7 @@ export default function AddItemsInvoices({
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
                                                     e.preventDefault();
-                                                    handleAddItem();
+                                                    handleAddItem(item);
                                                 }
                                             }}
                                         />
@@ -280,9 +299,9 @@ export default function AddItemsInvoices({
                                     <tr key={item.id} className="border-t text-sm">
                                         <td className="px-2 py-2">
                                             {item.productId ? (
-                                                      <ProductLabel
-                                                ProductId={item.productId}
-                                            />
+                                                <ProductLabel
+                                                    ProductId={item.productId}
+                                                />
 
                                             ) : (
                                                 <span className="text-gray-500 dark:text-gray-400">
@@ -360,6 +379,20 @@ export default function AddItemsInvoices({
                 )}
                 openModal={openPrintModal}
                 setOpenModal={setOpenPrintModal}
+            />
+            <AccountReceivableModal
+                studentId={student ?? ''}
+                accountReceivables={accountReceivables ?? []}
+                openModal={!!student && accountReceivables !== null}
+                handleAddItemsInvoice={handleAddItem}
+                setAccountsReceivables={setAccountReceivables}
+                setItem={setItem}
+                setOpenModal={(open) => {
+                    if (!open) {
+                        setAccountReceivables(null);
+                        setStudent(null);
+                    }
+                }}
             />
         </div>
     );

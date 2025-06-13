@@ -2,6 +2,7 @@ import PrintInvoice from '@/components/common/print/invoice';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
+import { set } from 'lodash';
 import { useParams, useRouter } from 'next/navigation';
 import React, { Fragment } from 'react'
 import { IoMdPrint } from 'react-icons/io';
@@ -24,11 +25,12 @@ export default function PrintInvoiceModal(
 
     const params = useParams();
     const cashRegisterId = params.id;
+    const [loading, setLoading] = React.useState(false);
 
 
     return (
         <Transition appear show={openModal} as={Fragment}>
-            <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
+            <Dialog as="div" open={openModal} onClose={() => { }}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -66,10 +68,10 @@ export default function PrintInvoiceModal(
                                     <Button
                                         type="button"
                                         onClick={() => {
-                                            setOpenModal(false);
+                                            setLoading(true);
                                             router.push(`/invoices/${cashRegisterId}`);
                                         }}
-                                        
+                                        loading={loading}
                                         className="flex items-center gap-1 px-4 py-2 rounded-md bg-success text-white shadow hover:bg-success-dark"
                                     >
                                         <TbCheck className="size-5" />
