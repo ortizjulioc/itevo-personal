@@ -34,7 +34,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
             openNotification('success', 'Logo actualizado correctamente');
              const url = (resp as any).data.url as string;
             //const url = resp.data?.url as string;
-             console.log('Logo URL:', url);
+         
         if (!url) {
             openNotification('error', 'No se pudo obtener la URL del logo');
             return;
@@ -51,7 +51,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
             openNotification('error', 'No se pudo obtener el nombre del archivo');
             return;
         }
-    console.log('Deleting logo with file name:', fileName);
+
         const resp = await deleteLogo(fileName);
         if (resp.success) {
             openNotification('success', 'Logo eliminado correctamente');

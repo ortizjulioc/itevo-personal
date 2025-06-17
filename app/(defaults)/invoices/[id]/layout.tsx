@@ -8,7 +8,7 @@ import InvoiceList from '../components/invoice/invoices-list';
 export default function layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
     const { id, billid } = params;
     const { loading, CashRegister } = useFetchCashRegistersById(id);
-    console.log(CashRegister, 'CashRegister')
+    
 
 
     return (

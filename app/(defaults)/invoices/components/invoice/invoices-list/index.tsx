@@ -9,7 +9,7 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
     const pathname = usePathname();
     const [newCardloading, setnewCardloading] = React.useState(false);
     useEffect(() => {
-       
+
         fetchInvoicesData('status=DRAFT');
         return () => {
             setnewCardloading(false);
@@ -33,6 +33,7 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
                 ) : (
                     invoices.map((invoice) => (
                         <InvoiceCard
+                            key={invoice.id}
                             invoice={invoice}
                             cashRegisterId={cashRegisterId}
                         />

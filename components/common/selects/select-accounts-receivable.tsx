@@ -37,7 +37,7 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
       const response = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?search=${inputValue}`);
       if (!response.success) throw new Error(response.message);
 
-      console.log('Fetched AccountsReceivables:', response.data);
+    
       const courseName = (response.data as any)?.
         courseBranch
         ?.course?.name || 'N/A';

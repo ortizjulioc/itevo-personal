@@ -23,7 +23,7 @@ export default function UserList({ className, query = '' }: Props) {
     }
 
     const onDelete = async (id: string) => {
-        console.log('delete', id);
+      
         confirmDialog({
             title: 'Eliminar usuario',
             text: '¿Seguro que quieres eliminar este usuario?',

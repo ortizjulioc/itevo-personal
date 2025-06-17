@@ -45,7 +45,7 @@ export default function ImageUploader({ value, onChange, onUpload, onDelete }: I
         if (onChange) {
             onChange(''); // Llama a la función onChange con cadena vacía
         }
-        console.log('Imagen eliminada');
+     
         if (onDelete) {
             onDelete();
         }

@@ -26,12 +26,12 @@ export default function CreateCashRegisterForm() {
     };
 
 
-    console.log(session, status);
+
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any) => {
 
         setLoading(true);
-        console.log('user', user);
+
 
         if (!user?.branches || user.branches.length === 0) {
             openNotification('error', 'No se encontró una sucursal asociada al usuario');

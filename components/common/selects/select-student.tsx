@@ -6,7 +6,7 @@ import { Student } from '@prisma/client';
 import { Select } from '@/components/ui';
 import { GroupBase } from 'react-select';
 
-interface StudentSelect {
+export interface StudentSelect {
   value: string;
   label: string;
 }
@@ -20,6 +20,7 @@ interface SelectStudentProps {
   value?: string;
   loading?: boolean;
   onChange?: (selected: StudentSelect | null) => void;
+  isDisabled?: boolean;
 }
 
 export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
@@ -76,7 +77,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         cacheOptions
         defaultOptions={options}
         isLoading={rest.loading}
-        isDisabled={rest.loading}
+        //isDisabled={rest.disabled}
         placeholder="-Estudiantes-"
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}

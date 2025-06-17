@@ -9,6 +9,7 @@ import { Fragment, useState } from 'react';
 import { TbCancel, TbCheck } from 'react-icons/tb';
 import { StylesConfig } from 'react-select';
 import PrintInvoiceMpdal from '../print-invoice';
+import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 
 type OptionType = {
     value: string;
@@ -25,8 +26,6 @@ const customStyles: StylesConfig<OptionType, false> = {
 interface CustomModalProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
-    Invoice: Invoice | null;
-    setInvoice: (value: Invoice | null) => void;
     handleSubmit: () => void;
     paymentLoading: boolean;
 }
@@ -51,20 +50,18 @@ type CheckDetails = {
 export default function PayInvoice({
     openModal,
     setOpenModal,
-    Invoice,
-    setInvoice,
     handleSubmit,
     paymentLoading
 }: CustomModalProps) {
-    if (!Invoice) return null;
+   const {invoice ,setInvoice} = useInvoice()
 
     const [openPrintModal, setOpenPrintModal] = useState(false);
 
     const handleDetailsChange = (key: string, value: string) => {
-        const currentDetails = (Invoice.paymentDetails || {}) as Record<string, any>;
+        const currentDetails = (invoice.paymentDetails || {}) as Record<string, any>;
 
         setInvoice({
-            ...Invoice,
+            ...invoice,
             paymentDetails: {
                 ...currentDetails,
                 [key]: value,
@@ -73,13 +70,13 @@ export default function PayInvoice({
     };
 
     const handlePaymentMethodChange = (option: any) => {
-        if (!Invoice) return;
+        if (!invoice) return;
 
         const isCash = option?.value === 'cash';
-        const total = (Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0);
+        const total = (invoice.subtotal ?? 0) + (invoice.itbis ?? 0);
 
         setInvoice({
-            ...Invoice,
+            ...invoice,
             paymentMethod: option?.value || '',
             paymentDetails: {
                 ...(isCash ? {} : { receivedAmount: total.toFixed(2) }),
@@ -96,9 +93,9 @@ export default function PayInvoice({
                     placeholder="Monto recibido"
                     type="number"
                     min="0"
-                    value={(Invoice.paymentDetails as any)?.receivedAmount || ''}
+                    value={(invoice.paymentDetails as any)?.receivedAmount || ''}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}
-                    disabled={Invoice.paymentMethod !== 'cash'} // 👈 opcional para bloquear edición
+                    disabled={invoice.paymentMethod !== 'cash'} // 👈 opcional para bloquear edición
                 />
 
             </div>
@@ -106,9 +103,9 @@ export default function PayInvoice({
     };
 
     const renderPaymentDetails = () => {
-        switch (Invoice.paymentMethod) {
+        switch (invoice.paymentMethod) {
             case 'credit_card': {
-                const creditDetails = Invoice.paymentDetails as CreditCardDetails;
+                const creditDetails = invoice.paymentDetails as CreditCardDetails;
                 return (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -136,7 +133,7 @@ export default function PayInvoice({
                 );
             }
             case 'bank_transfer': {
-                const bankDetails = Invoice.paymentDetails as BankTransferDetails;
+                const bankDetails = invoice.paymentDetails as BankTransferDetails;
                 return (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -158,7 +155,7 @@ export default function PayInvoice({
                 );
             }
             case 'check': {
-                const checkDetails = Invoice.paymentDetails as CheckDetails;
+                const checkDetails = invoice.paymentDetails as CheckDetails;
                 return (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -250,7 +247,7 @@ export default function PayInvoice({
                                             <span className="text-lg font-bold">Datos de pago</span>
                                             <Select
                                                 options={PAYMENT_METHODS_OPTIONS}
-                                                value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === Invoice?.paymentMethod)}
+                                                value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice?.paymentMethod)}
                                                 onChange={handlePaymentMethodChange}
                                                 isSearchable={false}
                                                 placeholder="Selecciona un método de pago"
@@ -264,25 +261,25 @@ export default function PayInvoice({
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Subtotal</span>
                                             <span className="font-semibold">
-                                                {formatCurrency(Invoice.subtotal ?? 0)}
+                                                {formatCurrency(invoice.subtotal ?? 0)}
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">ITBIS</span>
                                             <span className="font-semibold">
-                                                {formatCurrency(Invoice.itbis ?? 0)}
+                                                {formatCurrency(invoice.itbis ?? 0)}
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-center text-center bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg">
                                             <span className="block  font-bold">Total</span>
                                             <span className="font-bold">
-                                                {formatCurrency((Invoice.subtotal ?? 0) + (Invoice.itbis ?? 0))}
+                                                {formatCurrency((invoice.subtotal ?? 0) + (invoice.itbis ?? 0))}
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Recibido</span>
                                             <span className="font-semibold">
-                                                {formatCurrency((Invoice.paymentDetails as any)?.receivedAmount || 0)}
+                                                {formatCurrency((invoice.paymentDetails as any)?.receivedAmount || 0)}
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-center text-center">
@@ -290,8 +287,8 @@ export default function PayInvoice({
                                             <span className="font-semibold">
                                                 {formatCurrency(
                                                     Math.max(
-                                                        parseFloat((Invoice.paymentDetails as any)?.receivedAmount || 0) -
-                                                        ((Invoice?.subtotal ?? 0) + (Invoice?.itbis ?? 0)),
+                                                        parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) -
+                                                        ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)),
                                                         0
                                                     )
                                                 )}

@@ -4,7 +4,10 @@ import React, { Fragment } from 'react';
 import StudentLabel from '@/components/common/info-labels/student-label';
 import { Button, Input } from '@/components/ui';
 import { set } from 'lodash';
-import { openNotification } from '@/utils';
+import { confirmDialog, openNotification } from '@/utils';
+import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
+import { IvoicebyId } from '../../../lib/accounts-receivable/use-fetch-accounts-receivable';
+import { removeItemsInvoice } from '../../../lib/invoice/invoice-request';
 
 
 
@@ -28,6 +31,8 @@ export default function AccountReceivableModal({
     setOpenModal: (open: boolean) => void;
 }) {
     const [loadingId, setLoadingId] = React.useState<string | null>(null);
+   
+
 
     const grouped = React.useMemo(() => {
         return accountReceivables.reduce<Record<string, any[]>>((acc, curr) => {
@@ -41,6 +46,8 @@ export default function AccountReceivableModal({
         try {
             setLoadingId(item.id);
 
+        
+
             const newItem: any = {
                 quantity: 1,
                 accountReceivableId: item.id,
@@ -53,7 +60,8 @@ export default function AccountReceivableModal({
             setItem(newItem);
             await handleAddItemsInvoice(newItem);
 
-            // ✅ Actualizar visualmente el estado del item como pagado
+         
+
             setAccountsReceivables(prev => {
                 if (!prev) return [];
                 return prev.map(ar =>
@@ -62,6 +70,8 @@ export default function AccountReceivableModal({
                         : ar
                 );
             });
+
+
         } catch (error) {
             console.error("Error setting item:", error);
         } finally {

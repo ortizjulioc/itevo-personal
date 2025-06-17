@@ -27,7 +27,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
             const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}`);
-            console.log('response', response);
+          
             if (!response.success) {
                 throw new Error(response.message);
             }
