@@ -3,11 +3,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import StudentLabel from '@/components/common/info-labels/student-label';
 import { Button, Input } from '@/components/ui';
-import { set } from 'lodash';
-import { confirmDialog, openNotification } from '@/utils';
-import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
-import { IvoicebyId } from '../../../lib/accounts-receivable/use-fetch-accounts-receivable';
-import { removeItemsInvoice } from '../../../lib/invoice/invoice-request';
 
 
 
@@ -31,7 +26,7 @@ export default function AccountReceivableModal({
     setOpenModal: (open: boolean) => void;
 }) {
     const [loadingId, setLoadingId] = React.useState<string | null>(null);
-   
+
 
 
     const grouped = React.useMemo(() => {
@@ -46,7 +41,7 @@ export default function AccountReceivableModal({
         try {
             setLoadingId(item.id);
 
-        
+
 
             const newItem: any = {
                 quantity: 1,
@@ -60,16 +55,30 @@ export default function AccountReceivableModal({
             setItem(newItem);
             await handleAddItemsInvoice(newItem);
 
-         
 
+
+            // setAccountsReceivables(prev => {
+            //     if (!prev) return [];
+            //     return prev.map(ar =>
+            //         ar.id === item.id
+            //             ? { ...ar, amountPaid: ar.amountPaid + value }
+            //             : ar
+            //     );
+            // });
             setAccountsReceivables(prev => {
                 if (!prev) return [];
                 return prev.map(ar =>
                     ar.id === item.id
-                        ? { ...ar, amountPaid: ar.amountPaid + value }
+                        ? {
+                            ...ar,
+                            amountPaid: ar.amountPaid + value,
+                            uiStatus: 'ADDED', // propiedad personalizada solo para frontend
+                        }
                         : ar
                 );
             });
+
+
 
 
         } catch (error) {
@@ -125,9 +134,13 @@ export default function AccountReceivableModal({
 
                                         // Ordenar: los items pagados van al final
                                         const sortedItems = [...items].sort((a, b) => {
-                                            const aPaid = a.amount <= a.amountPaid;
-                                            const bPaid = b.amount <= b.amountPaid;
-                                            return Number(aPaid) - Number(bPaid); // false (0) antes que true (1)
+                                            const getStatusPriority = (item: any) => {
+                                                if (item.status === 'PAID') return 2; // PAID
+                                                if (item.uiStatus === 'ADDED') return 1;       // ADDED
+                                                return 0;                                      // PENDING
+                                            };
+
+                                            return getStatusPriority(a) - getStatusPriority(b);
                                         });
 
                                         return (
@@ -159,13 +172,14 @@ export default function AccountReceivableModal({
                                                                         {formatDate(item.dueDate)}
                                                                     </td>
                                                                     <td className="px-4 py-2 text-sm font-medium text-center">
-                                                                        {isPaid ? (
+                                                                        {item.uiStatus === 'ADDED' ? (
+                                                                            <span className="text-blue-600 dark:text-blue-400 font-semibold">Agregado</span>
+                                                                        ) : isPaid ? (
                                                                             <span className="text-green-600 dark:text-green-400 font-semibold">Pagado</span>
                                                                         ) : (
-                                                                            <span className="text-red-600 dark:text-red-400">
-                                                                                ${maxAmount.toFixed(2)}
-                                                                            </span>
+                                                                            <span className="text-red-600 dark:text-red-400">${maxAmount.toFixed(2)}</span>
                                                                         )}
+
                                                                     </td>
                                                                     <td className="px-4 py-2 text-center">
                                                                         <Input

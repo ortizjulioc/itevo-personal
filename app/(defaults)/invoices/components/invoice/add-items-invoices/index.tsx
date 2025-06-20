@@ -78,7 +78,7 @@ export default function AddItemsInvoices({
     }
 
 
-   
+
 
     const handleSubmit = async () => {
         if (!invoice) {
@@ -126,7 +126,7 @@ export default function AddItemsInvoices({
         setItemloading(false);
     };
 
-    const handleDeteleItem = async (itemId: string) => {
+    const handleDeteleItem = async (item: InvoiceItem) => {
         setItemloading(true);
         confirmDialog({
             title: 'Eliminar Item',
@@ -135,10 +135,26 @@ export default function AddItemsInvoices({
             icon: 'error',
         }, async () => {
 
-            const resp = await removeItemsInvoice(InvoiceId, itemId);
+            const resp = await removeItemsInvoice(InvoiceId, item.id);
             if (resp.success) {
                 openNotification('success', 'Item eliminado correctamente');
                 await fetchInvoiceData(InvoiceId);
+
+                console.log('item eliminado', item);
+
+                setAccountReceivables(prev => {
+                    if (!prev) return [];
+                    return prev.map(ar =>
+                        ar.id === item.accountReceivableId
+                            ? {
+                                ...ar,
+
+                                AmountPaid: 0,
+                                uiStatus: null, 
+                            }
+                            : ar
+                    );
+                });
                 return;
             }
             openNotification('error', resp.message);
@@ -171,25 +187,32 @@ export default function AddItemsInvoices({
             setSearchLoading(false);
         }
     };
-    const onChangeStudent = async (selected :StudentSelect) => {
+    const onChangeStudent = async (selected: StudentSelect) => {
         const studentId = selected?.value ?? null;
-
         setStudent(studentId);
 
         setInvoice((prev: IvoicebyId) => ({
             ...prev!,
             studentId: studentId,
         }));
-        const resp = await updateInvoice(InvoiceId, {
-            ...invoice,
-            studentId: studentId,
-        } as Invoice);
-        if (resp.success) {
-            openNotification('success', 'Estudiante actualizado correctamente');
-        }
-        await handleSearchAccountReceivables(studentId); // <-- pásalo directamente
-    }
 
+        try {
+
+            const resp = await updateInvoice(InvoiceId, {
+                ...invoice,
+                studentId: studentId,
+            } as Invoice);
+            if (resp.success) {
+                openNotification('success', 'Estudiante actualizado correctamente');
+            }
+            await handleSearchAccountReceivables(studentId);
+            setOpenAccountReceivableModal(true);
+        } catch (error) {
+            console.error('Error updating invoice with student:', error);
+            openNotification('error', 'Error al actualizar el estudiante en la factura');
+
+        }
+    }
 
 
 
@@ -341,7 +364,7 @@ export default function AddItemsInvoices({
                                                 variant="outline"
                                                 color="danger"
                                                 size="sm"
-                                                onClick={() => { handleDeteleItem(item.id) }}
+                                                onClick={() => { handleDeteleItem(item) }}
                                             >
                                                 <TbX className='size-4' />
                                             </Button>
