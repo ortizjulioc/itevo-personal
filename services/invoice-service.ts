@@ -27,7 +27,8 @@ export interface InvoiceCreateDataType {
     cashRegisterId: string;
     paymentDate?: Date | null;
     paymentMethod?: string | null;
-    paymentDetails?: any; // Puedes tiparlo más estrictamente si quieres
+    paymentDetails?: any; // Puedes tiparlo más estrictamente si quieres,
+    status?: InvoiceStatus; // DRAFT, PAID, VOID
 }
 
 export interface InvoiceItemCreateData {
@@ -144,10 +145,14 @@ export const createInvoice = async (data: InvoiceCreateDataType): Promise<Invoic
     return invoice;
 }
 
-export const updateInvoice = async (id: string, data: Partial<InvoiceCreateDataType>): Promise<Invoice> => {
-    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId } = data;
+export const updateInvoice = async (
+    id: string,
+    data: Partial<InvoiceCreateDataType>,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+): Promise<Invoice> => {
+    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId, status } = data;
 
-    return await Prisma.invoice.update({
+    return await prisma.invoice.update({
         where: { id },
         data: {
             invoiceNumber,
@@ -155,6 +160,7 @@ export const updateInvoice = async (id: string, data: Partial<InvoiceCreateDataT
             studentId,
             createdBy,
             cashRegisterId,
+            status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
         },
     });
 }
