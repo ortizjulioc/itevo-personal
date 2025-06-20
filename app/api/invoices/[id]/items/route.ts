@@ -1,3 +1,4 @@
+import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
@@ -65,11 +66,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
-                // TODO: Cambiar implementacion por la version con servicios, cuando este disponible
-                const receivable = await Prisma.accountReceivable.findUnique({
-                    where: { id: body.accountReceivableId },
-                    include: { courseBranch: true },
-                });
+                const receivable = await findAccountReceivableById(body.accountReceivableId);
     
                 if (!receivable) {
                     throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
@@ -77,37 +74,43 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 if (receivable.status !== PaymentStatus.PENDING) {
                     throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
                 }
-    
-                
+
+                const amountPending = receivable.amount - receivable.amountPaid;
+                if (amountPending < body.quantity) {
+                    throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${body.accountReceivableId} (pendiente: ${amountPending})`);
+                }
+
+                const newAmountPending = amountPending - body.quantity;
+                await updateAccountReceivableById(body.accountReceivableId, {
+                    amountPaid: newAmountPending,
+                    status: newAmountPending >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
+                }, prisma);
+
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
             }
-
-            // Crear el ítem y actualizar la factura en una transacción
+            const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
+                type: body.type,
+                productId: body.productId,
+                accountReceivableId: body.accountReceivableId,
+                quantity: body.quantity,
+                unitPrice: body.unitPrice,
+                concept: body.concept,
+                subtotal,
+                itbis,
+            }, prisma);
+            // Registrar log de éxito
+            await createLog({
+                action: 'POST',
+                description: `Ítem: \n${JSON.stringify(itemCreated, null, 2)} agregado a la factura ${invoice.invoiceNumber}`,
+                origin: `invoices/${id}/items`,
+                elementId: invoiceUpdated.id,
+                success: true,
+            });
+    
+            return NextResponse.json(invoiceUpdated, { status: 200 });
         });
 
-        const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
-            type: body.type,
-            productId: body.productId,
-            accountReceivableId: body.accountReceivableId,
-            quantity: body.quantity,
-            unitPrice: body.unitPrice,
-            concept: body.concept,
-            subtotal,
-            itbis,
-        });
-
-
-        // Registrar log de éxito
-        await createLog({
-            action: 'POST',
-            description: `Ítem: \n${JSON.stringify(itemCreated, null, 2)} agregado a la factura ${invoice.invoiceNumber}`,
-            origin: `invoices/${id}/items`,
-            elementId: invoiceUpdated.id,
-            success: true,
-        });
-
-        return NextResponse.json(invoiceUpdated, { status: 200 });
     } catch (error) {
         // Registrar log de error
         await createLog({

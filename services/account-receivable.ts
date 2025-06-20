@@ -144,8 +144,12 @@ export const findAccountReceivableById = async (id: string) => {
   return accountReceivable;
 };
 
-export const updateAccountReceivableById = async (id: string, data: PrismaTypes.AccountReceivableUpdateInput) => {
-  return Prisma.accountReceivable.update({
+export const updateAccountReceivableById = async (
+  id: string,
+  data: PrismaTypes.AccountReceivableUpdateInput,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  return prisma.accountReceivable.update({
     where: { id },
     data: {
       dueDate: data.dueDate,
