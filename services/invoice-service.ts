@@ -131,6 +131,21 @@ export const createInvoice = async (data: InvoiceCreateDataType): Promise<Invoic
     return invoice;
 }
 
+export const updateInvoice = async (id: string, data: Partial<InvoiceCreateDataType>): Promise<Invoice> => {
+    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId } = data;
+    
+    return await Prisma.invoice.update({
+        where: { id },
+        data: {
+            invoiceNumber,
+            ncf,
+            studentId,
+            createdBy,
+            cashRegisterId,
+        },
+    });
+}
+
 export const findInvoiceById = async (
     id: string,
 ): Promise<InvoiceWithItems | null> => {
