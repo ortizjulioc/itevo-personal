@@ -4,7 +4,7 @@ import { updateProductById } from "@/services/product-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
-import { CashMovementReferenceType, InvoiceItemType, InvoiceStatus } from "@prisma/client";
+import { CashMovementReferenceType, InvoiceItemType, InvoiceStatus, PaymentStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
@@ -72,10 +72,10 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
           const receivable = await findAccountReceivableById(item.accountReceivableId);
 
           if (receivable) {
-            const newAmountPending = receivable.amountPaid - (item.quantity || 0);
+            const newAmountPending = receivable.amountPaid - (item.unitPrice || 0);
             await updateAccountReceivableById(item.accountReceivableId, {
                 amountPaid: newAmountPending,
-                status: newAmountPending >= receivable.amount ? 'PAID' : 'PENDING',
+                status: newAmountPending >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
               },
               prisma
             );
