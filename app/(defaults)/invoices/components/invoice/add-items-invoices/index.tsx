@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import type { AccountReceivable, Invoice, InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 import { IvoicebyId, } from '../../../lib/invoice/use-fetch-cash-invoices';
 import { TbCancel, TbCheck, TbX } from 'react-icons/tb';
@@ -213,6 +213,15 @@ export default function AddItemsInvoices({
 
         }
     }
+
+    useEffect(() => {
+        if (invoice?.studentId) {
+            setStudent(invoice.studentId);
+            handleSearchAccountReceivables(invoice.studentId);
+        } else {
+            setStudent(null);
+        }
+    }, [invoice?.studentId]);
 
 
 
