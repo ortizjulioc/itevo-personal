@@ -28,6 +28,8 @@ export interface InvoiceCreateDataType {
     paymentDate?: Date | null;
     paymentMethod?: string | null;
     paymentDetails?: any; // Puedes tiparlo más estrictamente si quieres,
+    subtotal?: number; // Si no se especifica, se calculará al agregar ítems
+    itbis?: number; // Si no se especifica, se calculará al agregar ítems
     status?: InvoiceStatus; // DRAFT, PAID, VOID
 }
 
@@ -150,7 +152,7 @@ export const updateInvoice = async (
     data: Partial<InvoiceCreateDataType>,
     prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ): Promise<Invoice> => {
-    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId, status } = data;
+    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId, status, subtotal, itbis } = data;
 
     return await prisma.invoice.update({
         where: { id },
@@ -160,6 +162,8 @@ export const updateInvoice = async (
             studentId,
             createdBy,
             cashRegisterId,
+            subtotal,
+            itbis,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
         },
     });
@@ -167,8 +171,9 @@ export const updateInvoice = async (
 
 export const findInvoiceById = async (
     id: string,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ): Promise<InvoiceWithItems | null> => {
-    return await Prisma.invoice.findUnique({
+    return await prisma.invoice.findUnique({
         where: { id },
         include: {
             items: true,
@@ -274,44 +279,11 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
     });
 };
 
-export const deleteInvoiceItem = async (invoiceId: string, itemId: string): Promise<Invoice> => {
-    return await Prisma.$transaction(async (tx) => {
-        // Verificar que la factura existe y está en DRAFT
-        const invoice = await tx.invoice.findUnique({
-            where: { id: invoiceId },
-            include: { items: true },
-        });
-        if (!invoice) throw new Error(`Factura con ID ${invoiceId} no encontrada`);
-        if (invoice.status !== 'DRAFT') throw new Error(`Solo se pueden eliminar ítems de facturas en estado DRAFT (actual: ${invoice.status})`);
-
-        // Verificar que el ítem pertenece a la factura y eliminarlo
-        const itemToDelete = await tx.invoiceItem.findUnique({
-            where: { id: itemId },
-        });
-        if (!itemToDelete || itemToDelete.invoiceId !== invoiceId) throw new Error(`El ítem ${itemId} no pertenece a la factura ${invoiceId}`);
-
-        // Eliminar el ítem y recalcular totales
-        await tx.invoiceItem.delete({
-            where: { id: itemId },
-        });
-
-        // Recalcular subtotal e itbis de los ítems restantes
-        const remainingItems = await tx.invoiceItem.findMany({
-            where: { invoiceId },
-        });
-        const newSubtotal = remainingItems.reduce((sum, item) => sum + item.subtotal, 0);
-        const newItbis = remainingItems.reduce((sum, item) => sum + item.itbis, 0);
-
-        // Actualizar la factura
-        const invoiceUpdated = await tx.invoice.update({
-            where: { id: invoiceId },
-            data: {
-                subtotal: newSubtotal,
-                itbis: newItbis,
-            },
-            include: { items: true },
-        });
-
-        return invoiceUpdated;
-    });
+export const deleteInvoiceItem = async (
+    itemId: string,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+    return await prisma.invoiceItem.delete({
+        where: { id: itemId },
+    })
 }
