@@ -2,7 +2,7 @@
 import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
-import type { AccountReceivable, Invoice, InvoiceItem } from '@prisma/client';
+import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
@@ -106,9 +106,10 @@ export default function AddItemsInvoices({
             setItemloading(false);
             return;
         }
+        const type = item?.productId ? InvoiceItemType.PRODUCT : InvoiceItemType.RECEIVABLE;
         const itemWithType = {
             ...item,
-            type: 'PRODUCT' as const,
+            type,
         };
         const resp = await addItemsInvoice(InvoiceId, itemWithType);
 
@@ -150,7 +151,7 @@ export default function AddItemsInvoices({
                                 ...ar,
 
                                 AmountPaid: 0,
-                                uiStatus: null, 
+                                uiStatus: null,
                             }
                             : ar
                     );
