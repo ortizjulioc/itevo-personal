@@ -105,8 +105,11 @@ export const getAccountsReceivable = async (
   return { accountsReceivable, totalAccountsReceivable };
 };
 
-export const findAccountReceivableById = async (id: string) => {
-  const accountReceivable = await Prisma.accountReceivable.findUnique({
+export const findAccountReceivableById = async (
+  id: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  const accountReceivable = await prisma.accountReceivable.findUnique({
     where: {
       id: id,
     },

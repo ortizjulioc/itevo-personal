@@ -72,10 +72,10 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
           const receivable = await findAccountReceivableById(item.accountReceivableId);
 
           if (receivable) {
-            const newAmountPending = receivable.amountPaid - (item.unitPrice || 0);
+            const newAmountPaid = receivable.amountPaid - (item.unitPrice || 0);
             await updateAccountReceivableById(item.accountReceivableId, {
-                amountPaid: newAmountPending,
-                status: newAmountPending >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
+                amountPaid: newAmountPaid,
+                status: newAmountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
               },
               prisma
             );

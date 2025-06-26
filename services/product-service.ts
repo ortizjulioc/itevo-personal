@@ -34,8 +34,11 @@ export async function createProduct(data: PrismaTypes.ProductCreateInput) {
 }
 
 // Buscar producto por ID
-export async function findProductById(id: string) {
-  return await Prisma.product.findUnique({ where: { id, deleted: false } });
+export async function findProductById(
+  id: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) {
+  return await prisma.product.findUnique({ where: { id, deleted: false } });
 }
 
 // Buscar producto por código
