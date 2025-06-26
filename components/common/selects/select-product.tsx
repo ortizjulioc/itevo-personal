@@ -37,7 +37,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
           <div className="flex flex-col">
             <span className="font-medium">{product.code} - {product.name}</span>
             <span className="text-sm text-gray-500">
-              Precio: RD${product.price.toFixed(2)} | 
+              Precio: RD${product.price.toFixed(2)} |
               <span className={product.stock <= 0 ? 'text-red-600 font-bold ml-1' : 'ml-1'}>
                 Stock: {product.stock}
               </span>
@@ -71,7 +71,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
                 <div className="flex flex-col">
                   <span className="font-medium">{response.data.code} - {response.data.name}</span>
                   <span className="text-sm text-gray-500">
-                    Precio: RD${response.data.price.toFixed(2)} | 
+                    Precio: RD${response.data.price.toFixed(2)} |
                     <span className={response.data.stock <= 0 ? 'text-red-600 font-bold ml-1' : 'ml-1'}>
                       Stock: {response.data.stock}
                     </span>
@@ -100,11 +100,17 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
         defaultOptions={options}
         placeholder="-Productos-"
         noOptionsMessage={() => 'No hay opciones'}
-        value={options.find(option => option.value === value) || null}
+        value={options.find(option => option.value === value) || undefined}
         isClearable
         asComponent={AsyncSelect}
-        onChange={onChange}
+        onChange={(newValue, _actionMeta) => {
+          if (onChange) {
+            onChange(newValue as ProductSelect | null);
+          }
+        }
+        }
         isDisabled={disabled}
+
       />
     </div>
   );

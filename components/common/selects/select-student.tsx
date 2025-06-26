@@ -74,7 +74,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
     <div>
       <AsyncSelect<StudentSelect, false, GroupBase<StudentSelect>>
         loadOptions={loadOptions}
-        cacheOptions
+        //cacheOptions
         defaultOptions={options}
         isLoading={rest.loading}
         //isDisabled={rest.disabled}

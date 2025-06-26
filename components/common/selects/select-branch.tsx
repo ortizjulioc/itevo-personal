@@ -65,7 +65,7 @@ export default function SelectBranch({ value, onChange, ...rest }: SelectBranchP
 
   return (
     <div>
-      <Select<SelectBranchType, false, GroupBase<SelectBranchType>>
+      <AsyncSelect<SelectBranchType, false, GroupBase<SelectBranchType>>
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
@@ -74,7 +74,7 @@ export default function SelectBranch({ value, onChange, ...rest }: SelectBranchP
         value={options.find((option) => option.value === value) || null}
         onChange={onChange}
         isClearable
-        asComponent={AsyncSelect}
+        //asComponent={AsyncSelect}
         {...rest}
       />
     </div>

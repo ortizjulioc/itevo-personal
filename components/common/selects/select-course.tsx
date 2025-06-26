@@ -70,7 +70,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
 
   return (
     <div>
-      <Select<SelectCourseType, false, GroupBase<SelectCourseType>>
+      <AsyncSelect<SelectCourseType, false, GroupBase<SelectCourseType>>
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
@@ -78,7 +78,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
-        asComponent={AsyncSelect}
+        //asComponent={AsyncSelect}
         {...rest}
       />
     </div>
