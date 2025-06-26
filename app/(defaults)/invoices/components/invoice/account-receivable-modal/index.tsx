@@ -3,6 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import StudentLabel from '@/components/common/info-labels/student-label';
 import { Button, Input } from '@/components/ui';
+import { formatCurrency, openNotification } from '@/utils';
 
 
 
@@ -154,7 +155,9 @@ export default function AccountReceivableModal({
                                                     <thead>
                                                         <tr className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                                             <th className="px-4 py-2 text-center">Fecha de Vencimiento</th>
-                                                            <th className="px-4 py-2 text-center">Monto a Pagar</th>
+                                                            <th className="px-4 py-2 text-center">Precio</th>
+                                                            <th className="px-4 py-2 text-center">Abonado</th>
+                                                            <th className="px-4 py-2 text-center">Pendiente</th>
                                                             <th className="px-4 py-2 text-center">Cantidad a Pagar</th>
                                                             <th className="px-4 py-2 text-center">Acción</th>
                                                         </tr>
@@ -171,13 +174,20 @@ export default function AccountReceivableModal({
                                                                     <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100 text-center">
                                                                         {formatDate(item.dueDate)}
                                                                     </td>
+                                                                    <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100 text-center">
+                                                                        {formatCurrency(item.amount)}
+                                                                    </td>
+                                                                    <td className="px-4 py-2 text-sm text-gray-800 dark
+                                                                        :text-gray-100 text-center">
+                                                                        {formatCurrency(item.amountPaid)}
+                                                                    </td>
                                                                     <td className="px-4 py-2 text-sm font-medium text-center">
                                                                         {item.uiStatus === 'ADDED' ? (
                                                                             <span className="text-blue-600 dark:text-blue-400 font-semibold">Agregado</span>
                                                                         ) : isPaid ? (
                                                                             <span className="text-green-600 dark:text-green-400 font-semibold">Pagado</span>
                                                                         ) : (
-                                                                            <span className="text-red-600 dark:text-red-400">${maxAmount.toFixed(2)}</span>
+                                                                            <span className="text-red-600 dark:text-red-400">{formatCurrency(maxAmount as number)}</span>
                                                                         )}
 
                                                                     </td>
@@ -193,7 +203,11 @@ export default function AccountReceivableModal({
                                                                             disabled={isLoading || isPaid}
                                                                             onChange={(e) => {
                                                                                 const value = parseFloat(e.target.value);
-                                                                                if (value > maxAmount) e.target.value = maxAmount.toString();
+                                                                                if (value > maxAmount) {
+                                                                                    e.target.value = maxAmount.toString();
+                                                                                    openNotification('warning', `El monto máximo a pagar es ${maxAmount.toFixed(2)}`)
+
+                                                                                };
                                                                                 if (value < 0) e.target.value = "0";
                                                                             }}
                                                                         />

@@ -3,7 +3,7 @@ import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
-import { addItemsInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
+import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 import { IvoicebyId, } from '../../../lib/invoice/use-fetch-cash-invoices';
@@ -215,6 +215,23 @@ export default function AddItemsInvoices({
         }
     }
 
+    const handleCancelInvoice = async () => {
+        confirmDialog({
+            title: 'Cancelar Factura',
+            text: '¿Seguro que quieres cancelar esta factura?',
+            confirmButtonText: 'Sí, cancelar',
+            icon: 'warning',
+        }, async () => {
+            const resp = await cancelInvoice(InvoiceId);
+            if (resp.success) {
+                openNotification('success', 'Factura cancelada correctamente');
+                route.push(`/invoices/${cashRegisterId}`)
+            } else {
+                openNotification('error', resp.message);
+            }
+        });
+    }
+
     useEffect(() => {
         if (invoice?.studentId) {
             setStudent(invoice.studentId);
@@ -406,13 +423,24 @@ export default function AddItemsInvoices({
             </div>
 
             <div className="mt-6 flex flex-col md:flex-row justify-end gap-2">
-                <Button type="button" color="danger" onClick={() => route.back()} className="w-full md:w-auto">
-                    <TbCancel className='mr-1 size-6' />
+                <Button
+                    type="button"
+                    color="danger"
+                    onClick={handleCancelInvoice}
+                    className="w-full md:w-auto"
+                    icon={<TbCancel className='mr-1 size-6' />}
+                >
                     Cancelar
                 </Button>
 
-                <Button type="button" color="success" onClick={() => (setOpenModal(true))} className="w-full md:w-auto">
-                    <TbCheck className='mr-1 size-6' />
+                <Button
+                    type="button"
+                    color="success"
+                    onClick={() => (setOpenModal(true))}
+                    className="w-full md:w-auto"
+                    icon={<TbCheck className='mr-1 size-6' />}
+                >
+
                     Completar
                 </Button>
             </div>
