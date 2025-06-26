@@ -25,9 +25,7 @@ interface AccountReceivableWithCourseBranch extends AccountReceivable {
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
     const { id } = params; // ID de la factura
     try {
-        console.log(`Agregando ítem a la factura ${id}`);
         const body: InvoiceItemInput = await req.json();
-        console.log(`Datos del ítem: ${JSON.stringify(body, null, 2)}`);
 
         // Verificar que la factura existe y está en DRAFT
         const invoice = await findInvoiceById(id);
@@ -84,13 +82,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 }
 
                 const newAmountPending = amountPending - body.unitPrice;
-                console.log(`Nuevo monto pendiente: ${newAmountPending}`);
                 const amountPaid = receivable.amount - newAmountPending;
-                const cxc = await updateAccountReceivableById(body.accountReceivableId, {
+                await updateAccountReceivableById(body.accountReceivableId, {
                     amountPaid,
                     status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
                 }, prisma);
-                console.log(`Cuenta por cobrar actualizada: ${JSON.stringify(cxc, null, 2)}`);
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');

@@ -15,7 +15,8 @@ async function apiRequest<T>(params: AxiosRequestConfig): Promise<ApiResponse<T>
         console.error('Error:', axiosError);
 
         const errorResponse = axiosError.response?.data as ApiErrorResponse;
-        const message = errorResponse?.message || typedErrorsCode[errorResponse?.code] || 'Ocurrió un error inesperado. Contacte al administrador del sistema.';
+        console.error('Error response:', errorResponse);
+        const message = errorResponse?.message || typedErrorsCode[errorResponse?.code] || errorResponse?.error || 'Ocurrió un error inesperado. Contacte al administrador del sistema.';
         return { success: false, message, error: axiosError, data: null };
     }
 }
