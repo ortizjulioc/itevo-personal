@@ -9,7 +9,6 @@ import IconMenu from '@/components/icon/icon-menu';
 import IconSun from '@/components/icon/icon-sun';
 import IconMoon from '@/components/icon/icon-moon';
 import IconLaptop from '@/components/icon/icon-laptop';
-import IconUser from '@/components/icon/icon-user';
 import IconLogout from '@/components/icon/icon-logout';
 import { usePathname } from 'next/navigation';
 import { IconSettings } from '../icon';
@@ -18,6 +17,7 @@ import { Role } from '@prisma/client';
 import Avatar from '../common/Avatar';
 import { getInitials } from '@/utils';
 import { ADMIN } from '@/constants/role.constant';
+import BranchSwitcher from '../common/branch-switcher';
 
 
 const Header = ({ user }: { user: any }) => {
@@ -74,6 +74,9 @@ const Header = ({ user }: { user: any }) => {
                     </div>
 
                     <div className="flex justify-end items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
+                        <div>
+                            <BranchSwitcher branches={user.branches} />
+                        </div>
                         <div>
                             {themeConfig.theme === 'light' ? (
                                 <button
