@@ -18,11 +18,10 @@ interface ScheduleAssignmentProps {
 
 
 export default function PrerequisitesFields({ className, values, touched, errors }: ScheduleAssignmentProps) {
-  console.log('values', values);
+
   const { handleAddPrerequisite, handleRemovePrerequisite, preRequisites } = useCourseBranch();
   const params = useURLSearchParams();
-  console.log('params', params.get('prerequisite'));
-
+ 
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
 
 

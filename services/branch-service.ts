@@ -1,6 +1,6 @@
 import 'server-only';
-import { Branch as PrismaBranch, PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Branch as PrismaBranch } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 
 interface Branch extends Omit<PrismaBranch, 'id' | 'updatedAt' | 'createAt' | 'deleted'> { }
 

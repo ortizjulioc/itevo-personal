@@ -99,7 +99,7 @@ export default function SearchInvoice() {
             <Select
                 options={NCF_TYPES_OPTIONS}
                 value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === filters.type)}
-                onChange={(option: { value: string, label: string } | null) => handleFilterChange('type', option)}
+                onChange={(option) => handleFilterChange('type', option as SelectOption | null)}
                 isSearchable={false}
                 placeholder="-Tipo Factura-"
                 isClearable={true}
@@ -107,7 +107,7 @@ export default function SearchInvoice() {
             <Select
                 options={STATUS_OPTIONS}
                 value={STATUS_OPTIONS.find((status) => status.value === filters.status)}
-                onChange={(option: { value: string, label: string } | null) => handleFilterChange('status', option)}
+                onChange={(option) => handleFilterChange('status', option as SelectOption | null)}
                 isSearchable={false}
                 placeholder="-Estado-"
                 isClearable={true}
@@ -118,7 +118,7 @@ export default function SearchInvoice() {
                 placeholder="Buscar por N. DE FACTURA o NCF"
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-    
+
             />
 
 

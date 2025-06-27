@@ -44,7 +44,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const isANewCourseBranch = params.get('new') === 'true';
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { preRequisites, fetchPreRequisites } = useFetchPreRequisites(initialValues.courseId);
-    console.log('preRequisites', preRequisites);
+ 
 
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);

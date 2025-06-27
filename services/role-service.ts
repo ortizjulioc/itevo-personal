@@ -1,7 +1,7 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-import { normalizeString } from "@/utils/normalize-string";
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
+import { normalizeString } from '@/utils/normalize-string';
+
 
 export const getRoles = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;

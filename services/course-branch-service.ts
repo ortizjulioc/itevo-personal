@@ -1,6 +1,6 @@
 import 'server-only';
-import { CourseBranch, PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { CourseBranch } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getCourseBranch = async (filters: any) => {
 

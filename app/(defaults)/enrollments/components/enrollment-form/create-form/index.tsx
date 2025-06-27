@@ -10,25 +10,25 @@ import SelectCourseBranch from '@/components/common/selects/select-course-branch
 import SelectStudent from '@/components/common/selects/select-student';
 import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
 
-    interface OptionSelect {
-        value: string;
-        label: string;
-    }
-    interface CourseBranchSelect {
-        value: string;
-        label: JSX.Element;
-    }
-    interface statusOption {
-        value: string;
-        label: JSX.Element;
-    }
+interface OptionSelect {
+    value: string;
+    label: string;
+}
+interface CourseBranchSelect {
+    value: string;
+    label: JSX.Element;
+}
+interface statusOption {
+    value: string;
+    label: JSX.Element;
+}
 
-export default function CreateEnrollmentForm({ courseBranchId,studentId }: { courseBranchId?: string,studentId?:string }) {
+export default function CreateEnrollmentForm({ courseBranchId, studentId }: { courseBranchId?: string, studentId?: string }) {
     const route = useRouter();
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-     
+
 
         const resp = await createEnrollment(data);
 
@@ -43,16 +43,16 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
 
     const statusOptions = [
         { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },
-        { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} />  },
-        { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} />  },
-        { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} />  },
+        { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} /> },
+        { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} /> },
+        { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} /> },
     ]
-    
+
 
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de inscripción</h4>
-            <Formik initialValues={{...initialValues, courseBranchId: courseBranchId || initialValues.courseBranchId, studentId: studentId || initialValues.studentId}} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={{ ...initialValues, courseBranchId: courseBranchId || initialValues.courseBranchId, studentId: studentId || initialValues.studentId }} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
                         <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
@@ -83,7 +83,8 @@ export default function CreateEnrollmentForm({ courseBranchId,studentId }: { cou
                                 name="status"
                                 options={statusOptions}
                                 value={statusOptions.find((status) => status.value === values.status)}
-                                onChange={(option: statusOption | null) => {
+                                onChange={(newValue, _actionMeta) => {
+                                    const option = newValue as statusOption | null;
                                     setFieldValue('status', option?.value ?? null);
                                 }}
                                 isSearchable={false}

@@ -16,7 +16,7 @@ const useFetchEnrollments = (query: string) => {
   useEffect(() => {
     const fetchrolesData = async (query: string) => {
       try {
-        console.log(query);
+     
         const response = await apiRequest.get<EnrollmentResponse>(`/enrollments?${query}`);
        ;
         if (!response.success) {

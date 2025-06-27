@@ -1,8 +1,8 @@
 import 'server-only';
-import { PrismaClient, User as PrismaUser, Role, Branch as PrismaBranch } from "@prisma/client";
+import { User as PrismaUser, Role, Branch as PrismaBranch } from "@prisma/client";
 import { normalizeString } from "@/utils/normalize-string";
+import { Prisma } from '@/utils/lib/prisma';
 const bcrypt = require('bcrypt');
-const Prisma = new PrismaClient();
 
 // Definimos las interfaces necesarias para tipificar la respuesta de usuario por id
 interface Branch extends Omit<PrismaBranch, 'roles'> {

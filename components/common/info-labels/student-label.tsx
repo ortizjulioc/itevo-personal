@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 import { formatPhoneNumber } from '@/utils';
 
-export default function StudentLabel({ StudentId }: { StudentId: string }) {
+export default function StudentLabel({ StudentId, showNumber = true }: { StudentId: string, showNumber?: boolean }) {
     const [student, setStudent] = useState<Student | null>(null);
 
     const fetchStudentById = async () => {
@@ -25,7 +25,8 @@ export default function StudentLabel({ StudentId }: { StudentId: string }) {
     return (
         <span>
             {student
-                ? `${student.firstName} ${student.lastName} ${student.phone ? `     ${formatPhoneNumber(student.phone)}` : ''}`
+                ? `${student.firstName} ${student.lastName}
+                 ${showNumber && student.phone ? `- ${formatPhoneNumber(student.phone)}` : ''}`
                 : '...'}
         </span>
     )

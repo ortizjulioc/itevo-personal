@@ -53,7 +53,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
           { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
           { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
       ];
-      console.log('enrollments', enrollments);
+     
   
     if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE','OFERTA ACADEMICA','FECHA DE INSCRIPCION']} />;
 

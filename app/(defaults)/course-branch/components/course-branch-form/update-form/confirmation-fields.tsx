@@ -46,12 +46,12 @@ const weekdayNames = [
 ];
 
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
-  console.log(values)
+
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
 
-  console.log(courseSchedules)
+
   return (
     <div className={className}>
       <div className="max-w-3xl p-6">

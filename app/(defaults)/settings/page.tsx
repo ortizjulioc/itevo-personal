@@ -7,17 +7,16 @@ import { Fragment } from "react";
 
 
 
-export default function EditSetting({ params }: { params: { id: string } }) {
-    const { id } = params;
-    const { loading, Setting } = useFetchSetting();
-    
+export default function EditSetting() {
+    const { setting } = useFetchSetting();
+
     return (
         <>
-        <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
+            <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
 
-        <div className="container mx-auto px-4 panel bg">
-            
-            <Tab.Group>
+            <div className="container mx-auto px-4 panel bg">
+
+                {/* <Tab.Group>
                 <Tab.List className=" flex flex-wrap">
                     <Tab as={Fragment}>
                         {({ selected }) => (
@@ -34,12 +33,15 @@ export default function EditSetting({ params }: { params: { id: string } }) {
                 <Tab.Panels>
                     <Tab.Panel>
                         <div className="mt-6">
-                            {Setting && <UpdateSettingForm initialValues={Setting} />}
+                            {setting && <UpdateSettingForm initialValues={setting} />}
                         </div>
                     </Tab.Panel>
                 </Tab.Panels>
-            </Tab.Group>
-        </div>
+            </Tab.Group> */}
+                <div className="mt-6">
+                    {setting && <UpdateSettingForm initialValues={setting} />}
+                </div>
+            </div>
         </>
     )
 }

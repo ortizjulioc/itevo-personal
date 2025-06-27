@@ -1,6 +1,6 @@
 import 'server-only';
-import { PrismaClient, EnrollmentStatus } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {
     const { studentId, courseBranchId, status, enrollmentDate, page, top } = filters;
@@ -81,8 +81,8 @@ export const getEnrollments = async (filters: any) => {
     return { enrollments, totalEnrollments };
 };
 
-export const createEnrollment = async (data: any) => {
-    const enrollment = await Prisma.enrollment.create({ data: data });
+export const createEnrollment = async (data: PrismaTypes.EnrollmentCreateInput, prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma) => {
+    const enrollment = await prisma.enrollment.create({ data: data });
     return enrollment;
 };
 

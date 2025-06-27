@@ -1,5 +1,6 @@
-import { Prisma as Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from '@prisma/client';
+import 'server-only';
+import { Prisma } from '@/utils/lib/prisma';
+import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 // Obtener todos los productos con búsqueda y paginación
 export async function getProducts(search = '', page = 1, top = 10) {
@@ -33,8 +34,11 @@ export async function createProduct(data: PrismaTypes.ProductCreateInput) {
 }
 
 // Buscar producto por ID
-export async function findProductById(id: string) {
-  return await Prisma.product.findUnique({ where: { id, deleted: false } });
+export async function findProductById(
+  id: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) {
+  return await prisma.product.findUnique({ where: { id, deleted: false } });
 }
 
 // Buscar producto por código
@@ -43,8 +47,12 @@ export async function findProductByCode(code: string) {
 }
 
 // Actualizar producto por ID
-export async function updateProductById(id: string, data: PrismaTypes.ProductUpdateInput) {
-  return await Prisma.product.update({ where: { id }, data });
+export async function updateProductById(
+  id: string,
+  data: PrismaTypes.ProductUpdateInput,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) {
+  return await prisma.product.update({ where: { id }, data });
 }
 
 // Eliminar producto por ID (soft delete)

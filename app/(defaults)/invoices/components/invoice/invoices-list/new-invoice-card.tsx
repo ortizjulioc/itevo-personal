@@ -6,15 +6,16 @@ import { CiCirclePlus } from "react-icons/ci";
 import { createInvoice } from '../../../lib/invoice/invoice-request';
 import { useRouter } from 'next/navigation';
 
-export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
+export default function NewinvoiceCard({ cashRegisterId, userId, loading, setLoading }: { cashRegisterId?: string, userId?: string, loading: boolean, setLoading: (loading: boolean) => void }) {
 
 
     const route = useRouter();
-    const [loading, setLoading] = React.useState(false);
+    //const [loading, setLoading] = React.useState(false);
     const handleCreateInvoice = async () => {
         setLoading(true);
         if (!cashRegisterId || !userId) {
             console.error('Faltan datos requeridos');
+            setLoading(false);
             return;
         }
 
@@ -28,14 +29,13 @@ export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegiste
 
         if (resp.success) {
             openNotification('success', 'Factura creada correctamente');
+
             route.push(`/invoices/${cashRegisterId}/bill/${invoice.id}`);
         } else {
             openNotification('error', resp.message);
+            setLoading(false);
         }
-
-        setLoading(false);
-
-
+        
     };
 
 
@@ -48,9 +48,9 @@ export default function NewinvoiceCard({ cashRegisterId, userId }: { cashRegiste
             loading={loading}
         >
             {!loading && (
-                   <CiCirclePlus className='size-10' />
+                <CiCirclePlus className='size-10' />
             )}
-         
+
 
             <span className=''>Nueva Factura</span>
         </Button>
