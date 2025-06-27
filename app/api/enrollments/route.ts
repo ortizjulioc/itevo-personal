@@ -5,8 +5,8 @@ import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
-import { createAccountReceivable, createManyAccountsReceivable } from "@/services/account-receivable";
-import { Attendance } from "@prisma/client";
+import { createManyAccountsReceivable } from "@/services/account-receivable";
+import { EnrollmentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
 
 export async function GET(request: NextRequest) {
@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ', body);
 
         // Validate the request body
         const { isValid, message } = validateObject(body, ['studentId', 'courseBranchId', 'enrollmentDate', 'status']);
@@ -61,11 +60,27 @@ export async function POST(request: Request) {
         if (!student) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
         }
-        console.log('STUDENT: ', student);
-        console.log('COURSE BRANCH sessionCount:', courseBranch.sessionCount);
-        console.log('COURSE BRANCH amount:', courseBranch.amount);
 
         if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount  && courseBranch.sessionCount > 0) {
+            // Check if the student is already enrolled in the course branch
+            const existingEnrollment = await Prisma.enrollment.findFirst({
+                where: {
+                    studentId: student.id,
+                    courseBranchId: courseBranch.id,
+                    status: {
+                        in: [EnrollmentStatus.ENROLLED, EnrollmentStatus.WAITING],
+                    },
+                },
+            });
+
+            if (existingEnrollment) {
+                return NextResponse.json({
+                    code: 'E_STUDENT_ALREADY_ENROLLED',
+                    error: 'Student is already enrolled in this course branch',
+                    message: 'El estudiante ya está inscrito en este curso',
+                }, { status: 400 });
+            }
+
             const accountReceivable = {
                 studentId: student.id,
                 courseBranchId: courseBranch.id,

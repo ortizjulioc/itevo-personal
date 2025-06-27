@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PaymentStatus } from '@prisma/client';
+import { Prisma as PrismaTypes } from "@prisma/client";
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -45,7 +45,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
     return { students, totalStudents };
 };
 
-export const createStudent = async (data: any) => {
+export const createStudent = async (data: PrismaTypes.StudentCreateInput) => {
     const student = await Prisma.student.create({ data: data });
     return student;
 };

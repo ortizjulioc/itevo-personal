@@ -3,6 +3,9 @@ import { validateObject } from "@/utils";
 import { getStudents, createStudent, createStudentCode } from '@/services/student-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
+import { getServerSession } from "next-auth";
+import { get } from "lodash";
+import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 export async function GET(request: NextRequest) {
     try {
@@ -24,15 +27,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
         const body = await request.json();
-        console.log('BODY: ',body);
-
+        
         // Validate the request body
         const {isValid, message} = validateObject(body, ["firstName", "lastName", "identification"]);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
         body.code = await createStudentCode();
+        body.branchId = body.branchId || session?.user?.branches?.[0]?.id || null;
         const student = await createStudent(body);
 
         // Enviar log de auditoría
