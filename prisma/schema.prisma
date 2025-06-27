@@ -101,7 +101,7 @@ model Student {
   lastName          String              @map("last_name")
   identification    String?
   phone             String?
-  email             String?             @unique
+  email             String?
   address           String?
   hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
   createdAt         DateTime            @default(now()) @map("created_at")

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findStudentById, updateStudentById, deleteStudentById } from '@/services/student-service';
+import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail } from '@/services/student-service';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(student, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
@@ -31,6 +31,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const { isValid, message } = validateObject(body, ['firstName', 'lastName', 'identification']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
+        }
+
+        if (body.email) {
+            // Validar que no se repita el email
+            const existingStudent = await findStudentByEmail(body.email);
+            if (existingStudent) {
+                return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
+            }
         }
 
         // Verificar si el estudiante existe
@@ -65,7 +73,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
@@ -106,6 +114,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }

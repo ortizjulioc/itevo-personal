@@ -60,6 +60,15 @@ export const findStudentById = async (id: string) => {
     });
 };
 
+export const findStudentByEmail = async (email: string) => {
+    return Prisma.student.findFirst({
+        where: {
+            email: email,
+            deleted: false,
+        },
+    });
+}
+
 // Actualizar student por ID
 export const updateStudentById = async (id: string, data: any) => {
     return Prisma.student.update({

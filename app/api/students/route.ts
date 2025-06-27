@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getStudents, createStudent, createStudentCode } from '@/services/student-service';
+import { getStudents, createStudent, createStudentCode, findStudentByEmail } from '@/services/student-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
@@ -35,6 +35,15 @@ export async function POST(request: Request) {
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
+
+        if (body.email) {
+            // Validar que no se repita el email
+            const existingStudent = await findStudentByEmail(body.email);
+            if (existingStudent) {
+                return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
+            }
+        }
+
         body.code = await createStudentCode();
         body.branchId = body.branchId || session?.user?.branches?.[0]?.id || null;
         const student = await createStudent(body);
