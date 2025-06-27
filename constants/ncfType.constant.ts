@@ -1,6 +1,13 @@
 import { NcfType } from "@prisma/client";
 
-export const NCF_TYPES = {
+type NcfTypeMap = {
+  [key in NcfType]: {
+    code: NcfType;
+    label: string;
+  };
+};
+
+export const NCF_TYPES: NcfTypeMap = {
   FACTURA_CREDITO_FISCAL: {
     code: NcfType.FACTURA_CREDITO_FISCAL,
     label: "Factura de Crédito Fiscal"

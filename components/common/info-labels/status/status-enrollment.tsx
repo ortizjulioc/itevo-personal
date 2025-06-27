@@ -27,7 +27,7 @@ const StatusColors = {
 };
 
 export default function StatusEnrollment({ status }: StatusEnrollmentProps) {
-  console.log('status', status);
+  
   return (
     <span className={`flex items-center gap-1 font-bold min-w-max ${StatusColors[status]}`}>
       <TbPointFilled />

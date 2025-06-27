@@ -20,7 +20,7 @@ export default async function DefaultLayout({ children }: { children: React.Reac
                 <ScrollToTop />
 
                 {/* BEGIN APP SETTING LAUNCHER */}
-                <Setting />
+                {/* <Setting /> */}
                 {/* END APP SETTING LAUNCHER */}
 
                 <MainContainer>

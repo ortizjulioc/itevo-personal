@@ -26,3 +26,6 @@ export const removeItemsInvoice = async (id: string, invoiceItemId: string) => {
 export const payInvoice = async (id: string, invoice: Invoice) => {
     return await apiRequest.post<Invoice>(`/invoices/${id}/pay`, invoice);
 };
+export const cancelInvoice = async (id: string) => {
+    return await apiRequest.remove<InvoicePrisma>(`/invoices/${id}`);
+};

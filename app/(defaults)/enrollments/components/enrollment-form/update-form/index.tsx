@@ -89,7 +89,8 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                                 name="status"
                                 options={statusOptions}
                                 value={statusOptions.find((status) => status.value === values.status)}
-                                onChange={(option: statusOption | null) => {
+                                onChange={(newValue, _actionMeta) => {
+                                    const option = newValue as statusOption | null;
                                     setFieldValue('status', option?.value ?? null);
                                 }}
                                 isSearchable={false}

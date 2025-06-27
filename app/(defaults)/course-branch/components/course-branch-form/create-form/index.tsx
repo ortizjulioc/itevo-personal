@@ -34,9 +34,9 @@ export default function CreateCourseBranchForm() {
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        console.log('values', values);
+
         const resp = await createCourseBranch(values);
-        console.log(resp)
+        
         if (resp.success) {
             openNotification('success', 'Curso creado correctamente');
             route.push(`/course-branch/${resp.data?.id}?new=true#schedule-assignment`);

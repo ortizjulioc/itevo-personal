@@ -23,7 +23,7 @@ interface Props {
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
     const { loading, error, courseBranches, totalCourseBranches, setCourseBranches } = useFetchCourseBranch(query);
-    console.log('courseBranches', courseBranches);
+
     if (error) {
         openNotification('error', error);
     }

@@ -89,7 +89,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
 
   return (
     <div>
-      <Select<SelectPromotionType, false, GroupBase<SelectPromotionType>>
+      <AsyncSelect<SelectPromotionType, false, GroupBase<SelectPromotionType>>
         cacheOptions
         loadOptions={loadOptions}
         defaultOptions={options}
@@ -97,7 +97,7 @@ export default function SelectPromotion({ value, ...rest }: SelectPromotionProps
         noOptionsMessage={() => 'No hay opciones'}
         value={options.filter(({ value }) => value === defaultValue?.value)}
         isLoading={loading}
-        asComponent={AsyncSelect}
+        //asComponent={AsyncSelect}
         isClearable
         {...rest}
       />

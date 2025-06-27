@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteInvoiceItem, findInvoiceById } from '@/services/invoice-service';
+import { deleteInvoiceItem, findInvoiceById, updateInvoice } from '@/services/invoice-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { PrismaClient } from '@prisma/client';
+import { InvoiceItemType, PaymentStatus, PrismaClient } from '@prisma/client';
+import { findProductById, updateProductById } from '@/services/product-service';
+import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 
 const Prisma = new PrismaClient();
 
@@ -10,35 +12,58 @@ const Prisma = new PrismaClient();
 export async function DELETE(req: NextRequest, { params }: { params: { id: string; itemId: string } }) {
   const { id, itemId } = params; // ID de la factura y del ítem
   try {
-    // Verificar que la factura existe y está en DRAFT
-    const invoice = await findInvoiceById(id);
-    if (!invoice) {
-      throw new Error(`Factura con ID ${id} no encontrada`);
-    }
-    if (invoice.status !== 'DRAFT') {
-      throw new Error(`Solo se pueden eliminar ítems de facturas en estado DRAFT (actual: ${invoice.status})`);
-    }
+    let invoiceUpdated;
+    // Iniciar transacción
+    await Prisma.$transaction(async (prisma) => {
+      // Verificar que la factura existe y está en DRAFT
+      const invoice = await findInvoiceById(id, prisma);
+      if (!invoice) {
+        throw new Error(`Factura con ID ${id} no encontrada`);
+      }
+      if (invoice.status !== 'DRAFT') {
+        throw new Error(`Solo se pueden eliminar ítems de facturas en estado DRAFT (actual: ${invoice.status})`);
+      }
 
-    // Verificar que el ítem pertenece a la factura y eliminarlo
-    const itemToDelete = await Prisma.invoiceItem.findUnique({
-      where: { id: itemId },
-    });
-    if (!itemToDelete || itemToDelete.invoiceId !== id) {
-      throw new Error(`El ítem ${itemId} no pertenece a la factura ${id}`);
-    }
+      // Verificar que el ítem existe
+      const item = invoice.items.find((i) => i.id === itemId);
+      if (!item) {
+        throw new Error(`Ítem con ID ${itemId} no encontrado en la factura ${id}`);
+      }
 
-    const invoiceUpdated = await deleteInvoiceItem(id, itemId);
-    if (!invoiceUpdated) {
-      throw new Error(`Error al eliminar el ítem ${itemId} de la factura ${id}`);
-    }
+      // Si es un producto, actualizar el stock
+      if (item.type === InvoiceItemType.PRODUCT && item.productId) {
+        const product = await findProductById(item.productId, prisma);
+        if (!product) {
+          throw new Error(`Producto con ID ${item.productId} no encontrado`);
+        }
+        // Actualizar stock del producto
+        await updateProductById(item.productId, {
+          stock: product.stock + (item.quantity || 0),
+        }, prisma);
+      } else if (item.type === InvoiceItemType.RECEIVABLE && item.accountReceivableId) {
+        // Si es una cuenta por cobrar, actualizar el estado
+        const accountReceivable = await findAccountReceivableById(item.accountReceivableId, prisma);
+        if (!accountReceivable) {
+          throw new Error(`Cuenta por cobrar con ID ${item.accountReceivableId} no encontrada`);
+        }
 
-    // Registrar log de éxito
-    await createLog({
-      action: 'DELETE',
-      description: `Ítem: \n${JSON.stringify(itemToDelete, null, 2)} eliminado de la factura ${invoice.invoiceNumber}`,
-      origin: `invoices/${id}/items/${itemId}`,
-      elementId: invoiceUpdated.id,
-      success: true,
+        const newAmountPaid = accountReceivable.amountPaid - (item.unitPrice || 0);
+        await updateAccountReceivableById(item.accountReceivableId, {
+          amountPaid: newAmountPaid,
+          status: newAmountPaid >= accountReceivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING
+        }, prisma);
+      }
+
+      // Eliminar el ítem de la factura
+      await deleteInvoiceItem(itemId, prisma);
+
+      // Recalcular subtotal e itbis totales de la factura
+      const newItbis = invoice.itbis - (item.itbis || 0);
+      const newSubtotal = invoice.subtotal - (item.subtotal || 0);
+      invoiceUpdated = await updateInvoice(id, {
+        subtotal: newSubtotal,
+        itbis: newItbis,
+      }, prisma);
     });
 
     return NextResponse.json(invoiceUpdated, { status: 200 });

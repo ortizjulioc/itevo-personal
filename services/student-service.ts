@@ -1,6 +1,6 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
+import { Prisma as PrismaTypes } from "@prisma/client";
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -45,7 +45,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
     return { students, totalStudents };
 };
 
-export const createStudent = async (data: any) => {
+export const createStudent = async (data: PrismaTypes.StudentCreateInput) => {
     const student = await Prisma.student.create({ data: data });
     return student;
 };
@@ -64,7 +64,7 @@ export const findStudentById = async (id: string) => {
 export const updateStudentById = async (id: string, data: any) => {
     return Prisma.student.update({
         where: { id },
-        data: {code: data.code, firstName: data.firstName , lastName: data.lastName, identification: data.identification, address: data.address, phone: data.phone, email: data.email, hasTakenCourses: data.hasTakenCourses},
+        data: { code: data.code, firstName: data.firstName, lastName: data.lastName, identification: data.identification, address: data.address, phone: data.phone, email: data.email, hasTakenCourses: data.hasTakenCourses },
     });
 };
 
@@ -99,4 +99,29 @@ export const createStudentCode = async () => {
     const lastStudentCode = parseInt(code, 10);
     const newStudentCode = lastStudentCode + 1;
     return `${year}-${newStudentCode.toString().padStart(4, '0')}`;
+};
+
+export const findAccountsReceivableByStudentId = async (studentId: string) => {
+    return Prisma.accountReceivable.findMany({
+        where: {
+            studentId: studentId,
+        },
+        include: {
+            courseBranch: {
+                select: {
+                    id: true,
+                    course: {
+                        select: {
+                            id: true,
+                            code: true,
+                            name: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: [
+            { createdAt: 'asc' },
+        ],
+    });
 };

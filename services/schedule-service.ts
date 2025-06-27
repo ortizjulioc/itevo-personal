@@ -1,6 +1,5 @@
 import 'server-only';
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import { Prisma } from '@/utils/lib/prisma';
 
 export const getSchedules = async (weekday: number | null, startTime: string | null, endTime: string | null) => {
     const whereCondition: any = { deleted: false };

@@ -21,6 +21,6 @@ export const updateValidationSchema = Yup.object().shape({
 export const initialValues = {
     studentId: '',
     courseBranchId: '',
-    enrollmentDate: undefined,
+    enrollmentDate: new Date(),
     status: ENROLLMENT_STATUS.WAITING,
 };

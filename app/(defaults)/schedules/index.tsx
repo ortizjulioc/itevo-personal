@@ -24,7 +24,7 @@ export default function Schedule() {
   };
 
   const onNewSchedule = (schedule: any) => {
-    console.log(schedule);
+  
     setSchedules((prev: any) => [...prev, schedule]);
     setIsFormVisible(false);
   }

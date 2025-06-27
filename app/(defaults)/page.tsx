@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const Sales = async () => {
     const session = await getServerSession(authOptions);
-  
+
     return (
         <div>
             <ViewTitle title={`¡Bienvenido ${session?.user?.name} ${session?.user?.lastName}!`} />
