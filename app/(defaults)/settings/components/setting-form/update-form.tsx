@@ -26,15 +26,10 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
     }
 
     const handleUploadLogo = async (file: File, setFieldValue:(path:string,value:any)=>void) => {
-
         const resp = await uploadLogo(file);
-        
-       
         if (resp.success) {
             openNotification('success', 'Logo actualizado correctamente');
-             const url = (resp as any).data.url as string;
-            //const url = resp.data?.url as string;
-         
+            const url = (resp as any).data.url as string;
         if (!url) {
             openNotification('error', 'No se pudo obtener la URL del logo');
             return;
@@ -60,14 +55,8 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
     }
 
-
-
-
-
     return (
         <div>
-
-
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
@@ -137,9 +126,6 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                         <FormItem name="logo" label="Logo" invalid={Boolean(errors.logo && touched.logo)} errorMessage={errors.logo}>
                                             <ImageUploader
                                                 value={values.logo}
-                                                // onChange={(value: string) => {
-                                                //     setFieldValue('logo', value);
-                                                // }}
                                                 onUpload={(file: File) => handleUploadLogo(file, setFieldValue)}
                                                 onDelete={() => handleDeleteLogo(values.logo)}
                                             />
@@ -148,9 +134,6 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
-
-
-
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>

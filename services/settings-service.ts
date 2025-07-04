@@ -16,6 +16,7 @@ export const getSettings = async (search: string, page: number, top: number) => 
             email: true,
             logo: true,
             phone: true,
+            billingWithoutNcf: true,
         },
         where: {
             deleted: false,

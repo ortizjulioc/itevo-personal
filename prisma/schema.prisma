@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "./node_modules/@prisma/client"
+  output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -360,14 +360,16 @@ model PayablePayment {
 }
 
 model Setting {
-  id              String   @id @default(uuid())
-  rnc             String   @unique
-  companyName     String   @map("company_name")
-  address         String
-  phone           String
-  email           String
-  logo            String
-  defaultPassword String?  @map("default_password")
+  id                String   @id @default(uuid())
+  rnc               String   @unique
+  companyName       String   @map("company_name")
+  address           String
+  phone             String
+  email             String
+  logo              String
+  defaultPassword   String?  @map("default_password")
+  billingWithoutNcf Boolean  @default(false) @map("billing_without_ncf")
+
   deleted         Boolean  @default(false)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")

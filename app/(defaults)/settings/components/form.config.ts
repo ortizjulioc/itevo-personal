@@ -1,7 +1,5 @@
 import * as Yup from 'yup';
 
-
-
 export const updateValidationSchema = Yup.object().shape({
     rnc: Yup.string()
         .required('El RNC es obligatorio')
@@ -12,6 +10,7 @@ export const updateValidationSchema = Yup.object().shape({
     email: Yup.string().email('Correo electrónico no válido'),
     logo: Yup.string().url('El logo debe ser una URL válida'),
     defaultPassword: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    billingWithoutNcf: Yup.boolean(),
 });
 
 export const initialValues = {
@@ -22,5 +21,6 @@ export const initialValues = {
     email: '',
     logo: '',
     defaultPassword: '',
+    billingWithoutNcf: true,
 };
 
