@@ -1,10 +1,12 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
+import { PrismaClient, Prisma as PrismaTypes, } from '@prisma/client';
 const bcrypt = require('bcrypt');
 
-export const getSettings = async (search: string, page: number, top: number) => {
-    const skip = (page - 1) * top;
-    const settings = await Prisma.setting.findMany({
+export const getSettings = async (
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    return await prisma.setting.findFirst({
         orderBy: [
             { companyName: 'asc' },
         ],
@@ -17,15 +19,8 @@ export const getSettings = async (search: string, page: number, top: number) => 
             logo: true,
             phone: true,
             billingWithoutNcf: true,
-        },
-        where: {
-            deleted: false,
-        },
-        skip: skip,
-        take: top,
+        }
     });
-
-    return {settings};
 };
 
 export const createSetting = async (data: any) => {

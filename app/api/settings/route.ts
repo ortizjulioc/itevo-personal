@@ -7,12 +7,7 @@ import { createLog } from "@/utils/log";
 
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
-        const page = parseInt(searchParams.get('page') || '1', 10);
-        const top = parseInt(searchParams.get('top') || '10', 10);
-
-        const { settings } = await getSettings(search, page, top);
+        const settings = await getSettings();
 
         return NextResponse.json({
             settings,
