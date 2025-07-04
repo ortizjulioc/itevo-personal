@@ -45,14 +45,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {
                 // TODO: cambiar implementacion por la version con servicios, cuando este disponible
                 const product = await findProductById(body.productId);
-    
+
                 if (!product) {
                     throw new Error(`Producto ${body.productId} no encontrado`);
                 }
                 if (product.stock < body.quantity) {
                     throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
                 }
-    
+
                 if (product.isTaxIncluded) {
                     const total = subtotal;
                     subtotal = total / (1 + product.taxRate);
@@ -60,14 +60,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 } else {
                     itbis = subtotal * product.taxRate;
                 }
-    
+
                 body.concept = product.name;
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
                 const receivable = await findAccountReceivableById(body.accountReceivableId);
-    
+
                 if (!receivable) {
                     throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
                 }
@@ -109,10 +109,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 elementId: invoiceUpdated.id,
                 success: true,
             });
-    
         });
         return NextResponse.json({ status: 200 });
-            
     } catch (error) {
         // Registrar log de error
         await createLog({
