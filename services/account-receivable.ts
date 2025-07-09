@@ -139,6 +139,13 @@ export const findAccountReceivableById = async (
               name: true,
             },
           },
+          teacher: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       },
     },

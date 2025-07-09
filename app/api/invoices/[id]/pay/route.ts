@@ -3,7 +3,7 @@ import { findInvoiceById, InvoicePaymentData, updateInvoice } from '@/services/i
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceStatus } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus } from '@prisma/client';
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 
@@ -49,6 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     createdBy: invoice.createdBy,
                 },
             });
+
             await createLog({
                 action: 'POST',
                 description: `Factura ${updatedInvoice.invoiceNumber} pagada. \nInformación de la factura: ${JSON.stringify(updatedInvoice, null, 2)}`,

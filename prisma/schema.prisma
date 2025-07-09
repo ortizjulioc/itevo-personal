@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -44,15 +44,15 @@ model Role {
 }
 
 model Branch {
-  id           String           @id @default(uuid())
-  name         String
-  address      String
-  phone        String?
-  deleted      Boolean          @default(false)
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String?
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  students       Student[]
+  students     Student[]
   CashRegister CashRegister[]
   courseBranch CourseBranch[]
   userRole     UserRoleBranch[]
@@ -96,21 +96,21 @@ model Teacher {
 }
 
 model Student {
-  id                String              @id @default(uuid())
-  code              String              @unique
-  firstName         String              @map("first_name")
-  lastName          String              @map("last_name")
-  identification    String?
-  phone             String?
-  email             String?
-  address           String?
-  hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  deleted           Boolean             @default(false)
-  branchId          String              @map("branch_id")
+  id              String   @id @default(uuid())
+  code            String   @unique
+  firstName       String   @map("first_name")
+  lastName        String   @map("last_name")
+  identification  String?
+  phone           String?
+  email           String?
+  address         String?
+  hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deleted         Boolean  @default(false)
+  branchId        String   @map("branch_id")
 
-  branch            Branch?              @relation(fields: [branchId], references: [id])
+  branch            Branch?             @relation(fields: [branchId], references: [id])
   accountReceivable AccountReceivable[]
   enrollment        Enrollment[]
   graduation        Graduation[]
@@ -319,29 +319,47 @@ model ReceivablePayment {
   cashMovementId      String            @unique @map("cash_movement_id")
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
+
   accountReceivable   AccountReceivable @relation(fields: [accountReceivableId], references: [id])
   cashMovement        CashMovement      @relation(fields: [cashMovementId], references: [id])
+  PayableEarning      PayableEarning?
 
   @@index([accountReceivableId], map: "receivable_payments_account_receivable_id_fkey")
   @@map("receivable_payments")
 }
 
 model AccountPayable {
-  id             String           @id @default(uuid())
-  teacherId      String           @map("teacher_id")
-  courseBranchId String           @map("course_branch_id")
+  id             String        @id @default(uuid())
+  teacherId      String        @map("teacher_id")
+  courseBranchId String        @map("course_branch_id")
   amount         Float
-  dueDate        DateTime         @map("due_date")
-  status         PaymentStatus    @default(PENDING)
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
-  teacher        Teacher          @relation(fields: [teacherId], references: [id])
-  PayablePayment PayablePayment[]
+  status         PaymentStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
+  courseBranch CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  teacher      Teacher          @relation(fields: [teacherId], references: [id])
+  earings      PayableEarning[]
+  payments     PayablePayment[]
+
+  @@unique([teacherId, courseBranchId], map: "accounts_payable_teacher_course_branch_unique")
   @@index([courseBranchId], map: "accounts_payable_course_branch_id_fkey")
   @@index([teacherId], map: "accounts_payable_teacher_id_fkey")
   @@map("accounts_payable")
+}
+
+model PayableEarning {
+  id                  String   @id @default(uuid())
+  accountPayableId    String   @map("account_payable_id")
+  receivablePaymentId String   @unique @map("receivable_payment_id")
+  amount              Float
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  accountPayable    AccountPayable    @relation(fields: [accountPayableId], references: [id])
+  receivablePayment ReceivablePayment @relation(fields: [receivablePaymentId], references: [id])
+
+  @@map("payable_earnings")
 }
 
 model PayablePayment {
@@ -360,19 +378,19 @@ model PayablePayment {
 }
 
 model Setting {
-  id                String   @id @default(uuid())
-  rnc               String   @unique
-  companyName       String   @map("company_name")
+  id                String  @id @default(uuid())
+  rnc               String  @unique
+  companyName       String  @map("company_name")
   address           String
   phone             String
   email             String
   logo              String
-  defaultPassword   String?  @map("default_password")
-  billingWithoutNcf Boolean  @default(false) @map("billing_without_ncf")
+  defaultPassword   String? @map("default_password")
+  billingWithoutNcf Boolean @default(false) @map("billing_without_ncf")
 
-  deleted         Boolean  @default(false)
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
 }

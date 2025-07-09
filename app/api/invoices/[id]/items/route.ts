@@ -1,3 +1,4 @@
+import { getAccountPayableByCourseBranchId } from '@/services/account-payable';
 import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
@@ -87,6 +88,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     amountPaid,
                     status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
                 }, prisma);
+
+                // Crear/actualizar cuenta por pagar
+                const accountPayable = await getAccountPayableByCourseBranchId({
+                    courseBranchId: receivable.courseBranchId,
+                    prisma,
+                });
+
+                // const receivablePayment = await prisma.receivablePayment.create({
+                //     data: {
+                //         accountReceivableId: body.accountReceivableId,
+                //         amount: body.unitPrice,
+                //         paymentDate: new Date(),
+                //     },
+                // });
+
+                if (!accountPayable) {
+                    throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                }
+
+
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
