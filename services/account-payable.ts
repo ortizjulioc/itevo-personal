@@ -152,3 +152,37 @@ export const newPayablePayment = async (
 
   return payablePayment;
 }
+
+export const deletePayablePayment = async (
+  accountPayableId: string,
+  payablePaymentId: string,
+  prisma: PrismaTypes.TransactionClient
+) => {
+  // Verificar que la cuenta por pagar existe
+  const accountPayable = await prisma.accountPayable.findUnique({
+    where: { id: accountPayableId },
+  });
+
+  if (!accountPayable) {
+    throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
+  }
+
+  // Anular el pago de la cuenta por pagar
+  const payablePayment = await prisma.payablePayment.update({
+    where: { id: payablePaymentId },
+    data: { deleted: true }, // Marcar como eliminado
+  });
+
+  // Actualizar el monto de la cuenta por pagar
+  const newDisbursedAmount = accountPayable.amountDisbursed - payablePayment.amount;
+  const newStatus = newDisbursedAmount <= 0 ? PaymentStatus.PENDING : accountPayable.status;
+  await prisma.accountPayable.update({
+    where: { id: accountPayableId },
+    data: {
+      amountDisbursed: { decrement: payablePayment.amount }, // Decrementar el monto desembolsado
+      status: newStatus, // Mantener el estado como pendiente
+    },
+  });
+
+  return payablePayment;
+}
