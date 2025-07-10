@@ -316,12 +316,13 @@ model ReceivablePayment {
   accountReceivableId String            @map("account_receivable_id")
   amount              Float
   paymentDate         DateTime          @map("payment_date")
-  cashMovementId      String            @unique @map("cash_movement_id")
+  invoiceId           String            @map("invoice_id")
+  deleted             Boolean           @default(false)
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
 
   accountReceivable   AccountReceivable @relation(fields: [accountReceivableId], references: [id])
-  cashMovement        CashMovement      @relation(fields: [cashMovementId], references: [id])
+  invoice             Invoice           @relation(fields: [invoiceId], references: [id])
   PayableEarning      PayableEarning?
 
   @@index([accountReceivableId], map: "receivable_payments_account_receivable_id_fkey")
@@ -350,9 +351,11 @@ model AccountPayable {
 
 model PayableEarning {
   id                  String   @id @default(uuid())
+  date                DateTime
   accountPayableId    String   @map("account_payable_id")
   receivablePaymentId String   @unique @map("receivable_payment_id")
   amount              Float
+  deleted             Boolean @default(false)
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
@@ -368,6 +371,7 @@ model PayablePayment {
   amount           Float
   paymentDate      DateTime       @map("payment_date")
   cashMovementId   String         @unique @map("cash_movement_id")
+  deleted          Boolean        @default(false)
   createdAt        DateTime       @default(now()) @map("created_at")
   updatedAt        DateTime       @updatedAt @map("updated_at")
   accountPayable   AccountPayable @relation(fields: [accountPayableId], references: [id])
@@ -443,7 +447,6 @@ model CashMovement {
   cashRegister      CashRegister               @relation(fields: [cashRegisterId], references: [id])
   user              User                       @relation(fields: [createdBy], references: [id])
   PayablePayment    PayablePayment?
-  ReceivablePayment ReceivablePayment?
 
   @@index([cashRegisterId], map: "cash_movements_cash_register_id_fkey")
   @@index([createdBy], map: "cash_movements_created_by_fkey")
@@ -507,6 +510,7 @@ model Invoice {
   cashRegister   CashRegister  @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
   user           User          @relation(fields: [createdBy], references: [id])
   student        Student?      @relation(fields: [studentId], references: [id])
+  receivablePayment ReceivablePayment[]
 
   @@index([cashRegisterId], map: "invoices_cash_register_id_fkey")
   @@index([createdBy], map: "invoices_created_by_fkey")

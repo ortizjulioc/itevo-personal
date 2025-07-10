@@ -5,6 +5,7 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { InvoiceItemType, PaymentStatus, PrismaClient } from '@prisma/client';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
+import { deleteEarningFromAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 
 const Prisma = new PrismaClient();
 
@@ -47,11 +48,36 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
           throw new Error(`Cuenta por cobrar con ID ${item.accountReceivableId} no encontrada`);
         }
 
+        // TODO: Mover logica a un servicio separado
         const newAmountPaid = accountReceivable.amountPaid - (item.unitPrice || 0);
         await updateAccountReceivableById(item.accountReceivableId, {
           amountPaid: newAmountPaid,
           status: newAmountPaid >= accountReceivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING
         }, prisma);
+
+        // Anular el pago asociado si existe
+        const receivablePayment = await prisma.receivablePayment.findUnique({
+          where: { accountReceivableId: item.accountReceivableId, invoiceId: id, deleted: false },
+        });
+        if (receivablePayment) {
+          await prisma.receivablePayment.update({
+            where: { id: receivablePayment.id },
+            data: { deleted: true }, // Marcar como eliminado
+          });
+
+          // Eliminar cuenta por pagar asociada si existe
+          const accountPayable = await prisma.accountPayable.findFirst({
+            where: { courseBranchId: accountReceivable.courseBranchId },
+          });
+
+          if (accountPayable) {
+            // Eliminar la ganancia asociada a la cuenta por pagar
+            await deleteEarningFromAccountsPayable(accountPayable.id, receivablePayment.id, prisma);
+          }
+        }
+        // TODO: ***Hasta aqui se deberia mover a un servicio separado
+
+
       }
 
       // Eliminar el ítem de la factura

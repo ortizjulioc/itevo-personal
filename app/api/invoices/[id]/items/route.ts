@@ -1,4 +1,4 @@
-import { getAccountPayableByCourseBranchId } from '@/services/account-payable';
+import { addNewEarningToAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
@@ -44,7 +44,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         await Prisma.$transaction(async (prisma) => {
             // Validar y calcular impuestos según el tipo de ítem
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-                // TODO: cambiar implementacion por la version con servicios, cuando este disponible
                 const product = await findProductById(body.productId);
 
                 if (!product) {
@@ -63,6 +62,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 }
 
                 body.concept = product.name;
+                // Actualizar el stock del producto
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,
                 }, prisma);
@@ -76,18 +76,32 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
                 }
 
+                // TODO: Llevar lógica de los calculos de cuentas por pagar a service
+
                 const amountPending = receivable.amount - receivable.amountPaid;
-                console.log(`Monto pendiente: ${amountPending}, Cantidad a agregar: ${body.unitPrice}`);
                 if (amountPending < body.unitPrice) {
                     throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${body.accountReceivableId} (pendiente: ${amountPending})`);
                 }
 
                 const newAmountPending = amountPending - body.unitPrice;
                 const amountPaid = receivable.amount - newAmountPending;
+                // Actualizamos cuenta por cobrar
                 await updateAccountReceivableById(body.accountReceivableId, {
                     amountPaid,
                     status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
                 }, prisma);
+
+                // Crear pago de cuenta por cobrar
+                const receivablePayment = await prisma.receivablePayment.create({
+                    data: {
+                        accountReceivableId: body.accountReceivableId,
+                        amount: body.unitPrice,
+                        paymentDate: new Date(),
+                        invoiceId: id, // Asociar el pago a la factura
+                    },
+                });
+
+                // TODO: Hasta aquí deberia estar en el service de AccountReceivable ***
 
                 // Crear/actualizar cuenta por pagar
                 const accountPayable = await getAccountPayableByCourseBranchId({
@@ -95,19 +109,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     prisma,
                 });
 
-                // const receivablePayment = await prisma.receivablePayment.create({
-                //     data: {
-                //         accountReceivableId: body.accountReceivableId,
-                //         amount: body.unitPrice,
-                //         paymentDate: new Date(),
-                //     },
-                // });
+                // Agregar ganancia a la cuenta por pagar
+                await addNewEarningToAccountsPayable(
+                    accountPayable.id,
+                    body.unitPrice,
+                    receivablePayment.id,
+                    prisma
+                );
 
                 if (!accountPayable) {
                     throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
                 }
-
-
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
