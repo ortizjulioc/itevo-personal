@@ -334,6 +334,7 @@ model AccountPayable {
   teacherId      String        @map("teacher_id")
   courseBranchId String        @map("course_branch_id")
   amount         Float
+  amountDisbursed    Float         @default(0) @map("amount_disbursed")
   status         PaymentStatus @default(PENDING)
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")

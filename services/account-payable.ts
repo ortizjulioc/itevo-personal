@@ -38,79 +38,117 @@ export const getAccountPayableByCourseBranchId = async ({
 }
 
 export const addNewEarningToAccountsPayable = async (
-    accountPayableId: string,
-    amount: number,
-    receivablePaymentId: string,
-    prisma: PrismaTypes.TransactionClient
+  accountPayableId: string,
+  amount: number,
+  receivablePaymentId: string,
+  prisma: PrismaTypes.TransactionClient
 ) => {
-    // Verificar que la cuenta por pagar existe
-    const accountPayable = await prisma.accountPayable.findUnique({
-        where: { id: accountPayableId, status: PaymentStatus.PENDING },
-    });
+  // Verificar que la cuenta por pagar existe
+  const accountPayable = await prisma.accountPayable.findUnique({
+    where: { id: accountPayableId, status: PaymentStatus.PENDING },
+  });
 
-    if (!accountPayable) {
-        throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
-    }
+  if (!accountPayable) {
+    throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
+  }
 
-    // Crear ganancia por pagar (PayableEarning)
-    const payableEarning = await prisma.payableEarning.create({
-        data: {
-            accountPayableId,
-            receivablePaymentId,
-            amount,
-            date: new Date(),
-        },
-    });
+  // Crear ganancia por pagar (PayableEarning)
+  const payableEarning = await prisma.payableEarning.create({
+    data: {
+      accountPayableId,
+      receivablePaymentId,
+      amount,
+      date: new Date(),
+    },
+  });
 
-    // Actualizar el monto de la cuenta por pagar
-    const accountPayableUpdated =  await prisma.accountPayable.update({
-        where: { id: accountPayableId },
-        data: {
-        amount: accountPayable.amount + amount,
-        },
-    });
+  // Actualizar el monto de la cuenta por pagar
+  const accountPayableUpdated = await prisma.accountPayable.update({
+    where: { id: accountPayableId },
+    data: {
+      amount: accountPayable.amount + amount,
+    },
+  });
 
-    return {
-        payableEarning,
-        accountPayable: accountPayableUpdated,
-    };
+  return {
+    payableEarning,
+    accountPayable: accountPayableUpdated,
+  };
 }
 
 export const deleteEarningFromAccountsPayable = async (
-    accountPayableId: string,
-    receivablePaymentId: string,
-    prisma: PrismaTypes.TransactionClient
+  accountPayableId: string,
+  receivablePaymentId: string,
+  prisma: PrismaTypes.TransactionClient
 ) => {
-    // Verificar que la cuenta por pagar existe
-    const accountPayable = await prisma.accountPayable.findUnique({
-        where: { id: accountPayableId },
-    });
+  // Verificar que la cuenta por pagar existe
+  const accountPayable = await prisma.accountPayable.findUnique({
+    where: { id: accountPayableId },
+  });
 
-    if (!accountPayable) {
-        throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
-    }
+  if (!accountPayable) {
+    throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
+  }
 
-    // Anular la ganancia por pagar (PayableEarning)
-    const payableEarning = await prisma.payableEarning.update({
-        where: {
-                accountPayableId,
-                receivablePaymentId,
-        },
-        data: {
-            deleted: true, // Marcar como eliminado
-        },
-    });
+  // Anular la ganancia por pagar (PayableEarning)
+  const payableEarning = await prisma.payableEarning.update({
+    where: {
+      accountPayableId,
+      receivablePaymentId,
+    },
+    data: {
+      deleted: true, // Marcar como eliminado
+    },
+  });
 
-    // Actualizar el monto de la cuenta por pagar
-    const accountPayableUpdated = await prisma.accountPayable.update({
-        where: { id: accountPayableId },
-        data: {
-            amount: accountPayable.amount - payableEarning.amount,
-        },
-    });
+  // Actualizar el monto de la cuenta por pagar
+  const accountPayableUpdated = await prisma.accountPayable.update({
+    where: { id: accountPayableId },
+    data: {
+      amount: accountPayable.amount - payableEarning.amount,
+    },
+  });
 
-    return {
-        payableEarning,
-        accountPayable: accountPayableUpdated,
-    };
+  return {
+    payableEarning,
+    accountPayable: accountPayableUpdated,
+  };
+}
+
+export const newPayablePayment = async (
+  accountPayableId: string,
+  amount: number,
+  cashMovementId: string,
+  prisma: PrismaTypes.TransactionClient
+) => {
+  // Verificar que la cuenta por pagar existe
+  const accountPayable = await prisma.accountPayable.findUnique({
+    where: { id: accountPayableId, status: PaymentStatus.PENDING },
+  });
+
+  if (!accountPayable) {
+    throw new Error(`Cuenta por pagar con ID ${accountPayableId} no encontrada`);
+  }
+
+  // Crear el pago de la cuenta por pagar
+  const payablePayment = await prisma.payablePayment.create({
+    data: {
+      amount,
+      cashMovement: { connect: { id: cashMovementId } },
+      accountPayable: { connect: { id: accountPayableId } },
+      paymentDate: new Date(),
+    },
+  });
+
+  // Actualizar el monto de la cuenta por pagar
+  const newStatus = accountPayable.amount - amount <= 0 ? PaymentStatus.PAID : PaymentStatus.PENDING;
+  await prisma.accountPayable.update({
+    where: { id: accountPayableId },
+    data: {
+      amountDisbursed: { increment: amount }, // Actualizar el monto desembolsado
+      status: newStatus, // Mantener el estado como pendiente
+    },
+  });
+
+  return payablePayment;
 }
