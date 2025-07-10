@@ -6,6 +6,7 @@ import { Prisma } from '@/utils/lib/prisma';
 import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus } from '@prisma/client';
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
+import { createCashMovement } from '@/services/cash-movement';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
     const { id } = params; // ID de la factura
@@ -38,17 +39,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             }, tx);
             newInvoiceData = updatedInvoice;
 
-            await tx.cashMovement.create({
-                data: {
-                    cashRegisterId: invoice.cashRegisterId,
-                    type: CashMovementType.INCOME,
-                    amount: invoice.subtotal + invoice.itbis,
-                    description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
-                    referenceType: CashMovementReferenceType.INVOICE,
-                    referenceId: updatedInvoice.id,
-                    createdBy: invoice.createdBy,
-                },
-            });
+            await createCashMovement({
+                cashRegister: { connect: { id: invoice.cashRegisterId }},
+                type: CashMovementType.INCOME,
+                amount: invoice.subtotal + invoice.itbis,
+                description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
+                referenceType: CashMovementReferenceType.INVOICE,
+                referenceId: updatedInvoice.id,
+                user: { connect: { id: invoice.createdBy } },
+            }, tx);
 
             await createLog({
                 action: 'POST',

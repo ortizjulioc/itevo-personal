@@ -1,5 +1,6 @@
 import { deleteEarningFromAccountsPayable } from "@/services/account-payable";
 import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from "@/services/account-receivable";
+import { deleteCashMovementsByInvoiceId } from "@/services/cash-movement";
 import { findInvoiceById, updateInvoice } from "@/services/invoice-service";
 import { updateProductById } from "@/services/product-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
@@ -85,21 +86,15 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
           );
         }
       }
+      // anular cashregister movements
+      await deleteCashMovementsByInvoiceId(id, prisma);
+  
+      // anular invoice
+      await updateInvoice(id, {
+        status: InvoiceStatus.CANCELED,
+      }, prisma);
     });
 
-    // anular cashregister movements
-    // TODO: Cambiar a cashMovement Service cuando esté listo
-    await Prisma.cashMovement.deleteMany({
-      where: {
-        referenceType: CashMovementReferenceType.INVOICE,
-        referenceId: id,
-      },
-    });
-
-    // anular invoice
-    await updateInvoice(id, {
-      status: InvoiceStatus.CANCELED,
-    });
 
     return NextResponse.json({ message: 'Factura anulada correctamente' }, { status: 200 });
   } catch (error) {
