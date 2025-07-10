@@ -1,5 +1,5 @@
 import { addNewEarningToAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
-import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
+import { processReceivablePayment } from '@/services/account-receivable';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
@@ -17,10 +17,6 @@ interface InvoiceItemInput {
     quantity: number;
     unitPrice: number;
     concept: string;
-}
-
-interface AccountReceivableWithCourseBranch extends AccountReceivable {
-    courseBranch: CourseBranch;
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -67,45 +63,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
-                const receivable = await findAccountReceivableById(body.accountReceivableId);
-
-                if (!receivable) {
-                    throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
-                }
-                if (receivable.status !== PaymentStatus.PENDING) {
-                    throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
-                }
-
-                // TODO: Llevar lógica de los calculos de cuentas por pagar a service
-
-                const amountPending = receivable.amount - receivable.amountPaid;
-                if (amountPending < body.unitPrice) {
-                    throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${body.accountReceivableId} (pendiente: ${amountPending})`);
-                }
-
-                const newAmountPending = amountPending - body.unitPrice;
-                const amountPaid = receivable.amount - newAmountPending;
-                // Actualizamos cuenta por cobrar
-                await updateAccountReceivableById(body.accountReceivableId, {
-                    amountPaid,
-                    status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
-                }, prisma);
-
-                // Crear pago de cuenta por cobrar
-                const receivablePayment = await prisma.receivablePayment.create({
-                    data: {
-                        accountReceivableId: body.accountReceivableId,
-                        amount: body.unitPrice,
-                        paymentDate: new Date(),
-                        invoiceId: id, // Asociar el pago a la factura
-                    },
-                });
-
-                // TODO: Hasta aquí deberia estar en el service de AccountReceivable ***
+                const { accountReceivable, receivablePayment } = await processReceivablePayment({
+                    unitPrice: body.unitPrice,
+                    accountReceivableId: body.accountReceivableId,
+                    invoiceId: id,
+                    prisma,
+                })
 
                 // Crear/actualizar cuenta por pagar
                 const accountPayable = await getAccountPayableByCourseBranchId({
-                    courseBranchId: receivable.courseBranchId,
+                    courseBranchId: accountReceivable.courseBranchId,
                     prisma,
                 });
 

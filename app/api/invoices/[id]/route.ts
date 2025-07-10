@@ -1,4 +1,5 @@
-import { findAccountReceivableById, updateAccountReceivableById } from "@/services/account-receivable";
+import { deleteEarningFromAccountsPayable } from "@/services/account-payable";
+import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from "@/services/account-receivable";
 import { findInvoiceById, updateInvoice } from "@/services/invoice-service";
 import { updateProductById } from "@/services/product-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
@@ -63,23 +64,25 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
     if (!invoice) {
       return NextResponse.json({ code: 'E_INVOICE_NOT_FOUND', message: 'Factura no encontrado' }, { status: 404 });
     }
-    
+
     await Prisma.$transaction(async (prisma) => {
       for (const item of invoice.items) {
         if (item.type === InvoiceItemType.PRODUCT && item.productId) {
           await updateProductById(item.productId, { stock: { increment: item.quantity || 0 } }, prisma);
         } else if (item.type === InvoiceItemType.RECEIVABLE && item.accountReceivableId) {
-          const receivable = await findAccountReceivableById(item.accountReceivableId);
+          const { accountReceivable, receivablePayment } = await annularReceivablePayment({
+            unitPrice: item.unitPrice || 0,
+            accountReceivableId: item.accountReceivableId,
+            invoiceId: id,
+            prisma,
+          });
 
-          if (receivable) {
-            const newAmountPaid = receivable.amountPaid - (item.unitPrice || 0);
-            await updateAccountReceivableById(item.accountReceivableId, {
-                amountPaid: newAmountPaid,
-                status: newAmountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
-              },
-              prisma
-            );
-          }
+          // Eliminar cuenta por pagar asociada si existe
+          await deleteEarningFromAccountsPayable(
+            accountReceivable.courseBranchId,
+            receivablePayment.id,
+            prisma
+          );
         }
       }
     });
