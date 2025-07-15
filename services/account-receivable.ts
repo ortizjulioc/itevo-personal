@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { AccountReceivable, PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 type processReceivablePaymentProps = {
     unitPrice: number;
@@ -165,7 +165,7 @@ export const updateAccountReceivableById = async (
   id: string,
   data: PrismaTypes.AccountReceivableUpdateInput,
   prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
-) => {
+): Promise<AccountReceivable> => {
   return prisma.accountReceivable.update({
     where: { id },
     data: {
@@ -295,9 +295,6 @@ export const annularReceivablePayment = async ({
     if (!receivable) {
         throw new Error(`Cuenta por cobrar ${accountReceivableId} no encontrada`);
     }
-    if (receivable.status !== PaymentStatus.PAID) {
-        throw new Error(`La cuenta por cobrar ${accountReceivableId} no está pagada`);
-    }
 
     const amountPaid = receivable.amountPaid - unitPrice;
     if (amountPaid < 0) {
@@ -314,7 +311,9 @@ export const annularReceivablePayment = async ({
 
     // Anular pago de cuenta por cobrar
     const receivablePayment = await prisma.receivablePayment.update({
-        where: { accountReceivableId: accountReceivableId, invoiceId: invoiceId },
+        where: { accountReceivableId_invoiceId:
+            { accountReceivableId: accountReceivableId, invoiceId: invoiceId }
+        },
         data: { deleted: true, },
     });
 

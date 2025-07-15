@@ -78,17 +78,23 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
             prisma,
           });
 
+          const accountPayable = await prisma.accountPayable.findFirst({
+            where: { courseBranchId: accountReceivable.courseBranchId },
+          });
+
+            if (accountPayable) {
+                await deleteEarningFromAccountsPayable(
+                  accountPayable.id,
+                  receivablePayment.id,
+                  prisma
+                );
+            }
           // Eliminar cuenta por pagar asociada si existe
-          await deleteEarningFromAccountsPayable(
-            accountReceivable.courseBranchId,
-            receivablePayment.id,
-            prisma
-          );
         }
       }
       // anular cashregister movements
       await deleteCashMovementsByInvoiceId(id, prisma);
-  
+
       // anular invoice
       await updateInvoice(id, {
         status: InvoiceStatus.CANCELED,

@@ -3,7 +3,7 @@ import { findInvoiceById, InvoicePaymentData, updateInvoice } from '@/services/i
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus, NcfType } from '@prisma/client';
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 import { createCashMovement } from '@/services/cash-movement';
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             if (invoice.subtotal + invoice.itbis <= 0) throw new Error('El monto total de la factura debe ser mayor a 0');
             if (invoice.cashRegister?.status !== CashRegisterStatus.OPEN) throw new Error(`La caja registradora ${invoice.cashRegisterId} está cerrada`);
 
-            const finalType = (body.paymentMethod || invoice.type) as Invoice['type'];
+            const finalType = (body.type || invoice.type) as NcfType;
             const settings = await getSettings(tx);
             const USE_NCF = settings?.billingWithoutNcf !== true;
             const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;

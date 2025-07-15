@@ -325,6 +325,7 @@ model ReceivablePayment {
   invoice             Invoice           @relation(fields: [invoiceId], references: [id])
   PayableEarning      PayableEarning?
 
+  @@unique([accountReceivableId, invoiceId], map: "receivable_payments_account_receivable_invoice_unique")
   @@index([accountReceivableId], map: "receivable_payments_account_receivable_id_fkey")
   @@map("receivable_payments")
 }
