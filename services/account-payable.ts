@@ -37,6 +37,34 @@ export const getAccountPayableByCourseBranchId = async ({
   return accountPayable;
 }
 
+export const getAccountsPayable = async (
+  filters: Record<string, any>,
+  page: number,
+  top: number,
+  prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+  const where: Record<string, any> = {};
+
+  if (filters.courseBranchId) {
+    where.courseBranchId = filters.courseBranchId;
+  }
+  if (filters.teacherId) {
+    where.teacherId = filters.teacherId;
+  }
+
+  const [accountsPayable, totalAccountsPayable] = await Promise.all([
+    prisma.accountPayable.findMany({
+      where,
+      skip: (page - 1) * top,
+      take: top,
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.accountPayable.count({ where }),
+  ]);
+
+  return { accountsPayable, totalAccountsPayable };
+}
+
 export const addNewEarningToAccountsPayable = async (
   accountPayableId: string,
   amount: number,
