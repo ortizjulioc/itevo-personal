@@ -7,7 +7,7 @@ import { createValidationSchema, createInitialValues as initialValues } from '..
 import { Tab } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
-import { createCourseBranch } from '../../../lib/request';
+import { createCourseBranch, loadDefaultPromotion } from '../../../lib/request';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 
 const COURSE_BRANCH_TABS = [
@@ -21,6 +21,20 @@ export default function CreateCourseBranchForm() {
     const route = useRouter();
     const pathname = usePathname();
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [defaultPromotion, setDefaultPromotion] = useState<string | null>(null);
+    useEffect(() => {
+        const fetchDefaultPromotion = async () => {
+            try {
+                const { data } = await loadDefaultPromotion();
+                if (data?.id) {
+                    setDefaultPromotion(data.id); // o data.value según la estructura
+                }
+            } catch (error) {
+                console.error('Error cargando la promoción por defecto', error);
+            }
+        };
+        fetchDefaultPromotion();
+    }, []);
 
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);
@@ -36,7 +50,7 @@ export default function CreateCourseBranchForm() {
         setSubmitting(true);
 
         const resp = await createCourseBranch(values);
-        
+
         if (resp.success) {
             openNotification('success', 'Curso creado correctamente');
             route.push(`/course-branch/${resp.data?.id}?new=true#schedule-assignment`);
@@ -53,11 +67,17 @@ export default function CreateCourseBranchForm() {
             setSelectedIndex(tabIndex);
         }
     }, []);
+    
+    if (!defaultPromotion) return null;
 
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
-            <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
+            <Formik
+                enableReinitialize
+                initialValues={{ ...initialValues, promotionId: defaultPromotion }}
+                validationSchema={createValidationSchema}
+                onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
                         <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
@@ -75,7 +95,7 @@ export default function CreateCourseBranchForm() {
                                     Modalidad y horarios
                                 </Tab>
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Prerrequisitos 
+                                    Prerrequisitos
                                 </Tab>
                                 <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
                                     Configuración financiera
