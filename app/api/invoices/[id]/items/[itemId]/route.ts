@@ -4,7 +4,8 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { InvoiceItemType, PaymentStatus, PrismaClient } from '@prisma/client';
 import { findProductById, updateProductById } from '@/services/product-service';
-import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
+import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
+import { deleteEarningFromAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 
 const Prisma = new PrismaClient();
 
@@ -41,18 +42,23 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
           stock: product.stock + (item.quantity || 0),
         }, prisma);
       } else if (item.type === InvoiceItemType.RECEIVABLE && item.accountReceivableId) {
-        // Si es una cuenta por cobrar, actualizar el estado
-        const accountReceivable = await findAccountReceivableById(item.accountReceivableId, prisma);
-        if (!accountReceivable) {
-          throw new Error(`Cuenta por cobrar con ID ${item.accountReceivableId} no encontrada`);
-        }
+        const { accountReceivable, receivablePayment } = await annularReceivablePayment({
+            unitPrice: item.unitPrice || 0,
+            accountReceivableId: item.accountReceivableId,
+            invoiceId: id,
+            prisma,
+        });
 
-        const newAmountPaid = accountReceivable.amountPaid - (item.unitPrice || 0);
-        await updateAccountReceivableById(item.accountReceivableId, {
-          amountPaid: newAmountPaid,
-          status: newAmountPaid >= accountReceivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING
-        }, prisma);
-      }
+          // Eliminar cuenta por pagar asociada si existe
+        const accountPayable = await prisma.accountPayable.findFirst({
+          where: { courseBranchId: accountReceivable.courseBranchId },
+        });
+
+          if (accountPayable) {
+            // Eliminar la ganancia asociada a la cuenta por pagar
+            await deleteEarningFromAccountsPayable(accountPayable.id, receivablePayment.id, prisma);
+          }
+        }
 
       // Eliminar el ítem de la factura
       await deleteInvoiceItem(itemId, prisma);

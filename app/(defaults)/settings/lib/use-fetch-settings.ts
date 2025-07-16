@@ -15,14 +15,12 @@ const useFetchSetting = () => {
         const fetchSettingsData = async () => {
             try {
                 const response = await apiRequest.get<SettingResponse>(`/settings`);
+                console.log('Response from settings:', response);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
-                
                 const setting = response.data?.settings[0];
-              
                 setSetting(setting);
-            
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error.message);

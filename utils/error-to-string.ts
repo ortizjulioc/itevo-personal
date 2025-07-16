@@ -47,7 +47,7 @@ export const formatErrorMessage = (error: unknown): string => {
     }
 
     if (error instanceof Error) {
-        return `Error general: ${error.message}`;
+        return error.message || "Error desconocido. Contacte al administrador del sistema.";
     }
 
     // Si el error no es una instancia de Error, lo convertimos en JSON string

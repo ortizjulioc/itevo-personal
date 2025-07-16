@@ -63,3 +63,14 @@ export const deletePromotionById = async (id: string) => {
         where: { id },
     });
 };
+
+export const getCurrentPromotion = async () => {
+    const today = new Date();
+    return Prisma.promotion.findFirst({
+        where: {
+            startDate: { lte: today },
+            endDate: { gte: today },
+        },
+        orderBy: { startDate: 'asc' },
+    });
+}
