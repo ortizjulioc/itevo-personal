@@ -9,6 +9,8 @@ import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
 import { createCourseBranch, loadDefaultPromotion } from '../../../lib/request';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
+import { useSession } from 'next-auth/react';
+import { Branch } from '@prisma/client';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -22,6 +24,20 @@ export default function CreateCourseBranchForm() {
     const pathname = usePathname();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [defaultPromotion, setDefaultPromotion] = useState<string | null>(null);
+    const { data: session, status } = useSession();
+    const user = session?.user as {
+        id: string;
+        name?: string | null;
+        email?: string | null;
+        username?: string;
+        phone?: string;
+        lastName?: string;
+        roles?: any[];
+        mainBranch: Branch;
+        branches?: any[];
+    };
+
+
     useEffect(() => {
         const fetchDefaultPromotion = async () => {
             try {
@@ -67,15 +83,20 @@ export default function CreateCourseBranchForm() {
             setSelectedIndex(tabIndex);
         }
     }, []);
-    
+
     if (!defaultPromotion) return null;
+    if (!user) return null;
 
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
             <Formik
                 enableReinitialize
-                initialValues={{ ...initialValues, promotionId: defaultPromotion }}
+                initialValues={{ 
+                    ...initialValues, 
+                    promotionId: defaultPromotion,
+                    branchId: user.mainBranch.id
+                 }}
                 validationSchema={createValidationSchema}
                 onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
