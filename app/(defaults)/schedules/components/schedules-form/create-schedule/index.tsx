@@ -22,11 +22,12 @@ const weekOptions: WeekOption[] = [
 
 ];// Por ejemplo, en CreateScheduleForm.tsx
 interface CreateScheduleFormProps {
-  onCreated?: (schedule: any) => void;
+    onCreated?: (schedule: any) => void;
+    onClose?: any
 }
 
 
-export default function CreateScheduleForm({  onCreated }: CreateScheduleFormProps) {
+export default function CreateScheduleForm({ onCreated, onClose }: CreateScheduleFormProps) {
 
     const handleSubmit = async (values: ScheduleFormType, { setSubmitting }: any) => {
         setSubmitting(true);
@@ -39,6 +40,8 @@ export default function CreateScheduleForm({  onCreated }: CreateScheduleFormPro
             openNotification('error', resp.message);
         }
         setSubmitting(false);
+
+        onClose?.()
     };
 
     return (
@@ -61,10 +64,16 @@ export default function CreateScheduleForm({  onCreated }: CreateScheduleFormPro
                                             className="min-w-[200px]"
                                             options={weekOptions}
                                             value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                           onChange={(newValue, _actionMeta) => {
-    const option = newValue as WeekOption | null;
-    form.setFieldValue('weekday', option?.value ?? null);
-}}
+                                            onChange={(newValue, _actionMeta) => {
+                                                const option = newValue as WeekOption | null;
+                                                form.setFieldValue('weekday', option?.value ?? null);
+                                            }}
+                                            menuPortalTarget={typeof window !== 'undefined' ? document.body : null} // <- clave
+                                            menuPosition="fixed"
+                                            styles={{
+                                                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                            }}
+
                                         />
                                     )}
                                 </Field>
@@ -75,7 +84,7 @@ export default function CreateScheduleForm({  onCreated }: CreateScheduleFormPro
                                 label="Hora de inicio"
                                 invalid={Boolean(errors.startTime && touched.startTime)}
                                 errorMessage={errors.startTime}
-                                
+
                             >
                                 <Field
                                     type="time"

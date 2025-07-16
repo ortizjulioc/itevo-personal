@@ -30,6 +30,8 @@ export default function GeneralInformationFields({ values, errors, touched, clas
         branches?: any[];
     };
 
+    if (!user) return null;
+
     return (
         <div className={className}>
             <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>
