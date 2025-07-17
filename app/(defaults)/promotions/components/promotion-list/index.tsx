@@ -66,10 +66,10 @@ export default function PromotionList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{promotion.description}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{getFormattedDate(promotion.startDate)}</div>
+                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(promotion.startDate))}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{getFormattedDate(promotion.endDate)}</div>
+                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(promotion.endDate))}</div>
                                     </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">

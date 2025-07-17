@@ -59,7 +59,7 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
                                         <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
                                     </td>
                                     <td>
-                                        {getFormattedDate(enrollment.enrollmentDate)}
+                                        {getFormattedDate(new Date(enrollment.enrollmentDate))}
                                     </td>
                                     <td>
                                        {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}

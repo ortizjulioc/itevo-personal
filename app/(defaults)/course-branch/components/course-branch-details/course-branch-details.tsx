@@ -52,8 +52,8 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                 { label: "Profesor", value: <TeacherLabel teacherId={courseBranch.teacherId} /> },
                 { label: "Monto", value: formatCurrency(courseBranch.amount) },
                 { label: "Modalidad", value: modalities[courseBranch.modality as keyof typeof modalities] || "No especificado" },
-                { label: "Fecha de inicio", value: courseBranch.startDate ? getFormattedDate(courseBranch.startDate) : "No especificado" },
-                { label: "Fecha de finalizacion", value: courseBranch.endDate ? getFormattedDate(courseBranch.endDate) : "No especificado" },
+                { label: "Fecha de inicio", value: courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : "No especificado" },
+                { label: "Fecha de finalizacion", value: courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : "No especificado" },
                 {
                     label: "Comision", value: courseBranch.commissionRate != null
                         ? `${courseBranch.commissionRate * 100} %`

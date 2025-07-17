@@ -126,11 +126,11 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
-              <p className="text-gray-800">{values?.startDate ? getFormattedDate(values.startDate) : ''}</p>
+              <p className="text-gray-800">{values?.startDate ? getFormattedDate(new Date(values.startDate)) : ''}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Fin:</p>
-              <p className="text-gray-800">{values?.endDate ? getFormattedDate(values.endDate) : ''}</p>
+              <p className="text-gray-800">{values?.endDate ? getFormattedDate(new Date(values.endDate)) : ''}</p>
             </div>
           </div>
           {courseSchedules && courseSchedules.length > 0 && (

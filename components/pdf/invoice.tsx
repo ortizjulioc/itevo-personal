@@ -84,7 +84,7 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
           <View style={styles.line} /> */}
 
           <Text>Factura No. {invoiceNumber}</Text>
-          <Text>Fecha: {getFormattedDateTime(date)}</Text>
+          <Text>Fecha: {getFormattedDateTime(new Date(date))}</Text>
           <Text>Cliente: </Text>
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>

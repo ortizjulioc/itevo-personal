@@ -61,7 +61,7 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
                                         <StudentLabel StudentId={enrollment.studentId} />
                                     </td>
                                     <td>
-                                        {getFormattedDateTime(enrollment.enrollmentDate)}
+                                        {getFormattedDateTime(new Date(enrollment.enrollmentDate))}
                                     </td>
                                     <td>
                                         <StatusEnrollment status={enrollment.status as any} />

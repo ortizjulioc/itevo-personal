@@ -114,7 +114,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                             </span>
                                         </div>
                                     </td>
-                                    <td>{courseBranch.startDate ? getFormattedDate(courseBranch.startDate) : ''} → {courseBranch.endDate ? getFormattedDate(courseBranch.endDate) : ''}</td>
+                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
                                     <td><ModalityTag modality={courseBranch.modality} /></td>
                                     <td>{courseBranch.sessionCount}</td>
                                     <td>{courseBranch.capacity}</td>

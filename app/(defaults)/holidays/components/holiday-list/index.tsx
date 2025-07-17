@@ -71,7 +71,7 @@ export default function HolidayList({ className, query = '' }: Props) {
                                         {holiday.name}
                                     </td>
                                     <td>
-                                        {getFormattedDate(holiday.date)}
+                                        {getFormattedDate(new Date(holiday.date))}
                                     </td>
                                     <td>
                                         {holiday.isRecurring ? 'Si' : 'No'}

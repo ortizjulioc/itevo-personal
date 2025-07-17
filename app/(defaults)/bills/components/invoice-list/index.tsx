@@ -56,8 +56,8 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                     <td className="text-left">{invoice.ncf.includes('TEMP' ) ? 'No disponible' : invoice.ncf}</td>
                                     <td className="text-left">{ NCF_TYPES[invoice.type as keyof typeof NCF_TYPES].label}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
-                                    <td className="text-left">{getFormattedDateTime(invoice.createdAt)}</td>
-                                    <td className={`text-left ${invoice.paymentDate ? '' : 'italic'}`}>{invoice.paymentDate ? getFormattedDateTime(invoice.paymentDate) : 'No pagado'}</td>
+                                    <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
+                                    <td className={`text-left ${invoice.paymentDate ? '' : 'italic'}`}>{invoice.paymentDate ? getFormattedDateTime(new Date(invoice.paymentDate)) : 'No pagado'}</td>
                                     <td className="text-left">
                                         <InvoiceStatusField status={invoice.status} />
                                     </td>

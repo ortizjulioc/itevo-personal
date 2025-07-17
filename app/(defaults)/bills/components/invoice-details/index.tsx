@@ -33,8 +33,8 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                 <div className='grid grid-cols-1 md:grid-cols-12 gap-4'>
                     <div className='md:col-span-8 text-lg'>
                         <h3 className='text-xl font-bold mb-2'>Detalles</h3>
-                        <p><strong>Fecha:</strong> {getFormattedDate(invoice.createdAt)}</p>
-                        <p><strong>Fecha de Pago</strong> {invoice.paymentDate ? getFormattedDate(invoice.paymentDate) : 'No pagado'}</p>
+                        <p><strong>Fecha:</strong> {getFormattedDate(new Date(invoice.createdAt))}</p>
+                        <p><strong>Fecha de Pago</strong> {invoice.paymentDate ? getFormattedDate(new Date(invoice.paymentDate)) : 'No pagado'}</p>
 
                         <p className="flex items-center gap-1">
                             <strong>Estado:</strong>{' '}
