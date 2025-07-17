@@ -6,6 +6,7 @@ import CourseScheduleAssigner from './course-schedule-assigner';
 import { assignScheduleToCourseBranch, unassignScheduleToCourseBranch } from '../../../lib/request';
 import { useParams } from 'next/navigation';
 import { openNotification } from '@/utils';
+import ModalCreateSchedule from './modal-create-schedule';
 
 interface ScheduleFieldProps {
   values: CourseBranchFormType;
@@ -17,9 +18,10 @@ interface ScheduleFieldProps {
 export default function ScheduleField({ values, errors, touched, className }: ScheduleFieldProps) {
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
-  const { schedules } = useFetchSchedule();
+  const { schedules,fetchSchedulesData } = useFetchSchedule();
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
   const [assignedSchedules, setAssignedSchedules] = useState<string[]>([]);
+  const [modal, setModal] =useState<boolean>(false)
 
   const onChange = async (scheduleId: string) => {
     if (assignedSchedules.includes(scheduleId)) {
@@ -61,7 +63,16 @@ export default function ScheduleField({ values, errors, touched, className }: Sc
           availableSchedules={schedules}
           assignedSchedules={assignedSchedules}
           onChange={onChange}
+          modal={modal}
+          setModal={setModal}
+      
         />
+        <ModalCreateSchedule
+          modal={modal}
+          setModal={setModal}
+          fetchSchedulesData={fetchSchedulesData}
+          />
+
       </div>
     </div>
   );

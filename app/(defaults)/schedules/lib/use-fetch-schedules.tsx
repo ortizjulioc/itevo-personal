@@ -12,9 +12,7 @@ const useFetchSchedule = (query: string = '') => {
     const [totalSchedules, setTotalSchedules] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchSchedulesData = async (query: string) => {
+     const fetchSchedulesData = async (query: string) => {
             try {
                 const response = await apiRequest.get<ScheduleResponse>(`/schedules?${query}`);
                 if (!response.success) {
@@ -33,10 +31,13 @@ const useFetchSchedule = (query: string = '') => {
             }
         };
 
+
+    useEffect(() => {
+       
         fetchSchedulesData(query);
     }, [query]);
 
-    return { schedules, totalSchedules, loading, error, setSchedules };
+    return { schedules, totalSchedules, loading, error, setSchedules,fetchSchedulesData };
 };
 
 export const useFetchScheduleById = (id: string) => {
@@ -66,7 +67,7 @@ export const useFetchScheduleById = (id: string) => {
         fetchScheduleData(id);
     }, [id]);
 
-    return { Schedule, loading, error, setSchedule };
+    return { Schedule, loading, error, setSchedule, };
 }
 
 export const useFetchScheduleByCourseId = (courseId: string) => {

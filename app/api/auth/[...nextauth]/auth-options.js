@@ -37,6 +37,7 @@ export const authOptions = {
           lastName: user.lastName,
           email: user.email,
           phone: user.phone,
+          mainBranch: user.branches[0],
           branches: user.branches,
         };
       },
@@ -52,6 +53,7 @@ export const authOptions = {
         token.lastName = user.lastName;
         token.email = user.email;
         token.phone = user.phone;
+        token.mainBranch = user.mainBranch
         token.branches = user.branches;
         token.roles = user.branches[0]?.roles;
       }
@@ -64,6 +66,7 @@ export const authOptions = {
       session.user.lastName = token.lastName;
       session.user.email = token.email;
       session.user.phone = token.phone;
+      session.user.mainBranch= token.mainBranch;
       session.user.branches = token.branches;
       session.user.roles = token.roles;
       return session;

@@ -11,6 +11,7 @@ import React from 'react';
 import { deleteCourseBranch } from '../../lib/request';
 import { useRouter } from 'next/navigation';
 import { CourseBranch } from '@prisma/client';
+import { getFormattedDate } from '@/utils/date';
 
 const modalities = {
     PRESENTIAL: 'Presencial',
@@ -51,8 +52,8 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                 { label: "Profesor", value: <TeacherLabel teacherId={courseBranch.teacherId} /> },
                 { label: "Monto", value: formatCurrency(courseBranch.amount) },
                 { label: "Modalidad", value: modalities[courseBranch.modality as keyof typeof modalities] || "No especificado" },
-                { label: "Fecha de inicio", value: courseBranch.startDate ? new Date(courseBranch.startDate).toLocaleDateString() : "No especificado" },
-                { label: "Fecha de finalizacion", value: courseBranch.endDate ? new Date(courseBranch.endDate).toLocaleDateString() : "No especificado" },
+                { label: "Fecha de inicio", value: courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : "No especificado" },
+                { label: "Fecha de finalizacion", value: courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : "No especificado" },
                 {
                     label: "Comision", value: courseBranch.commissionRate != null
                         ? `${courseBranch.commissionRate * 100} %`

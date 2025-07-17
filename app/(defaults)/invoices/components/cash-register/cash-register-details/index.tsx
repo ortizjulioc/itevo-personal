@@ -4,6 +4,7 @@ import { CashRegister as CashRegisterPrisma } from '@prisma/client'
 import React from 'react'
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import CashRegisterClose from '../cash-register-close';
+import { getFormattedDate, getFormattedDateTime } from '@/utils/date';
 
 
 interface CashRegister extends CashRegisterPrisma {
@@ -24,7 +25,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                 <div className="flex items-center justify-between gap-4 p-5">
                     <div className="flex items-center gap-2 mb-4 md:mb-0">
                         <span className="font-bold text-gray-800 dark:text-white"> Fecha de apertura:</span>
-                        <span className=" text-gray-800 dark:text-white">{new Date(CashRegister.openingDate).toLocaleString()}</span>
+                        <span className=" text-gray-800 dark:text-white">{getFormattedDateTime(new Date(CashRegister.openingDate))}</span>
                     </div>
                     <div className="flex items-center gap-2  mb-4 md:mb-0 ">
                         <span className="font-bold text-gray-800 dark:text-white"> Caja:</span>

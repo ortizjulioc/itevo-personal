@@ -6,6 +6,7 @@ import CourseBranchLabel from "@/components/common/info-labels/course-branch-lab
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enrollments";
 import { Pagination } from "@/components/ui";
+import { getFormattedDate } from "@/utils/date";
 
 
 
@@ -58,7 +59,7 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
                                         <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
                                     </td>
                                     <td>
-                                        {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                        {getFormattedDate(new Date(enrollment.enrollmentDate))}
                                     </td>
                                     <td>
                                        {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}

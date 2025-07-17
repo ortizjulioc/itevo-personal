@@ -8,6 +8,7 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchHolidays from "../../lib/use-fetch-holidays";
 import { deleteHoliday } from "../../lib/request";
+import { getFormattedDate } from "@/utils/date";
 
 
 
@@ -70,7 +71,7 @@ export default function HolidayList({ className, query = '' }: Props) {
                                         {holiday.name}
                                     </td>
                                     <td>
-                                        {new Date(holiday.date).toLocaleDateString()}
+                                        {getFormattedDate(new Date(holiday.date))}
                                     </td>
                                     <td>
                                         {holiday.isRecurring ? 'Si' : 'No'}

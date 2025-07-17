@@ -7,6 +7,7 @@ import { TbCancel, TbPrinter } from 'react-icons/tb'
 import PrintInvoice from '@/components/common/print/invoice'
 import { IoMdPrint } from 'react-icons/io'
 import Tooltip from '@/components/ui/tooltip'
+import { getFormattedDate } from '@/utils/date'
 
 export default function InvoiceDetails({ invoice }: { invoice: any }) {
     console.log(invoice, 'invoice')
@@ -32,8 +33,8 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                 <div className='grid grid-cols-1 md:grid-cols-12 gap-4'>
                     <div className='md:col-span-8 text-lg'>
                         <h3 className='text-xl font-bold mb-2'>Detalles</h3>
-                        <p><strong>Fecha:</strong> {new Date(invoice.createdAt).toLocaleString()}</p>
-                        <p><strong>Fecha de Pago</strong> {invoice.paymentDate ? new Date(invoice.paymentDate).toLocaleString() : 'No pagado'}</p>
+                        <p><strong>Fecha:</strong> {getFormattedDate(new Date(invoice.createdAt))}</p>
+                        <p><strong>Fecha de Pago</strong> {invoice.paymentDate ? getFormattedDate(new Date(invoice.paymentDate)) : 'No pagado'}</p>
 
                         <p className="flex items-center gap-1">
                             <strong>Estado:</strong>{' '}

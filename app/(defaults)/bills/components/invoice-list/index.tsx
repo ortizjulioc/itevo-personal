@@ -8,6 +8,7 @@ import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import InvoiceStatusField from "./invoice-status";
+import { getFormattedDateTime } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -55,8 +56,8 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                     <td className="text-left">{invoice.ncf.includes('TEMP' ) ? 'No disponible' : invoice.ncf}</td>
                                     <td className="text-left">{ NCF_TYPES[invoice.type as keyof typeof NCF_TYPES].label}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
-                                    <td className="text-left">{new Date(invoice.createdAt).toLocaleString()}</td>
-                                    <td className={`text-left ${invoice.paymentDate ? '' : 'italic'}`}>{invoice.paymentDate ? new Date(invoice.paymentDate).toLocaleString() : 'No pagado'}</td>
+                                    <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
+                                    <td className={`text-left ${invoice.paymentDate ? '' : 'italic'}`}>{invoice.paymentDate ? getFormattedDateTime(new Date(invoice.paymentDate)) : 'No pagado'}</td>
                                     <td className="text-left">
                                         <InvoiceStatusField status={invoice.status} />
                                     </td>
