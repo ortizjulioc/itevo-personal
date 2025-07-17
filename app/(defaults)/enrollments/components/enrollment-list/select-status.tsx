@@ -1,27 +1,34 @@
 import Select from 'react-select';
-import { CourseBranchStatus } from '@prisma/client';
+import { EnrollmentStatus } from '@prisma/client';
 import { GroupBase } from 'react-select';
-import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
+import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
+import StatusEnrollment from '@/components/common/info-labels/status/status-enrollment';
 
-export type SelectCourseBranchStatusType = {
+export type SelectEnrollmentStatusType = {
     value: string;
     label: string | JSX.Element;
 };
 
-interface SelectCourseBranchStatusProps {
+interface SelectEnrollmentStatusProps {
     value?: string;
-    onChange?: (selected: SelectCourseBranchStatusType | null) => void;
+    onChange?: (selected: SelectEnrollmentStatusType | null) => void;
 }
 
-export default function SelectCourseBranchStatus({ value, ...rest }: SelectCourseBranchStatusProps) {
-    const options = Object.values(CourseBranchStatus).map((status) => ({
+export default function SelectEnrollmentStatus({ value, ...rest }: SelectEnrollmentStatusProps) {
+        const enrollmentStatus = [
+        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
+        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
+        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
+        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
+    ];
+    const options = Object.values(EnrollmentStatus).map((status) => ({
         value: status,
-        label: <StatusCourseBranch status={status as CourseBranchStatus} />,
+        label: <StatusEnrollment status={status as any} />,
     }));
 
     return (
         <div style={{ position: 'relative', zIndex: 1 }}>
-            <Select<SelectCourseBranchStatusType, false, GroupBase<SelectCourseBranchStatusType>>
+            <Select<SelectEnrollmentStatusType, false, GroupBase<SelectEnrollmentStatusType>>
                 className="w-[160px]"
                 options={options}
                 placeholder="Estados"

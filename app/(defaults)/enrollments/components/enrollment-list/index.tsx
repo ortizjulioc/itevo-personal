@@ -6,12 +6,13 @@ import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchEnrollments from "../../lib/use-fetch-enrollments";
-import { deleteEnrollment } from "../../lib/request";
+import { deleteEnrollment, updateEnrollment } from "../../lib/request";
 import StudentLabel from "@/components/common/info-labels/student-label";
-import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
-import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
 import { getFormattedDate } from "@/utils/date";
+import SelectEnrollmentStatus from "./select-status";
+import { EnrollmentStatus } from "@prisma/client";
+import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
 
 
 
@@ -31,7 +32,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
 
 
     const onDelete = async (id: string) => {
-     ;
+        ;
         confirmDialog({
             title: 'Eliminar inscripcion',
             text: '¿Seguro que quieres eliminar esta inscripcion?',
@@ -48,15 +49,33 @@ export default function EnrollmentList({ className, query = '' }: Props) {
             }
         });
     }
-    const enrollmentStatus = [
-          { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-          { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-          { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-          { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-      ];
-     
-  
-    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE','OFERTA ACADEMICA','FECHA DE INSCRIPCION']} />;
+
+       const onStatusChange = async (id: string, status: EnrollmentStatus) => {
+            try {
+                const enrollment = enrollments?.find(cb => cb.id === id);
+                if (!enrollment) {
+                    openNotification('error', 'No se encontró la oferta académica');
+                    return;
+                }
+    
+                const resp = await updateEnrollment(id, {
+                    ...enrollment,
+                    status, // actualizamos solo el campo necesario
+                });
+    
+                if (resp.success) {
+                    setEnrollments(enrollments.map((cb) =>
+                        cb.id === id ? { ...cb, status } : cb
+                    ));
+                    openNotification('success', 'Estado actualizado correctamente');
+                }
+            } catch (error) {
+                openNotification('error', 'Error al actualizar el estado');
+            }
+        };
+
+
+    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', 'FECHA DE INSCRIPCION']} />;
 
     return (
         <div className={className}>
@@ -90,9 +109,14 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                         {getFormattedDate(new Date(enrollment.enrollmentDate))}
                                     </td>
                                     <td>
-                                       <StatusEnrollment status={enrollment.status as any} />
+                                        <SelectEnrollmentStatus
+                                            value={enrollment.status}
+                                            onChange={(selected) => {
+                                                onStatusChange(enrollment.id, selected?.value as EnrollmentStatus);
+                                            }}
+
+                                        />
                                     </td>
-                                   
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">
@@ -103,7 +127,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
-                                            
+
                                             {/* ALTERNATIVA */}
                                             {/* <Button onClick={() => onDelete(Enrollmentt.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
                                             <Link href={`/Enrollments/${Enrollmentt.id}`}>
