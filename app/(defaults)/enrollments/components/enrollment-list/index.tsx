@@ -11,6 +11,7 @@ import StudentLabel from "@/components/common/info-labels/student-label";
 import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
 import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
+import { getFormattedDate } from "@/utils/date";
 
 
 
@@ -86,7 +87,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                         <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
                                     </td>
                                     <td>
-                                        {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                        {getFormattedDate(enrollment.enrollmentDate)}
                                     </td>
                                     <td>
                                        <StatusEnrollment status={enrollment.status as any} />

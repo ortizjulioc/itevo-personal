@@ -3,7 +3,7 @@ import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useParams } from 'next/navigation';
 import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
-import { convertTimeFrom24To12Format, getClassSessions, getHoursDifferenceText } from '@/utils/date';
+import { convertTimeFrom24To12Format, getClassSessions, getFormattedDate, getHoursDifferenceText } from '@/utils/date';
 import PromotionLabel from '@/components/common/info-labels/promotion-label';
 import CourseLabel from '@/components/common/info-labels/course-label';
 import BranchLabel from '@/components/common/info-labels/branch-label';
@@ -126,11 +126,11 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
-              <p className="text-gray-800">{values?.startDate ? new Date(values.startDate).toLocaleDateString() : ''}</p>
+              <p className="text-gray-800">{values?.startDate ? getFormattedDate(values.startDate) : ''}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Fin:</p>
-              <p className="text-gray-800">{values?.endDate ? new Date(values.endDate).toLocaleDateString() : ''}</p>
+              <p className="text-gray-800">{values?.endDate ? getFormattedDate(values.endDate) : ''}</p>
             </div>
           </div>
           {courseSchedules && courseSchedules.length > 0 && (

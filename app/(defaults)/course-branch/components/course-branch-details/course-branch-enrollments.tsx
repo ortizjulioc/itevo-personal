@@ -8,6 +8,7 @@ import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enro
 import { Pagination } from "@/components/ui";
 import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
 import { EnrollmentStatus } from "@prisma/client";
+import { getFormattedDateTime } from "@/utils/date";
 
 
 
@@ -60,7 +61,7 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
                                         <StudentLabel StudentId={enrollment.studentId} />
                                     </td>
                                     <td>
-                                        {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                        {getFormattedDateTime(enrollment.enrollmentDate)}
                                     </td>
                                     <td>
                                         <StatusEnrollment status={enrollment.status as any} />
