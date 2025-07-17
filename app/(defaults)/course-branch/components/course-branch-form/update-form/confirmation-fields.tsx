@@ -3,11 +3,12 @@ import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useParams } from 'next/navigation';
 import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
-import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
+import { convertTimeFrom24To12Format, getClassSessions, getHoursDifferenceText } from '@/utils/date';
 import PromotionLabel from '@/components/common/info-labels/promotion-label';
 import CourseLabel from '@/components/common/info-labels/course-label';
 import BranchLabel from '@/components/common/info-labels/branch-label';
 import TeacherLabel from '@/components/common/info-labels/teacher-label';
+import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
 
 interface ConfirmationFieldsProps {
   values: CourseBranchFormType;
@@ -50,6 +51,8 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
+  const { holidays } = useFetchHolidays('top=365')
+
 
 
   return (
@@ -101,7 +104,16 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Sesiones:</p>
-              <p className="text-gray-800">{values.sessionCount}</p>
+              <p className="text-gray-800">
+                {
+                  getClassSessions(
+                    values.startDate || new Date(),
+                    values.endDate || new Date(),
+                    courseSchedules,
+                    holidays
+                  ).count 
+                }
+              </p>
               <p className="text-xs text-gray-500 italic mt-1">
                 Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
               </p>
