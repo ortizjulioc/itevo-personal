@@ -1,5 +1,5 @@
 'use client';
-import { Button, FormItem, Input } from '@/components/ui';
+import { Button, Checkbox, FormItem, Input } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -25,22 +25,22 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
     }
 
-    const handleUploadLogo = async (file: File, setFieldValue:(path:string,value:any)=>void) => {
+    const handleUploadLogo = async (file: File, setFieldValue: (path: string, value: any) => void) => {
         const resp = await uploadLogo(file);
         if (resp.success) {
             openNotification('success', 'Logo actualizado correctamente');
             const url = (resp as any).data.url as string;
-        if (!url) {
-            openNotification('error', 'No se pudo obtener la URL del logo');
-            return;
-        }
+            if (!url) {
+                openNotification('error', 'No se pudo obtener la URL del logo');
+                return;
+            }
             setFieldValue('logo', url);
         } else {
             openNotification('error', resp.message);
         }
     }
 
-    const handleDeleteLogo = async (file:string) => {
+    const handleDeleteLogo = async (file: string) => {
         const fileName = file.split('/').pop();
         if (!fileName) {
             openNotification('error', 'No se pudo obtener el nombre del archivo');
@@ -62,12 +62,24 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                     <Form className="form">
                         <Tab.Group>
                             <Tab.List className="flex flex-wrap">
-                                <Tab as="button" className={({ selected }) =>
-                                    `${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}>
+                                <Tab
+                                    as="button"
+                                    className={({ selected }) =>
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
+                                    }
+                                >
                                     Información general de la empresa
                                 </Tab>
-                                <Tab as="button" className={({ selected }) =>
-                                    `${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}>
+                                <Tab
+                                    as="button"
+                                    className={({ selected }) =>
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
+                                    }
+                                >
                                     Logo
                                 </Tab>
                             </Tab.List>
@@ -96,7 +108,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             errorMessage={errors.phone}
                                         >
                                             <Field name="phone">
-                                                {({ form,  setFieldValue }: any) => (
+                                                {({ form, setFieldValue }: any) => (
                                                     <FormatPatterInput
                                                         format="(###) ###-####"
                                                         placeholder="(___) ___-____"
@@ -114,8 +126,18 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             <Field type="email" name="email" component={Input} placeholder="Correo" />
                                         </FormItem>
 
-                                        <FormItem name="defaultPassword" label="Cambiar contraseña por defecto" invalid={Boolean(errors.defaultPassword && touched.defaultPassword)} errorMessage={errors.defaultPassword}>
+                                        <FormItem
+                                            name="defaultPassword"
+                                            label="Cambiar contraseña por defecto"
+                                            invalid={Boolean(errors.defaultPassword && touched.defaultPassword)}
+                                            errorMessage={errors.defaultPassword}
+                                        >
                                             <Field type="text" name="defaultPassword" component={Input} placeholder="Contraseña" />
+                                        </FormItem>
+                                        <FormItem name="billingWithoutNcf" label="" invalid={Boolean(errors.billingWithoutNcf && touched.billingWithoutNcf)} errorMessage={errors.billingWithoutNcf}>
+                                            <Field type="checkbox" name="billingWithoutNcf" component={Checkbox}>
+                                                Esta empresa no requiere NCF para facturar
+                                            </Field>
                                         </FormItem>
                                     </div>
                                 </Tab.Panel>
@@ -124,11 +146,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 <Tab.Panel>
                                     <div className="mt-6">
                                         <FormItem name="logo" label="Logo" invalid={Boolean(errors.logo && touched.logo)} errorMessage={errors.logo}>
-                                            <ImageUploader
-                                                value={values.logo}
-                                                onUpload={(file: File) => handleUploadLogo(file, setFieldValue)}
-                                                onDelete={() => handleDeleteLogo(values.logo)}
-                                            />
+                                            <ImageUploader value={values.logo} onUpload={(file: File) => handleUploadLogo(file, setFieldValue)} onDelete={() => handleDeleteLogo(values.logo)} />
                                         </FormItem>
                                     </div>
                                 </Tab.Panel>

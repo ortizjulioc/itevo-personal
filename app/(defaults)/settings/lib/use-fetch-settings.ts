@@ -1,9 +1,11 @@
+
+
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import { Setting } from "@prisma/client";
 
 export interface SettingResponse {
-    settings: Setting[];
+    settings: Setting; // 👈 ya no es un array
 }
 
 const useFetchSetting = () => {
@@ -19,7 +21,8 @@ const useFetchSetting = () => {
                 if (!response.success) {
                     throw new Error(response.message);
                 }
-                const setting = response.data?.settings[0];
+
+                const setting = response.data?.settings;
                 setSetting(setting);
             } catch (error) {
                 if (error instanceof Error) {
@@ -39,3 +42,4 @@ const useFetchSetting = () => {
 };
 
 export default useFetchSetting;
+;
