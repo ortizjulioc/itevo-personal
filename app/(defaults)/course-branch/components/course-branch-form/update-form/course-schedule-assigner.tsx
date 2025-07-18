@@ -4,7 +4,7 @@ import Tooltip from '@/components/ui/tooltip';
 import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
 import { Schedule } from '@prisma/client';
 import React from 'react';
-import { IoMdAdd } from 'react-icons/io';
+import { IoMdAdd, IoMdAddCircleOutline } from 'react-icons/io';
 
 interface CourseScheduleAssignerProps {
   availableSchedules: Schedule[]; // Horarios existentes en el sistema
@@ -58,13 +58,12 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
       </div>
 
 
-      <div className='flex  items-center  gap-4'>
-        <h3 className="text-lg font-medium text-gray-700 mb-2">Horarios disponibles</h3>
+      <div className='flex  items-center  gap-2 mb-4'>
+        <h3 className="text-lg font-medium text-gray-700 leading-none">Horarios disponibles</h3>
         <Tooltip title='Agregar nuevo Horario'>
-          <Button
-            icon={<IoMdAdd className=' w-4 h-4' />}
-            onClick={() => { setModal(true) }}
-          />
+          <button type="button" className="p-0.5 text-primary transition-colors duration-200 hover:text-primary/80" onClick={() => setModal(true)}>
+            <IoMdAddCircleOutline className="h-6 w-6 align-middle" />
+          </button>
         </Tooltip>
       </div>
 
