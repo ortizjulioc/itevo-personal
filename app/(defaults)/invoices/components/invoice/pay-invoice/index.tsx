@@ -26,7 +26,7 @@ const customStyles: StylesConfig<OptionType, false> = {
 interface CustomModalProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
-    handleSubmit: () => void;
+    handleSubmit: () => Promise<boolean>;
     paymentLoading: boolean;
 }
 
@@ -53,7 +53,7 @@ export default function PayInvoice({
     handleSubmit,
     paymentLoading
 }: CustomModalProps) {
-   const {invoice ,setInvoice} = useInvoice()
+    const { invoice, setInvoice } = useInvoice()
 
     const [openPrintModal, setOpenPrintModal] = useState(false);
 
@@ -301,10 +301,16 @@ export default function PayInvoice({
                                             <TbCancel className='mr-1 size-6' />
                                             Cancelar
                                         </Button>
-                                        <Button type="button" onClick={ async () => {
-                                            await handleSubmit(); 
-                                            setOpenPrintModal(true);
-                                            setOpenModal(false)
+                                        <Button type="button" onClick={async () => {
+                                            const success = await handleSubmit();
+                                            console.log(success);
+                                            if (success) {
+                                                 setTimeout(() => {
+                                                    setOpenPrintModal(true);
+                                                }, 100);
+                                                setOpenModal(false);
+                                                // Espera 100 ms antes de abrir el modal de impresión
+                                            }
                                         }
 
                                         } className="w-full md:w-auto" loading={paymentLoading}>
@@ -312,7 +318,7 @@ export default function PayInvoice({
                                             Pagar
                                         </Button>
                                     </div>
-                                    
+
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

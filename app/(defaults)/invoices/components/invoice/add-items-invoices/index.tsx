@@ -80,25 +80,37 @@ export default function AddItemsInvoices({
 
 
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (): Promise<boolean> => {
         if (!invoice) {
             openNotification('error', 'No hay información de la factura');
-            return;
+            return false;
         }
+
+        const totalFactura = invoice.subtotal + invoice.itbis;
+        const montoRecibido = invoice?.paymentDetails?.receivedAmount;
+
+        if (montoRecibido === undefined || montoRecibido < totalFactura) {
+            openNotification('error', 'El monto recibido es menor al total de la factura');
+            return false;
+        }
+
         setPaymentLoading(true);
+
         const resp = await payInvoice(InvoiceId, invoice);
+
+        setPaymentLoading(false);
 
         if (resp.success) {
             openNotification("success", "Factura pagada correctamente");
-            setOpenModal(false);
-            setOpenPrintModal(true);
-
+            setOpenPrintModal(true)
+            return true; // ✅ pago exitoso
         } else {
             openNotification("error", resp.message);
             console.log(resp);
+            return false; // ❌ fallo en el backend
         }
-        setPaymentLoading(false);
-    }
+    };
+
     const handleAddItem = async (item: any) => {
         setItemloading(true);
         if (!item?.quantity) {

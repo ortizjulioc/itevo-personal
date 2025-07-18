@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 interface FormItemProps {
     name?: string;
-    label: string;
+    label: string | React.ReactNode;
     invalid?: boolean;
     errorMessage?: string;
     asterisk?: boolean;
