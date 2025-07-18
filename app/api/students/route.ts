@@ -4,7 +4,6 @@ import { getStudents, createStudent, createStudentCode, findStudentByEmail } fro
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
-import { get } from "lodash";
 import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 export async function GET(request: NextRequest) {
@@ -45,11 +44,14 @@ export async function POST(request: Request) {
         }
 
         body.code = await createStudentCode();
-        body.branchId = body.branchId || session?.user?.branches?.[0]?.id || null;
-        const student = await createStudent(body);
+        body.branchId = body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null;
+        console.log("Branch ID:", body.branchId);
+        const student = await createStudent({
+            ...body,
+            branchId: body.branchId,
+        });
 
         // Enviar log de auditoría
-
         await createLog({
             action: "POST",
             description: `Se creó un student con los siguientes datos: ${JSON.stringify(student, null, 2)}`,

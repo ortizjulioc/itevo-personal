@@ -464,7 +464,7 @@ model CashRegisterClosure {
   initialBalance Float        @default(0) @map("initial_balance")
   totalIncome    Float        @default(0) @map("total_income")
   totalExpense   Float        @default(0) @map("total_expense")
-  cashBreakdown  String?      @map("cash_breakdown") @db.LongText
+  cashBreakdown  Json?        @map("cash_breakdown")
   closedBy       String       @map("closed_by")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
