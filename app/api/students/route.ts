@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getStudents, createStudent, createStudentCode, findStudentByEmail } from '@/services/student-service';
+import { getStudents, createStudent, createStudentCode, findStudentByEmail, findStudentByIdentification } from '@/services/student-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         
         // Validate the request body
-        const {isValid, message} = validateObject(body, ["firstName", "lastName", "identification"]);
+        const {isValid, message} = validateObject(body, ["firstName", "lastName"]);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
@@ -40,6 +40,14 @@ export async function POST(request: Request) {
             const existingStudent = await findStudentByEmail(body.email);
             if (existingStudent) {
                 return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
+            }
+        }
+
+        if (body.identification) {
+            // Validar que no se repita la identificación
+            const existingStudent = await findStudentByIdentification(body.identification);
+            if (existingStudent) {
+                return NextResponse.json({ code: 'E_IDENTIFICATION_EXISTS', error: 'La identificación ya está en uso por otro estudiante.' }, { status: 400 });
             }
         }
 
