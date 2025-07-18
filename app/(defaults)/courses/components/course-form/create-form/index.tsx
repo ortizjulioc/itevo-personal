@@ -1,5 +1,5 @@
 'use client';
-import { Button, FormItem, Input,Checkbox } from '@/components/ui';
+import { Button, FormItem, Input, Checkbox } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -7,8 +7,10 @@ import { createValidationSchema, initialValues } from '../form.config';
 import { createCourse } from '../../../lib/request';
 
 
-
-export default function CreateCourseForm() {
+interface Props {
+  onClose?: (id: string) => void;
+}
+export default function CreateCourseForm({ onClose }: Props) {
   const route = useRouter();
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
@@ -19,7 +21,11 @@ export default function CreateCourseForm() {
 
     if (resp.success) {
       openNotification('success', 'Curso creado correctamente');
-      route.push('/courses');
+      if (!onClose) {
+        route.push('/courses');
+      }
+      onClose?.(resp?.data?.id || '');
+
     } else {
       openNotification('error', resp.message);
     }
@@ -48,8 +54,8 @@ export default function CreateCourseForm() {
               <Field type="number" name="duration" component={Input} />
             </FormItem>
 
-            
-           
+
+
             <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>
               <Field type="checkbox" name="requiresGraduation" component={Checkbox} >
                 Este Curso Requiere Graduacion

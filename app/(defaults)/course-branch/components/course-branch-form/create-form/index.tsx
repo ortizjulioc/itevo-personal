@@ -99,7 +99,7 @@ export default function CreateCourseBranchForm() {
                  }}
                 validationSchema={createValidationSchema}
                 onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched }) => (
+                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
                     <Form className="form">
                         <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                             <Tab.List className=" flex flex-wrap">
@@ -127,7 +127,12 @@ export default function CreateCourseBranchForm() {
                             </Tab.List>
                             <Tab.Panels>
                                 <Tab.Panel>
-                                    <GeneralInformationFields values={values} errors={errors} touched={touched} />
+                                    <GeneralInformationFields 
+                                        values={values} 
+                                        errors={errors} 
+                                        touched={touched}
+                                        setFieldValue={setFieldValue}
+                                         />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

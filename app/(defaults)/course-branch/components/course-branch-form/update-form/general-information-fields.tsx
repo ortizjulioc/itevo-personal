@@ -8,6 +8,12 @@ import { CourseBranchFormType } from "../form.config";
 import { useSession } from "next-auth/react";
 import { Branch, Role } from "@prisma/client";
 import { ADMIN } from "@/constants/role.constant";
+import { useState } from "react";
+import ModalCreateCourse from "./modal-create-course";
+import Tooltip from "@/components/ui/tooltip";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { useCourseBranch } from "./course-branch-provider";
+
 
 interface GeneralInformationFieldsProps {
     values: CourseBranchFormType;
@@ -18,6 +24,9 @@ interface GeneralInformationFieldsProps {
 
 export default function GeneralInformationFields({ values, errors, touched, className }: GeneralInformationFieldsProps) {
     const { data: session, status } = useSession();
+    const { setFieldValue } = useCourseBranch()
+
+    const [modal, setModal] = useState<boolean>(false);
     const user = session?.user as {
         id: string;
         name?: string | null;
@@ -77,16 +86,39 @@ export default function GeneralInformationFields({ values, errors, touched, clas
                 </Field>
             </FormItem>
 
-            <FormItem name="courseId" label="Curso" invalid={Boolean(errors.courseId && touched.courseId)} errorMessage={errors.courseId}>
+            <FormItem
+                name="courseId"
+                label={
+                    <div className="flex items-center gap-2">
+                        <span className="text-base leading-none">Curso</span>
+                        <Tooltip title="Crear estudiante">
+                            <button type="button" className="p-0.5 text-primary transition-colors duration-200 hover:text-primary/80" onClick={() => setModal(true)}>
+                                <IoMdAddCircleOutline className="h-6 w-6 align-middle" />
+                            </button>
+                        </Tooltip>
+                    </div>
+                }
+                invalid={Boolean(errors.courseId && touched.courseId)} errorMessage={errors.courseId}
+            >
                 <Field>
                     {({ form, field }: any) => (
-                        <SelectCourse
-                            {...field}
-                            value={values.courseId}
-                            onChange={(option: SelectBranchType | null) => {
-                                form.setFieldValue('courseId', option?.value || '');
-                            }}
-                        />
+                        <>
+                            <SelectCourse
+                                {...field}
+                                value={values.courseId}
+                                onChange={(option: SelectBranchType | null) => {
+                                    form.setFieldValue('courseId', option?.value || '');
+                                }}
+
+                            />
+                            <ModalCreateCourse
+                                modal={modal}
+                                setModal={setModal}
+                                setFieldValue={setFieldValue}
+                            />
+                        </>
+
+
                     )}
                 </Field>
             </FormItem>

@@ -139,7 +139,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta academica</h4>
 
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched }) => (
+                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
                     <CourseBranchProvider value={{
                         selectedIndex,
                         changeTab,
@@ -147,6 +147,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                         handleErrors,
                         handleAddPrerequisite,
                         handleRemovePrerequisite,
+                        setFieldValue,
                         preRequisites
                     }}>
                         <Form className="form">

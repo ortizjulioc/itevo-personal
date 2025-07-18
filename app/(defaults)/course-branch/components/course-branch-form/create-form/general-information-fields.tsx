@@ -8,15 +8,21 @@ import { CreateCourseBranchFormType } from "../form.config";
 import { useSession } from 'next-auth/react';
 import { Branch, Role } from "@prisma/client";
 import { ADMIN } from "@/constants/role.constant";
+import ModalCreateCourse from "../update-form/modal-create-course";
+import { useState } from "react";
+import Tooltip from "@/components/ui/tooltip";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 interface GeneralInformationFieldsProps {
     values: CreateCourseBranchFormType;
     errors: FormikErrors<CreateCourseBranchFormType>;
     touched: FormikTouched<CreateCourseBranchFormType>;
+    setFieldValue: any;
 }
 
-export default function GeneralInformationFields({ values, errors, touched }: GeneralInformationFieldsProps) {
+export default function GeneralInformationFields({ values, errors, touched ,setFieldValue}: GeneralInformationFieldsProps) {
     const { data: session, status } = useSession();
+    const [modal , setModal] = useState<boolean>(false)
     const user = session?.user as {
         id: string;
         name?: string | null;
@@ -29,7 +35,7 @@ export default function GeneralInformationFields({ values, errors, touched }: Ge
         branches?: any[];
     };
 
-   
+
 
     return (
         <div className="mt-6">
@@ -77,16 +83,39 @@ export default function GeneralInformationFields({ values, errors, touched }: Ge
                 </Field>
             </FormItem>
 
-            <FormItem name="courseId" label="Curso" invalid={Boolean(errors.courseId && touched.courseId)} errorMessage={errors.courseId}>
+            <FormItem
+                name="courseId"
+                label={
+                    <div className="flex items-center gap-2">
+                        <span className="text-base leading-none">Curso</span>
+                        <Tooltip title="Crear estudiante">
+                            <button type="button" className="p-0.5 text-primary transition-colors duration-200 hover:text-primary/80" onClick={() => setModal(true)}>
+                                <IoMdAddCircleOutline className="h-6 w-6 align-middle" />
+                            </button>
+                        </Tooltip>
+                    </div>
+                }
+                invalid={Boolean(errors.courseId && touched.courseId)} errorMessage={errors.courseId}
+            >
                 <Field>
                     {({ form, field }: any) => (
-                        <SelectCourse
-                            {...field}
-                            value={values.courseId}
-                            onChange={(option: SelectBranchType | null) => {
-                                form.setFieldValue('courseId', option?.value || '');
-                            }}
-                        />
+                        <>
+                            <SelectCourse
+                                {...field}
+                                value={values.courseId}
+                                onChange={(option: SelectBranchType | null) => {
+                                    form.setFieldValue('courseId', option?.value || '');
+                                }}
+
+                            />
+                            <ModalCreateCourse
+                                modal={modal}
+                                setModal={setModal}
+                                setFieldValue={setFieldValue}
+                            />
+                        </>
+
+
                     )}
                 </Field>
             </FormItem>
