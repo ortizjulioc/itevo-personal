@@ -7,6 +7,9 @@ import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enrollments";
 import { Pagination } from "@/components/ui";
 import { getFormattedDate } from "@/utils/date";
+import StatusEnrollment, { EnrollmentStatus } from "@/components/common/info-labels/status/status-enrollment";
+import SelectEnrollmentStatus from "@/app/(defaults)/enrollments/components/enrollment-list/select-status";
+import { updateEnrollment } from "@/app/(defaults)/enrollments/lib/request";
 
 
 
@@ -25,13 +28,36 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
     }
 
     const enrollmentStatus = [
-          { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-          { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-          { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-          { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-      ];
-  
-    if (loading) return <Skeleton rows={3} columns={['OFERTA ACADEMICA','FECHA DE INSCRIPCION','ESTADO']} />;
+        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
+        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
+        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
+        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
+    ];
+    const onStatusChange = async (id: string, status: EnrollmentStatus) => {
+                try {
+                    const enrollment = enrollments?.find(cb => cb.id === id);
+                    if (!enrollment) {
+                        openNotification('error', 'No se encontró la oferta académica');
+                        return;
+                    }
+        
+                    const resp = await updateEnrollment(id, {
+                        ...enrollment,
+                        status, // actualizamos solo el campo necesario
+                    });
+        
+                    if (resp.success) {
+                        setEnrollments(enrollments.map((cb) =>
+                            cb.id === id ? { ...cb, status } : cb
+                        ));
+                        openNotification('success', 'Estado actualizado correctamente');
+                    }
+                } catch (error) {
+                    openNotification('error', 'Error al actualizar el estado');
+                }
+            };
+
+    if (loading) return <Skeleton rows={3} columns={['OFERTA ACADEMICA', 'FECHA DE INSCRIPCION', 'ESTADO']} />;
 
     return (
         <div className='col-span-2'>
@@ -43,7 +69,7 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
                             <th>OFERTA ACADEMICA</th>
                             <th>FECHA DE INSCRIPCION</th>
                             <th>ESTADO</th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -62,9 +88,15 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
                                         {getFormattedDate(new Date(enrollment.enrollmentDate))}
                                     </td>
                                     <td>
-                                       {enrollmentStatus.find((status) => status.value === enrollment.status)?.label}
+                                        <SelectEnrollmentStatus
+                                            value={enrollment.status}
+                                            onChange={(selected) => {
+                                                onStatusChange(enrollment.id, selected?.value as EnrollmentStatus);
+                                            }}
+
+                                        />
                                     </td>
-                                   
+
                                 </tr>
                             );
                         })}
