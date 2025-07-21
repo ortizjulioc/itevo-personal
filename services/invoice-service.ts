@@ -186,21 +186,21 @@ export const updateInvoice = async (
 export const findInvoiceById = async (
     id: string,
     prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
-    include?: { items?: boolean, user?: boolean, cashRegister?: boolean }
+    include: PrismaTypes.InvoiceInclude = {}
 ): Promise<InvoiceWithItems | null> => {
     return await prisma.invoice.findUnique({
         where: { id },
         include: {
             ...include,
-            items: true,
-            user: {
+            items: include.items ?? true, // Asegura que items sea true si no se especifica
+            user: include.user ?? {
                 select: {
                     id: true,
                     name: true,
                     email: true,
                     lastName: true,
-                },
-            }
+                }
+            },
         },
     });
 }

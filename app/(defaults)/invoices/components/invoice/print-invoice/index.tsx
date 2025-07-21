@@ -2,10 +2,8 @@ import PrintInvoice from '@/components/common/print/invoice';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
-import { set } from 'lodash';
 import { useParams, useRouter } from 'next/navigation';
 import React, { Fragment } from 'react'
-import { IoMdPrint } from 'react-icons/io';
 import { TbCheck } from 'react-icons/tb';
 
 export default function PrintInvoiceModal(

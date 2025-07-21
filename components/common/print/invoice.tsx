@@ -27,9 +27,20 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
     handlePrintPDF(invoice);
   }
 
+  console.log('invoice', invoice);
+
   const handlePrintPDF = async (invoice: any) => {
     try {
-      const blob = await pdf(<InvoicePDF invoice={invoice} companyInfo={setting} />).toBlob();
+      const companyInfo = {
+        companyName: setting?.companyName,
+        address: invoice.cashRegister?.branch?.address || setting?.address,
+        phone: invoice.cashRegister?.branch?.phone || setting?.phone,
+        email: invoice.cashRegister?.branch?.email || setting?.email,
+        logoUrl: setting?.logo,
+        rnc: setting?.rnc,
+      }
+      console.log('companyInfo', companyInfo);
+      const blob = await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} />).toBlob();
       const blobUrl = URL.createObjectURL(blob);
 
       const isKioskMode = navigator.userAgent.includes('Chrome') && window.location.search.includes('kiosk-printing');
@@ -87,8 +98,8 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
 
   return (
     <>
-      <Button 
-        onClick={onPrint} 
+      <Button
+        onClick={onPrint}
         loading={loading}
         icon={<IoMdPrint className='text-lg ' />}
         >

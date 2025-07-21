@@ -6,14 +6,29 @@ import { updateProductById } from "@/services/product-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
-import { CashMovementReferenceType, InvoiceItemType, InvoiceStatus, PaymentStatus } from "@prisma/client";
+import { InvoiceItemType, InvoiceStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
 
-    const invoice = await findInvoiceById(id);
+    const invoice = await findInvoiceById(
+      id,
+      Prisma,
+      {
+        cashRegister: {select: {
+          id: true,
+          name: true,
+          branch: true,
+        }},
+        student: {select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        }}
+      }
+    );
 
     if (!invoice) {
       return NextResponse.json({ code: 'E_INVOICE_NOT_FOUND', message: 'Factura no encontrado' }, { status: 404 });
