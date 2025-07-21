@@ -31,8 +31,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
     const handlepayAccount = async (id: string, amount: number) => {
         const data = {
             amount,
-            CashRegisterId:id,
-            paymentDate:new Date()
+            cashRegisterId:id
         }
         try {
             setLoadingPayment(true)
