@@ -19,6 +19,8 @@ export interface TeachersResponse {
 interface SelectTeacherProps {
   value?: string;
   onChange?: (selected: SelectTeacherType | null) => void;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 export default function SelectTeacher({ value, ...rest }: SelectTeacherProps) {
@@ -69,18 +71,18 @@ export default function SelectTeacher({ value, ...rest }: SelectTeacherProps) {
 
 
   return (
-    <div>
-      <AsyncSelect<SelectTeacherType, false, GroupBase<SelectTeacherType>>
-        loadOptions={loadOptions}
-        cacheOptions
-        defaultOptions={options}
-        placeholder="-Profesores-"
-        noOptionsMessage={() => 'No hay opciones'}
-        value={options.find((option) => option.value === value) || null}
-        isClearable
-        //asComponent={AsyncSelect}
-        {...rest}
-      />
-    </div>
+      <div>
+          <AsyncSelect<SelectTeacherType, false, GroupBase<SelectTeacherType>>
+              loadOptions={loadOptions}
+              cacheOptions
+              defaultOptions={options}
+              placeholder="-Profesores-"
+              noOptionsMessage={() => 'No hay opciones'}
+              value={options.find((option) => option.value === value) || null}
+              isClearable
+              //asComponent={AsyncSelect}
+              {...rest}
+          />
+      </div>
   );
 }
