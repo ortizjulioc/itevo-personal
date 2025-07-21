@@ -1,6 +1,7 @@
 import 'server-only';
 import { CourseBranch } from "@prisma/client";
 import { Prisma } from '@/utils/lib/prisma';
+import { Prisma as PrismaTypes } from "@prisma/client";
 
 export const getCourseBranch = async (filters: any) => {
 
@@ -75,8 +76,11 @@ export const createCourseBranch = async (data: any) => {
     return courseBranch;
 };
 
-export const findCourseBranchById = async (id: string) => {
-    const courseBranch = await Prisma.courseBranch.findUnique({
+export const findCourseBranchById = async (
+    id: string,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    const courseBranch = await prisma.courseBranch.findUnique({
         where: { id },
         include: {
             branch: { select: { id: true, name: true } },
