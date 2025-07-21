@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateObject } from '@/utils';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { z } from 'zod';
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
                 description: validatedData.description || `Pago de cuenta por pagar ${params.id}`,
                 referenceType: CashMovementReferenceType.PAYABLE_PAYMENT,
                 referenceId: params.id,
-                user: { connect: { id: session.id || '' } },
+                user: { connect: { id: session.user.id || '' } },
             }, prisma);
 
             // Create payment record
