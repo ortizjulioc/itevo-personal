@@ -15,8 +15,8 @@ interface SelectTeacherType {
     label: string
 }
 export default function TeacherPayment({ setOpenModal, openModal }: { setOpenModal: (open: boolean) => void, openModal: boolean }) {
-     const { id } = useParams()
-     console.log('cashregister',id)
+    const { id: cashRegisterId } = useParams()
+
     const [teacher, setTeacher] = useState('')
     const [loadingPayment, setLoadingPayment] = useState(false)
     const { accountsPayable, fetchAccountsPayableData, loading } = useFetchAccountsPayable('')
@@ -31,7 +31,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
     const handlepayAccount = async (id: string, amount: number) => {
         const data = {
             amount,
-            cashRegisterId:id
+            cashRegisterId
         }
         try {
             setLoadingPayment(true)
@@ -99,7 +99,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                         </thead>
 
                                         <tbody>
-                                            { !loading && teacher && accountsPayable.map((account) => {
+                                            {!loading && teacher && accountsPayable.map((account) => {
                                                 const item = account; // Asigna `account` a `item` si prefieres trabajar con `item`
                                                 const inputId = `input-${item.id}`;
                                                 const isPaid = item.amountDisbursed >= item.amount;
