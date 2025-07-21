@@ -1,5 +1,6 @@
 import { addNewEarningToAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 import { processReceivablePayment } from '@/services/account-receivable';
+import { findCourseBranchById } from '@/services/course-branch-service';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
@@ -70,6 +71,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     prisma,
                 })
 
+                const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+
                 // Crear/actualizar cuenta por pagar
                 const accountPayable = await getAccountPayableByCourseBranchId({
                     courseBranchId: accountReceivable.courseBranchId,
@@ -79,7 +82,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 // Agregar ganancia a la cuenta por pagar
                 await addNewEarningToAccountsPayable(
                     accountPayable.id,
-                    body.unitPrice,
+                    courseBranch.commissionAmount || ((courseBranch.amount || 0) * (courseBranch.commissionRate || 0)) || 0,
                     receivablePayment.id,
                     prisma
                 );

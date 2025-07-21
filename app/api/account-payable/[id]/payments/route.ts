@@ -12,7 +12,6 @@ import { newPayablePayment } from '@/services/account-payable';
 
 const CreatePayablePaymentSchema = z.object({
   amount: z.number().positive(),
-  paymentDate: z.string().datetime(),
   cashRegisterId: z.string().uuid(),
   description: z.string().optional(),
 });
