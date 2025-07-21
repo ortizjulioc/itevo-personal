@@ -16,7 +16,6 @@ const CreatePayablePaymentSchema = z.object({
   description: z.string().optional(),
 });
 
-
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const session = await getServerSession(authOptions);
@@ -29,6 +28,15 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
         // Init prisma transaction
         const resp = await Prisma.$transaction(async (prisma) => {
+            // Verify if the cash register exists
+            const cashRegister = await prisma.cashRegister.findUnique({
+                where: { id: validatedData.cashRegisterId },
+            });
+
+            if (!cashRegister) {
+                throw new Error(`No se encontró la caja registradora con ID ${validatedData.cashRegisterId}`);
+            }
+
             // Create cash movement
             const cashMovement = await createCashMovement({
                 cashRegister: { connect: { id: validatedData.cashRegisterId } },
