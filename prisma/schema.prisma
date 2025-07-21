@@ -175,6 +175,7 @@ model CourseBranch {
   startDate         DateTime?           @map("start_date")
   endDate           DateTime?           @map("end_date")
   commissionRate    Float               @default(0) @map("commission_rate")
+  commissionAmount  Float               @default(0) @map("commission_amount")
   capacity          Int                 @default(0)
   sessionCount      Int                 @default(0) @map("session_count")
   status            CourseBranchStatus
@@ -182,6 +183,7 @@ model CourseBranch {
   updatedAt         DateTime            @updatedAt @map("updated_at")
   isTaxIncluded     Boolean             @default(true) @map("is_tax_included")
   taxRate           Float               @default(0) @map("tax_rate")
+
   accountPayable    AccountPayable[]
   accountReceivable AccountReceivable[]
   branch            Branch              @relation(fields: [branchId], references: [id])
