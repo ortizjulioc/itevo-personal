@@ -22,6 +22,7 @@ const useFetchAccountsPayable = (query: string) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const fetchAccountsPayableData = async (query: string) => {
+        setLoading(true);
         try {
             const response = await apiRequest.get<AccountsPayableResponse>(`/account-payable?${query}`);
             if (!response.success) {

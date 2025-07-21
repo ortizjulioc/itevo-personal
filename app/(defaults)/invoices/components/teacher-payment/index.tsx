@@ -5,11 +5,9 @@ import React, { Fragment, useState } from 'react'
 import useFetchAccountsPayable from '../../lib/accounts-payable/use-fetch-accounts-payable'
 import { formatCurrency, openNotification } from '@/utils'
 import TeacherLabel from '@/components/common/info-labels/teacher-label'
-import apiRequest from "@/utils/lib/api-request/request";
-import { AccountPayable } from '@prisma/client'
 import { PayAccount } from '../../lib/accounts-payable/request'
-import CashRegister from '../../page'
 import { useParams } from 'next/navigation'
+import CourseBranchLabel from '@/components/common/info-labels/course-branch-label'
 interface SelectTeacherType {
     value: string
     label: string
@@ -40,6 +38,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
             if (resp.success) {
                 openNotification('success', 'Desembolso exitoso')
+                useFetchpayment(teacher)
 
             }
 
@@ -89,7 +88,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                     <table className="table-hover border-collapse border border-gray-300 w-full mx-1 ">
                                         <thead>
                                             <tr>
-                                                <th className="text-center px-4 py-2">PROFESOR</th>
+                                                <th className="text-center px-4 py-2">CURSO</th>
                                                 <th className="text-center px-4 py-2">TOTAL</th>
                                                 <th className="text-center px-4 py-2">PENDIENTE</th>
                                                 <th className="text-center px-4 py-2"> A PAGAR</th>
@@ -108,8 +107,12 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
                                                 return (
                                                     <tr key={item.id} className="border-t border-gray-200 dark:border-gray-700">
-                                                        <td className="px-4 py-2 text-center text-sm text-gray-800 dark:text-gray-100">
-                                                            <TeacherLabel teacherId={item.teacherId} />
+                                                        <td className="px-4 py-2 text-Left text-sm text-gray-800 dark:text-gray-100">
+                                                            <CourseBranchLabel
+                                                                CourseBranchId={item.courseBranchId}
+
+                                                            />
+
                                                         </td>
                                                         <td className="px-4 py-2 text-center text-sm font-medium">{formatCurrency(item.amount)}</td>
 
