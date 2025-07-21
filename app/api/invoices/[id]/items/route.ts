@@ -72,6 +72,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 })
 
                 const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                if (!courseBranch) {
+                    throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
+                }
 
                 // Crear/actualizar cuenta por pagar
                 const accountPayable = await getAccountPayableByCourseBranchId({
@@ -82,7 +85,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 // Agregar ganancia a la cuenta por pagar
                 await addNewEarningToAccountsPayable(
                     accountPayable.id,
-                    courseBranch.commissionAmount || ((courseBranch.amount || 0) * (courseBranch.commissionRate || 0)) || 0,
+                    courseBranch.commissionAmount || (body.unitPrice * (courseBranch.commissionRate || 0)) || 0,
                     receivablePayment.id,
                     prisma
                 );
