@@ -297,7 +297,7 @@ export default function PayInvoice({
                                     </div>
 
                                     <div className="flex justify-end items-center gap-4 mt-8">
-                                        <Button type="button" color="danger" onClick={() => (setOpenModal(false))} className="w-full md:w-auto">
+                                        <Button type="button" color="danger" onClick={() => (setOpenModal(false))} variant='outline' className="w-full md:w-auto">
                                             <TbCancel className='mr-1 size-6' />
                                             Cancelar
                                         </Button>

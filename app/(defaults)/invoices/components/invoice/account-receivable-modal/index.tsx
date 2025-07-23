@@ -244,8 +244,8 @@ export default function AccountReceivableModal({
                                 </div>
 
                                 <div className="mt-8 flex justify-end">
-                                    <Button type="button" onClick={() => setOpenModal(false)}>
-                                        Cerrar
+                                    <Button type="button" onClick={() => setOpenModal(false)} variant="outline" color="danger">
+                                        Cancelar
                                     </Button>
                                 </div>
                             </Dialog.Panel>
