@@ -10,6 +10,7 @@ import useFetchCashRegisters from "../../../lib/cash-register/use-fetch-cash-reg
 import { ViewTitle } from "@/components/common";
 import CashRegisterModal from "../cash-register-modal";
 import { useSession } from 'next-auth/react';
+import { getFormattedDate } from "@/utils/date";
 
 
 interface Props {
@@ -36,7 +37,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
 
     rawParams.userId = user?.id;
     rawParams.status = 'OPEN';
-    
+
     const finalQuery = new URLSearchParams(rawParams).toString();
 
     const { loading, error, cashRegisters, totalCashRegisters, setCashRegisters } = useFetchCashRegisters(finalQuery);
@@ -55,8 +56,8 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                     {cashRegisters?.length === 0 && (
                         <CashRegisterModal />
                     )}
-                        
-                    
+
+
                 </>
             } />
 
@@ -67,7 +68,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                             <tr>
                                 <th className="text-left">CAJA</th>
                                 <th className="text-left">USUARIO</th>
-                                <th className="text-left">FECHA DE CREACION</th>
+                                <th className="text-left">FECHA DE APERTURA</th>
                                 <th className="text-left">ESTADO</th>
 
                                 <th />
@@ -84,7 +85,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                                     <tr key={CashRegister.id}>
                                         <td className="text-left">{CashRegister.name}</td>
                                         <td className="text-left">{CashRegister.user.name}</td>
-                                        <td className="text-left">{new Date(CashRegister.openingDate).toLocaleDateString()}</td>
+                                        <td className="text-left">{getFormattedDate(new Date(CashRegister.openingDate))}</td>
                                         <td className="text-left">
                                             {CashRegister.status === 'OPEN' ? (
                                                 <span className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>

@@ -2,7 +2,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import IconCaretDown from '../icon/icon-caret-down';
-import PrintInvoice from './print/invoice';
 interface ViewTitleProps {
     title: string;
     showBackPage?: boolean;
@@ -31,11 +30,6 @@ const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, righ
                     {rightComponent}
                 </div>
             </div>
-
-
-            <PrintInvoice
-                invoiceId="3d7ded0f-ec00-4800-8fd6-b1639108331f"
-            />
         </>
     );
 };

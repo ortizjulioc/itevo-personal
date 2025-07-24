@@ -18,7 +18,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
     const [openModalCashRegister, setOpenModalCashRegister] = React.useState(false);
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
-    
+
 
 
     return (
@@ -28,7 +28,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                 <div className="flex items-center justify-between gap-4 p-5">
                     <div className="mb-4 flex items-center gap-2 md:mb-0">
                         <span className="font-bold text-gray-800 dark:text-white"> Fecha de apertura:</span>
-                        <span className=" text-gray-800 dark:text-white">{getFormattedDateTime(new Date(CashRegister.openingDate))}</span>
+                        <span className=" text-gray-800 dark:text-white">{getFormattedDateTime(new Date(CashRegister.openingDate), { hour12: true })}</span>
                     </div>
                     <div className="mb-4 flex items-center  gap-2 md:mb-0 ">
                         <span className="font-bold text-gray-800 dark:text-white"> Caja:</span>
@@ -40,17 +40,17 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                     </div>
                     <div className="mb-4 flex items-center justify-end gap-2 md:mb-0">
                         <div className="dropdown">
-                            <Dropdown button={<HiOutlineDotsVertical size={'24'} />} btnClassName="" placement="bottom-end">
+                            <Dropdown button={<HiOutlineDotsVertical size={20}/>} btnClassName="" placement="bottom-end">
                                 <div className="!min-w-[200px]">
                                     <ul>
                                         <li>
-                                            <button type="button" onClick={() => setOpenModalCashRegister(true)} className="dropdown-item">
-                                                Cerrar caja
+                                            <button type="button" onClick={() => setOpenModalTeacher(true)} className="dropdown-item">
+                                                Desembolso a profesor
                                             </button>
                                         </li>
-                                        <li>
-                                            <button type="button" onClick={() => setOpenModalTeacher(true)} className="dropdown-item">
-                                                Desembolso de profesor
+                                        <li className="border-t border-white-light dark:border-white-light/10">
+                                            <button type="button" onClick={() => setOpenModalCashRegister(true)} className="dropdown-item">
+                                                Cerrar caja
                                             </button>
                                         </li>
                                     </ul>
