@@ -88,7 +88,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                     }}
                                     type="number"
                                     placeholder="Monto que ganará el profesor"
-                                    className="form-input rounded-r-md"
+                                    className="form-input rounded-none"
                                 />
                                 <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                     .00

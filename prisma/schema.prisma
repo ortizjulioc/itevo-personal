@@ -84,7 +84,7 @@ model Teacher {
   prefix         String?          @default("P") @map("prefix")
   address        String?
   phone          String?
-  email          String?          @unique
+  email          String?
   commissionRate Float?           @map("commission_rate")
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
@@ -125,7 +125,7 @@ model Course {
   code               String         @unique
   name               String
   description        String?
-  duration           Int?
+  duration           Int?           @default(0)
   requiresGraduation Boolean        @default(false) @map("requires_graduation")
   createdAt          DateTime       @default(now()) @map("created_at")
   updatedAt          DateTime       @updatedAt @map("updated_at")
