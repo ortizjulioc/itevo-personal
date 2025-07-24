@@ -12,6 +12,7 @@ import { Tab } from '@headlessui/react';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
+    console.log('initialValues', initialValues);
     const handleSubmit = async (values: any) => {
         const data = { ...values };
 

@@ -2,14 +2,13 @@
 import React from 'react';
 import {
   Document,
+  Image,
   Page,
   StyleSheet,
   Text,
   View,
 } from '@react-pdf/renderer';
 import { getFormattedDateTime } from '@/utils/date';
-import { NCF_TYPES } from '@/constants/ncfType.constant';
-import { NcfType } from '@prisma/client';
 
 const styles = StyleSheet.create({
   page: {
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo: any }) => {
+export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, companyInfo: any, logo: Blob | null }) => {
   const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user } = invoice;
 
   const total = subtotal + itbis;
@@ -70,6 +69,15 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
     <Document>
       <Page size={'A4'} style={styles.page}>
         <View style={styles.container}>
+          <View>
+            {logo && (
+              // eslint-disable-next-line jsx-a11y/alt-text
+              <Image
+                src={logo}
+                style={{ height: 80, objectFit: 'contain', }}
+              />
+            )}
+          </View>
 
           <View style={styles.header}>
             <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{companyInfo.companyName}</Text>
@@ -87,7 +95,7 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
           <View style={styles.line} /> */}
 
           <Text>Factura No. {invoiceNumber}</Text>
-          <Text>Fecha: {getFormattedDateTime(new Date(date))}</Text>
+          <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
           <Text>Cliente: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>

@@ -9,17 +9,7 @@ export const getSettings = async (
     return await prisma.setting.findFirst({
         orderBy: [
             { companyName: 'asc' },
-        ],
-        select: {
-            id: true,
-            rnc: true,
-            companyName: true,
-            address: true,
-            email: true,
-            logo: true,
-            phone: true,
-            billingWithoutNcf: true,
-        }
+        ]
     });
 };
 
