@@ -3,6 +3,7 @@ import NewinvoiceCard from './new-invoice-card'
 import InvoiceCard from './invoice-card'
 import useFetchInvoices from '../../../lib/invoice/use-fetch-cash-invoices'
 import { usePathname } from 'next/navigation'
+import { GenericSkeleton } from '@/components/common/Skeleton'
 
 export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
     const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
@@ -20,27 +21,10 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
 
     return (
         <div className="mb-5 flex items-center justify-center">
-            <div className="max-w-[22rem] w-full ">
-
-                <NewinvoiceCard
-                    cashRegisterId={cashRegisterId}
-                    userId={userId}
-                    loading={newCardloading}
-                    setLoading={setnewCardloading}
-                />
-                {loading ? (
-                    <p className="text-center mt-4">Cargando facturas...</p>
-                ) : (
-                    invoices.map((invoice) => (
-                        <InvoiceCard
-                            key={invoice.id}
-                            invoice={invoice}
-                            cashRegisterId={cashRegisterId}
-                        />
-                    ))
-                )}
-
+            <div className="w-full max-w-[22rem] ">
+                <NewinvoiceCard cashRegisterId={cashRegisterId} userId={userId} loading={newCardloading} setLoading={setnewCardloading} />
+                {loading ? <GenericSkeleton lines={8} withHeader={false} /> : invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} cashRegisterId={cashRegisterId} />)}
             </div>
         </div>
-    )
+    );
 }
