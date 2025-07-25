@@ -215,3 +215,27 @@ export const deletePayablePayment = async (
 
   return payablePayment;
 }
+
+export const getPayablePaymentsByAccountPayableId = async (
+  accountPayableId: string,
+  prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+  return prisma.payablePayment.findMany({
+    where: {
+      accountPayableId: accountPayableId,
+      deleted: false,
+    },
+  });
+};
+
+export const getPayableEarningsByAccountPayableId = async (
+  accountPayableId: string,
+  prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+  return prisma.payableEarning.findMany({
+    where: {
+      accountPayableId: accountPayableId,
+      deleted: false,
+    },
+  });
+};

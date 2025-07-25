@@ -7,7 +7,7 @@ import { createCashMovement } from '@/services/cash-movement';
 import { CashMovementReferenceType, CashMovementType } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
-import { newPayablePayment } from '@/services/account-payable';
+import { newPayablePayment, getPayablePaymentsByAccountPayableId } from '@/services/account-payable';
 
 const CreatePayablePaymentSchema = z.object({
   amount: z.number().positive(),
@@ -71,6 +71,23 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         await createLog({
             action: 'POST',
             description: `Error processing payment: ${formatErrorMessage(error)}`,
+            origin: 'account-payable/[id]/payments',
+            elementId: params.id,
+            success: false,
+        });
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+    }
+}
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        // Fetch payments for the specified account payable
+        const payments = await getPayablePaymentsByAccountPayableId(params.id);
+        return NextResponse.json({ payments }, { status: 200 });
+    } catch (error) {
+        await createLog({
+            action: 'GET',
+            description: `Error fetching payments: ${formatErrorMessage(error)}`,
             origin: 'account-payable/[id]/payments',
             elementId: params.id,
             success: false,
