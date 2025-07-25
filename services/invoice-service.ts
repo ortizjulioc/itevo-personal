@@ -62,6 +62,7 @@ interface InvoiceFilter {
     toDate?: Date;
     studentId?: string;
     createdBy?: string;
+    cashRegisterId?: string;
     page?: number;
     pageSize?: number;
 }
@@ -80,6 +81,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         toDate,
         studentId,
         createdBy,
+        cashRegisterId,
         page = 1,
         pageSize = 10,
     } = filter;
@@ -90,6 +92,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (status) where.status = status;
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
+    if (cashRegisterId) where.cashRegisterId = cashRegisterId;
 
     if (fromDate || toDate) {
         where.date = {};
@@ -164,7 +167,10 @@ export const updateInvoice = async (
         status,
         subtotal,
         itbis,
-        type
+        type,
+        paymentDate,
+        paymentMethod,
+        paymentDetails
     } = data;
 
     return await prisma.invoice.update({
@@ -178,6 +184,9 @@ export const updateInvoice = async (
             subtotal,
             itbis,
             type,
+            paymentDate,
+            paymentMethod,
+            paymentDetails,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
         },
     });

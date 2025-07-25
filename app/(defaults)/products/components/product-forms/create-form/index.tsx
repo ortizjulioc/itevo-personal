@@ -13,8 +13,6 @@ export default function CreateProductForm() {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-
-
         const resp = await createProduct(values);
 
         if (resp.success) {
@@ -31,13 +29,14 @@ export default function CreateProductForm() {
         { value: 0.18, label: 'Grabados con el 18%' },
     ]
 
-    
+
     interface TaxRateOptions
     {
         value: number;
         label: string;
     }
 
+    console.log(initialValues);
 
     return (
         <div className="panel">
@@ -88,6 +87,12 @@ export default function CreateProductForm() {
                             </Field>
                         </FormItem>
 
+                        <FormItem name="billingWithoutStock" label="" invalid={Boolean(errors.billingWithoutStock && touched.billingWithoutStock)} errorMessage={errors.billingWithoutStock}>
+                            <Field type="checkbox" name="billingWithoutStock" component={Checkbox} >
+                                Facturar sin existencias
+                            </Field>
+                            <p className="text-xs text-gray-500">Si está habilitado, se podrá facturar sin tener existencias disponibles.</p>
+                        </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>

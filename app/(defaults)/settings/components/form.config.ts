@@ -11,6 +11,7 @@ export const updateValidationSchema = Yup.object().shape({
     logo: Yup.string(),
     defaultPassword: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
     billingWithoutNcf: Yup.boolean(),
+    billingWithoutStock: Yup.boolean(),
 });
 
 export const initialValues = {
@@ -22,5 +23,6 @@ export const initialValues = {
     logo: '',
     defaultPassword: '',
     billingWithoutNcf: true,
+    billingWithoutStock: true,
 };
 

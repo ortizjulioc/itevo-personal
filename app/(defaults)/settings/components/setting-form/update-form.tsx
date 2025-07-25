@@ -127,17 +127,23 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             <Field type="email" name="email" component={Input} placeholder="Correo" />
                                         </FormItem>
 
-                                        <FormItem
+                                        {/* <FormItem
                                             name="defaultPassword"
                                             label="Cambiar contraseña por defecto"
                                             invalid={Boolean(errors.defaultPassword && touched.defaultPassword)}
                                             errorMessage={errors.defaultPassword}
                                         >
                                             <Field type="text" name="defaultPassword" component={Input} placeholder="Contraseña" />
-                                        </FormItem>
+                                        </FormItem> */}
                                         <FormItem name="billingWithoutNcf" label="" invalid={Boolean(errors.billingWithoutNcf && touched.billingWithoutNcf)} errorMessage={errors.billingWithoutNcf}>
                                             <Field type="checkbox" name="billingWithoutNcf" component={Checkbox}>
-                                                Esta empresa no requiere NCF para facturar
+                                                Permitir facturar sin NCF
+                                            </Field>
+                                        </FormItem>
+
+                                        <FormItem name="billingWithoutStock" label="" invalid={Boolean(errors.billingWithoutStock && touched.billingWithoutStock)} errorMessage={errors.billingWithoutStock}>
+                                            <Field type="checkbox" name="billingWithoutStock" component={Checkbox}>
+                                                Permitir facturar sin existencia de inventario
                                             </Field>
                                         </FormItem>
                                     </div>

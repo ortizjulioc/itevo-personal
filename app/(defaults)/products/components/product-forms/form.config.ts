@@ -11,6 +11,7 @@ export const createValidationSchema = Yup.object().shape({
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
     taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
+    billingWithoutStock: Yup.boolean(),
 });
 
 export const updateValidationSchema = Yup.object().shape({
@@ -22,6 +23,7 @@ export const updateValidationSchema = Yup.object().shape({
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
     taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
+    billingWithoutStock: Yup.boolean(),
 });
 
 export const initialValues = {
@@ -33,4 +35,5 @@ export const initialValues = {
     stock: 0,
     taxRate: 0.18,
     isTaxIncluded: true,
+    billingWithoutStock: true,
 };

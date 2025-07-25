@@ -394,7 +394,8 @@ model Setting {
   email             String
   logo              String
   defaultPassword   String? @map("default_password")
-  billingWithoutNcf Boolean @default(false) @map("billing_without_ncf")
+  billingWithoutNcf Boolean @default(true) @map("billing_without_ncf")
+  billingWithoutStock Boolean @default(true) @map("billing_without_stock")
 
   deleted   Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -557,6 +558,8 @@ model Product {
   stock         Int             @default(0)
   taxRate       Float           @default(0) @map("tax_rate")
   isTaxIncluded Boolean         @default(true) @map("is_tax_included")
+  billingWithoutStock Boolean   @default(true) @map("billing_without_stock")
+
   deleted       Boolean         @default(false)
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
