@@ -2,13 +2,13 @@ import { Teacher } from '@prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 
-export default function TeacherLabel({ teacherId }: { teacherId: string }) {
+export default function TeacherLabel({ teacherId, className }: { teacherId: string; className?: string }) {
     const [teacher, setteacher] = useState<Teacher | null>(null);
 
     const fetchteacherById = async () => {
         try {
             const response = await apiRequest.get<Teacher>(`/teachers/${teacherId}`);
-           
+
             if (response.success && response.data) {
                 setteacher(response.data);
             }
@@ -21,7 +21,5 @@ export default function TeacherLabel({ teacherId }: { teacherId: string }) {
         fetchteacherById();
     }, []);
 
-    return (
-        <span >{teacher ?  `${teacher.firstName} ${teacher.lastName}`  : '...'}</span>
-    )
+    return <span className={className}>{teacher ? `${teacher.firstName} ${teacher.lastName}` : '...'}</span>;
 }
