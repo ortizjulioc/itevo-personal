@@ -28,8 +28,6 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
     handlePrintPDF(invoice);
   }
 
-  console.log('invoice', invoice);
-
   const handlePrintPDF = async (invoice: any) => {
     try {
       let companyInfo = {
@@ -40,7 +38,7 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
         logoUrl: setting?.logo,
         rnc: setting?.rnc,
       }
-      console.log('companyInfo', companyInfo);
+
       let blobLogo = null;
       if (companyInfo.logoUrl) {
         blobLogo = await fetchImageAsBase64(companyInfo.logoUrl);
