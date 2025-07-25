@@ -4,6 +4,11 @@ interface SkeletonProps {
     rows?: number;
     columns?: string[];
 }
+ interface GenericSkeletonProps {
+  lines?: number;
+  withHeader?: boolean;
+  className?: string;
+}
 
 const TableSkeleton: React.FC<SkeletonProps> = ({ rows = 5, columns = [] }) => {
     return (
@@ -37,6 +42,20 @@ const TableSkeleton: React.FC<SkeletonProps> = ({ rows = 5, columns = [] }) => {
             </table>
         </div>
     );
+};
+
+
+export const GenericSkeleton: React.FC<GenericSkeletonProps> = ({ lines = 3, withHeader = true, className = '' }) => {
+  return (
+    <div className={`animate-pulse rounded-lg shadow p-4 bg-white dark:bg-[#1E1E2D] ${className}`}>
+      {withHeader && (
+        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+      )}
+      {Array.from({ length: lines }).map((_, index) => (
+        <div key={index} className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full mb-2"></div>
+      ))}
+    </div>
+  );
 };
 
 export default TableSkeleton;

@@ -54,61 +54,66 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
             >
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-                        <div className='flex items-start gap-4'>
-                            <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
-                                <Field>
-                                    {({ form }: FieldProps<ScheduleFormType>) => (
-                                        <Select
-                                            name="weekday"
-                                            placeholder="Selecciona un día"
-                                            className="min-w-[200px]"
-                                            options={weekOptions}
-                                            value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                            onChange={(newValue, _actionMeta) => {
-                                                const option = newValue as WeekOption | null;
-                                                form.setFieldValue('weekday', option?.value ?? null);
-                                            }}
-                                            menuPortalTarget={typeof window !== 'undefined' ? document.body : null} // <- clave
-                                            menuPosition="fixed"
-                                            styles={{
-                                                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                            }}
+                        <div className='grid grid-cols-1  gap-4 md:items-start'>
 
-                                        />
-                                    )}
-                                </Field>
-                            </FormItem>
+                            <div className="w-full">
+                                <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
+                                    <Field>
+                                        {({ form }: FieldProps<ScheduleFormType>) => (
+                                            <Select
+                                                name="weekday"
+                                                placeholder="Selecciona un día"
+                                                className="min-w-[200px] "
+                                                options={weekOptions}
+                                                value={weekOptions.find((opt) => opt.value === values.weekday)}
+                                                onChange={(newValue, _actionMeta) => {
+                                                    const option = newValue as WeekOption | null;
+                                                    form.setFieldValue('weekday', option?.value ?? null);
+                                                }}
+                                                menuPortalTarget={typeof window !== 'undefined' ? document.body : null} // <- clave
+                                                menuPosition="fixed"
+                                                styles={{
+                                                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                                }}
 
-                            <FormItem
-                                name="startTime"
-                                label="Hora de inicio"
-                                invalid={Boolean(errors.startTime && touched.startTime)}
-                                errorMessage={errors.startTime}
-
-                            >
-                                <Field
-                                    type="time"
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </div>
+                            <div className="w-full">
+                                <FormItem
                                     name="startTime"
-                                    placeholder="Hora de inicio"
-                                    className="min-w-[200px]"
-                                    component={Input}
-                                />
-                            </FormItem>
+                                    label="Hora de inicio"
+                                    invalid={Boolean(errors.startTime && touched.startTime)}
+                                    errorMessage={errors.startTime}
 
-                            <FormItem
-                                name="endTime"
-                                label="Hora de finalización"
-                                invalid={Boolean(errors.endTime && touched.endTime)}
-                                errorMessage={errors.endTime}
-                            >
-                                <Field
-                                    type="time"
+                                >
+                                    <Field
+                                        type="time"
+                                        name="startTime"
+                                        placeholder="Hora de inicio"
+                                        className="min-w-[200px]"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                            </div>
+                            <div className="w-full">
+                                <FormItem
                                     name="endTime"
-                                    placeholder="Hora de finalización"
-                                    className="min-w-[200px]"
-                                    component={Input}
-                                />
-                            </FormItem>
+                                    label="Hora de finalización"
+                                    invalid={Boolean(errors.endTime && touched.endTime)}
+                                    errorMessage={errors.endTime}
+                                >
+                                    <Field
+                                        type="time"
+                                        name="endTime"
+                                        placeholder="Hora de finalización"
+                                        className="min-w-[200px]"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                            </div>
 
                         </div>
                         <div className='mb-4'>

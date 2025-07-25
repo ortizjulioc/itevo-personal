@@ -102,7 +102,10 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
             </FormItem>
 
             <div className="mt-6 flex justify-end gap-2">
-              <Button type="button" color="danger" onClick={() => route.back()}>
+              <Button type="button" color="danger" onClick={() => {
+                onClose ? onClose('') : route.back();
+
+              }}>
                 Cancelar
               </Button>
               <Button loading={isSubmitting} type="submit">

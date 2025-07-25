@@ -23,6 +23,7 @@ export default function CreateCourseBranchForm() {
     const route = useRouter();
     const pathname = usePathname();
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
     const [defaultPromotion, setDefaultPromotion] = useState<string | null>(null);
     const { data: session, status } = useSession();
     const user = session?.user as {
@@ -63,16 +64,17 @@ export default function CreateCourseBranchForm() {
     };
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
-        setSubmitting(true);
+       setLoading(true);
 
         const resp = await createCourseBranch(values);
 
         if (resp.success) {
-            openNotification('success', 'Curso creado correctamente');
+            //openNotification('success', 'Curso creado correctamente');
             route.push(`/course-branch/${resp.data?.id}?new=true#schedule-assignment`);
         } else {
             openNotification('error', resp.message);
             setSubmitting(false);
+            setLoading(false)
         }
     };
 
@@ -165,8 +167,8 @@ export default function CreateCourseBranchForm() {
                                     </Button>
                                 )}
                                 {selectedIndex === COURSE_BRANCH_TABS.length - 1 && (
-                                    <Button loading={isSubmitting} type="submit">
-                                        {isSubmitting ? 'Guardando...' : 'Continuar'}
+                                    <Button loading={loading} type="submit">
+                                        {loading ? 'Guardando...' : 'Continuar'}
                                     </Button>
                                 )}
                             </div>

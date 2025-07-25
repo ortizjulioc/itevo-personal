@@ -47,7 +47,7 @@ export default function ModalOpenFormStudent(
                                     leaveFrom="opacity-100 scale-100"
                                     leaveTo="opacity-0 scale-95"
                                 >
-                                    <Dialog.Panel as="div" className="w-1/2 h-auto mt-10 bg-white dark:bg-[#1E1E2D] text-black dark:text-white p-6 overflow-y-auto">
+                                    <Dialog.Panel as="div" className="w-1/2 h-auto mt-10  dark:bg-[#1E1E2D] text-black dark:text-white p-6 overflow-y-auto">
                                         <div className='min-w-full'>
                                             <CreateStudentForm
                                                 onClose={onClose}

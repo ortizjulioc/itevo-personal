@@ -39,7 +39,7 @@ export default function ModalCreateCourse(
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel as="div" className="mt-10 h-auto w-1/2 overflow-y-auto bg-white p-6 text-black dark:bg-[#1E1E2D] dark:text-white">
+                                <Dialog.Panel as="div" className="mt-10 h-auto w-1/2 overflow-y-auto  p-6 text-black dark:bg-[#1E1E2D] dark:text-white">
                                     <div className="min-w-full">
                                         <CreateCourseForm onClose={onClose} />
                                     </div>
