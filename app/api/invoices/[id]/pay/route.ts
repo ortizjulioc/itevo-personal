@@ -12,7 +12,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const { id } = params; // ID de la factura
     try {
         const body: InvoicePaymentData = await req.json();
-        console.log('Datos de pago recibidos:', body);
 
         let newInvoiceData: Invoice | null = null;
         // Verificar que la factura existe

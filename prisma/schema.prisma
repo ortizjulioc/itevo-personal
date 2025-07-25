@@ -116,9 +116,21 @@ model Student {
   graduation        Graduation[]
   Invoice           Invoice[]
   Quotation         Quotation[]
+  fingerprint       Fingerprint?
 
   @@map("students")
 }
+
+model Fingerprint {
+  id         String   @id @default(uuid())
+  studentId  String   @unique
+  template   Bytes    // Plantilla biométrica
+  sensorType String   // Marca/modelo del lector (útil si usas varios)
+  createdAt  DateTime @default(now())
+
+  student    Student  @relation(fields: [studentId], references: [id])
+}
+
 
 model Course {
   id                 String         @id @default(uuid())
