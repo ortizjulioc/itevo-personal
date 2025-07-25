@@ -8,9 +8,11 @@ import { CourseBranch } from '@/app/(defaults)/course-branch/lib/use-fetch-cours
 type Props = {
   CourseBranchId: string;
   isSelected?: boolean;
+  showTeacher?: boolean;
+
 };
 
-export default function CourseBranchLabel({ CourseBranchId, isSelected }: Props) {
+export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeacher = true }: Props) {
   const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(null);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected }: Props)
       try {
         const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
         if (response.success && response.data) {
-         // console.log('response course branch', response);
+          // console.log('response course branch', response);
           setCourseBranch(response.data);
         }
       } catch (error) {
@@ -41,18 +43,23 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected }: Props)
           <ModalityTag modality={courseBranch.modality} />
         </div>
         <span className="text-sm text-gray-600 dark:text-gray-400">
-          {courseBranch.teacher.firstName}  {courseBranch.teacher.lastName
-          } | {courseBranch.branch.name}
+          {showTeacher && (
+            <>
+              {courseBranch.teacher.firstName} {courseBranch.teacher.lastName} |{' '}
+            </>
+          )}
+          {courseBranch.branch.name}
         </span>
+
         {courseBranch.schedules && (
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {formatSchedule(courseBranch.schedules)}
           </span>
         )}
       </div>
-      
+
     </div>
   ) : (
-   null
+    null
   );
 }

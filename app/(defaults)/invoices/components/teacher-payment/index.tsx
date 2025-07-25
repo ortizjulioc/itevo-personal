@@ -8,6 +8,7 @@ import TeacherLabel from '@/components/common/info-labels/teacher-label'
 import { PayAccount } from '../../lib/accounts-payable/request'
 import { useParams } from 'next/navigation'
 import CourseBranchLabel from '@/components/common/info-labels/course-branch-label'
+import { useRouter } from 'next/navigation'
 interface SelectTeacherType {
     value: string
     label: string
@@ -17,6 +18,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
     const [teacher, setTeacher] = useState('')
     const [loadingPayment, setLoadingPayment] = useState(false)
+    const router = useRouter();
     const { accountsPayable, fetchAccountsPayableData, loading } = useFetchAccountsPayable('')
 
     const useFetchpayment = async (id: string) => {
@@ -69,11 +71,12 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="panel w-screen max-w-5xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                            <Dialog.Panel className="panel w-1/2 max-w-5xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                                     <h5 className="text-lg font-bold">Desembolso a Profesor</h5>
                                 </div>
                                 <div className="p-5">
+
                                     <SelectTeacher
                                         value={teacher}
                                         isLoading={loading}
@@ -84,98 +87,84 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                         }}
                                     />
                                 </div>
-                                <div className='w-full flex justify-center'>
-                                    <table className="table-hover border-collapse border border-gray-300 w-full mx-1 ">
-                                        <thead>
-                                            <tr>
-                                                <th className="text-center px-4 py-2">CURSO</th>
-                                                <th className="text-center px-4 py-2">TOTAL</th>
-                                                <th className="text-center px-4 py-2">PENDIENTE</th>
-                                                <th className="text-center px-4 py-2"> A PAGAR</th>
-                                                <th className="text-center px-4 py-2">ACCION</th>
+                                {/* Profesor debajo del selector */}
+                                <div className="px-5 mb-2">
+                                    {teacher &&
+                                        <TeacherLabel
+                                            teacherId={teacher}
+                                            className="text-2xl font-bold text-gray-800 dark:text-white mb-4"
+                                        />
+                                    }
+                                </div>
 
-                                            </tr>
-                                        </thead>
+                                {/* Tarjetas de pagos */}
+                                <div className="px-5">
+                                    {!loading && teacher && accountsPayable.map((item) => {
+                                        const paidAmount = item.amountDisbursed;
+                                        const pendingAmount = item.amount - item.amountDisbursed;
 
-                                        <tbody>
-                                            {!loading && teacher && accountsPayable.map((account) => {
-                                                const item = account; // Asigna `account` a `item` si prefieres trabajar con `item`
-                                                const inputId = `input-${item.id}`;
-                                                const isPaid = item.amountDisbursed >= item.amount;
-                                                const maxAmount = item.amount - item.amountDisbursed;
-                                                const isLoading = false; // Aquí puedes colocar tu lógica real
+                                        return (
+                                            <div
+                                                key={item.id}
+                                                className="mb-5 w-full rounded-md border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-[#1E1E2D]"
+                                            >
+                                                {/* Nombre del curso */}
+                                                <div className="mb-4 text-sm font-semibold text-gray-800 dark:text-white">
+                                                    <CourseBranchLabel CourseBranchId={item.courseBranchId} showTeacher={false} />
+                                                </div>
 
-                                                return (
-                                                    <tr key={item.id} className="border-t border-gray-200 dark:border-gray-700">
-                                                        <td className="px-4 py-2 text-Left text-sm text-gray-800 dark:text-gray-100">
-                                                            <CourseBranchLabel
-                                                                CourseBranchId={item.courseBranchId}
+                                                {/* Totales */}
+                                                <div className="flex flex-wrap gap-6 justify-between">
+                                                    {/* Adeudado */}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="mt-1 h-2 w-2 rounded-full bg-red-500" />
+                                                        <div>
+                                                            <div className="text-base font-semibold text-gray-900 dark:text-white">
+                                                                {formatCurrency(item.amount)}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500">Total </div>
+                                                        </div>
+                                                    </div>
 
-                                                            />
+                                                    {/* Abonado */}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="mt-1 h-2 w-2 rounded-full bg-green-500" />
+                                                        <div>
+                                                            <div className="text-base font-semibold text-gray-900 dark:text-white">
+                                                                {formatCurrency(paidAmount)}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500">Total Abonado</div>
+                                                        </div>
+                                                    </div>
 
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center text-sm font-medium">{formatCurrency(item.amount)}</td>
-
-                                                        <td className="px-4 py-2 text-center text-sm font-medium">
-                                                            {isPaid ? (
-                                                                <span className="font-semibold text-green-600 dark:text-green-400">Pagado</span>
-                                                            ) : (
-                                                                <span className="text-red-600 dark:text-red-400">{formatCurrency(maxAmount)}</span>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center">
-                                                            <Input
-                                                                id={inputId}
-                                                                type="number"
-                                                                defaultValue={maxAmount}
-                                                                max={maxAmount}
-                                                                min={0}
-                                                                step="0.01"
-                                                                className="w-32"
-                                                                disabled={isLoading || isPaid}
-                                                                onChange={(e) => {
-                                                                    const value = parseFloat(e.target.value);
-                                                                    if (value > maxAmount) {
-                                                                        e.target.value = maxAmount.toString();
-                                                                        openNotification('warning', `El monto máximo a pagar es ${maxAmount.toFixed(2)}`);
-                                                                    }
-                                                                    if (value < 0) e.target.value = '0';
-                                                                }}
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center align-middle">
-                                                            <Button
-                                                                type="button"
-                                                                size="sm"
-                                                                className="mx-auto"
-                                                                loading={loadingPayment}
-                                                                disabled={loadingPayment || isPaid}
-                                                                onClick={() => {
-                                                                    const inputEl = document.getElementById(inputId) as HTMLInputElement;
-                                                                    const value = parseFloat(inputEl?.value || '0');
-                                                                    if (value > 0 && value <= maxAmount) {
-                                                                        handlepayAccount(account.id, value);
-                                                                    } else {
-                                                                        alert('Por favor, ingrese un monto válido.');
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isPaid ? 'Pagado' : 'Desembolsar'}
-                                                            </Button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-
-                                    </table>
+                                                    {/* Pendiente */}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="mt-1 h-2 w-2 rounded-full bg-orange-500" />
+                                                        <div>
+                                                            <div className="text-base font-semibold text-gray-900 dark:text-white">
+                                                                {formatCurrency(pendingAmount)}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500">Pendiente de pago</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                                 <div className="p-5">
                                     <div className="mt-2 flex items-center justify-end gap-3">
                                         <Button onClick={() => setOpenModal(false)} variant="outline" color="danger">
                                             Cancelar
                                         </Button>
-
+                                        <Button
+                                            onClick={() => router.push(`/teacher-payments/${cashRegisterId}/teacher/${teacher}`)}
+                                            disabled={!teacher}
+                                            loading={loadingPayment}
+                                          
+                                            color='primary'>
+                                            Desembolsar
+                                        </Button>
                                     </div>
                                 </div>
                             </Dialog.Panel>
