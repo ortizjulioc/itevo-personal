@@ -58,12 +58,22 @@ const styles = StyleSheet.create({
   },
 });
 
+const PAYMENT_METHODS_OPTIONS = [
+  { value: 'cash', label: 'Efectivo' },
+  { value: 'credit_card', label: 'TC' },
+  { value: 'bank_transfer', label: 'Transferencia' },
+  { value: 'check', label: 'Cheque' },
+];
+
 export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, companyInfo: any, logo: Blob | null }) => {
   const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user } = invoice;
 
   const total = subtotal + itbis;
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
   const returned = receivedAmount - total;
+
+  console.log('InvoicePDF', { invoice });
+  console.log('Payment Method', paymentMethod, PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)   );
 
   return (
     <Document>
@@ -137,7 +147,7 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
 
           <View style={styles.line} />
 
-          <Text>{paymentMethod?.toUpperCase()}: {receivedAmount.toFixed(2)}</Text>
+          <Text>{PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)?.label}: {receivedAmount.toFixed(2)}</Text>
           <Text>Recibido: {receivedAmount.toFixed(2)}</Text>
           <Text>Devuelta: {returned.toFixed(2)}</Text>
           <Text style={{ marginTop: 4 }}>Le atendió: {user.name} {user.lastName}</Text>

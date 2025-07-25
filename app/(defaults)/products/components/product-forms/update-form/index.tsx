@@ -32,8 +32,7 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
         { value: 0.18, label: 'Grabados con el 18%' },
     ]
 
-    interface TaxRateOptions
-    {
+    interface TaxRateOptions {
         value: number;
         label: string;
     }
@@ -73,7 +72,7 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                                         {...field}
                                         options={TAX_RATE_OPTIONS}
                                         value={TAX_RATE_OPTIONS.find((option) => option.value === values.taxRate)}
-                                        onChange={(option:TaxRateOptions) => {
+                                        onChange={(option: TaxRateOptions) => {
                                             setFieldValue('taxRate', option?.value);
                                         }}
                                     />
@@ -86,6 +85,13 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                             <Field type="checkbox" name="isTaxIncluded" component={Checkbox} >
                                 Tiene los impuestos incluidos
                             </Field>
+                        </FormItem>
+
+                        <FormItem name="billingWithoutStock" label="" invalid={Boolean(errors.billingWithoutStock && touched.billingWithoutStock)} errorMessage={errors.billingWithoutStock}>
+                            <Field type="checkbox" name="billingWithoutStock" component={Checkbox} >
+                                Facturar sin existencias
+                            </Field>
+                            <p className="text-xs text-gray-500">Si está habilitado, se podrá facturar sin tener existencias disponibles.</p>
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">

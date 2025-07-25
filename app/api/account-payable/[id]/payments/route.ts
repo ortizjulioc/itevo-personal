@@ -19,12 +19,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     try {
         const session = await getServerSession(authOptions);
         const body = await request.json();
+        console.log("Request Body:", body);
         const validatedData = CreatePayablePaymentSchema.parse(body);
         // Validate the request body
         if (!validatedData) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS' }, { status: 400 });
         }
-
+        console.log("Validated Data:", validatedData);
         // Init prisma transaction
         const resp = await Prisma.$transaction(async (prisma) => {
             // Verify if the cash register exists

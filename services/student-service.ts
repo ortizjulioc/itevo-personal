@@ -143,3 +143,26 @@ export const findAccountsReceivableByStudentId = async (studentId: string) => {
         ],
     });
 };
+
+export const addFingerprintToStudent = async (
+    studentId: string,
+    fingerprintData: PrismaTypes.FingerprintCreateInput
+) => {
+    return Prisma.fingerprint.create({
+        data: {
+            ...fingerprintData,
+            student: {
+                connect: { id: studentId },
+            },
+        },
+    });
+};
+
+export const findFingerprintByStudentId = async (studentId: string) => {
+    return Prisma.fingerprint.findUnique({
+        where: {
+            studentId: studentId,
+        },
+    });
+};
+

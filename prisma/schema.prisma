@@ -116,9 +116,21 @@ model Student {
   graduation        Graduation[]
   Invoice           Invoice[]
   Quotation         Quotation[]
+  fingerprint       Fingerprint?
 
   @@map("students")
 }
+
+model Fingerprint {
+  id         String   @id @default(uuid())
+  studentId  String   @unique
+  template   Bytes    // Plantilla biométrica
+  sensorType String   // Marca/modelo del lector (útil si usas varios)
+  createdAt  DateTime @default(now())
+
+  student    Student  @relation(fields: [studentId], references: [id])
+}
+
 
 model Course {
   id                 String         @id @default(uuid())
@@ -394,7 +406,8 @@ model Setting {
   email             String
   logo              String
   defaultPassword   String? @map("default_password")
-  billingWithoutNcf Boolean @default(false) @map("billing_without_ncf")
+  billingWithoutNcf Boolean @default(true) @map("billing_without_ncf")
+  billingWithoutStock Boolean @default(true) @map("billing_without_stock")
 
   deleted   Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -424,8 +437,10 @@ model CashRegister {
   cashBreakdown  String?               @map("cash_breakdown") @db.LongText
   openingDate    DateTime              @default(now()) @map("opening_date")
   createdAt      DateTime              @default(now()) @map("created_at")
+  closedAt       DateTime?             @map("closed_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
   deleted        Boolean               @default(false)
+
   movements      CashMovement[]
   closures       CashRegisterClosure[]
   branch         Branch                @relation(fields: [branchId], references: [id])
@@ -557,6 +572,8 @@ model Product {
   stock         Int             @default(0)
   taxRate       Float           @default(0) @map("tax_rate")
   isTaxIncluded Boolean         @default(true) @map("is_tax_included")
+  billingWithoutStock Boolean   @default(true) @map("billing_without_stock")
+
   deleted       Boolean         @default(false)
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")

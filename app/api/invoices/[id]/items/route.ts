@@ -6,7 +6,7 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { AccountReceivable, CourseBranch, InvoiceItemType, PaymentStatus } from '@prisma/client';
+import { InvoiceItemType } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -46,8 +46,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 if (!product) {
                     throw new Error(`Producto ${body.productId} no encontrado`);
                 }
-                if (product.stock < body.quantity) {
-                    throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
+
+                if (!product.billingWithoutStock) {
+                    if (product.stock < body.quantity) {
+                        throw new Error(`No hay suficiente existencia para el producto ${product.name}. Existencias: ${product.stock}, Solicitada: ${body.quantity}`);
+                    }
                 }
 
                 if (product.isTaxIncluded) {

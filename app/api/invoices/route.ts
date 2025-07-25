@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = req.nextUrl;
+        console.log('Parámetros de búsqueda:', searchParams.toString());
 
         const filters = {
             search: searchParams.get('search') || undefined,
@@ -84,6 +85,7 @@ export async function GET(req: NextRequest) {
             toDate: searchParams.get('toDate') ? new Date(searchParams.get('toDate')!) : undefined,
             studentId: searchParams.get('studentId') || undefined,
             createdBy: searchParams.get('createdBy') || undefined,
+            cashRegisterId: searchParams.get('cashRegisterId') || undefined,
             page: Number(searchParams.get('page') || '1'),
             pageSize: Number(searchParams.get('pageSize') || '10'),
         };

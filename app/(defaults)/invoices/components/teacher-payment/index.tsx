@@ -154,7 +154,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                                     const inputEl = document.getElementById(inputId) as HTMLInputElement;
                                                                     const value = parseFloat(inputEl?.value || '0');
                                                                     if (value > 0 && value <= maxAmount) {
-                                                                        handlepayAccount(account.id, account.amount);
+                                                                        handlepayAccount(account.id, value);
                                                                     } else {
                                                                         alert('Por favor, ingrese un monto válido.');
                                                                     }

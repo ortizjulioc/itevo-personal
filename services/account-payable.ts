@@ -14,7 +14,6 @@ export const getAccountPayableByCourseBranchId = async ({
   const accountPayable = await prisma.accountPayable.findFirst({
     where: {
       courseBranchId,
-      status: PaymentStatus.PENDING,
     },
   });
 
@@ -73,7 +72,7 @@ export const addNewEarningToAccountsPayable = async (
 ) => {
   // Verificar que la cuenta por pagar existe
   const accountPayable = await prisma.accountPayable.findUnique({
-    where: { id: accountPayableId, status: PaymentStatus.PENDING },
+    where: { id: accountPayableId },
   });
 
   if (!accountPayable) {
@@ -95,6 +94,7 @@ export const addNewEarningToAccountsPayable = async (
     where: { id: accountPayableId },
     data: {
       amount: accountPayable.amount + amount,
+      status: PaymentStatus.PENDING,
     },
   });
 
@@ -151,7 +151,7 @@ export const newPayablePayment = async (
 ) => {
   // Verificar que la cuenta por pagar existe
   const accountPayable = await prisma.accountPayable.findUnique({
-    where: { id: accountPayableId, status: PaymentStatus.PENDING },
+    where: { id: accountPayableId },
   });
 
   if (!accountPayable) {
@@ -169,11 +169,12 @@ export const newPayablePayment = async (
   });
 
   // Actualizar el monto de la cuenta por pagar
-  const newStatus = accountPayable.amount - amount <= 0 ? PaymentStatus.PAID : PaymentStatus.PENDING;
+  const newAmountDisbursed = accountPayable.amountDisbursed + amount;
+  const newStatus = newAmountDisbursed >= accountPayable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING;
   await prisma.accountPayable.update({
     where: { id: accountPayableId },
     data: {
-      amountDisbursed: { increment: amount }, // Actualizar el monto desembolsado
+      amountDisbursed: newAmountDisbursed,
       status: newStatus, // Mantener el estado como pendiente
     },
   });
@@ -203,7 +204,7 @@ export const deletePayablePayment = async (
 
   // Actualizar el monto de la cuenta por pagar
   const newDisbursedAmount = accountPayable.amountDisbursed - payablePayment.amount;
-  const newStatus = newDisbursedAmount <= 0 ? PaymentStatus.PENDING : accountPayable.status;
+  const newStatus = newDisbursedAmount < accountPayable.amount ? PaymentStatus.PENDING : accountPayable.status;
   await prisma.accountPayable.update({
     where: { id: accountPayableId },
     data: {
