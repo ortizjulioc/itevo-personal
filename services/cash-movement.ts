@@ -34,3 +34,18 @@ export const deleteCashMovementsByInvoiceId = async (
     data: { deleted: true },
   });
 }
+
+export const getCashMovementsByCashRegisterId = async (
+  cashRegisterId: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  return await prisma.cashMovement.findMany({
+    where: {
+      cashRegisterId,
+      deleted: false,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+}

@@ -425,8 +425,10 @@ model CashRegister {
   cashBreakdown  String?               @map("cash_breakdown") @db.LongText
   openingDate    DateTime              @default(now()) @map("opening_date")
   createdAt      DateTime              @default(now()) @map("created_at")
+  closedAt       DateTime?             @map("closed_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
   deleted        Boolean               @default(false)
+
   movements      CashMovement[]
   closures       CashRegisterClosure[]
   branch         Branch                @relation(fields: [branchId], references: [id])
