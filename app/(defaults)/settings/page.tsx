@@ -1,22 +1,23 @@
 'use client';
-import { ViewTitle } from "@/components/common";
+import { FormSkeleton, ViewTitle } from "@/components/common";
 import useFetchSetting from "./lib/use-fetch-settings";
 import UpdateSettingForm from "./components/setting-form/update-form";
 
 
 export default function EditSetting() {
-    const { setting } = useFetchSetting();
+    const { setting,loading  } = useFetchSetting();
     console.log('editar', setting);
 
     return (
         <>
-            <ViewTitle className='mb-6' title="Configuracion de la Empresa" />
+            <ViewTitle className="mb-6" title="Configuracion de la Empresa" />
 
-            <div className="container mx-auto px-4 panel bg">
+            <div className="panel bg container mx-auto px-4">
                 <div className="mt-6">
+                    {loading && <FormSkeleton />}
                     {setting && <UpdateSettingForm initialValues={setting} />}
                 </div>
             </div>
         </>
-    )
+    );
 }
