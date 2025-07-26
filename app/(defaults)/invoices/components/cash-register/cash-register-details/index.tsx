@@ -3,9 +3,10 @@ import { Button } from '@/components/ui';
 import { CashRegister as CashRegisterPrisma } from '@prisma/client'
 import React from 'react'
 import { HiOutlineDotsVertical } from 'react-icons/hi';
-import CashRegisterClose from '../cash-register-close';
+import CashRegisterClose from '../../../../close-cash-register/components/modal-cash-register-close';
 import { getFormattedDate, getFormattedDateTime } from '@/utils/date';
 import TeacherPayment from '../../teacher-payment';
+import { useRouter } from 'next/navigation';
 
 
 interface CashRegister extends CashRegisterPrisma {
@@ -16,8 +17,9 @@ interface CashRegister extends CashRegisterPrisma {
 }
 export default function CashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
 
-    const [openModalCashRegister, setOpenModalCashRegister] = React.useState(false);
+ 
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
+    const router = useRouter();
 
 
 
@@ -49,7 +51,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                             </button>
                                         </li>
                                         <li className="border-t border-white-light dark:border-white-light/10">
-                                            <button type="button" onClick={() => setOpenModalCashRegister(true)} className="dropdown-item">
+                                            <button type="button" onClick={() => router.push(`/close-cash-register/${CashRegister.id}`) } className="dropdown-item">
                                                 Cerrar caja
                                             </button>
                                         </li>
@@ -59,7 +61,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                         </div>
                     </div>
 
-                    <CashRegisterClose setOpenModal={setOpenModalCashRegister} openModal={openModalCashRegister} />
+                 
                     <TeacherPayment setOpenModal={setOpenModalTeacher} openModal={openModalTeacher} />
                 </div>
             </div>
