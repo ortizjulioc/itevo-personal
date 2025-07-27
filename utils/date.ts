@@ -135,6 +135,50 @@ export function getClassSessions(
     return { count: sessionCount, dates: sessionDates };
 }
 
+/**
+ * Calcula la fecha de finalización de un curso, dado un número de sesiones,
+ * una fecha de inicio, horarios semanales y días feriados.
+ *
+ * @param startDate Fecha de inicio del curso.
+ * @param sessionCount Número total de clases a impartir.
+ * @param schedules Array de objetos con la propiedad `weekday` (0 = Domingo, 6 = Sábado).
+ * @param holidays Array de feriados con propiedades `date` (Date) e `isRecurring` (boolean).
+ * @returns Fecha de finalización del curso.
+ */
+export function getCourseEndDate(
+    startDate: Date,
+    sessionCount: number,
+    schedules: { weekday: number; startTime: string; endTime: string }[],
+    holidays: { date: Date; isRecurring: boolean }[]
+): Date {
+    let currentDate = toLocalDate(new Date(startDate));
+    let sessionsAdded = 0;
+
+    while (sessionsAdded < sessionCount) {
+        for (const schedule of schedules) {
+            if (currentDate.getDay() === schedule.weekday) {
+                const isHoliday = holidays.some((holiday) => {
+                    const holidayDate = toLocalDate(new Date(holiday.date));
+                    return holiday.isRecurring
+                        ? currentDate.getMonth() === holidayDate.getMonth() &&
+                          currentDate.getDate() === holidayDate.getDate()
+                        : currentDate.getTime() === holidayDate.getTime();
+                });
+
+                if (!isHoliday) {
+                    sessionsAdded++;
+                    if (sessionsAdded === sessionCount) {
+                        return new Date(currentDate);
+                    }
+                }
+            }
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return new Date(currentDate); // Por si algo falla, aunque en teoría ya se devuelve antes.
+}
+
 
 /**
  * Esta función recibe un objeto Date y devuelve la hora en formato HH:mm.
