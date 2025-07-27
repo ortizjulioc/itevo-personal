@@ -44,35 +44,23 @@ export const getCourseBranch = async (filters: any) => {
     };
 };
 
-export const createCourseBranch = async (data: any) => {
-    const dataToCreate = {
-        promotion: {
-            connect: {
-                id: data.promotionId,
-            },
+export const createCourseBranch = async (data: PrismaTypes.CourseBranchCreateInput) => {
+    const courseBranch = await Prisma.courseBranch.create({
+        data: {
+            promotion: data.promotion,
+            branch: data.branch,
+            teacher: data.teacher,
+            course: data.course,
+            amount: data.amount,
+            modality: data.modality,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            commissionRate: data.commissionRate,
+            sessionCount: data.sessionCount,
+            capacity: data.capacity,
+            status: data.status,
         },
-        branch: {
-            connect: {
-                id: data.branchId,
-            },
-        },
-        teacher: {
-            connect: {
-                id: data.teacherId,
-            },
-        },
-        course: {
-            connect: {
-                id: data.courseId,
-            },
-        }
-    };
-    delete data.promotionId;
-    delete data.branchId;
-    delete data.teacherId;
-    delete data.courseId;
-
-    const courseBranch = await Prisma.courseBranch.create({ data: {...dataToCreate, ...data} });
+    });
     return courseBranch;
 };
 
@@ -94,15 +82,15 @@ export const findCourseBranchById = async (
 };
 
 // Actualizar courseBranch por ID
-export const updateCourseBranchById = async (id: string, data: CourseBranch) => {
+export const updateCourseBranchById = async (id: string, data: PrismaTypes.CourseBranchUpdateInput) => {
 
     return Prisma.courseBranch.update({
         where: { id },
         data: {
-            promotionId: data.promotionId,
-            branchId: data.branchId,
-            teacherId: data.teacherId,
-            courseId: data.courseId,
+            promotion: data.promotion,
+            branch: data.branch,
+            teacher: data.teacher,
+            course: data.course,
             amount: data.amount,
             modality: data.modality,
             startDate: data.startDate,

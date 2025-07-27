@@ -4,6 +4,7 @@ import { getCourseBranch, createCourseBranch } from '@/services/course-branch-se
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { CourseBranchStatus, Modality } from '@prisma/client';
+import { findCourseById } from '@/services/course-service';
 
 export async function GET(request: NextRequest) {
     try {
@@ -48,8 +49,25 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        console.log('post course-branch', body);
-        const courseBranch = await createCourseBranch(body);
+        const course = await findCourseById(body.courseId);
+        if (!course) {
+            return NextResponse.json({ code: 'E_COURSE_NOT_FOUND', error: 'El curso especificado no existe.' }, { status: 404 });
+        }
+
+        const courseBranch = await createCourseBranch({
+            promotion: { connect: { id: body.promotionId } },
+            branch: { connect: { id: body.branchId } },
+            teacher: { connect: { id: body.teacherId } },
+            course: { connect: { id: body.courseId } },
+            amount: body.amount || 0,
+            modality: body.modality || Modality.PRESENTIAL,
+            startDate: body.startDate ? new Date(body.startDate) : null,
+            endDate: body.endDate ? new Date(body.endDate) : null,
+            commissionRate: body.commissionRate || 0,
+            sessionCount: body.sessionCount || 0,
+            capacity: body.capacity || 0,
+            status: body.status || CourseBranchStatus.DRAFT,
+        });
         await createLog({
             action: 'POST',
             description: `Se creó un curso con los siguientes datos: ${JSON.stringify(body, null, 2)}`,
