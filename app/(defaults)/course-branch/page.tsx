@@ -26,14 +26,12 @@ export default function Coursets({ searchParams }: CoursetListProps) {
         <>
 
 
-          <div className="inline-flex">
             <Link href="/course-branch/new">
-              <Button
-                className="ltr:rounded-r-none rtl:rounded-l-none"
-              >
+              <Button>
                 Crear Oferta
               </Button>
             </Link>
+          {/* <div className="inline-flex">
             <div className="dropdown">
               <Dropdown
                 btnClassName="btn dropdown-toggle btn-primary ltr:rounded-l-none rtl:rounded-r-none border-l-[#4468fd] before:border-[5px] before:border-l-transparent before:border-r-transparent before:border-t-inherit before:border-b-0 before:inline-block before:border-t-white-light h-full"
@@ -46,7 +44,7 @@ export default function Coursets({ searchParams }: CoursetListProps) {
                 </div>
               </Dropdown>
             </div>
-          </div>
+          </div> */}
 
 
         </>
