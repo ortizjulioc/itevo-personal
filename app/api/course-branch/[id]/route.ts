@@ -3,10 +3,7 @@ import { findCourseBranchById, updateCourseBranchById, deleteCourseBranchById } 
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { getClassSessions } from '@/utils/date';
-import { getAllHolidays, getHolidays } from '@/services/holiday-service';
-import { getCourseSchedulesByCourseId } from '@/services/course-schedule-service';
-import { CourseBranchStatus } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@prisma/client';
 import { COURSE_BRANCH_STATUS } from '@/constants/status.constant';
 
 // Obtener courseBranch por ID
@@ -47,13 +44,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         // Traer los horarios de los cursos para calcular las sesiones
-        const courseSchedules = await getCourseSchedulesByCourseId(id);
-        if (body.startDate && body.endDate && courseSchedules) {
-            // // Traer holidays con el api de holidays
-            const holidays = await getAllHolidays();
-            const { count } = getClassSessions(body.startDate, body.endDate, courseSchedules, holidays);
-            body.sessionCount = count;
-        }
+        // const courseSchedules = await getCourseSchedulesByCourseId(id);
+        // if (body.startDate && body.endDate && courseSchedules) {
+        //     const holidays = await getAllHolidays();
+        //     const { count } = getClassSessions(body.startDate, body.endDate, courseSchedules, holidays);
+        //     body.sessionCount = count;
+        // }
 
         // Verificar si el course existe
         const courseBranch = await findCourseBranchById(id);
@@ -62,7 +58,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         // Actualizar el course
-        const updatedCourseBranch = await updateCourseBranchById(id, body);
+        const updatedCourseBranch = await updateCourseBranchById(id, {
+            promotion: { connect: { id: body.promotionId } },
+            branch: { connect: { id: body.branchId } },
+            teacher: { connect: { id: body.teacherId } },
+            course: { connect: { id: body.courseId } },
+            amount: body.amount || 0,
+            modality: body.modality || Modality.PRESENTIAL,
+            startDate: body.startDate ? new Date(body.startDate) : null,
+            endDate: body.endDate ? new Date(body.endDate) : null,
+            commissionRate: body.commissionRate || 0,
+            sessionCount: body.sessionCount || 0,
+            capacity: body.capacity || 0,
+            status: body.status || CourseBranchStatus.DRAFT,
+        });
 
         // Enviar log de auditoría
         await createLog({

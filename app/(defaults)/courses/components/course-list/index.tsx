@@ -54,7 +54,7 @@ export default function CoursetList({ className, query = '' }: Props) {
                             <th>CODIGO</th>
                             <th>NOMBRE</th>
                             <th>DESCRIPCION</th>
-                            <th>DURACION</th>
+                            <th>SESIONES</th>
                             <th>REQUIERE GRADUACION</th>
                             <th />
                         </tr>
