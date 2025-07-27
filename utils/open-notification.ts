@@ -13,10 +13,20 @@ const Toast = Swal.mixin({
 });
 
 export const openNotification = (type: SweetAlertIcon, message: string) => {
-    Toast.fire({
-        icon: type,
-        title: message
-    });
+    if (type === "error") {
+        Swal.fire({
+            icon: type,
+            title: "¡Ha ocurrido un error!",
+            text: message,
+            confirmButtonText: "OK",
+            allowOutsideClick: false
+        });
+    } else {
+        Toast.fire({
+            icon: type,
+            title: message
+        });
+    }
 }
 
 const defaultConfigConfirm = {
