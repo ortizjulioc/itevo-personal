@@ -434,7 +434,6 @@ model CashRegister {
   status         CashRegisterStatus    @default(OPEN)
   userId         String                @map("user_id")
   initialBalance Float                 @default(0) @map("initial_balance")
-  cashBreakdown  String?               @map("cash_breakdown") @db.LongText
   openingDate    DateTime              @default(now()) @map("opening_date")
   createdAt      DateTime              @default(now()) @map("created_at")
   closedAt       DateTime?             @map("closed_at")

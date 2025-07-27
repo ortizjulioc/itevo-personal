@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCashRegisterClosureById, createCashRegisterClosure } from '@/services/cash-register-closure-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { calculateExpectedTotalForCashRegister, findCashRegisterById } from '@/services/cash-register-service';
+import { findCashRegisterById, getCashRegisterMovementSummary } from '@/services/cash-register-service';
 import { z } from 'zod';
 
 const CreateClosureSchema = z.object({
-  initialBalance: z.number().min(0),
-  totalIncome: z.number().min(0),
-  totalExpense: z.number().min(0),
   cashBreakdown: z.object({
     one: z.number().min(0),
     five: z.number().min(0),
@@ -68,8 +65,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ code: 'E_CASH_REGISTER_NOT_FOUND', message: 'Caja registradora no encontrada' }, { status: 404 });
     }
 
-    const totalExpected = await calculateExpectedTotalForCashRegister(id);
-    const difference = (validatedData.totalCash + validatedData.totalCard + validatedData.totalCheck + validatedData.totalTransfer) - totalExpected;
+    const { initialBalance, totalIncome, totalExpense, expectedTotal } = await getCashRegisterMovementSummary(id);
+    const difference = (validatedData.totalCash + validatedData.totalCard + validatedData.totalCheck + validatedData.totalTransfer) - expectedTotal;
     const closureData = {
       closureDate: new Date(),
       cashBreakdown: validatedData.cashBreakdown,
@@ -77,8 +74,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       totalCard: validatedData.totalCard,
       totalCheck: validatedData.totalCheck,
       totalTransfer: validatedData.totalTransfer,
-      totalExpected,
+      totalExpected: expectedTotal,
+      initialBalance,
       difference,
+      totalIncome,
+      totalExpense,
       cashRegister: { connect: { id: id } },
       user: { connect: { id: validatedData.userId } },
     };

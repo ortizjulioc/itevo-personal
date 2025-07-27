@@ -67,12 +67,10 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
         const closureData = {
             cashBreakdown: bills,
             userId: user.id,
-            closingBalance: totalGeneral +
-                otherPayments.card +
-                otherPayments.checks +
-                otherPayments.transfers,
-            otherPayments,
-            closureDate: new Date(),
+            totalCash: totalGeneral,
+            totalCard: otherPayments.card,
+            totalCheck: otherPayments.checks,
+            totalTransfer: otherPayments.transfers,
         };
 
         try {
@@ -203,4 +201,4 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
             </Dialog>
         </Transition>
     );
-} 
+}
