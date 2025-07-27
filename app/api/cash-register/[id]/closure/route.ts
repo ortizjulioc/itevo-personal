@@ -1,12 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import { getCashRegisterClosureById, createCashRegisterClosure } from '@/services/cash-register-closure-service';
-import { validateObject } from '@/utils';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { findCashRegisterById } from '@/services/cash-register-service';
-import { Prisma } from '@/utils/lib/prisma';
-import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { calculateExpectedTotalForCashRegister, findCashRegisterById } from '@/services/cash-register-service';
+import { z } from 'zod';
+
+const CreateClosureSchema = z.object({
+  initialBalance: z.number().min(0),
+  totalIncome: z.number().min(0),
+  totalExpense: z.number().min(0),
+  cashBreakdown: z.object({
+    one: z.number().min(0),
+    five: z.number().min(0),
+    ten: z.number().min(0),
+    twentyfive: z.number().min(0),
+    fifty: z.number().min(0),
+    hundred: z.number().min(0),
+    twoHundred: z.number().min(0),
+    fiveHundred: z.number().min(0),
+    thousand: z.number().min(0),
+    twoThousand: z.number().min(0),
+  }),
+  userId: z.string().uuid(),
+  totalCash: z.number().min(0),
+  totalCard: z.number().min(0),
+  totalCheck: z.number().min(0),
+  totalTransfer: z.number().min(0),
+});
 
 // Obtener cierre de caja por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -37,13 +57,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const { id } = params;
     const body = await request.json();
 
-    const { isValid, message } = validateObject(body, [
-      'closingBalance',
-      'cashBreakdown',
-      'userId',
-    ]);
-    if (!isValid) {
-      return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
+    const validatedData = CreateClosureSchema.parse(body);
+    // Validate the request body
+    if (!validatedData) {
+      return NextResponse.json({ code: 'E_INVALID_REQUEST', message: 'Datos de cierre de caja inválidos' }, { status: 400 });
     }
 
     const cashRegister = await findCashRegisterById(id);
@@ -51,10 +68,19 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json({ code: 'E_CASH_REGISTER_NOT_FOUND', message: 'Caja registradora no encontrada' }, { status: 404 });
     }
 
+    const totalExpected = await calculateExpectedTotalForCashRegister(id);
+    const difference = (validatedData.totalCash + validatedData.totalCard + validatedData.totalCheck + validatedData.totalTransfer) - totalExpected;
     const closureData = {
-      ...body,
-      cashRegisterId: id,
-      closingDate: new Date(),
+      closureDate: new Date(),
+      cashBreakdown: validatedData.cashBreakdown,
+      totalCash: validatedData.totalCash,
+      totalCard: validatedData.totalCard,
+      totalCheck: validatedData.totalCheck,
+      totalTransfer: validatedData.totalTransfer,
+      totalExpected,
+      difference,
+      cashRegister: { connect: { id: id } },
+      user: { connect: { id: validatedData.userId } },
     };
 
     const closure = await createCashRegisterClosure(closureData);

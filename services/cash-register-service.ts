@@ -114,3 +114,38 @@ export const deleteCashRegisterById = async (id: string) => {
     data: { deleted: true },
   });
 };
+
+export const calculateExpectedTotalForCashRegister = async (cashRegisterId: string) => {
+  const cashRegister = await Prisma.cashRegister.findUnique({
+    where: { id: cashRegisterId, deleted: false },
+    select: {
+      id: true,
+      initialBalance: true,
+      openingDate: true,
+    },
+  });
+
+  if (!cashRegister) throw new Error('Cash register not found');
+
+
+  // Filtrar movimientos dentro del rango válido
+  const cashMovements = await Prisma.cashMovement.findMany({
+    where: {
+      cashRegisterId,
+    },
+    select: {
+      amount: true,
+      type: true,
+    },
+  });
+
+  const totalMovements = cashMovements.reduce((total, movement) => {
+    return movement.type === 'INCOME'
+      ? total + movement.amount
+      : total - movement.amount;
+  }, 0);
+
+  const expectedTotal = cashRegister.initialBalance + totalMovements;
+
+  return expectedTotal;
+};
