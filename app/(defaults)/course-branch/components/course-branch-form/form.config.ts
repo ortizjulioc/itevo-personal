@@ -45,6 +45,7 @@ export const updateInitialValues = {
     commissionRate: '',
     capacity: '',
     status: '',
+    sessionCount: '',
 };
 
 export const createInitialValues = {

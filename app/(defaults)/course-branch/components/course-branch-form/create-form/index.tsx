@@ -94,8 +94,8 @@ export default function CreateCourseBranchForm() {
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
             <Formik
                 enableReinitialize
-                initialValues={{ 
-                    ...initialValues, 
+                initialValues={{
+                    ...initialValues,
                     promotionId: defaultPromotion,
                     branchId: user.mainBranch.id
                  }}
@@ -129,9 +129,9 @@ export default function CreateCourseBranchForm() {
                             </Tab.List>
                             <Tab.Panels>
                                 <Tab.Panel>
-                                    <GeneralInformationFields 
-                                        values={values} 
-                                        errors={errors} 
+                                    <GeneralInformationFields
+                                        values={values}
+                                        errors={errors}
                                         touched={touched}
                                         setFieldValue={setFieldValue}
                                          />

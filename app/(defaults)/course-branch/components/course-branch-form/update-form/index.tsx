@@ -44,7 +44,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const isANewCourseBranch = params.get('new') === 'true';
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { preRequisites, fetchPreRequisites } = useFetchPreRequisites(initialValues.courseId);
- 
+
 
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);
@@ -206,7 +206,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                     </Tab.Panel>
 
                                     <Tab.Panel>
-                                        <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} />
+                                        <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                     </Tab.Panel>
 
                                     <Tab.Panel>

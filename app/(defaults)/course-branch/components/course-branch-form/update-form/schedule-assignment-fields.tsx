@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CourseBranchFormType } from '../form.config'
 import { Field, FormikErrors, FormikTouched } from 'formik';
-import { FormItem, Select } from '@/components/ui';
+import { FormItem, Input, Select } from '@/components/ui';
 import DatePicker from '@/components/ui/date-picker';
 import { MODALITIES } from '@/constants/modality.constant';
 import ScheduleField from './schedule-field';
@@ -10,6 +10,7 @@ interface ScheduleAssignmentProps {
   values: CourseBranchFormType;
   errors: FormikErrors<CourseBranchFormType>;
   touched: FormikTouched<CourseBranchFormType>;
+  setFieldValue?: (field: string, value: any, shouldValidate?: boolean) => void;
   className?: string;
 }
 
@@ -39,6 +40,10 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
         </Field>
       </FormItem>
 
+      <FormItem name="sessionCount" label="Cantidad de sesiones" invalid={Boolean(errors.sessionCount && touched.sessionCount)} errorMessage={errors.sessionCount}>
+        <Field type="number" name="sessionCount" component={Input} />
+      </FormItem>
+
       <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
         <Field name='startDate'>
           {({ form, field }: any) => (
@@ -56,7 +61,13 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
         </Field>
       </FormItem>
 
-      <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
+      {/* <FormItem
+        name='endDate'
+        label='Fecha de fin'
+        extra={<span className='text-gray-500'>(se calculara automaticamente al selecicionar horarios)</span>}
+        invalid={Boolean(errors.endDate && touched.endDate)}
+        errorMessage={errors.endDate}
+      >
         <Field name='endDate'>
           {({ form, field }: any) => (
             <DatePicker
@@ -71,7 +82,7 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
             />
           )}
         </Field>
-      </FormItem>
+      </FormItem> */}
 
       <ScheduleField values={values} errors={errors} touched={touched} />
     </div>
