@@ -22,10 +22,10 @@ export default function CoursetList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
-  
+
 
     const onDelete = async (id: string) => {
-       
+
         confirmDialog({
             title: 'Eliminar Curso',
             text: '¿Seguro que quieres eliminar este Curso?',
@@ -78,7 +78,7 @@ export default function CoursetList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{course.description}</div>
                                     </td>
                                     <td>
-                                        {course.duration} Horas
+                                        {course.duration} sesion(es)
                                     </td>
                                     <td>
                                         {course.requiresGraduation ? 'Si' : 'No'}

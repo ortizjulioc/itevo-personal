@@ -10,7 +10,6 @@ export async function getProducts(search = '', page = 1, top = 10) {
     deleted: false,
     OR: [
       { name: { contains: search } },
-      { code: { contains: search } },
       { description: { contains: search } },
     ],
   };
@@ -42,7 +41,7 @@ export async function findProductById(
 }
 
 // Buscar producto por código
-export async function findProductByCode(code: string) {
+export async function findProductByCode(code: number) {
   return await Prisma.product.findUnique({ where: { code, deleted: false } });
 }
 

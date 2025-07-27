@@ -40,21 +40,15 @@ export default function CreateCourseForm({ onClose }: Props) {
         {({ isSubmitting, values, errors, touched }) => (
           <Form className="form">
 
-            <FormItem name="code" label="Codigo" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
-              <Field type="text" name="code" component={Input} />
-            </FormItem>
-
             <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
               <Field type="text" name="name" component={Input} />
             </FormItem>
             <FormItem name="description" label="Descripcion" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
               <Field type="textarea" name="description" component={Input} />
             </FormItem>
-            <FormItem name="duration" label="Duracion" extra="(horas)" invalid={Boolean(errors.duration && touched.duration)} errorMessage={errors.duration}>
+            <FormItem name="duration" label="Cantidad de sesiones" invalid={Boolean(errors.duration && touched.duration)} errorMessage={errors.duration}>
               <Field type="number" name="duration" component={Input} />
             </FormItem>
-
-
 
             <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>
               <Field type="checkbox" name="requiresGraduation" component={Checkbox} >

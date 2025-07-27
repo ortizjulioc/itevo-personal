@@ -11,12 +11,12 @@ import { updateCourse } from '../../../lib/request';
 export default function UpdateCourseForm({ initialValues }: { initialValues: Course }) {
     const route = useRouter();
 
-        
+
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-    
+
 
         const resp = await updateCourse(initialValues.id, data);
 
@@ -36,22 +36,15 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-
-                        <FormItem name="code" label="Codigo" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
-                            <Field type="text" name="code" component={Input} disabled />
-                        </FormItem>
-
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
                             <Field type="text" name="name" component={Input} />
                         </FormItem>
                         <FormItem name="description" label="Descripcion" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
                             <Field type="textarea" name="description" component={Input} />
                         </FormItem>
-                        <FormItem name="duration" label="Duracion" extra="(horas)" invalid={Boolean(errors.duration && touched.duration)} errorMessage={errors.duration}>
+                        <FormItem name="duration" label="Cantidad de sesiones" invalid={Boolean(errors.duration && touched.duration)} errorMessage={errors.duration}>
                             <Field type="number" name="duration" component={Input} />
                         </FormItem>
-
-
 
                         <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>
                             <Field type="checkbox" name="requiresGraduation" component={Checkbox} >

@@ -134,10 +134,10 @@ model Fingerprint {
 
 model Course {
   id                 String         @id @default(uuid())
-  code               String         @unique
+  code               Int            @unique @default(autoincrement())
   name               String
   description        String?
-  duration           Int?           @default(0)
+  duration           Int?           @default(0) // Duración en semanas
   requiresGraduation Boolean        @default(false) @map("requires_graduation")
   createdAt          DateTime       @default(now()) @map("created_at")
   updatedAt          DateTime       @updatedAt @map("updated_at")
@@ -569,7 +569,7 @@ model InvoiceItem {
 
 model Product {
   id            String          @id @default(uuid())
-  code          String          @unique
+  code          Int             @unique @default(autoincrement())
   name          String
   description   String?
   price         Float

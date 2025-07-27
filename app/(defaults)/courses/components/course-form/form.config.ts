@@ -1,7 +1,6 @@
 import * as Yup from 'yup';
 
 export const createValidationSchema = Yup.object().shape({
-    code: Yup.string().required('El código es obligatorio'),
     name: Yup.string().required('El nombre es obligatorio'),
     description: Yup.string(),
     duration: Yup.number(),
@@ -9,7 +8,6 @@ export const createValidationSchema = Yup.object().shape({
 });
 
 export const updateValidationSchema = Yup.object().shape({
-    code: Yup.string().required('El código es obligatorio'),
     name: Yup.string().required('El nombre es obligatorio'),
     description: Yup.string(),
     duration: Yup.number(),
@@ -17,7 +15,6 @@ export const updateValidationSchema = Yup.object().shape({
 });
 
 export const initialValues = {
-    code: '',
     name: '',
     description: '',
     duration: '',
