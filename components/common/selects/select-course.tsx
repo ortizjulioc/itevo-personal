@@ -31,7 +31,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
         throw new Error(response.message);
       }
 
-      return response.data?.courses.map(course => ({ value: course.id, label: course.name })) || [];
+      return response.data?.courses.map(course => ({ value: course.id, label: course.name, ...course })) || [];
     } catch (error) {
       console.error('Error fetching Courses data:', error);
       return [];
@@ -39,8 +39,6 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
   };
 
   const loadOptions = async (inputValue: string): Promise<SelectCourseType[]> => {
-    // const options = await fetchCourseData(inputValue);
-    // callback(options);
     return fetchCourseData(inputValue);
   };
 
@@ -53,7 +51,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
         try {
           const response = await apiRequest.get<Course>(`/courses/${value}`);
           if (response.success && response.data) {
-            const newOption = { value: response.data.id, label: response.data.name };
+            const newOption = { value: response.data.id, label: response.data.name, ...response.data };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
         } catch (error) {

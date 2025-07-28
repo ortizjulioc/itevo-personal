@@ -131,26 +131,6 @@ export default function GeneralInformationFields({ values, errors, touched, clas
                     placeholder="Ingrese la capacidad de estudiantes para este curso"
                 />
             </FormItem>
-
-
-            {/* TODO: Agregar select de estados */}
-
-            {/* <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
-                <Field name='modality'>
-                    {({ field, form }: any) => (
-                        <Select
-                            {...field}
-                            options={MODALITIES_OPTIONS}
-                            value={MODALITIES_OPTIONS.find((modality) => modality.value === values.modality)}
-                            onChange={(option: { value: string, label: string } | null) => {
-                                form.setFieldValue('modality', option?.value ?? null);
-                            }}
-                            isSearchable={false}
-                            placeholder="Selecciona una modalidad"
-                        />
-                    )}
-                </Field>
-            </FormItem> */}
         </div>
     )
 }

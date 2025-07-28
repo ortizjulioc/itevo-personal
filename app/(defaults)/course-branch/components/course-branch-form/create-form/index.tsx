@@ -38,7 +38,6 @@ export default function CreateCourseBranchForm() {
         branches?: any[];
     };
 
-
     useEffect(() => {
         const fetchDefaultPromotion = async () => {
             try {
@@ -64,7 +63,7 @@ export default function CreateCourseBranchForm() {
     };
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
-       setLoading(true);
+        setLoading(true);
 
         const resp = await createCourseBranch(values);
 
@@ -74,7 +73,7 @@ export default function CreateCourseBranchForm() {
         } else {
             openNotification('error', resp.message);
             setSubmitting(false);
-            setLoading(false)
+            setLoading(false);
         }
     };
 
@@ -91,50 +90,39 @@ export default function CreateCourseBranchForm() {
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta  academica</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta academica</h4>
             <Formik
                 enableReinitialize
                 initialValues={{
                     ...initialValues,
                     promotionId: defaultPromotion,
-                    branchId: user.mainBranch.id
-                 }}
+                    branchId: user.mainBranch.id,
+                }}
                 validationSchema={createValidationSchema}
-                onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
+                onSubmit={handleSubmit}
+            >
+                {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
                         <Tab.Group selectedIndex={selectedIndex} onChange={handleTabChange}>
                             <Tab.List className=" flex flex-wrap">
                                 <Tab as={Fragment}>
                                     {({ selected }) => (
                                         <button
-                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''} relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
+                                            className={`${selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                                } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`}
                                         >
                                             Información general
                                         </button>
                                     )}
                                 </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Modalidad y horarios
-                                </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Prerrequisitos
-                                </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Configuración financiera
-                                </Tab>
-                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">
-                                    Confirmación
-                                </Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">Modalidad y horarios</Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">Prerrequisitos</Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">Configuración financiera</Tab>
+                                <Tab className="pointer-events-none -mb-[1px] block rounded p-3.5 py-2 text-white-light dark:text-dark">Confirmación</Tab>
                             </Tab.List>
                             <Tab.Panels>
                                 <Tab.Panel>
-                                    <GeneralInformationFields
-                                        values={values}
-                                        errors={errors}
-                                        touched={touched}
-                                        setFieldValue={setFieldValue}
-                                         />
+                                    <GeneralInformationFields values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
@@ -146,23 +134,13 @@ export default function CreateCourseBranchForm() {
 
                             <div className="flex gap-2">
                                 {selectedIndex > 0 && (
-                                    <Button
-                                        type="button"
-                                        color="secondary"
-                                        onClick={() => changeTab(selectedIndex - 1)}
-                                        icon={<TbArrowLeft />}
-                                    >
+                                    <Button type="button" color="secondary" onClick={() => changeTab(selectedIndex - 1)} icon={<TbArrowLeft />}>
                                         Anterior
                                     </Button>
                                 )}
 
                                 {selectedIndex < COURSE_BRANCH_TABS.length - 1 && (
-                                    <Button
-                                        type="button"
-                                        color="secondary"
-                                        onClick={() => changeTab(selectedIndex + 1)}
-                                        icon={<TbArrowRight />}
-                                    >
+                                    <Button type="button" color="secondary" onClick={() => changeTab(selectedIndex + 1)} icon={<TbArrowRight />}>
                                         Siguiente
                                     </Button>
                                 )}

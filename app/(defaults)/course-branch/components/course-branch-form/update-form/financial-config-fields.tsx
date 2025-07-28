@@ -51,6 +51,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                 value={values.commissionRate !== 0 ? values.commissionRate * 100 : ''}
                                 onChange={(e) => {
                                     form.setFieldValue('commissionRate', e.target.value !== '' ? Number(e.target.value) / 100 : 0);
+                                    form.setFieldValue('commissionAmount', values.amount ? (Number(values.amount) * (e.target.value !== '' ? Number(e.target.value) / 100 : 0)).toFixed(2) : '');
                                 }}
                                 step={1}
                                 type="number"
@@ -85,6 +86,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                         const input = Number(e.target.value);
                                         const newRate = rawAmount !== 0 ? input / rawAmount : 0;
                                         form.setFieldValue('commissionRate', newRate);
+                                        form.setFieldValue('commissionAmount', input);
                                     }}
                                     type="number"
                                     placeholder="Monto que ganará el profesor"

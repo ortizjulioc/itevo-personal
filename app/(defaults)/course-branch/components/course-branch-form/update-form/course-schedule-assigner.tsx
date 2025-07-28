@@ -22,7 +22,6 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
   availableSchedules,
   assignedSchedules,
   onChange,
-  modal,
   setModal
 }) => {
   const groupedSchedules = groupSchedulesByWeekday(availableSchedules);
