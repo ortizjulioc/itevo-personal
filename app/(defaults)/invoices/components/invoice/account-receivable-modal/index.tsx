@@ -29,7 +29,7 @@ export default function AccountReceivableModal({
     const [loadingId, setLoadingId] = React.useState<string | null>(null);
 
 
-
+console.log( 'accountReceivables',accountReceivables)
     const grouped = React.useMemo(() => {
         return accountReceivables.reduce<Record<string, any[]>>((acc, curr) => {
             if (!acc[curr.courseBranchId]) acc[curr.courseBranchId] = [];

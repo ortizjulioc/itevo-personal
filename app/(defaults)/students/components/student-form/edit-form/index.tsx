@@ -7,6 +7,7 @@ import { updateValidationSchema, initialValues } from '../form.config';
 import { FormatPatterInput } from '@/components/common';
 import { Student } from '@prisma/client';
 import { updateStudent } from '../../../lib/request';
+import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
 
 
 export default function UpdateStudentForm({ initialValues }: { initialValues: Student }) {
@@ -102,6 +103,9 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
                 invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
               <Field type="email" name="email" component={Input} />
             </FormItem>
+
+             <CaptureFingerPrint/> 
+             
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => route.back()}>

@@ -6,6 +6,8 @@ import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createStudent } from '../../../lib/request';
 import { FormatPatterInput } from '@/components/common';
+import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
+import CompareFingerPrint from '@/components/common/finger-print/compare-finger-print';
 
 interface CreateStudentFormProps {
   onClose?: (id: string) => void;
@@ -100,6 +102,9 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
                 Ha tomado cursos anteriormente
               </Field>
             </FormItem>
+
+            <CaptureFingerPrint/>
+          
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => {
