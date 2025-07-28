@@ -4,6 +4,8 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { findCashRegisterById, getCashRegisterMovementSummary } from '@/services/cash-register-service';
 import { z } from 'zod';
+import { Prisma } from '@/utils/lib/prisma';
+import { CashRegisterStatus } from '@prisma/client';
 
 const CreateClosureSchema = z.object({
   cashBreakdown: z.object({
@@ -83,13 +85,22 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       user: { connect: { id: validatedData.userId } },
     };
 
-    const closure = await createCashRegisterClosure(closureData);
+    // Start a transaction to ensure atomicity
+    let closure: any = null;
+    await Prisma.$transaction(async (tx) => {
+        closure = await createCashRegisterClosure(closureData, tx);
+        // Update the cash register status to closed
+        await tx.cashRegister.update({
+            where: { id: id },
+            data: { status: CashRegisterStatus.CLOSED },
+        });
+    });
 
     await createLog({
       action: 'POST',
       description: `Se creó un nuevo cierre de caja.\nInformación del cierre: ${JSON.stringify(closure, null, 2)}`,
       origin: 'cash-register/[id]/closure',
-      elementId: closure.id,
+      elementId: closure?.id || '',
       success: true,
     });
 
