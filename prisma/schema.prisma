@@ -125,7 +125,7 @@ model Fingerprint {
   id         String   @id @default(uuid())
   studentId  String   @unique
   template   Bytes    // Plantilla biométrica
-  sensorType String   // Marca/modelo del lector (útil si usas varios)
+  sensorType String?  @map("sensor_type") // Tipo de sensor (opcional )
   createdAt  DateTime @default(now())
 
   student    Student  @relation(fields: [studentId], references: [id])

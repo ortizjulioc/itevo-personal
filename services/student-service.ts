@@ -146,7 +146,7 @@ export const findAccountsReceivableByStudentId = async (studentId: string) => {
 
 export const addFingerprintToStudent = async (
     studentId: string,
-    fingerprintData: PrismaTypes.FingerprintCreateInput
+    fingerprintData: Omit<PrismaTypes.FingerprintCreateInput, 'studentId' | 'student'>,
 ) => {
     return Prisma.fingerprint.create({
         data: {
