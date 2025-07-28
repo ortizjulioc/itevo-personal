@@ -8,21 +8,21 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Branch } from '@prisma/client';
-import { useFetchCashRegistersById } from '@/app/(defaults)/invoices/lib/cash-register/use-fetch-cash-register';
-import { useFetchUserById } from '@/app/(defaults)/users/lib/use-fetch-users';
+
 
 const billsList: Record<string, number> = {
     twoThousand: 2000,
-    oneThousand: 1000,
+    thousand: 1000,
     fiveHundred: 500,
     twoHundred: 200,
-    oneHundred: 100,
+    hundred: 100,
     fifty: 50,
     twentyfive: 25,
     ten: 10,
     five: 5,
     one: 1,
 };
+
 
 export default function ModalCashRegisterClose({ setOpenModal, openModal }: { setOpenModal: (open: boolean) => void, openModal: boolean }) {
     const { id } = useParams()
@@ -43,8 +43,6 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
         mainBranch: Branch;
         branches?: any[];
     };
-    const { CashRegister } = useFetchCashRegistersById(cashRegisterId)
-    const {user:userPrisma} = useFetchUserById(user.id)
 
     const [bills, setBills] = useState(
         Object.keys(billsList).reduce((acc, key) => {
@@ -64,8 +62,14 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
 
     const handleCloseCashRegister = async () => {
         setLoading(true)
+
+        const cashBreakdown = Object.entries(bills).reduce((acc, [key, value]) => {
+            acc[key as keyof typeof billsList] = value.quantity;
+            return acc;
+        }, {} as Record<keyof typeof billsList, number>);
+        
         const closureData = {
-            cashBreakdown: bills,
+            cashBreakdown,
             userId: user.id,
             totalCash: totalGeneral,
             totalCard: otherPayments.card,

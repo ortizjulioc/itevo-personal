@@ -45,8 +45,8 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
         openNotification('error', error);
     }
 
-    ;
-
+  
+  console.log(cashRegisters)
     if (loading) return <Skeleton rows={4} columns={['CAJA', 'USUARIO', 'FECHA DE CREACION', 'ESTADO']} />;
 
     return (
