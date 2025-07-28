@@ -4,14 +4,53 @@ import useFingerprint from '@/utils/hooks/use-finger-print-scanner';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { IoIosFingerPrint } from 'react-icons/io';
+import apiRequest from '@/utils/lib/api-request/request';
+import { Fingerprint } from '@prisma/client';
+import { openNotification } from '@/utils';
 
-export default function CaptureFingerPrint() {
+interface Props {
+    studentId: string,
+    showTitle?: boolean
+}
+
+export default function CaptureFingerPrint({ studentId, showTitle = true }: Props) {
     const [openModal, setOpenModal] = useState(false);
     const [image, setImage] = useState('');
     const [fingerprintData, setFingerprintData] = useState('');
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [submitloading, setSubmitLoading] = useState(false)
+
+    const addFingerPrint = async () => {
+
+        setSubmitLoading(true)
+        const data = {
+            studentId,
+            template: fingerprintData,
+            sensorType: '2connect',
+        };
+
+        try {
+            const resp = await apiRequest.post<any>(`/students/${studentId}/fingerprint`, data);
+
+            if (resp.success) {
+                openNotification('success', 'Huella registrada correctamente')
+                setOpenModal(false)
+            } else {
+                setSubmitLoading(false)
+                openNotification('error', 'Hubo un problema al registrar la huella')
+            }
+
+        } catch (error) {
+            console.log(error)
+            openNotification('error', 'Hubo un problema al registrar la huella')
+
+        }
+
+
+    }
+
 
     const { state, captureFingerprint, matchFingerprint } = useFingerprint();
 
@@ -60,12 +99,6 @@ export default function CaptureFingerPrint() {
         setOpenModal(false);
     };
 
-    const handleSave = () => {
-        if (fingerprintData) {
-            console.log('✅ Huella guardada:', fingerprintData);
-            resetState();
-        }
-    };
 
     useEffect(() => {
         if (openModal) handleCapture();
@@ -79,7 +112,8 @@ export default function CaptureFingerPrint() {
                 icon={<IoIosFingerPrint className='text-2xl' />}
                 size="md"
             >
-                Registrar Huella
+                {showTitle && 'Registrar Huella'}
+
             </Button>
 
             <Transition appear show={openModal} as={Fragment}>
@@ -100,9 +134,7 @@ export default function CaptureFingerPrint() {
                                         <h5 className="font-bold text-lg">Registro de Huella</h5>
                                     </div>
                                     <div className="p-5 text-center">
-                                        <p className="text-base mb-4 text-gray-600 dark:text-gray-300">
-                                            Estado del dispositivo: <span className="font-semibold">{state}</span>
-                                        </p>
+
 
                                         <div className="flex justify-center">
                                             {image ? (
@@ -135,7 +167,7 @@ export default function CaptureFingerPrint() {
                                             <Button variant="outline" color="danger" onClick={resetState}>
                                                 Cancelar
                                             </Button>
-                                            <Button onClick={handleSave} disabled={!fingerprintData}>
+                                            <Button onClick={addFingerPrint} disabled={!fingerprintData} loading={submitloading}>
                                                 Guardar
                                             </Button>
                                         </div>
