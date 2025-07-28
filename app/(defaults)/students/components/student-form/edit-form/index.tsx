@@ -7,19 +7,18 @@ import { updateValidationSchema, initialValues } from '../form.config';
 import { FormatPatterInput } from '@/components/common';
 import { Student } from '@prisma/client';
 import { updateStudent } from '../../../lib/request';
+import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
 
 
 export default function UpdateStudentForm({ initialValues }: { initialValues: Student }) {
   const route = useRouter();
 
- 
-
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     const data = { ...values };
- 
 
-    const resp = await updateStudent(initialValues.id,data);
+
+    const resp = await updateStudent(initialValues.id, data);
 
     if (resp.success) {
       openNotification('success', 'Estudiante creado correctamente');
@@ -59,7 +58,7 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
                     className="form-input"
                     value={values.identification}
                     onValueChange={(value: any) => {
-                  
+
                       form.setFieldValue('identification', value.value);
                     }}
                   />
@@ -97,11 +96,16 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
               </Field>
             </FormItem>
             <FormItem
-                name="email" 
-                label="Correo electrónico" 
-                invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
+              name="email"
+              label="Correo electrónico"
+              invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
               <Field type="email" name="email" component={Input} />
             </FormItem>
+
+            <CaptureFingerPrint
+              studentId={initialValues.id}
+            />
+
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => route.back()}>
