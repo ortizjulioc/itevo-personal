@@ -20,9 +20,9 @@ interface GeneralInformationFieldsProps {
     setFieldValue: any;
 }
 
-export default function GeneralInformationFields({ values, errors, touched ,setFieldValue}: GeneralInformationFieldsProps) {
-    const { data: session, status } = useSession();
-    const [modal , setModal] = useState<boolean>(false)
+export default function GeneralInformationFields({ values, errors, touched, setFieldValue }: GeneralInformationFieldsProps) {
+    const { data: session } = useSession();
+    const [modal, setModal] = useState<boolean>(false)
     const user = session?.user as {
         id: string;
         name?: string | null;
@@ -104,7 +104,11 @@ export default function GeneralInformationFields({ values, errors, touched ,setF
                                 {...field}
                                 value={values.courseId}
                                 onChange={(option: SelectBranchType | null) => {
+                                    console.log('Selected course:', option);
                                     form.setFieldValue('courseId', option?.value || '');
+                                    if (option?.value) {
+                                        form.setFieldValue('sessionCount', option?.duration || '');
+                                    }
                                 }}
 
                             />
@@ -129,25 +133,14 @@ export default function GeneralInformationFields({ values, errors, touched ,setF
                 />
             </FormItem>
 
-
-            {/* TODO: Agregar select de estados */}
-
-            {/* <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
-                <Field name='modality'>
-                    {({ field, form }: any) => (
-                        <Select
-                            {...field}
-                            options={MODALITIES_OPTIONS}
-                            value={MODALITIES_OPTIONS.find((modality) => modality.value === values.modality)}
-                            onChange={(option: { value: string, label: string } | null) => {
-                                form.setFieldValue('modality', option?.value ?? null);
-                            }}
-                            isSearchable={false}
-                            placeholder="Selecciona una modalidad"
-                        />
-                    )}
-                </Field>
-            </FormItem> */}
+            <FormItem name="sessionCount" label="Cantidad de sesiones" invalid={Boolean(errors.sessionCount && touched.sessionCount)} errorMessage={errors.sessionCount}>
+                <Field
+                    type="number"
+                    name="sessionCount"
+                    component={Input}
+                    placeholder="Ingrese la cantidad de sesiones para este curso"
+                />
+            </FormItem>
         </div>
     )
 }

@@ -3,12 +3,11 @@ import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useParams } from 'next/navigation';
 import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
-import { convertTimeFrom24To12Format, getClassSessions, getFormattedDate, getHoursDifferenceText } from '@/utils/date';
+import { convertTimeFrom24To12Format, getFormattedDate, getHoursDifferenceText } from '@/utils/date';
 import PromotionLabel from '@/components/common/info-labels/promotion-label';
 import CourseLabel from '@/components/common/info-labels/course-label';
 import BranchLabel from '@/components/common/info-labels/branch-label';
 import TeacherLabel from '@/components/common/info-labels/teacher-label';
-import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
 import { useURLSearchParams } from '@/utils/hooks';
 import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { useCourseBranch } from './course-branch-provider';
@@ -22,30 +21,6 @@ interface ConfirmationFieldsProps {
   className?: string;
 }
 
-const data = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  promotionId: "promo-001",
-  branchId: "branch-001",
-  teacherId: "teacher-001",
-  courseId: "course-001",
-  amount: 200.0,
-  modality: "Presencial", // Opciones: "Presencial", "Virtual", "Híbrido"
-  startDate: new Date("2023-09-01T09:00:00.000Z"),
-  endDate: new Date("2023-12-31T17:00:00.000Z"),
-  commissionRate: 15.0,
-  capacity: 40,
-  sessionCount: 20,
-  status: "ACTIVE", // Ejemplo: "ACTIVE", "INACTIVE", "DRAFT"
-  schedules: [
-    { day: "Lunes", startTime: "09:00", endTime: "11:00" },
-    { day: "Miércoles", startTime: "09:00", endTime: "11:00" }
-  ],
-  // Los arreglos siguientes se pueden dejar vacíos para efectos de prueba:
-  enrollment: [],
-  accountReceivable: [],
-  accountPayable: []
-};
-
 const weekdayNames = [
   'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
 ];
@@ -55,11 +30,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
-  const { holidays } = useFetchHolidays('top=365')
   const params = useURLSearchParams();
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
-  const { handleAddPrerequisite, handleRemovePrerequisite, preRequisites } = useCourseBranch();
-
+  const { preRequisites } = useCourseBranch();
 
   return (
     <div className={className}>
@@ -111,14 +84,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             <div>
               <p className="font-medium text-gray-600">Sesiones:</p>
               <p className="text-gray-800">
-                {
-                  getClassSessions(
-                    values.startDate || new Date(),
-                    values.endDate || new Date(),
-                    courseSchedules,
-                    holidays
-                  ).count
-                }
+                {values.sessionCount}
               </p>
               <p className="text-xs text-gray-500 italic mt-1">
                 Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
@@ -193,7 +159,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Comisión:</p>
-              <p className="text-gray-800">{values.commissionRate * 100}%</p>
+              <p className="text-gray-800">RD${values.commissionAmount} ({values.commissionRate * 100}%)</p>
             </div>
           </div>
           <button type='button' onClick={() => onChangeTab(3)} className="mt-2 text-blue-600 hover:underline">
