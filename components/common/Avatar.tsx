@@ -21,11 +21,13 @@ interface AvatarProps {
 
   const Avatar: React.FC<AvatarProps> = ({ initials, size = 'md', color="primary" }) => {
     return (
+      <div className="min-w-max">
       <span
         className={`flex justify-center items-center rounded-full text-center object-cover text-white ${sizeClasses[size]} ${colorClasses[color]}`}
-      >
+        >
         {initials}
       </span>
+        </div>
     );
   };
 

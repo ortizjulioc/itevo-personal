@@ -170,6 +170,8 @@ model Promotion {
   endDate      DateTime       @map("end_date")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
+  deleted      Boolean        @default(false)
+
   courseBranch CourseBranch[]
   graduation   Graduation[]
 
@@ -195,6 +197,7 @@ model CourseBranch {
   updatedAt         DateTime            @updatedAt @map("updated_at")
   isTaxIncluded     Boolean             @default(true) @map("is_tax_included")
   taxRate           Float               @default(0) @map("tax_rate")
+  deleted           Boolean             @default(false)
 
   accountPayable    AccountPayable[]
   accountReceivable AccountReceivable[]
@@ -251,6 +254,7 @@ model Enrollment {
   attendance     Attendance[]
   courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
   student        Student          @relation(fields: [studentId], references: [id])
+  deleted        Boolean          @default(false)
 
   @@index([courseBranchId], map: "enrollments_course_branch_id_fkey")
   @@index([studentId], map: "enrollments_student_id_fkey")

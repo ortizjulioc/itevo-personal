@@ -99,7 +99,7 @@ export const findEnrollmentById = async (id: string) => {
     const enrollment = await Prisma.enrollment.findUnique({
         where: {
             id: id,
-            // deleted: false,
+            deleted: false,
         },
         include: {
             student: {
@@ -164,7 +164,8 @@ export const updateEnrollmentById = async (id: string, data: any) => {
 
 // Eliminar enrollment por ID (soft delete)
 export const deleteEnrollmentById = async (id: string) => {
-    return Prisma.enrollment.delete({
+    return Prisma.enrollment.update({
         where: { id },
+        data: { deleted: true },
     });
 };
