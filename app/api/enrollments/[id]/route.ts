@@ -3,7 +3,6 @@ import { findEnrollmentById, updateEnrollmentById, deleteEnrollmentById } from '
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { getCourseBranch } from '@/services/course-branch-service';
 
 // Obtener enrollment por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {

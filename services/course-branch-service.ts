@@ -1,5 +1,4 @@
 import 'server-only';
-import { CourseBranch } from "@prisma/client";
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from "@prisma/client";
 
@@ -17,6 +16,7 @@ export const getCourseBranch = async (filters: any) => {
             teacherId,
             courseId,
             modality,
+            deleted: false,
         },
         include: {
             branch: { select: { id: true, name: true } },
@@ -69,7 +69,7 @@ export const findCourseBranchById = async (
     prisma: PrismaTypes.TransactionClient = Prisma
 ) => {
     const courseBranch = await prisma.courseBranch.findUnique({
-        where: { id },
+        where: { id, deleted: false },
         include: {
             branch: { select: { id: true, name: true } },
             teacher: { select: { id: true, firstName: true, lastName: true  } },
@@ -105,7 +105,8 @@ export const updateCourseBranchById = async (id: string, data: PrismaTypes.Cours
 
 // Eliminar courseBranch por ID (soft delete)
 export const deleteCourseBranchById = async (id: string) => {
-    return Prisma.courseBranch.delete({
+    return Prisma.courseBranch.update({
         where: { id },
+        data: { deleted: true },
     });
 };
