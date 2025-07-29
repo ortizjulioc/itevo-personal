@@ -8,6 +8,7 @@ import useFetchSchedule from './lib/use-fetch-schedules';
 import ScheduleList from './components/schedules-list';
 import { deleteSchedule } from './lib/request';
 import { openNotification } from '@/utils';
+import { IconPlusCircle } from '@/components/icon';
 
 export default function Schedule() {
   const { schedules, setSchedules, loading } = useFetchSchedule();
@@ -56,7 +57,7 @@ export default function Schedule() {
               {!isFormVisible && (
                 <Button
                   variant="default"
-                  icon={<TbPlus className="size-4" />}
+                  icon={<IconPlusCircle />}
                   onClick={() => toggleForm(true)}
                   size="sm"
                   className="transition-all duration-200 hover:shadow-md"

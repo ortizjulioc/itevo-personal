@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
+import { IconPlusCircle} from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function Coursets({ searchParams }: CoursetListProps) {
         <>
           <SearchInput placeholder="Buscar Cursos" />
           <Link href="/courses/new">
-            <Button icon={<IconUserPlus />}>Crear curso</Button>
+            <Button icon={<IconPlusCircle />}>Crear curso</Button>
           </Link>
 
          

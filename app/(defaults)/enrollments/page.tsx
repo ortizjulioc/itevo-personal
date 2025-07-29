@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
+import { IconPlusCircle} from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -26,7 +26,7 @@ export default function Enrollment({ searchParams }: EnrollmentListProps) {
         <>
         
           <Link href="/enrollments/new">
-            <Button icon={<IconUserPlus />}>Crear inscripcion</Button>
+            <Button icon={<IconPlusCircle/>}>Crear inscripcion</Button>
           </Link>
 
 
