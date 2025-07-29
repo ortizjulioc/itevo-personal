@@ -15,7 +15,7 @@ interface ScheduleFieldProps {
   className?: string;
 }
 
-export default function ScheduleField({ values, errors, touched, className }: ScheduleFieldProps) {
+export default function ScheduleField({ className }: ScheduleFieldProps) {
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules,fetchSchedulesData } = useFetchSchedule();

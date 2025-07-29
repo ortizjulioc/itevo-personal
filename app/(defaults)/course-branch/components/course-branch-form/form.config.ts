@@ -82,6 +82,7 @@ export type CourseBranchFormType = {
     startDate: Date | null;
     endDate: Date | null;
     commissionRate: number;
+    commissionAmount: number;
     capacity: number;
     status: CourseBranchStatus;
     sessionCount: number;

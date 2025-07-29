@@ -8,6 +8,8 @@ import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
 import { EnrollmentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
+import { getCourseEndDate } from "@/utils/date";
+import { getHolidays } from "@/services/holiday-service";
 
 export async function GET(request: NextRequest) {
     try {
@@ -79,6 +81,19 @@ export async function POST(request: Request) {
                     error: 'Student is already enrolled in this course branch',
                     message: 'El estudiante ya está inscrito en este curso',
                 }, { status: 400 });
+            }
+
+            if (!courseBranch.endDate && courseBranch.sessionCount > 0) {
+                // Calculate the end date based on the session count and schedules
+                const schedules = courseBranch.schedules || [];
+                const {holidays} = await getHolidays(1, 365, '');
+                courseBranch.endDate = getCourseEndDate(
+                    new Date(body.enrollmentDate),
+                    courseBranch.sessionCount,
+                    schedules,
+                    holidays
+                );
+                
             }
 
             const accountReceivable = {

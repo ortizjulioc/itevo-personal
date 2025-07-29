@@ -86,9 +86,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
               <p className="text-gray-800">
                 {values.sessionCount}
               </p>
-              <p className="text-xs text-gray-500 italic mt-1">
+              {/* <p className="text-xs text-gray-500 italic mt-1">
                 Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
-              </p>
+              </p> */}
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
@@ -97,6 +97,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             <div>
               <p className="font-medium text-gray-600">Fecha de Fin:</p>
               <p className="text-gray-800">{values?.endDate ? getFormattedDate(new Date(values.endDate)) : ''}</p>
+              <p className="text-xs text-gray-500 italic mt-1">
+                **Fecha de fin calculada automáticamente según la fecha de inicio, el número de sesiones y los horarios.
+              </p>
             </div>
           </div>
           {courseSchedules && courseSchedules.length > 0 && (

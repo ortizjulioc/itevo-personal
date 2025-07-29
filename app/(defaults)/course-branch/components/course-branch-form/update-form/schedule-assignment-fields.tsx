@@ -5,6 +5,9 @@ import { FormItem, Input, Select } from '@/components/ui';
 import DatePicker from '@/components/ui/date-picker';
 import { MODALITIES } from '@/constants/modality.constant';
 import ScheduleField from './schedule-field';
+// import { getCourseEndDate } from '@/utils/date';
+// import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
+// import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
 
 interface ScheduleAssignmentProps {
   values: CourseBranchFormType;
@@ -20,7 +23,20 @@ const MODALITIES_OPTIONS = [
   { value: MODALITIES.HYBRID, label: 'Híbrida' },
 ];
 
-export default function ScheduleAssignmentFields({ values, errors, touched, className }: ScheduleAssignmentProps) {
+export default function ScheduleAssignmentFields({ values, errors, touched, className, setFieldValue }: ScheduleAssignmentProps) {
+  // const { holidays } = useFetchHolidays('top=365');
+  // const { schedules } = useFetchScheduleByCourseId(values.courseId);
+  // useEffect(() => {
+  //   if (values.startDate && values.sessionCount && schedules && holidays) {
+  //     const endDate = getCourseEndDate(values.startDate, values.sessionCount, schedules, holidays);
+  //     console.log('End Date:', endDate);
+  //     if (endDate) {
+  //       // Set the end date in the form
+  //       setFieldValue?.('endDate', endDate);
+  //     }
+  //   }
+  //   console.log('useEffect ScheduleAssignmentFields');
+  // }, [values.startDate, values.sessionCount, schedules, holidays, setFieldValue]);
   return (
     <div className={className}>
       <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
