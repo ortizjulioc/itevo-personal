@@ -24,7 +24,7 @@ export default function CreateCourseBranchForm() {
     const pathname = usePathname();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [defaultPromotion, setDefaultPromotion] = useState<string | null>(null);
+    const [defaultPromotion, setDefaultPromotion] = useState<string | null>('');
     const { data: session, status } = useSession();
     const user = session?.user as {
         id: string;
@@ -85,7 +85,7 @@ export default function CreateCourseBranchForm() {
         }
     }, []);
 
-    if (!defaultPromotion) return null;
+    // if (!defaultPromotion) return null;
     if (!user) return null;
 
     return (
@@ -95,7 +95,7 @@ export default function CreateCourseBranchForm() {
                 enableReinitialize
                 initialValues={{
                     ...initialValues,
-                    promotionId: defaultPromotion,
+                    promotionId: defaultPromotion || '',
                     branchId: user.mainBranch.id,
                 }}
                 validationSchema={createValidationSchema}

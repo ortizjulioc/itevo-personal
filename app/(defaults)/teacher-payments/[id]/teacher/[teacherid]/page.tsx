@@ -95,6 +95,46 @@ export default function TeacherPayments() {
         }
     }
 
+    function getInvoiceSummary(invoices: any[]) {
+    const summary = {
+        total: 0,
+        efectivo: 0,
+        tarjeta: 0,
+        transferencia: 0,
+        cheque: 0,
+        credito: 0,
+    };
+
+    invoices.forEach((invoice) => {
+        const method = invoice.paymentMethod;
+
+        const amount = invoice.subtotal + invoice.itbis;
+        summary.total += amount;
+
+        switch (method) {
+            case 'cash':
+                summary.efectivo += amount;
+                break;
+            case 'credit_card':
+                summary.tarjeta += amount;
+                break;
+            case 'bank_transfer':
+                summary.transferencia += amount;
+                break;
+            case 'check':
+                summary.cheque += amount;
+                break;
+            default:
+                summary.credito += amount;
+                break;
+        }
+    });
+
+    return summary;
+}
+
+
+
 
     return (
         <div>

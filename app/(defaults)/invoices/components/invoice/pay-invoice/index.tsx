@@ -5,7 +5,7 @@ import { NCF_TYPES } from '@/constants/ncfType.constant';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
 import { Invoice, NcfType } from '@prisma/client';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { TbCancel, TbCheck } from 'react-icons/tb';
 import { StylesConfig } from 'react-select';
 import PrintInvoiceMpdal from '../print-invoice';
@@ -198,6 +198,18 @@ export default function PayInvoice({
         { value: 'check', label: 'Cheque' },
     ];
 
+
+
+    useEffect(() => {
+        if (!invoice?.paymentMethod) {
+
+            setInvoice({
+                ...invoice,
+                paymentMethod: 'cash',
+
+            });
+        }
+    }, [invoice, setInvoice]);
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
@@ -225,63 +237,83 @@ export default function PayInvoice({
                         >
                             <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-visible w-full max-w-5xl my-8 text-black dark:text-white-dark">
                                 <div className="p-5">
-                                    <div className="grid grid-cols-12 gap-4">
-                                        {/* <div className="col-span-12 md:col-span-4">
-                                           
-                                            {/* {Invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
+                                    {/* Fila: Tipo de comprobante + Datos de pago */}
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+                                        {/* Tipo de comprobante */}
+                                        <div className='col-span-4'>
+                                            <label className="text-lg font-bold block mb-1">Tipo de comprobante</label>
+                                            <Select
+                                                options={NCF_TYPES_OPTIONS}
+                                                value={NCF_TYPES_OPTIONS.find((option) => option.value === invoice?.type)}
+                                                onChange={(selected: any) =>
+                                                    setInvoice({
+                                                        ...invoice,
+                                                        type: selected.value,
+                                                    })
+                                                }
+                                                placeholder="-Modalidades-"
+                                               
+                                            />
+
+                                            {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
                                                 <Input
                                                     className="Input mt-4"
                                                     placeholder="RNC del cliente"
-                                                    value={(Invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
-                                                    onChange={(e) => setInvoice({
-                                                        ...Invoice,
-                                                        paymentDetails: {
-                                                            ...((Invoice.paymentDetails && typeof Invoice.paymentDetails === 'object') ? Invoice.paymentDetails : {}),
-                                                            customerRnc: e.target.value,
-                                                        },
-                                                    })}
+                                                    value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
+                                                    onChange={(e) =>
+                                                        setInvoice({
+                                                            ...invoice,
+                                                            paymentDetails: {
+                                                                ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                                                                customerRnc: e.target.value,
+                                                            },
+                                                        })
+                                                    }
                                                 />
-                                            
-                                        </div>  */}
-                                        <div className="col-span-12 ">
-                                            <span className="text-lg font-bold">Datos de pago</span>
+                                            )}
+                                        </div>
+
+                                        {/* Datos de pago */}
+                                        <div className='col-span-8'>
+                                            <label className="text-lg font-bold block mb-1">Datos de pago</label>
                                             <Select
                                                 options={PAYMENT_METHODS_OPTIONS}
                                                 value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice?.paymentMethod)}
                                                 onChange={handlePaymentMethodChange}
                                                 isSearchable={false}
                                                 placeholder="Selecciona un método de pago"
-                                            //styles={customStyles}
-
                                             />
                                             {renderPaymentDetails()}
                                         </div>
                                     </div>
-                                    <div className="mt-6 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4 text-lg">
+
+                                    {/* Totales y resumen (se mantiene como estaba) */}
+                                    <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 text-lg">
+                                        {/* Subtotal */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Subtotal</span>
-                                            <span className="font-semibold">
-                                                {formatCurrency(invoice.subtotal ?? 0)}
-                                            </span>
+                                            <span className="font-semibold">{formatCurrency(invoice.subtotal ?? 0)}</span>
                                         </div>
+
+                                        {/* ITBIS */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">ITBIS</span>
-                                            <span className="font-semibold">
-                                                {formatCurrency(invoice.itbis ?? 0)}
-                                            </span>
+                                            <span className="font-semibold">{formatCurrency(invoice.itbis ?? 0)}</span>
                                         </div>
+
+                                        {/* Total */}
                                         <div className="flex flex-col items-center text-center bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg">
-                                            <span className="block  font-bold">Total</span>
-                                            <span className="font-bold">
-                                                {formatCurrency((invoice.subtotal ?? 0) + (invoice.itbis ?? 0))}
-                                            </span>
+                                            <span className="block font-bold">Total</span>
+                                            <span className="font-bold">{formatCurrency((invoice.subtotal ?? 0) + (invoice.itbis ?? 0))}</span>
                                         </div>
+
+                                        {/* Recibido */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Recibido</span>
-                                            <span className="font-semibold">
-                                                {formatCurrency((invoice.paymentDetails as any)?.receivedAmount || 0)}
-                                            </span>
+                                            <span className="font-semibold">{formatCurrency((invoice.paymentDetails as any)?.receivedAmount || 0)}</span>
                                         </div>
+
+                                        {/* Devuelta */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Devuelta</span>
                                             <span className="font-semibold">
@@ -296,30 +328,32 @@ export default function PayInvoice({
                                         </div>
                                     </div>
 
+                                    {/* Botones */}
                                     <div className="flex justify-end items-center gap-4 mt-8">
-                                        <Button type="button" color="danger" onClick={() => (setOpenModal(false))} variant='outline' className="w-full md:w-auto">
-                                            <TbCancel className='mr-1 size-6' />
+                                        <Button type="button" color="danger" onClick={() => setOpenModal(false)} variant="outline" className="w-full md:w-auto">
+                                            <TbCancel className="mr-1 size-6" />
                                             Cancelar
                                         </Button>
-                                        <Button type="button" onClick={async () => {
-                                            const success = await handleSubmit();
-                                            console.log(success);
-                                            if (success) {
-                                                 setTimeout(() => {
-                                                    setOpenPrintModal(true);
-                                                }, 100);
-                                                setOpenModal(false);
-                                                // Espera 100 ms antes de abrir el modal de impresión
-                                            }
-                                        }
-
-                                        } className="w-full md:w-auto" loading={paymentLoading}>
-                                            <TbCheck className='mr-1 size-6' />
+                                        <Button
+                                            type="button"
+                                            onClick={async () => {
+                                                const success = await handleSubmit();
+                                                if (success) {
+                                                    setTimeout(() => {
+                                                        setOpenPrintModal(true);
+                                                    }, 100);
+                                                    setOpenModal(false);
+                                                }
+                                            }}
+                                            className="w-full md:w-auto"
+                                            loading={paymentLoading}
+                                        >
+                                            <TbCheck className="mr-1 size-6" />
                                             Pagar
                                         </Button>
                                     </div>
-
                                 </div>
+
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
