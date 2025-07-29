@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from "@prisma/client";
+import { PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -45,8 +45,11 @@ export const getStudents = async (search: string, page: number, top: number) => 
     return { students, totalStudents };
 };
 
-export const createStudent = async (data: PrismaTypes.StudentCreateInput) => {
-    const student = await Prisma.student.create({ data: data });
+export const createStudent = async (
+    data: PrismaTypes.StudentCreateInput,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    const student = await prisma.student.create({ data: data });
     return student;
 };
 
@@ -79,8 +82,12 @@ export const findStudentByIdentification = async (identification: string) => {
 };
 
 // Actualizar student por ID
-export const updateStudentById = async (id: string, data: any) => {
-    return Prisma.student.update({
+export const updateStudentById = async (
+    id: string,
+    data: any,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    return prisma.student.update({
         where: { id },
         data: { code: data.code, firstName: data.firstName, lastName: data.lastName, identification: data.identification, address: data.address, phone: data.phone, email: data.email, hasTakenCourses: data.hasTakenCourses },
     });
@@ -147,8 +154,9 @@ export const findAccountsReceivableByStudentId = async (studentId: string) => {
 export const addFingerprintToStudent = async (
     studentId: string,
     fingerprintData: Omit<PrismaTypes.FingerprintCreateInput, 'studentId' | 'student'>,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
 ) => {
-    return Prisma.fingerprint.create({
+    return prisma.fingerprint.create({
         data: {
             ...fingerprintData,
             student: {
