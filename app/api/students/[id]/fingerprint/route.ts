@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addFingerprintToStudent, findFingerprintByStudentId } from '@/services/student-service';
+import { addFingerprintToStudent, deleteFingerprintByStudentId, findFingerprintByStudentId } from '@/services/student-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { z } from 'zod';
@@ -44,6 +44,40 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         await createLog({
             action: "POST",
             description: `Error al agregar huella dactilar al estudiante con ID ${id}: ${errorMessage}`,
+            origin: "students/[id]/fingerprint",
+            elementId: id,
+            success: false,
+        });
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+    const { id } = params;
+
+    try {
+        // Find the fingerprint by student ID
+        const fingerprint = await findFingerprintByStudentId(id);
+        if (!fingerprint) {
+            return NextResponse.json({ error: "Fingerprint not found" }, { status: 404 });
+        }
+
+       await deleteFingerprintByStudentId(id);
+
+        // Log the successful deletion of fingerprint
+        await createLog({
+            action: "DELETE",
+            description: `Se eliminó la huella dactilar del estudiante con ID ${id}.`,
+            origin: "students/[id]/fingerprint",
+            elementId: id,
+            success: true,
+        });
+        return NextResponse.json({ message: "Fingerprint deleted successfully" });
+    } catch (error) {
+        const errorMessage = formatErrorMessage(error);
+        await createLog({
+            action: "DELETE",
+            description: `Error al eliminar huella dactilar del estudiante con ID ${id}: ${errorMessage}`,
             origin: "students/[id]/fingerprint",
             elementId: id,
             success: false,
