@@ -67,48 +67,41 @@ export default function StudentList({ className, query = '' }: Props) {
             )}
             {students?.map((student) => {
               return (
-                <tr key={student.id}>
-                  <td>
-                    <div className="ml-2 flex items-center gap-2">
-                      <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
-                      <div className="flex flex-col">
-                        <span>{`${student.firstName} ${student.lastName}`}</span>
-                        <span className="font-semibold">{student.identification}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="whitespace-nowrap">
-                      <OptionalInfo content={student.email || ''} />
-                    </div>
-                  </td>
-                  <td>
-                    <OptionalInfo content={formatPhoneNumber(student.phone)} />
-                  </td>
-                  <td>
-                    <div className="flex justify-end gap-2">
-                      <Tooltip title="Eliminar">
-                        <Button onClick={() => onDelete(student.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                      </Tooltip>
-                     
-                        <CaptureFingerPrint
-                          studentId={student.id}
-                          showTitle={false}
-                      />
-
-                    
-                      <Tooltip title="Editar">
-                        <Link href={`/students/${student.id}`}>
-                          <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                        </Link>
-                      </Tooltip>
-                      <Tooltip title="Ver">
-                        <Link href={`/students/view/${student.id}`}>
-                          <Button variant="outline" color="success" size="sm" icon={<IconEye className="size-4" />} />
-                        </Link>
-                      </Tooltip>
-                      {/* ALTERNATIVA */}
-                      {/* <Button onClick={() => onDelete(Student.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
+                  <tr key={student.id}>
+                      <td>
+                          <div className="ml-2 flex items-center gap-2">
+                              <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
+                              <div className="flex flex-col">
+                                  <span>{`${student.firstName} ${student.lastName}`}</span>
+                                  <span className="font-semibold">{student.identification}</span>
+                              </div>
+                          </div>
+                      </td>
+                      <td>
+                          <div className="whitespace-nowrap">
+                              <OptionalInfo content={student.email || ''} />
+                          </div>
+                      </td>
+                      <td>
+                          <OptionalInfo content={formatPhoneNumber(student.phone)} />
+                      </td>
+                      <td>
+                          <div className="flex justify-end gap-2">
+                              <Tooltip title="Eliminar">
+                                  <Button onClick={() => onDelete(student.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                              </Tooltip>
+                              <Tooltip title="Editar">
+                                  <Link href={`/students/${student.id}`}>
+                                      <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                  </Link>
+                              </Tooltip>
+                              <Tooltip title="Ver">
+                                  <Link href={`/students/view/${student.id}`}>
+                                      <Button variant="outline" color="success" size="sm" icon={<IconEye className="size-4" />} />
+                                  </Link>
+                              </Tooltip>
+                              {/* ALTERNATIVA */}
+                              {/* <Button onClick={() => onDelete(Student.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
                                             <Link href={`/Students/${Student.id}`}>
                                                 <Button variant="outline" size="sm">Editar</Button>
                                             </Link> */}

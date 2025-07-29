@@ -6,8 +6,7 @@ import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createStudent } from '../../../lib/request';
 import { FormatPatterInput } from '@/components/common';
-import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
-import CompareFingerPrint from '@/components/common/finger-print/compare-finger-print';
+import MultiPhoneInput from '@/components/common/multi-phone-input';
 
 interface CreateStudentFormProps {
   onClose?: (id: string) => void;
@@ -16,9 +15,7 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
   const route = useRouter();
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
-    const data = { ...values };
-    delete data.confirmPassword;
-
+    const data = values;
     const resp = await createStudent(data);
 
     if (resp.success) {
@@ -73,21 +70,20 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
             >
               <Field type="text" name="address" component={Input} />
             </FormItem>
+
             <FormItem name="phone" label="Teléfono" invalid={Boolean(errors.phone && touched.phone)} errorMessage={errors.phone}>
               <Field name="phone">
                 {({ form }: any) => (
-                  <FormatPatterInput
-                    format="(###) ###-####"
-                    placeholder="(___) ___-____"
-                    className="form-input"
-                    value={values.phone}
-                    onValueChange={(value: any) => {
-                      form.setFieldValue('phone', value.value);
+                  <MultiPhoneInput
+                    phone={values.phone}
+                    onChange={(phones: string) => {
+                      form.setFieldValue('phone', phones);
                     }}
                   />
                 )}
               </Field>
             </FormItem>
+
             <FormItem
               name="email"
               label="Correo electrónico"
@@ -102,9 +98,6 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
                 Ha tomado cursos anteriormente
               </Field>
             </FormItem>
-
-            
-          
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => {

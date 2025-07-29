@@ -1,10 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
-import { validateObject } from "@/utils";
-import { getStudents, createStudent, createStudentCode, findStudentByEmail, findStudentByIdentification } from '@/services/student-service';
+import { base64ToUint8Array, validateObject } from "@/utils";
+import { getStudents, createStudent, createStudentCode, findStudentByEmail, findStudentByIdentification, addFingerprintToStudent } from '@/services/student-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/auth-options";
+import { Prisma } from "@/utils/lib/prisma";
+import { Student } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
     try {
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         const body = await request.json();
-        
+
         // Validate the request body
         const {isValid, message} = validateObject(body, ["firstName", "lastName"]);
         if (!isValid) {
@@ -53,12 +55,24 @@ export async function POST(request: Request) {
 
         body.code = await createStudentCode();
         body.branchId = body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null;
-        console.log("Branch ID:", body.branchId);
-        const student = await createStudent({
-            ...body,
-            branchId: body.branchId,
-        });
 
+        const student = await Prisma.$transaction(async (prisma) => {
+            // Crear el estudiante
+            const student = await createStudent({
+                ...body,
+                branchId: body.branchId,
+            }, prisma);
+
+            if (body.fingerprint) {
+                // Crear el registro de huella dactilar si se proporciona
+                await addFingerprintToStudent(student.id, {
+                    template: base64ToUint8Array(body.fingerprint),
+                    sensorType: body.sensorType,
+                }, prisma);
+            }
+
+            return student;
+        });
         // Enviar log de auditoría
         await createLog({
             action: "POST",
@@ -67,8 +81,9 @@ export async function POST(request: Request) {
             elementId: student.id,
             success: true,
         });
-
         return NextResponse.json(student, { status: 201 });
+
+
     } catch (error) {
 
         // Enviar log de auditoría

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail } from '@/services/student-service';
-import { validateObject } from '@/utils';
+import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent } from '@/services/student-service';
+import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { Prisma } from '@/utils/lib/prisma';
 
 // Obtener estudiante por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -28,7 +29,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
-        const { isValid, message } = validateObject(body, ['firstName', 'lastName', 'identification']);
+        const { isValid, message } = validateObject(body, ['firstName', 'lastName']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
@@ -47,8 +48,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
         }
 
-        // Actualizar el estudiante
-        const updatedStudent = await updateStudentById(id, body);
+        const updatedStudent = await Prisma.$transaction(async (prisma) => {
+            // Actualizar el estudiante
+            const updatedStudent = await updateStudentById(id, body, prisma);
+            if (body.fingerprint) {
+                // Actualizar la huella dactilar si se proporciona
+                await addFingerprintToStudent(id, {
+                    template: base64ToUint8Array(body.fingerprint),
+                    sensorType: body.sensorType,
+                }, prisma);
+            }
+
+            return updatedStudent;
+        });
 
         // Enviar log de auditoría
 
