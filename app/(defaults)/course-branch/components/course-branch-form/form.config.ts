@@ -69,6 +69,7 @@ export type CreateCourseBranchFormType = {
     teacherId: string;
     courseId: string;
     capacity: number | string;
+    sessionCount:number | string;
 }
 
 export type CourseBranchFormType = {

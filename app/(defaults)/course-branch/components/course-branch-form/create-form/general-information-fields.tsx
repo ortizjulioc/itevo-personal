@@ -3,7 +3,7 @@ import { FormItem, Input } from "@/components/ui";
 import { Field, FormikErrors, FormikTouched } from "formik";
 import SelectBranch, { SelectBranchType } from "@/components/common/selects/select-branch";
 import SelectTeacher, { SelectTeacherType } from "@/components/common/selects/select-teacher";
-import SelectCourse from "@/components/common/selects/select-course";
+import SelectCourse, { SelectCourseType } from "@/components/common/selects/select-course";
 import { CreateCourseBranchFormType } from "../form.config";
 import { useSession } from 'next-auth/react';
 import { Branch, Role } from "@prisma/client";
@@ -103,11 +103,11 @@ export default function GeneralInformationFields({ values, errors, touched, setF
                             <SelectCourse
                                 {...field}
                                 value={values.courseId}
-                                onChange={(option: SelectBranchType | null) => {
+                                onChange={(option: SelectCourseType | null) => {
                                     console.log('Selected course:', option);
                                     form.setFieldValue('courseId', option?.value || '');
                                     if (option?.value) {
-                                        form.setFieldValue('sessionCount', option?.duration || '');
+                                        form.setFieldValue('sessionCount', option?.duration|| '');
                                     }
                                 }}
 

@@ -7,6 +7,7 @@ import { IoIosFingerPrint } from 'react-icons/io';
 import apiRequest from '@/utils/lib/api-request/request';
 import { Fingerprint } from '@prisma/client';
 import { openNotification } from '@/utils';
+import Tooltip from '@/components/ui/tooltip';
 
 interface Props {
     studentId: string,
@@ -26,8 +27,7 @@ export default function CaptureFingerPrint({ studentId, showTitle = true }: Prop
 
         setSubmitLoading(true)
         const data = {
-            studentId,
-            template: fingerprintData,
+            fingerprint: fingerprintData,
             sensorType: '2connect',
         };
 
@@ -38,7 +38,6 @@ export default function CaptureFingerPrint({ studentId, showTitle = true }: Prop
                 openNotification('success', 'Huella registrada correctamente')
                 setOpenModal(false)
             } else {
-                setSubmitLoading(false)
                 openNotification('error', 'Hubo un problema al registrar la huella')
             }
 
@@ -46,6 +45,8 @@ export default function CaptureFingerPrint({ studentId, showTitle = true }: Prop
             console.log(error)
             openNotification('error', 'Hubo un problema al registrar la huella')
 
+        } finally {
+            setSubmitLoading(false)
         }
 
 
@@ -106,16 +107,20 @@ export default function CaptureFingerPrint({ studentId, showTitle = true }: Prop
 
     return (
         <div>
-            <Button
-                type="button"
-                onClick={() => setOpenModal(true)}
-                icon={<IoIosFingerPrint className='text-2xl' />}
-                size="md"
-            >
-                {showTitle && 'Registrar Huella'}
+            <Tooltip title="Registrar Huella">
+                <Button
+                    type="button"
+                    onClick={() => setOpenModal(true)}
+                    icon={<IoIosFingerPrint className='text-lg' />}
+                    size="md"
+                    variant="outline"
+                    
+                >
+                    {showTitle && 'Registrar Huella'}
 
-            </Button>
+                </Button>
 
+            </Tooltip>
             <Transition appear show={openModal} as={Fragment}>
                 <Dialog as="div" open={openModal} onClose={resetState}>
                     <div className="fixed inset-0 bg-black/60 z-[999] overflow-y-auto">
