@@ -59,8 +59,15 @@ export async function POST(request: Request) {
         const student = await Prisma.$transaction(async (prisma) => {
             // Crear el estudiante
             const student = await createStudent({
-                ...body,
-                branchId: body.branchId,
+                code: body.code,
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                identification: body.identification,
+                address: body.address,
+                phone: body.phone,
+                hasTakenCourses: body.hasTakenCourses,
+                branch: { connect: { id: body.branchId } },
             }, prisma);
 
             if (body.fingerprint) {
