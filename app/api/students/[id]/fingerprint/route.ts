@@ -25,6 +25,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             return NextResponse.json({ error: "Fingerprint data is required" }, { status: 400 });
         }
 
+        // Eliminar huella dactilar existente si existe
+        const existingFingerprint = await findFingerprintByStudentId(id);
+        if (existingFingerprint) {
+            await deleteFingerprintByStudentId(id);
+        }
+
         const fingerprint = await addFingerprintToStudent(id, {
             template: base64ToUint8Array(validatedData.fingerprint),
             sensorType: validatedData.sensorType,
