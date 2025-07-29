@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent } from '@/services/student-service';
+import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent, findFingerprintByStudentId, deleteFingerprintByStudentId } from '@/services/student-service';
 import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
@@ -61,6 +61,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
                 branch: { connect: { id: body.branchId } },
             }, prisma);
             if (body.fingerprint) {
+                // Eliminar huella dactilar existente si existe
+                const existingFingerprint = await findFingerprintByStudentId(id);
+                if (existingFingerprint) {
+                    await deleteFingerprintByStudentId(id);
+                }
                 // Actualizar la huella dactilar si se proporciona
                 await addFingerprintToStudent(id, {
                     template: base64ToUint8Array(body.fingerprint),
