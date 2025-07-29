@@ -50,7 +50,16 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         const updatedStudent = await Prisma.$transaction(async (prisma) => {
             // Actualizar el estudiante
-            const updatedStudent = await updateStudentById(id, body, prisma);
+            const updatedStudent = await updateStudentById(id, {
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                identification: body.identification,
+                address: body.address,
+                phone: body.phone,
+                hasTakenCourses: body.hasTakenCourses,
+                branch: { connect: { id: body.branchId } },
+            }, prisma);
             if (body.fingerprint) {
                 // Actualizar la huella dactilar si se proporciona
                 await addFingerprintToStudent(id, {
