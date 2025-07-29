@@ -7,15 +7,27 @@ import { createValidationSchema, initialValues } from '../form.config';
 import { createStudent } from '../../../lib/request';
 import { FormatPatterInput } from '@/components/common';
 import MultiPhoneInput from '@/components/common/multi-phone-input';
+import { useState } from 'react';
+import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
 
 interface CreateStudentFormProps {
   onClose?: (id: string) => void;
 }
 export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
   const route = useRouter();
+  const [fingerprint, setFingerprint] = useState('')
+
+
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
-    const data = values;
+    const data = {
+      ...values,
+      fingerprint,
+      sensorType: '2connect'
+
+    };
+
+    
     const resp = await createStudent(data);
 
     if (resp.success) {
@@ -98,6 +110,10 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
                 Ha tomado cursos anteriormente
               </Field>
             </FormItem>
+
+            <CaptureFingerPrint
+              onChange={(fingerprint) => { setFingerprint(fingerprint) }}
+            />
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" color="danger" onClick={() => {
