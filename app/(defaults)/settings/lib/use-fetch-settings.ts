@@ -17,7 +17,6 @@ const useFetchSetting = () => {
         const fetchSettingsData = async () => {
             try {
                 const response = await apiRequest.get<SettingResponse>(`/settings`);
-                console.log('Response from settings:', response);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

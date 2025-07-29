@@ -72,9 +72,6 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
   const returned = receivedAmount - total;
 
-  console.log('InvoicePDF', { invoice });
-  console.log('Payment Method', paymentMethod, PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)   );
-
   return (
     <Document>
       <Page size={'A4'} style={styles.page}>
