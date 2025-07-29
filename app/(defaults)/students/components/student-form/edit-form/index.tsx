@@ -8,6 +8,7 @@ import { FormatPatterInput } from '@/components/common';
 import { Student } from '@prisma/client';
 import { updateStudent } from '../../../lib/request';
 import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
+import MultiPhoneInput from '@/components/common/multi-phone-input';
 
 
 export default function UpdateStudentForm({ initialValues }: { initialValues: Student }) {
@@ -75,7 +76,6 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
               <Field type="text" name="address" component={Input} />
             </FormItem>
             <FormItem
-
               name="phone"
               label="Teléfono"
               invalid={Boolean(errors.phone && touched.phone)}
@@ -83,13 +83,10 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
             >
               <Field name="phone">
                 {({ form }: any) => (
-                  <FormatPatterInput
-                    format="(###) ###-####"
-                    placeholder="(___) ___-____"
-                    className="form-input"
-                    value={values.phone}
-                    onValueChange={(value: any) => {
-                      form.setFieldValue('phone', value.value);
+                  <MultiPhoneInput
+                    phone={values.phone || ''}
+                    onChange={(phones: string) => {
+                      form.setFieldValue('phone', phones);
                     }}
                   />
                 )}

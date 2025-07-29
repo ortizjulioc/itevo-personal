@@ -82,7 +82,17 @@ export default function StudentList({ className, query = '' }: Props) {
                           </div>
                       </td>
                       <td>
-                          <OptionalInfo content={formatPhoneNumber(student.phone)} />
+                          {student.phone ? (
+                              <div className="whitespace-nowrap">
+                                  {student.phone.split(',').map((phone, index) => (
+                                      <span key={index} className="block">
+                                          {formatPhoneNumber(phone)}
+                                      </span>
+                                  ))}
+                              </div>
+                          ) : (
+                            <OptionalInfo />
+                          )}
                       </td>
                       <td>
                           <div className="flex justify-end gap-2">
