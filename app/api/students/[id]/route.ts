@@ -33,19 +33,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
+        
+        // Verificar si el estudiante existe
+        const student = await findStudentById(id);
+        if (!student) {
+            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
+        }
 
-        if (body.email) {
+        if (body.email && body.email !== student.email) {
             // Validar que no se repita el email
             const existingStudent = await findStudentByEmail(body.email);
             if (existingStudent) {
                 return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
             }
-        }
-
-        // Verificar si el estudiante existe
-        const student = await findStudentById(id);
-        if (!student) {
-            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
         }
 
         const updatedStudent = await Prisma.$transaction(async (prisma) => {

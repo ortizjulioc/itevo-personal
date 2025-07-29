@@ -108,6 +108,7 @@ export const findEnrollmentById = async (id: string) => {
                     email: true,
                     firstName: true,
                     lastName: true,
+                    phone: true,
                 },
             },
             courseBranch: {
@@ -115,9 +116,11 @@ export const findEnrollmentById = async (id: string) => {
                     id: true,
                     courseId: true,
                     branchId: true,
+                    amount: true,
                     course: {
                         select: {
                             name: true,
+                            code: true,
                         },
                     },
                     branch: {
@@ -125,16 +128,21 @@ export const findEnrollmentById = async (id: string) => {
                             name: true,
                         },
                     },
+                    schedules: {
+                        select: {
+                            schedule: {
+                                select: {
+                                    startTime: true,
+                                    endTime: true,
+                                    weekday: true,
+                                },
+                            }
+                        },
+                    }
                 },
             },
         },
     });
-
-    // Devolviendo prerequisites como un arreglo de IDs
-
-    // if (course) {
-    //     course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite.id);
-    // }
 
     return enrollment;
 

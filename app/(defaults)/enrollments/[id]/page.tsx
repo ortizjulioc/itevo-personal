@@ -13,7 +13,6 @@ export default function EditEnrollment({ params }: { params: { id: string } }) {
     return (
         <div>
             <ViewTitle className='mb-6' title="Editar Inscripcion" showBackPage />
-            <PrintEnrollment enrollmentId={id} />
 
             {loading && <FormSkeleton />}
             {enrollment && <UpdateEnrollmentForm initialValues={enrollment} />}
