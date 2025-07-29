@@ -103,7 +103,7 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
         try {
             onChange?.(fingerprintData);
             setOpenModal(false)
-             openNotification('success', 'Huella registrada correctamente');
+            openNotification('success', 'Huella registrada correctamente');
         } finally {
             setSubmitLoading(false);
         }
@@ -164,8 +164,10 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
                                                 onClick={() => {
                                                     if (!onChange) {
                                                         addFingerPrint();
+                                                    } else {
+                                                        handleOnChange()
                                                     }
-                                                    handleOnChange()
+
                                                 }}
                                                 disabled={!fingerprintData}
                                                 loading={submitloading}

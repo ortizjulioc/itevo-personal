@@ -20,14 +20,21 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
-    const data = {
-      ...values,
-      fingerprint,
-      sensorType: '2connect'
+    let data;
 
-    };
+    if (fingerprint) {
+      data = {
+        ...values,
+        fingerprint,
+        sensorType: '2connect'
 
-    
+      };
+
+    } else {
+      data = values
+    }
+
+
     const resp = await createStudent(data);
 
     if (resp.success) {
