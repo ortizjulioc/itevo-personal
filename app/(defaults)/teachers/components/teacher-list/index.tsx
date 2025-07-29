@@ -58,7 +58,7 @@ export default function TeacherList({ className, query = '' }: Props) {
           <tbody>
             {teachers?.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron profesors registrados</td>
+                <td colSpan={4} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron profesores registrados</td>
               </tr>
             )}
             {teachers?.map((teacher) => {

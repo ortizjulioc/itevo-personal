@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
+import { IconPlusCircle} from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export default function Students({ searchParams }: StudentListProps) {
         <>
           <SearchInput placeholder="Buscar Estudiantes" />
           <Link href="/students/new">
-            <Button icon={<IconUserPlus />}>Crear estudiante</Button>
+            <Button icon={<IconPlusCircle />}>Crear estudiante</Button>
           </Link>
 
          

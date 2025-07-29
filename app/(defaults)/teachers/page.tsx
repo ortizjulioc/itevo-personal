@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
+import { IconPlusCircle} from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function Teachers({ searchParams }: TeacherListProps) {
         <>
           <SearchInput placeholder="Buscar profesores" />
           <Link href="/teachers/new">
-            <Button icon={<IconUserPlus />}>Crear profesor</Button>
+            <Button icon={<IconPlusCircle />}>Crear profesor</Button>
           </Link>
 
          

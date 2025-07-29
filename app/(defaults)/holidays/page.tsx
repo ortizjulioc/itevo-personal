@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
+import { IconPlusCircle} from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export default function Holiday({ searchParams }: HolidayListProps) {
         <>
           <SearchInput placeholder="Buscar Cursos" />
           <Link href="/holidays/new">
-            <Button icon={<IconUserPlus />}>Crear dia feriado</Button>
+            <Button icon={<IconPlusCircle />}>Crear dia feriado</Button>
           </Link>
 
          

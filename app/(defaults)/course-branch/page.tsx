@@ -6,6 +6,7 @@ import { objectToQueryString } from "@/utils";
 import CourseBranchList from "./components/course-branch-list";
 import Dropdown from "@/components/dropdown";
 import SearchCourseBranch from "./components/search-course-branch";
+import { IconPlusCircle } from "@/components/icon";
 
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function Coursets({ searchParams }: CoursetListProps) {
 
 
             <Link href="/course-branch/new">
-              <Button>
+              <Button icon={<IconPlusCircle/>}>
                 Crear Oferta
               </Button>
             </Link>
