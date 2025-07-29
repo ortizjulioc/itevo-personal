@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent } from '@/services/student-service';
+import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent, findFingerprintByStudentId, deleteFingerprintByStudentId } from '@/services/student-service';
 import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
@@ -33,19 +33,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
+        
+        // Verificar si el estudiante existe
+        const student = await findStudentById(id);
+        if (!student) {
+            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
+        }
 
-        if (body.email) {
+        if (body.email && body.email !== student.email) {
             // Validar que no se repita el email
             const existingStudent = await findStudentByEmail(body.email);
             if (existingStudent) {
                 return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
             }
-        }
-
-        // Verificar si el estudiante existe
-        const student = await findStudentById(id);
-        if (!student) {
-            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
         }
 
         const updatedStudent = await Prisma.$transaction(async (prisma) => {
@@ -61,6 +61,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
                 branch: { connect: { id: body.branchId } },
             }, prisma);
             if (body.fingerprint) {
+                // Eliminar huella dactilar existente si existe
+                const existingFingerprint = await findFingerprintByStudentId(id);
+                if (existingFingerprint) {
+                    await deleteFingerprintByStudentId(id);
+                }
                 // Actualizar la huella dactilar si se proporciona
                 await addFingerprintToStudent(id, {
                     template: base64ToUint8Array(body.fingerprint),

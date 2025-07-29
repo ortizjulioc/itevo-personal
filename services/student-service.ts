@@ -174,3 +174,11 @@ export const findFingerprintByStudentId = async (studentId: string) => {
     });
 };
 
+export const deleteFingerprintByStudentId = async (studentId: string) => {
+    return Prisma.fingerprint.delete({
+        where: {
+            studentId: studentId,
+        },
+    });
+};
+
