@@ -9,6 +9,7 @@ import OptionalInfo from "@/components/common/optional-info";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchStudents from "../../lib/use-fetch-students";
 import { deleteStudent } from "../../lib/request";
+import CaptureFingerPrint from "@/components/common/finger-print/capture-finger-print";
 
 
 
@@ -82,17 +83,7 @@ export default function StudentList({ className, query = '' }: Props) {
                           </div>
                       </td>
                       <td>
-                          {student.phone ? (
-                              <div className="whitespace-nowrap">
-                                  {student.phone.split(',').map((phone, index) => (
-                                      <span key={index} className="block">
-                                          {formatPhoneNumber(phone)}
-                                      </span>
-                                  ))}
-                              </div>
-                          ) : (
-                            <OptionalInfo />
-                          )}
+                          <OptionalInfo content={formatPhoneNumber(student.phone)} />
                       </td>
                       <td>
                           <div className="flex justify-end gap-2">
@@ -114,9 +105,9 @@ export default function StudentList({ className, query = '' }: Props) {
                                             <Link href={`/Students/${Student.id}`}>
                                                 <Button variant="outline" size="sm">Editar</Button>
                                             </Link> */}
-                          </div>
-                      </td>
-                  </tr>
+                    </div>
+                  </td>
+                </tr>
               );
             })}
           </tbody>

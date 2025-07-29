@@ -6,9 +6,10 @@ import { Course } from '@prisma/client';
 import { Select } from '@/components/ui';
 import { GroupBase } from 'react-select';
 
-type SelectCourseType = {
+export type SelectCourseType = Course & {
   value: string;
   label: string;
+
 }
 
 export interface CoursesResponse {
