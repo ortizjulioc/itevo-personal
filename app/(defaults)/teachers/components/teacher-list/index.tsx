@@ -74,7 +74,7 @@ export default function TeacherList({ className, query = '' }: Props) {
                     </div>
                   </td>
                   <td>
-                    <div className="whitespace-nowrap">{teacher.email}</div>
+                    <div className="whitespace-nowrap">{<OptionalInfo  content={teacher.email || ''} />}</div>
                   </td>
                   <td>
                     <OptionalInfo content={formatPhoneNumber(teacher.phone)} />
