@@ -11,6 +11,8 @@ import useFetchStudents from "../../lib/use-fetch-students";
 import { deleteStudent } from "../../lib/request";
 import CaptureFingerPrint from "@/components/common/finger-print/capture-finger-print";
 import { useState } from "react";
+import TextEllipsis from "@/components/common/text-ellipsis";
+import { TbDetails } from "react-icons/tb";
 
 
 
@@ -55,8 +57,8 @@ export default function StudentList({ className, query = '' }: Props) {
           <thead>
             <tr>
               <th>NOMBRE</th>
-              <th>CORREO ELECTRÓNICO</th>
               <th>TELEFONO</th>
+              <th>DIRECCION</th>
               <th />
             </tr>
           </thead>
@@ -69,8 +71,9 @@ export default function StudentList({ className, query = '' }: Props) {
             {students?.map((student) => {
               return (
                 <tr key={student.id}>
-                  <td>
-                    <div className="ml-2 flex items-center gap-2">
+                    {/* 12 16 */}
+                  <td className="py-1 px-2">
+                    <div className="ml-2 flex items-center gap-2 min-w-64 hover:cursor-pointer hover:bg-slate-100 py-2 px-2 rounded-md">
                       <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
                       <div className="flex flex-col">
                         <span>{`${student.firstName} ${student.lastName}`}</span>
@@ -79,38 +82,44 @@ export default function StudentList({ className, query = '' }: Props) {
                     </div>
                   </td>
                   <td>
-                    <div className="whitespace-nowrap">
-                      <OptionalInfo content={student.email || ''} />
+                    <div>
+                    {student.phone ? student.phone.split(',').map((phone, index) => (
+                        <span key={index} className="block min-w-max">
+                        {formatPhoneNumber(phone.trim())}
+                      </span>
+                    )) : (
+                        <OptionalInfo />
+                    )}
                     </div>
                   </td>
                   <td>
-                    <OptionalInfo content={formatPhoneNumber(student.phone)} />
+                    <div className="whitespace-nowrap">
+                      {student.address ? (
+                        <TextEllipsis text={student.address} maxLength={30} />
+                        ) : <OptionalInfo />}
+                    </div>
                   </td>
                   <td>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex items-center justify-end gap-3">
                       <Tooltip title="Eliminar">
-                        <Button onClick={() => onDelete(student.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                        <button onClick={() => onDelete(student.id)}>
+                          <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                        </button>
                       </Tooltip>
-                      <CaptureFingerPrint
+                      {/* <CaptureFingerPrint
                         studentId={student.id}
                         showTitle={false}
-
-                      />
+                      /> */}
                       <Tooltip title="Editar">
                         <Link href={`/students/${student.id}`}>
-                          <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                          <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                         </Link>
                       </Tooltip>
-                      <Tooltip title="Ver">
+                      <Tooltip title="Detalles">
                         <Link href={`/students/view/${student.id}`}>
-                          <Button variant="outline" color="success" size="sm" icon={<IconEye className="size-4" />} />
+                          <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                         </Link>
                       </Tooltip>
-                      {/* ALTERNATIVA */}
-                      {/* <Button onClick={() => onDelete(Student.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/Students/${Student.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
                     </div>
                   </td>
                 </tr>
