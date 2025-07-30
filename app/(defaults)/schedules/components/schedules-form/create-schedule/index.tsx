@@ -2,8 +2,8 @@
 import { Button, FormItem, Input, Select } from '@/components/ui';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
-import { initialValues, ScheduleFormType } from '../form.config'
-import { createValidationSchema } from "../form.config"
+import { initialValues, ScheduleFormType } from '../form.config';
+import { createValidationSchema } from "../form.config";
 import { createSchedule } from '../../../lib/request';
 
 interface WeekOption {
@@ -19,16 +19,15 @@ const weekOptions: WeekOption[] = [
     { value: 4, label: 'Jueves' },
     { value: 5, label: 'Viernes' },
     { value: 6, label: 'Sábado' },
+];
 
-];// Por ejemplo, en CreateScheduleForm.tsx
 interface CreateScheduleFormProps {
     onCreated?: (schedule: any) => void;
-    onClose?: any
+    onClose?: () => void;
+    layout?: 'horizontal' | 'vertical'; // <-- nueva prop
 }
 
-
-export default function CreateScheduleForm({ onCreated, onClose }: CreateScheduleFormProps) {
-
+export default function CreateScheduleForm({ onCreated, onClose, layout = 'horizontal' }: CreateScheduleFormProps) {
     const handleSubmit = async (values: ScheduleFormType, { setSubmitting }: any) => {
         setSubmitting(true);
         const resp = await createSchedule(values);
@@ -39,14 +38,16 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
         } else {
             openNotification('error', resp.message);
         }
-        setSubmitting(false);
 
-        onClose?.()
+        setSubmitting(false);
+        onClose?.();
     };
 
+    const isVertical = layout === 'vertical';
+
     return (
-        <div className='panel px-4'>
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de creacion de horario</h4>
+        <div className="panel px-4">
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de creación de horario</h4>
             <Formik
                 initialValues={initialValues}
                 validationSchema={createValidationSchema}
@@ -54,40 +55,36 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
             >
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-                        <div className='grid grid-cols-1  gap-4 md:items-start'>
-
+                        <div className={`grid gap-4 ${isVertical ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3 md:items-start'}`}>
                             <div className="w-full">
-                                <FormItem name="weekday" label="Día de la semana" invalid={Boolean(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
+                                <FormItem name="weekday" label="Día de la semana" invalid={!!(errors.weekday && touched.weekday)} errorMessage={errors.weekday}>
                                     <Field>
                                         {({ form }: FieldProps<ScheduleFormType>) => (
                                             <Select
                                                 name="weekday"
                                                 placeholder="Selecciona un día"
-                                                className="min-w-[200px] "
+                                                className="min-w-[200px]"
                                                 options={weekOptions}
                                                 value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                                onChange={(newValue, _actionMeta) => {
+                                                onChange={(newValue) => {
                                                     const option = newValue as WeekOption | null;
                                                     form.setFieldValue('weekday', option?.value ?? null);
                                                 }}
-                                                menuPortalTarget={typeof window !== 'undefined' ? document.body : null} // <- clave
+                                                menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                                                 menuPosition="fixed"
-                                                styles={{
-                                                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                                }}
-
+                                                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
                             </div>
+
                             <div className="w-full">
                                 <FormItem
                                     name="startTime"
                                     label="Hora de inicio"
-                                    invalid={Boolean(errors.startTime && touched.startTime)}
+                                    invalid={!!(errors.startTime && touched.startTime)}
                                     errorMessage={errors.startTime}
-
                                 >
                                     <Field
                                         type="time"
@@ -98,11 +95,12 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
                                     />
                                 </FormItem>
                             </div>
+
                             <div className="w-full">
                                 <FormItem
                                     name="endTime"
                                     label="Hora de finalización"
-                                    invalid={Boolean(errors.endTime && touched.endTime)}
+                                    invalid={!!(errors.endTime && touched.endTime)}
                                     errorMessage={errors.endTime}
                                 >
                                     <Field
@@ -114,9 +112,12 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
                                     />
                                 </FormItem>
                             </div>
-
                         </div>
-                        <div className='mb-4'>
+
+                        <div className="mt-6 flex justify-end gap-2">
+                            <Button type="button" color="danger" onClick={onClose}>
+                                Cancelar
+                            </Button>
                             <Button loading={isSubmitting} type="submit">
                                 {isSubmitting ? 'Guardando...' : 'Guardar'}
                             </Button>

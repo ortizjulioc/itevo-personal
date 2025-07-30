@@ -71,8 +71,15 @@ export default function CloseCashRegister({ params }: Props) {
             .reduce((total, m) => total + m.amount, 0);
     }
 
+function getTotalIncome(cashMovements: any[]) {
+        return cashMovements
+            .filter(m => m.type === 'INCOME')
+            .reduce((total, m) => total + m.amount, 0);
+    }
 
+    const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
+    const total = totalIngresos - totalEgresos + (CashRegister?.initialBalance || 0);
     const resumenFacturas = getInvoiceSummary(invoices);
 
 
@@ -113,7 +120,7 @@ export default function CloseCashRegister({ params }: Props) {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos + (CashRegister?.initialBalance || 0))}</p>
+                            <p className="text-base font-medium">{formatCurrency(total)}</p>
                         </div>
 
 

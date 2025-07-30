@@ -6,13 +6,15 @@ interface Props {
     modal: boolean
     setModal: (modal: boolean) => void
     fetchSchedulesData: any
+    assignSchedule: (schedule: string) => void
 }
 
 export default function ModalCreateSchedule(
     {
         modal,
         setModal,
-        fetchSchedulesData
+        fetchSchedulesData,
+        assignSchedule
     }: Props
 ) {
 
@@ -20,7 +22,9 @@ export default function ModalCreateSchedule(
 
         await fetchSchedulesData('')
         setModal(false)
+
     }
+
     return (
         <div className="mb-5">
             <Transition appear show={modal} as={Fragment}>
@@ -50,7 +54,11 @@ export default function ModalCreateSchedule(
                                 <Dialog.Panel as="div" className="w-full sm:w-[90%] md:w-[70%] lg:w-1/2 h-auto mt-10  dark:bg-[#1E1E2D] text-black dark:text-white p-6 overflow-y-auto">
                                     <div className='min-w-full'>
                                         <CreateScheduleForm
-                                            onClose={onClose} />
+                                            onClose={onClose}
+                                            onCreated={(schedule) => assignSchedule(schedule.id)}
+                                            layout="vertical" 
+                                        />
+
                                     </div>
 
                                 </Dialog.Panel>

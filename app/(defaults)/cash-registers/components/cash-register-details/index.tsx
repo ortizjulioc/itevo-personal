@@ -1,4 +1,4 @@
-import { CashRegister } from '@prisma/client'
+
 import React from 'react'
 import useFetchCashMovements from '../../lib/use-fetch-cash-movements';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
@@ -9,16 +9,18 @@ import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { formatCurrency } from '@/utils';
 import { getFormattedDateTime } from '@/utils/date';
 import useFetchClosure from '../../lib/use-fetch-cash-closure';
+import UserLabel from '@/components/common/info-labels/user-label';
+import { TbPointFilled } from 'react-icons/tb';
 
 
 
-export default function CashRegisterDetails({ cashRegister }: { cashRegister: CashRegister }) {
+export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
 
     const { cashMovements, loading } = useFetchCashMovements(cashRegister?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id)
     const { closure } = useFetchClosure(cashRegister?.id)
-    console.log(closure)
-
+    // console.log(closure)
+    console.log(cashRegister)
     function getInvoiceSummary(invoices: any[]) {
         const summary = {
             total: 0,
@@ -62,13 +64,96 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: Ca
             .reduce((total, m) => total + m.amount, 0);
     }
 
+    function getTotalIncome(cashMovements: any[]) {
+        return cashMovements
+            .filter(m => m.type === 'INCOME')
+            .reduce((total, m) => total + m.amount, 0);
+    }
 
+    const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
+    const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
+
+
+
     const resumenFacturas = getInvoiceSummary(invoices);
 
     return (
         <>
+
             <div className=' grid grid-cols-12 gap-5' >
+                <div className="col-span-12">
+                    <span className="ml-3 font-bold text-lg">Detalles de Caja</span>
+                    <div className="panel p-4 grid grid-cols-6 gap-4">
+                        <div>
+                            <p className="text-sm text-gray-600">Fecha de Apertura</p>
+                            <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.openingDate))}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Nombre</p>
+                            <p className="text-base font-medium">{cashRegister.name}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Usuario</p>
+                            <p className="text-base font-medium">{cashRegister?.user?.name}</p>
+                        </div>
+
+                        {cashRegister.closedAt && (
+                            <div>
+                                <p className="text-sm text-gray-600">Fecha de Cierre</p>
+                                <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.closedAt))}</p>
+                            </div>
+                        )}
+                        <div>
+                            <p className="text-sm text-gray-600">Estado</p>
+                            {cashRegister.status === 'OPEN' ? (
+                                <p className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>
+                                    <TbPointFilled />
+                                    Abierto
+                                </p>
+                            ) : (
+                                <p className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                    <TbPointFilled />
+                                    Cerrado
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                {closure && (
+                    <div className="col-span-12">
+                        <span className="ml-3 font-bold text-lg">Detalles de Cierre</span>
+                        <div className="panel p-4 grid grid-cols-6 gap-4">
+                            <div>
+                                <p className="text-sm text-gray-600">Fecha de Cierre</p>
+                                <p className="text-base font-medium">{getFormattedDateTime(new Date(closure.closureDate))}</p>
+                            </div>
+
+
+                            <div>
+                                <p className="text-sm text-gray-600">Esperado</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.totalExpected)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Total Reportado</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.totalCash +closure.totalCheck +closure.totalCard + closure.totalTransfer)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Diferencia</p>
+                                <p className={`text-base font-medium ${closure.difference === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {formatCurrency(closure.difference)}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Cerrado por</p>
+                                <p className="text-base font-medium">
+                                    <UserLabel UserId={closure.closedBy} />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className='col-span-3'>
                     <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
                     <div className="panel p-4 space-y-4">
@@ -99,7 +184,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: Ca
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos + (cashRegister?.initialBalance || 0))}</p>
+                            <p className="text-base font-medium">{formatCurrency(total)}</p>
                         </div>
 
 
