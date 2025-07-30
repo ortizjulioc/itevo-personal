@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { Button, Pagination } from '@/components/ui'
 import { HiOutlinePaperAirplane } from 'react-icons/hi'
 import Skeleton from "@/components/common/Skeleton";
-import useFetchCashMovements from '../lib/use-fetch-cash-movements'
-import ButtonCloseCashRegister from '../components/button-close-cash-register'
-import useFetchInvoices from '../../bills/lib/use-fetch-invoices'
+import useFetchCashMovements from '../../lib/use-fetch-cash-movements'
+import useFetchInvoices from '../../../bills/lib/use-fetch-invoices'
+import ButtonCloseCashRegister from '../../components/button-close-cash-register'
 
 interface Props {
     params: {
@@ -85,10 +85,7 @@ export default function CloseCashRegister({ params }: Props) {
                 <div className='col-span-3'>
                     <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
                     <div className="panel p-4 space-y-4">
-                        <div>
-                            <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total -totalEgresos)}</p>
-                        </div>
+                        
                         <div>
                             <p className="text-sm text-gray-600">Efectivo</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
@@ -108,6 +105,10 @@ export default function CloseCashRegister({ params }: Props) {
                         <div>
                             <p className="text-sm text-gray-600">Egresos</p>
                             <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Total</p>
+                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total -totalEgresos)}</p>
                         </div>
 
 

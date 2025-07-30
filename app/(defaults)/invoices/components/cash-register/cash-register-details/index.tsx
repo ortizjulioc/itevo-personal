@@ -23,7 +23,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
 
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
-    const [openModalAttendance ,setOpenModalAttendance] = React.useState(false);
+    const [openModalAttendance, setOpenModalAttendance] = React.useState(false);
     const { invoices, fetchInvoicesData } = useFetchInvoices(CashRegister.id);
     const pathname = usePathname();
     useEffect(() => {
@@ -61,7 +61,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                     <ul>
                                         <li>
                                             <button type="button" onClick={() => setOpenModalAttendance(true)} className="dropdown-item">
-                                               Registro de asistencia
+                                                Registro de asistencia
                                             </button>
                                         </li>
                                         <li>
@@ -74,7 +74,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 if (hasPendingInvoices) {
                                                     openNotification('error', ' No puede hacer cierre de caja, aún tiene facturas pendientes')
                                                 } else {
-                                                    router.push(`/close-cash-register/${CashRegister.id}`)
+                                                    router.push(`/cash-registers/close/${CashRegister.id}`)
                                                 }
                                             }
                                             } className="dropdown-item">

@@ -16,6 +16,7 @@ import {
     TbBrandCashapp,
     TbReportMoney,
     TbCheckupList,
+    TbCashRegister,
 } from 'react-icons/tb';
 
 const navigationConfig = [
@@ -133,6 +134,14 @@ const navigationConfig = [
         title: 'Facturas',
         icon: TbReportMoney,
         url: '/bills',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+    },
+    {
+        key: 'cashRegisters',
+        title: 'Cajas',
+        icon: TbCashRegister,
+        url: '/cash-registers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
     },

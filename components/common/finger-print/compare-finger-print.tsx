@@ -118,9 +118,7 @@ export default function CompareFingerPrint({ previousFingerprint, onSuccess, bla
                                         <h5 className="font-bold text-lg">Verificación de Huella</h5>
                                     </div>
                                     <div className="p-5 text-center">
-                                        <p className="text-base mb-4 text-gray-600 dark:text-gray-300">
-                                            Estado del dispositivo: <span className="font-semibold">{state}</span>
-                                        </p>
+                                       
 
                                         <div className="flex justify-center mb-4">
                                             {loading ? (
