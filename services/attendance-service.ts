@@ -11,8 +11,9 @@ export async function getAttendanceRecords(filter: {
     const skip = (page - 1) * top;
 
     const where: PrismaTypes.AttendanceWhereInput = {
-        courseBranchId: filter.courseBranchId  || undefined, // se ignora si está vacío
-        date: filter.date || undefined,
+        ...(filter.courseBranchId && { courseBranchId: filter.courseBranchId }),
+        ...(filter.studentId && { studentId: filter.studentId }),
+        ...(filter.date && { date: filter.date }),
     };
 
     const [attendanceRecords, totalAttendanceRecords] = await Promise.all([
