@@ -3,14 +3,43 @@ import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from "@prisma/c
 import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {
-    const { studentId, courseBranchId, status, enrollmentDate, page, top } = filters;
+    const {
+        studentId,
+        courseId,
+        teacherId,
+        branchId,
+        promotionId,
+        modality,
+        status,
+        enrollmentDate,
+        page,
+        top,
+    } = filters;
     const skip = (page - 1) * top;
 
-    let where: any = {};
 
-    where = {
-        studentId: studentId,
-        courseBranchId: courseBranchId,
+    const where: PrismaTypes.EnrollmentWhereInput = {
+        deleted: false,
+        ...(studentId && { studentId }),
+        ...(status && {
+            status: (Object.values(EnrollmentStatus) as string[]).includes(status.toUpperCase())
+                ? (status.toUpperCase() as EnrollmentStatus)
+                : undefined,
+        }),
+        ...(enrollmentDate && {
+            enrollmentDate: {
+                gte: new Date(new Date(enrollmentDate).setHours(0, 0, 0, 0)),
+                lte: new Date(new Date(enrollmentDate).setHours(23, 59, 59, 999)),
+            },
+        }),
+        courseBranch: {
+            deleted: false,
+            ...(courseId && { courseId }),
+            ...(teacherId && { teacherId }),
+            ...(branchId && { branchId }),
+            ...(promotionId && { promotionId }),
+            ...(modality && { modality }),
+        },
     };
 
     // Filtrar por enrollmentDate
