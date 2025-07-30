@@ -23,6 +23,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
         where: {
             deleted: false,
             OR: [
+                { code: { contains: search } },
                 { firstName: { contains: search } },
                 { lastName: { contains: search } },
                 { identification: { contains: search } },
