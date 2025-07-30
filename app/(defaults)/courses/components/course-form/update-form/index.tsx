@@ -6,6 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Course } from '@prisma/client';
 import { updateCourse } from '../../../lib/request';
+import Tooltip from '@/components/ui/tooltip';
 
 
 export default function UpdateCourseForm({ initialValues }: { initialValues: Course }) {
@@ -42,7 +43,13 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
                         <FormItem name="description" label="Descripcion" invalid={Boolean(errors.description && touched.description)} errorMessage={errors.description}>
                             <Field type="textarea" name="description" component={Input} />
                         </FormItem>
-                        <FormItem name="duration" label="Cantidad de sesiones" invalid={Boolean(errors.duration && touched.duration)} errorMessage={errors.duration}>
+                        <FormItem
+                            extra={(<Tooltip title="La cantidad de veces que se impartirá el curso"><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
+                            name="duration"
+                            label="Cantidad de sesiones"
+                            invalid={Boolean(errors.duration && touched.duration)}
+                            errorMessage={errors.duration}
+                        >
                             <Field type="number" name="duration" component={Input} />
                         </FormItem>
 
