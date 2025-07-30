@@ -116,6 +116,7 @@ model Student {
   graduation        Graduation[]
   Invoice           Invoice[]
   Quotation         Quotation[]
+  attendance        Attendance[]
   fingerprint       Fingerprint?
 
   @@map("students")
@@ -208,6 +209,7 @@ model CourseBranch {
   schedules         CourseSchedule[]
   enrollment        Enrollment[]
   QuotationItem     QuotationItem[]
+  attendance        Attendance[]
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
@@ -224,7 +226,7 @@ model Schedule {
   createdAt  DateTime         @default(now()) @map("created_at")
   updatedAt  DateTime         @updatedAt @map("updated_at")
   deleted    Boolean          @default(false)
-  attendance Attendance[]
+
   courses    CourseSchedule[]
 
   @@map("schedules")
@@ -251,7 +253,6 @@ model Enrollment {
   status         EnrollmentStatus
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
-  attendance     Attendance[]
   courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
   student        Student          @relation(fields: [studentId], references: [id])
   deleted        Boolean          @default(false)
@@ -262,18 +263,18 @@ model Enrollment {
 }
 
 model Attendance {
-  id           String           @id @default(uuid())
-  enrollmentId String           @map("enrollment_id")
-  scheduleId   String           @map("schedule_id")
-  date         DateTime
-  status       AttendanceStatus
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
-  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id])
-  schedule     Schedule         @relation(fields: [scheduleId], references: [id])
+  id                  String           @id @default(uuid())
+  courseBranchId      String           @map("course_branch_id")
+  studentId           String           @map("student_id")
+  date                DateTime
+  status              AttendanceStatus
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+  courseBranch        CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  student             Student          @relation(fields: [studentId], references: [id])
 
-  @@index([enrollmentId], map: "attendances_enrollment_id_fkey")
-  @@index([scheduleId], map: "attendances_schedule_id_fkey")
+  @@index([courseBranchId], map: "attendances_course_branch_id_fkey")
+  @@index([studentId], map: "attendances_student_id_fkey")
   @@map("attendances")
 }
 
