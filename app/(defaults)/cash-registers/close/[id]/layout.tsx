@@ -3,8 +3,8 @@ import React, { useEffect } from 'react'
 
 import { ViewTitle } from '@/components/common';
 import TableSkeleton, { GenericSkeleton } from '@/components/common/Skeleton';
-import { useFetchCashRegistersById } from '../../invoices/lib/cash-register/use-fetch-cash-register';
-import CashRegisterDetails from '../../invoices/components/cash-register/cash-register-details';
+import { useFetchCashRegistersById } from '../../../invoices/lib/cash-register/use-fetch-cash-register';
+import CashRegisterDetails from '../../../invoices/components/cash-register/cash-register-details';
 
 export default function layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
     const { id, } = params;

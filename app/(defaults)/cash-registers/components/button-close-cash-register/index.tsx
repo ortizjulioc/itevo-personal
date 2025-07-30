@@ -1,7 +1,8 @@
 'use client'
-import ModalCashRegisterClose from '@/app/(defaults)/close-cash-register/components/modal-cash-register-close';
+
 import { Button } from '@/components/ui';
 import React from 'react'
+import ModalCashRegisterClose from '../modal-cash-register-close';
 
 export default function ButtonCloseCashRegister() {
     const [openModalCashRegister, setOpenModalCashRegister] = React.useState(false);

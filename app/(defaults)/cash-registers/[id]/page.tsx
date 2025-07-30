@@ -1,0 +1,21 @@
+'use client';
+import { FormSkeleton, ViewTitle } from "@/components/common";
+import { useFetchCashRegistersById } from "../../invoices/lib/cash-register/use-fetch-cash-register";
+import CashRegisterDetails from "../components/cash-register-details";
+
+
+
+export default function EditCashRegister({ params }: { params: { id: string } }) {
+    const { id } = params;
+    const { loading, CashRegister } = useFetchCashRegistersById(id);
+
+    return (
+        <div>
+            <ViewTitle className='mb-6' title="Detalle de Caja" showBackPage />
+
+
+            {loading && <FormSkeleton />}
+            {CashRegister && <CashRegisterDetails cashRegister={CashRegister} />}
+        </div>
+    )
+}
