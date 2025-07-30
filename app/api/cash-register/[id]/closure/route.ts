@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCashRegisterClosureById, createCashRegisterClosure } from '@/services/cash-register-closure-service';
+import { createCashRegisterClosure, getCashRegisterClosureByCashRegisterId } from '@/services/cash-register-closure-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { findCashRegisterById, getCashRegisterMovementSummary } from '@/services/cash-register-service';
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const { id } = params;
 
-    const closure = await getCashRegisterClosureById(id);
+    const closure = await getCashRegisterClosureByCashRegisterId(id);
 
     if (!closure) {
       return NextResponse.json({ code: 'E_CLOSURE_NOT_FOUND', message: 'Cierre de caja no encontrado' }, { status: 404 });
