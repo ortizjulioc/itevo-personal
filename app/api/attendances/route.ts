@@ -50,8 +50,6 @@ export async function POST(request: NextRequest) {
             'date',
         ]);
 
-
-
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
@@ -63,9 +61,9 @@ export async function POST(request: NextRequest) {
        }
 
         const attendanceRecord = await createAttendanceRecord({
-            courseBranch: body.courseBranchId,
+            courseBranch: { connect: { id: body.courseBranchId } },
             date: new Date(body.date),
-            student: body.studentId,
+            student: { connect: { id: body.studentId } },
             status: body.status,
         });
 

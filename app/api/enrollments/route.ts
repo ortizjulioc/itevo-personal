@@ -16,12 +16,16 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
 
         const filters = {
-            studentId: searchParams.get('studentId') || undefined,
-            courseBranchId: searchParams.get('courseBranchId') || undefined,
-            status: searchParams.get('status') || '',
-            enrollmentDate: searchParams.get('enrollmentDate') || '',
             page: parseInt(searchParams.get('page') || '1', 10),
             top: parseInt(searchParams.get('top') || '10', 10),
+            studentId: searchParams.get('studentId') || undefined,
+            courseId: searchParams.get('courseId') || undefined,
+            teacherId: searchParams.get('teacherId') || undefined,
+            branchId: searchParams.get('branchId') || undefined,
+            promotionId: searchParams.get('promotionId') || undefined,
+            modality: searchParams.get('modality') || undefined,
+            status: searchParams.get('status') || undefined,
+            enrollmentDate: searchParams.get('enrollmentDate') || undefined,
         }
 
         const { enrollments, totalEnrollments } = await getEnrollments(filters);
@@ -71,7 +75,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
         }
 
-        if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount  && courseBranch.sessionCount > 0) {
+        if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount && courseBranch.sessionCount > 0) {
             // Check if the student is already enrolled in the course branch
             const existingEnrollment = await Prisma.enrollment.findFirst({
                 where: {
@@ -94,7 +98,7 @@ export async function POST(request: Request) {
             if (!courseBranch.endDate && courseBranch.sessionCount > 0) {
                 // Calculate the end date based on the session count and schedules
                 const schedules = courseBranch.schedules || [];
-                const {holidays} = await getHolidays(1, 365, '');
+                const { holidays } = await getHolidays(1, 365, '');
                 courseBranch.endDate = getCourseEndDate(
                     new Date(body.enrollmentDate),
                     courseBranch.sessionCount,
