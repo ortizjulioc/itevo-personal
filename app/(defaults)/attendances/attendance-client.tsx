@@ -38,7 +38,6 @@ export default function AttendanceClient({ searchParams }: { searchParams?: { se
         rightComponent={
           <div className="flex gap-2">
             <Button
-              size="sm"
               icon={showFilters ? <HiX /> : <HiOutlineFilter />}
               color={showFilters ? 'danger' : 'success'}
               onClick={handleFilterChange}
