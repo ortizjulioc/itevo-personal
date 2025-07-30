@@ -22,7 +22,7 @@ export default function Holiday({ searchParams }: HolidayListProps) {
     <div>
       <ViewTitle className='mb-6' title="Dias feriados" rightComponent={
         <>
-          <SearchInput placeholder="Buscar Cursos" />
+          <SearchInput placeholder="Buscar" />
           <Link href="/holidays/new">
             <Button icon={<IconPlusCircle />}>Crear dia feriado</Button>
           </Link>

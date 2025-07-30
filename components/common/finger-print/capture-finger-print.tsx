@@ -12,10 +12,11 @@ import Tooltip from '@/components/ui/tooltip';
 interface Props {
     studentId?: string;
     showTitle?: boolean;
+    blackStyle?:boolean
     onChange?: (val: string) => void;
 }
 
-export default function CaptureFingerPrint({ studentId, showTitle = true, onChange }: Props) {
+export default function CaptureFingerPrint({ studentId, showTitle = true, onChange, blackStyle=false }: Props) {
     const [openModal, setOpenModal] = useState(false);
     const [image, setImage] = useState('');
     const [fingerprintData, setFingerprintData] = useState('');
@@ -112,7 +113,14 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
     return (
         <div>
             <Tooltip title="Registrar Huella">
-                <Button type="button" onClick={() => setOpenModal(true)} icon={<IoIosFingerPrint className="text-lg" />} size="md" variant="outline">
+                <Button
+                    type="button"
+                    onClick={() => setOpenModal(true)}
+                    icon={<IoIosFingerPrint className="text-lg" />}
+                    size="md"
+                    variant="outline"
+                    className={ ` whitespace-nowrap ${blackStyle ? '  border-none text-black hover:bg-white hover:text-black' : ''}`}
+                >
                     {showTitle && 'Registrar Huella'}
                 </Button>
             </Tooltip>

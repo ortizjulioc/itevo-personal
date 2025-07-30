@@ -12,6 +12,10 @@ import { deleteStudent } from "../../lib/request";
 import CaptureFingerPrint from "@/components/common/finger-print/capture-finger-print";
 import TextEllipsis from "@/components/common/text-ellipsis";
 import { TbDetails } from "react-icons/tb";
+import Dropdown from "@/components/dropdown";
+import { IRootState } from "@/store";
+import { useSelector } from "react-redux";
+import { IoIosMore } from "react-icons/io";
 
 
 
@@ -22,6 +26,7 @@ interface Props {
 
 export default function StudentList({ className, query = '' }: Props) {
   const params = queryStringToObject(query);
+  const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
   const { loading, error, students, totalStudents, setStudents } = useFetchStudents(query);
   if (error) {
     openNotification('error', error);
@@ -81,33 +86,63 @@ export default function StudentList({ className, query = '' }: Props) {
                   </td>
                   <td>
                     <div>
-                    {student.phone ? student.phone.split(',').map((phone, index) => (
+                      {student.phone ? student.phone.split(',').map((phone, index) => (
                         <span key={index} className="block min-w-max">
-                        {formatPhoneNumber(phone.trim())}
-                      </span>
-                    )) : (
+                          {formatPhoneNumber(phone.trim())}
+                        </span>
+                      )) : (
                         <OptionalInfo />
-                    )}
+                      )}
                     </div>
                   </td>
                   <td>
                     <div className="whitespace-nowrap">
                       {student.address ? (
                         <TextEllipsis text={student.address} maxLength={30} />
-                        ) : <OptionalInfo />}
+                      ) : <OptionalInfo />}
                     </div>
                   </td>
                   <td>
                     <div className="flex items-center justify-end gap-3">
-                      <Tooltip title="Eliminar">
+                      {/* <Tooltip title="Eliminar">
                         <button onClick={() => onDelete(student.id)}>
                           <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
                         </button>
                       </Tooltip>
-                      {/* <CaptureFingerPrint
+                      <CaptureFingerPrint
                         studentId={student.id}
                         showTitle={false}
+                        blackStyle={true}
                       /> */}
+                      <details className="relative inline-block text-left group">
+                        <summary className="list-none p-2 rounded-full hover:bg-gray-100 cursor-pointer">
+                          <IoIosMore className="text-xl rotate-90" />
+                        </summary>
+
+                        <div className="absolute right-0 z-20 mt-2 w-auto origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 group-open:block hidden">
+                          <div className="py-1">
+                           
+
+                            <div className=" hover:bg-gray-100">
+                              <CaptureFingerPrint
+                                studentId={student.id}
+                                showTitle={true}
+                                blackStyle={true}
+                              />
+                            </div>
+                             <Button
+                              onClick={() => onDelete(student.id)}
+                              className="flex w-full items-start justify-start text-sm shadow-none  bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
+                              icon={<IconTrashLines className="text-lg"  />}
+                            >
+                              
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                      </details>
+
+
                       <Tooltip title="Editar">
                         <Link href={`/students/${student.id}`}>
                           <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
