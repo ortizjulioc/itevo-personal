@@ -78,7 +78,7 @@ export default function CoursetList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{course.description}</div>
                                     </td>
                                     <td>
-                                        {course.duration} sesion(es)
+                                        {course.duration}
                                     </td>
                                     <td>
                                         {course.requiresGraduation ? 'Si' : 'No'}

@@ -13,6 +13,7 @@ import ModalityTag from "../modality";
 import StatusCourseBranch from "@/components/common/info-labels/status/status-course-branch";
 import { CourseBranchStatus } from "@prisma/client";
 import SelectCourseBranchStatus from "./select-status";
+import OptionalInfo from "@/components/common/optional-info";
 
 
 
@@ -87,9 +88,10 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
-                            <th>CURSO</th>
+                            <th></th>
                             <th>FECHAS</th>
-                            <th>MODALIDAD</th>
+                            <th>CURSO</th>
+                            <th>PROFESOR</th>
                             <th>SESIONES</th>
                             <th>CAPACIDAD</th>
                             <th>COSTO</th>
@@ -106,27 +108,23 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                         {courseBranches?.map((courseBranch) => {
                             return (
                                 <tr key={courseBranch.id}>
+                                    <td><ModalityTag modality={courseBranch.modality} short /></td>
                                     <td>
-                                        <div className='flex flex-col'>
-                                            <span className='font-semibold'>{courseBranch.course.name}</span>
-                                            <span className="">
-                                                {courseBranch.teacher.firstName} {courseBranch.teacher.lastName}
-                                            </span>
-                                        </div>
+                                        {courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} {courseBranch.endDate ? ` ~ ${getFormattedDate(new Date(courseBranch.endDate))}` : ''}
+                                        {!courseBranch.startDate && !courseBranch.endDate && <OptionalInfo />}
                                     </td>
-                                    <td>{courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} → {courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : ''}</td>
-                                    <td><ModalityTag modality={courseBranch.modality} /></td>
+                                    <td>
+                                        <span className='font-semibold'>{courseBranch.course.name}</span>
+                                    </td>
+                                    <td>{courseBranch.teacher.firstName} {courseBranch.teacher.lastName}</td>
                                     <td>{courseBranch.sessionCount}</td>
                                     <td>{courseBranch.capacity}</td>
                                     <td><span className='font-bold'>{formatCurrency(courseBranch.amount)}</span></td>
-                                    {/* <td>
-                                        <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} />
-                                    </td> */}
                                     <td>
                                         <SelectCourseBranchStatus
                                             value={courseBranch.status}
                                             onChange={(selected) => {
-                                             onStatusChange(courseBranch.id, selected?.value as CourseBranchStatus);
+                                                onStatusChange(courseBranch.id, selected?.value as CourseBranchStatus);
                                             }}
                                         />
                                     </td>

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
             branchId: searchParams.get('branchId') || undefined,
             teacherId: searchParams.get('teacherId') || undefined,
             courseId: searchParams.get('courseId') || undefined,
-            Modality: searchParams.get('modality') as Modality,
+            modality: searchParams.get('modality') as Modality || undefined,
             startDate: searchParams.get('startDate') || undefined,
             endDate: searchParams.get('endDate') || undefined,
         }

@@ -6,18 +6,19 @@ export const getCourseBranch = async (filters: any) => {
 
     const { page, top, promotionId, branchId, teacherId, courseId, modality } = filters;
     const skip = (page - 1) * top;
+    const whereClause: PrismaTypes.CourseBranchWhereInput = {
+        deleted: false,
+        ...(promotionId && { promotionId }),
+        ...(branchId && { branchId }),
+        ...(teacherId && { teacherId }),
+        ...(courseId && { courseId }),
+        ...(modality && { modality }),
+    };
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
             { courseId: 'asc' },
         ],
-        where: {
-            promotionId,
-            branchId,
-            teacherId,
-            courseId,
-            modality,
-            deleted: false,
-        },
+        where: whereClause,
         include: {
             branch: { select: { id: true, name: true } },
             teacher: { select: { id: true, firstName: true, lastName: true  } },

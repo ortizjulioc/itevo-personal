@@ -135,6 +135,12 @@ export function getClassSessions(
     return { count: sessionCount, dates: sessionDates };
 }
 
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getDate() === b.getDate() &&
+         a.getMonth() === b.getMonth() &&
+         a.getFullYear() === b.getFullYear();
+}
+
 /**
  * Calcula la fecha de finalización de un curso, dado un número de sesiones,
  * una fecha de inicio, horarios semanales y días feriados.
@@ -151,32 +157,40 @@ export function getCourseEndDate(
     schedules: { weekday: number; startTime: string; endTime: string }[],
     holidays: { date: Date; isRecurring: boolean }[]
 ): Date {
-    let currentDate = toLocalDate(new Date(startDate));
-    let sessionsAdded = 0;
+  if (schedules.length === 0) {
+    // si no hay horarios, devolvemos la fecha de inicio + el número de sesiones como semanas
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + sessionCount * 7); // Asumimos que cada sesión es semanal
+    return endDate;
+  }
 
-    while (sessionsAdded < sessionCount) {
-        for (const schedule of schedules) {
-            if (currentDate.getDay() === schedule.weekday) {
-                const isHoliday = holidays.some((holiday) => {
-                    const holidayDate = toLocalDate(new Date(holiday.date));
-                    return holiday.isRecurring
-                        ? currentDate.getMonth() === holidayDate.getMonth() &&
-                          currentDate.getDate() === holidayDate.getDate()
-                        : currentDate.getTime() === holidayDate.getTime();
-                });
+  let currentDate = toLocalDate(new Date(startDate));
+  let sessionsAdded = 0;
 
-                if (!isHoliday) {
-                    sessionsAdded++;
-                    if (sessionsAdded === sessionCount) {
-                        return new Date(currentDate);
-                    }
-                }
-            }
+  while (sessionsAdded < sessionCount) {
+    console.log('Current Date:', currentDate, 'Sessions Added:', sessionsAdded);
+    for (const schedule of schedules) {
+      if (currentDate.getDay() === schedule.weekday) {
+        const isHoliday = holidays.some((holiday) => {
+          const holidayDate = toLocalDate(new Date(holiday.date));
+          return holiday.isRecurring
+            ? currentDate.getMonth() === holidayDate.getMonth() &&
+              currentDate.getDate() === holidayDate.getDate()
+            : isSameDay(currentDate, holidayDate);
+        });
+
+        if (!isHoliday) {
+          sessionsAdded++;
+          if (sessionsAdded === sessionCount) {
+            return new Date(currentDate);
+          }
         }
-        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
 
-    return new Date(currentDate); // Por si algo falla, aunque en teoría ya se devuelve antes.
+  return new Date(currentDate); // fallback
 }
 
 
