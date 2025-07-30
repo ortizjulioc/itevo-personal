@@ -1,13 +1,13 @@
 'use client';
 import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
 import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch, updateCourseBranch } from '../../../lib/request';
 import { Tab } from '@headlessui/react';
-import { createContext, Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
 import FinancialConfigFields from './financial-config-fields';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
@@ -17,9 +17,11 @@ import ConfirmationFields from './confirmation-fields';
 import StickyFooter from '@/components/common/sticky-footer';
 import { useURLSearchParams } from '@/utils/hooks';
 import PrerequisitesFields from './prerequisites-fields';
-import CourseBranchContext, { CourseBranchProvider } from './course-branch-provider';
-import { set } from 'lodash';
+import { CourseBranchProvider } from './course-branch-provider';
 import { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
+import { getCourseEndDate } from '@/utils/date';
+import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
+import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -45,7 +47,6 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { preRequisites, fetchPreRequisites } = useFetchPreRequisites(initialValues.courseId);
 
-
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);
         window.history.replaceState(null, '', `${pathname}#${COURSE_BRANCH_TABS[index]}`);
@@ -58,6 +59,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
+        console.log('Valores del formulario:', values);
         const resp = await updateCourseBranch(initialValues.id, values);
 
         if (resp.success) {
