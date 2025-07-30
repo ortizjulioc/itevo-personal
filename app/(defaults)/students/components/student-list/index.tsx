@@ -119,28 +119,27 @@ export default function StudentList({ className, query = '' }: Props) {
                           <IoIosMore className="text-xl rotate-90" />
                         </summary>
 
-                        <div className="absolute right-0 z-20 mt-2 w-auto origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 group-open:block hidden">
+                        <div className="fixed right-4 mt-2 w-auto z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 group-open:block hidden">
                           <div className="py-1">
-                           
-
-                            <div className=" hover:bg-gray-100">
+                            <div className="hover:bg-gray-100">
                               <CaptureFingerPrint
                                 studentId={student.id}
                                 showTitle={true}
                                 blackStyle={true}
                               />
                             </div>
-                             <Button
+
+                            <Button
                               onClick={() => onDelete(student.id)}
-                              className="flex w-full items-start justify-start text-sm shadow-none  bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
-                              icon={<IconTrashLines className="text-lg"  />}
+                              className="flex w-full items-start justify-start text-sm shadow-none bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
+                              icon={<IconTrashLines className="text-lg" />}
                             >
-                              
                               Eliminar
                             </Button>
                           </div>
                         </div>
                       </details>
+
 
 
                       <Tooltip title="Editar">

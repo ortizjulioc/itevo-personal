@@ -22,3 +22,7 @@ export const deleteAttendance = async (id: string) => {
 export const getFingerPrintById = async (id: string) => {
     return await apiRequest.get<Fingerprint>(`/students/${id}/fingerprint`);
 }
+export const deteleFingerPrintById = async (id: string) => {
+    return await apiRequest.remove<Fingerprint>(`/students/${id}/fingerprint`);
+}
+
