@@ -5,18 +5,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { IoIosFingerPrint } from 'react-icons/io';
 import apiRequest from '@/utils/lib/api-request/request';
-import { Fingerprint } from '@prisma/client';
 import { openNotification } from '@/utils';
 import Tooltip from '@/components/ui/tooltip';
+import Swal from 'sweetalert2';
+import { deteleFingerPrintById, getFingerPrintById } from '@/app/(defaults)/attendances/lib/request';
 
 interface Props {
     studentId?: string;
     showTitle?: boolean;
-    blackStyle?:boolean
+    blackStyle?: boolean;
     onChange?: (val: string) => void;
 }
 
-export default function CaptureFingerPrint({ studentId, showTitle = true, onChange, blackStyle=false }: Props) {
+export default function CaptureFingerPrint({ studentId, showTitle = true, onChange, blackStyle = false }: Props) {
     const [openModal, setOpenModal] = useState(false);
     const [image, setImage] = useState('');
     const [fingerprintData, setFingerprintData] = useState('');
@@ -24,32 +25,30 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [submitloading, setSubmitLoading] = useState(false);
+    const [existingFingerprint, setExistingFingerprint] = useState<boolean>(false);
+    const [deleting, setDeleting] = useState(false);
+    const { state, captureFingerprint, matchFingerprint } = useFingerprint();
 
-    const addFingerPrint = async () => {
-        setSubmitLoading(true);
-        const data = {
-            fingerprint: fingerprintData,
-            sensorType: '2connect',
-        };
+    const fetchExistingFingerprint = async () => {
+        if (!studentId) return;
 
         try {
-            const resp = await apiRequest.post<any>(`/students/${studentId}/fingerprint`, data);
+            const response = await getFingerPrintById(studentId || '');
+            const template = response.data?.template;
 
-            if (resp.success) {
-                openNotification('success', 'Huella registrada correctamente');
-                setOpenModal(false);
-            } else {
-                openNotification('error', 'Hubo un problema al registrar la huella');
+            let asString = '';
+
+            if (template && typeof template === 'object') {
+                const byteArray = Object.values(template);
+                const uint8 = Uint8Array.from(byteArray);
+                asString = Buffer.from(uint8).toString('base64');
             }
-        } catch (error) {
-            console.log(error);
-            openNotification('error', 'Hubo un problema al registrar la huella');
-        } finally {
-            setSubmitLoading(false);
+
+            setExistingFingerprint(!!asString);
+        } catch (e) {
+            setExistingFingerprint(false);
         }
     };
-
-    const { state, captureFingerprint, matchFingerprint } = useFingerprint();
 
     const handleCapture = async () => {
         setError(false);
@@ -75,13 +74,95 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
 
             setImage(captures[0].image);
             setFingerprintData(captures[0].fingerprintData);
-            return;
         } catch (e) {
             setError(true);
             setImage('');
             setFingerprintData('');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const addFingerPrint = async () => {
+        setSubmitLoading(true);
+        const data = {
+            fingerprint: fingerprintData,
+            sensorType: '2connect',
+        };
+
+        try {
+            const resp = await apiRequest.post<any>(`/students/${studentId}/fingerprint`, data);
+
+            if (resp.success) {
+                openNotification('success', 'Huella registrada correctamente');
+                setOpenModal(false);
+                setExistingFingerprint(true);
+            } else {
+                openNotification('error', 'Hubo un problema al registrar la huella');
+            }
+        } catch (error) {
+            console.log(error);
+            openNotification('error', 'Hubo un problema al registrar la huella');
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
+
+    const handleButtonClick = async () => {
+        if (existingFingerprint && studentId) {
+            const result = await Swal.fire({
+                title: 'Huella ya registrada',
+                text: 'Este estudiante ya tiene una huella registrada. ¿Desea reemplazarla?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, reemplazar',
+                cancelButtonText: 'Cancelar',
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                setDeleting(true); // 🟡 inicia loading
+                await deteleFingerPrintById(studentId);
+                openNotification('success', 'Huella anterior eliminada');
+                setExistingFingerprint(false);
+            } catch (error) {
+                openNotification('error', 'Error al eliminar la huella anterior');
+                return;
+            } finally {
+                setDeleting(false); // 🟢 termina loading
+            }
+        }
+
+        setOpenModal(true);
+    };
+
+    const handleSave = async () => {
+        if (existingFingerprint) {
+            const confirm = await Swal.fire({
+                title: 'Ya existe una huella registrada',
+                text: '¿Desea eliminar la anterior y registrar una nueva?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, reemplazar',
+                cancelButtonText: 'Cancelar',
+            });
+
+            if (!confirm.isConfirmed) return;
+        }
+
+        if (onChange) {
+            setSubmitLoading(true);
+            try {
+                onChange(fingerprintData);
+                openNotification('success', 'Huella registrada correctamente');
+                setOpenModal(false);
+                setExistingFingerprint(true);
+            } finally {
+                setSubmitLoading(false);
+            }
+        } else {
+            addFingerPrint();
         }
     };
 
@@ -95,35 +176,29 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
     };
 
     useEffect(() => {
-        if (openModal) handleCapture();
+        if (openModal) {
+            handleCapture();
+        }
     }, [openModal]);
 
-    const handleOnChange = () => {
-        setSubmitLoading(true);
-
-        try {
-            onChange?.(fingerprintData);
-            setOpenModal(false)
-            openNotification('success', 'Huella registrada correctamente');
-        } finally {
-            setSubmitLoading(false);
-        }
-    };
-
+    useEffect(() => {
+        fetchExistingFingerprint();
+    }, []);
     return (
         <div>
             <Tooltip title="Registrar Huella">
                 <Button
                     type="button"
-                    onClick={() => setOpenModal(true)}
+                    onClick={handleButtonClick}
                     icon={<IoIosFingerPrint className="text-lg" />}
                     size="md"
                     variant="outline"
-                    className={ ` whitespace-nowrap ${blackStyle ? '  border-none text-black hover:bg-white hover:text-black' : ''}`}
+                    className={`whitespace-nowrap ${blackStyle ? 'border-none text-black hover:bg-white hover:text-black' : ''}`}
                 >
-                    {showTitle && 'Registrar Huella'}
+                    {existingFingerprint ? 'Huella registrada' : showTitle && 'Registrar Huella'}
                 </Button>
             </Tooltip>
+
             <Transition appear show={openModal} as={Fragment}>
                 <Dialog as="div" open={openModal} onClose={resetState}>
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-black/60">
@@ -168,18 +243,7 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
                                             <Button variant="outline" color="danger" onClick={resetState}>
                                                 Cancelar
                                             </Button>
-                                            <Button
-                                                onClick={() => {
-                                                    if (!onChange) {
-                                                        addFingerPrint();
-                                                    } else {
-                                                        handleOnChange()
-                                                    }
-
-                                                }}
-                                                disabled={!fingerprintData}
-                                                loading={submitloading}
-                                            >
+                                            <Button onClick={handleSave} disabled={!fingerprintData} loading={submitloading}>
                                                 Guardar
                                             </Button>
                                         </div>
