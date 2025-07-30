@@ -157,8 +157,11 @@ export function getCourseEndDate(
     schedules: { weekday: number; startTime: string; endTime: string }[],
     holidays: { date: Date; isRecurring: boolean }[]
 ): Date {
-    if (schedules.length === 0) {
-    throw new Error("Schedules array cannot be empty");
+  if (schedules.length === 0) {
+    // si no hay horarios, devolvemos la fecha de inicio + el número de sesiones como semanas
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + sessionCount * 7); // Asumimos que cada sesión es semanal
+    return endDate;
   }
 
   let currentDate = toLocalDate(new Date(startDate));
