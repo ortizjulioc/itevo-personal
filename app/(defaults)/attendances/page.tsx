@@ -38,7 +38,7 @@ export default function Attendance({ searchParams }: { searchParams?: { search?:
                 title="Asistencias"
                 rightComponent={
                     <div className='flex gap-2'>
-                        <Button className="" size="sm" icon={showFilters ? <HiX /> : <HiOutlineFilter />} color={showFilters ? 'danger' : 'success'} onClick={handleFilterChange}>
+                        <Button className="" icon={showFilters ? <HiX /> : <HiOutlineFilter />} color={showFilters ? 'danger' : 'success'} onClick={handleFilterChange}>
                             {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
                         </Button>
 
