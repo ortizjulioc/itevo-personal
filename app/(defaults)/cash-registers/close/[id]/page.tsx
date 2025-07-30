@@ -10,6 +10,7 @@ import Skeleton from "@/components/common/Skeleton";
 import useFetchCashMovements from '../../lib/use-fetch-cash-movements'
 import useFetchInvoices from '../../../bills/lib/use-fetch-invoices'
 import ButtonCloseCashRegister from '../../components/button-close-cash-register'
+import { useFetchCashRegistersById } from '@/app/(defaults)/invoices/lib/cash-register/use-fetch-cash-register'
 
 interface Props {
     params: {
@@ -22,7 +23,7 @@ interface Props {
 
 export default function CloseCashRegister({ params }: Props) {
 
-
+    const { CashRegister } = useFetchCashRegistersById(params?.id);
     const { cashMovements, loading } = useFetchCashMovements(params?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(params?.id)
 
@@ -85,7 +86,11 @@ export default function CloseCashRegister({ params }: Props) {
                 <div className='col-span-3'>
                     <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
                     <div className="panel p-4 space-y-4">
-                        
+                        <div>
+                            <p className="text-sm text-gray-600">Balance Inicial</p>
+                            <p className="text-base font-medium">{formatCurrency(CashRegister?.initialBalance || 0)}</p>
+                        </div>
+
                         <div>
                             <p className="text-sm text-gray-600">Efectivo</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
@@ -108,7 +113,7 @@ export default function CloseCashRegister({ params }: Props) {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total -totalEgresos)}</p>
+                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos + (CashRegister?.initialBalance || 0))}</p>
                         </div>
 
 
