@@ -71,6 +71,7 @@ export default function ScheduleField({ className }: ScheduleFieldProps) {
           modal={modal}
           setModal={setModal}
           fetchSchedulesData={fetchSchedulesData}
+          assignSchedule={assignSchedule}
           />
 
       </div>
