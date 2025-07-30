@@ -9,7 +9,8 @@ import { useRouter } from 'next/navigation';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { openNotification } from '@/utils';
 import { usePathname } from 'next/navigation';
-import AttendanceModal from '../../attendance';
+import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-modal';
+
 
 
 interface CashRegister extends CashRegisterPrisma {

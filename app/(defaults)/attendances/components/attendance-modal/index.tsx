@@ -1,9 +1,6 @@
 import CreateAttendanceForm from '@/app/(defaults)/attendances/components/attendance-form';
-import { Button, FormItem } from '@/components/ui';
 import { Dialog, Transition } from '@headlessui/react';
-import { Field, Form, Formik } from 'formik';
 import React, { Fragment } from 'react'
-import { FaBullseye } from 'react-icons/fa';
 
 export default function AttendanceModal({ setOpenModal, openModal }: { setOpenModal: (open: boolean) => void, openModal: boolean }) {
 
