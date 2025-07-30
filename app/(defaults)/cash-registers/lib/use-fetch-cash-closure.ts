@@ -6,19 +6,19 @@ import type { CashMovement as CashMovementPrima, CashRegisterClosure, User } fro
 
 
 const useFetchClosure = (id:string,query?: string) => {
-    const [closure, setClosure] = useState<CashRegisterClosure |null>();
+    const [closure, setClosure] = useState<CashRegisterClosure | null>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchClosureData = async (id:string) => {
             try {
-                const response = await apiRequest.get<CashRegisterClosure>(`/cash-register/${id}/closure`);
+                const response = await apiRequest.get<CashRegisterClosure[]>(`/cash-register/${id}/closure`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }
                 console.log(response.data)
-                setClosure(response.data);
+                setClosure(response.data?.[0] || null);
               
             } catch (error) {
                 if (error instanceof Error) {

@@ -10,8 +10,11 @@ import IconCaretsDown from '@/components/icon/icon-carets-down';
 import IconCaretDown from '@/components/icon/icon-caret-down';
 import { usePathname } from 'next/navigation';
 import { getTranslation } from '@/i18n';
-import { NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_TITLE } from "@/constants/navigation.constant";
+import { useSession } from 'next-auth/react';
+
 import navigationConfig from '@/config/navigation.config';
+import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
+import { Branch, Role } from '@prisma/client';
 
 interface NavigationConfigInterface {
     key: string;
@@ -19,29 +22,60 @@ interface NavigationConfigInterface {
     icon?: React.ElementType;
     url: string;
     type: string;
+    auth?: string[]; // ← ROLES permitidos
     subItems: Array<{
         key: string;
         title: string;
         url: string;
         type: string;
+        auth?: string[]; // ← ROLES permitidos por subitem
         subItems?: Array<{ key: string; title: string; url: string }>;
     }>;
-};
+}
 
 const NavigationConfig: NavigationConfigInterface[] = navigationConfig as NavigationConfigInterface[];
+
 const Sidebar = () => {
     const dispatch = useDispatch();
-    const { t } = getTranslation();
+   const [modal, setModal] = useState<boolean>(false)
+      const { data: session, status } = useSession();
+      const user = session?.user as {
+          id: string;
+          name?: string | null;
+          email?: string | null;
+          username?: string;
+          phone?: string;
+          lastName?: string;
+          roles?: Role[];
+          mainBranch: Branch;
+          branches?: any[];
+      };
+  
     const pathname = usePathname();
+    const { t } = getTranslation();
     const [currentMenu, setCurrentMenu] = useState<string>('');
-    const [errorSubMenu, setErrorSubMenu] = useState(false);
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const semidark = useSelector((state: IRootState) => state.themeConfig.semidark);
-    const toggleMenu = (value: string) => {
-        setCurrentMenu((oldValue) => {
-            return oldValue === value ? '' : value;
-        });
+    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
+    const userRoles: string[] = user?.roles?.map((role: any) => role.normalizedName) || [];
+
+
+    // Verifica si el usuario tiene permiso para ver un ítem
+    const hasAccess = (auth?: string[]) => {
+        if (!auth || auth.length === 0) return true;
+        return auth.some((role) => userRoles.includes(role));
     };
+
+    // Filtrar ítems por autorización
+    const filteredNavigation = NavigationConfig.filter((item) => hasAccess(item.auth));
+
+    // Ocultar el sidebar si no tiene ningún menú permitido
+    if (filteredNavigation.length === 0) return null;
+
+    const toggleMenu = (value: string) => {
+        setCurrentMenu((oldValue) => (oldValue === value ? '' : value));
+    };
+
     useEffect(() => {
         const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
         if (selector) {
@@ -58,6 +92,7 @@ const Sidebar = () => {
             }
         }
     }, []);
+
     useEffect(() => {
         setActiveRoute();
         if (window.innerWidth < 1024 && themeConfig.sidebar) {
@@ -66,30 +101,23 @@ const Sidebar = () => {
     }, [pathname]);
 
     const setActiveRoute = () => {
-        document.querySelectorAll('.sidebar ul a.active').forEach(link => {
-            link.classList.remove('active');
-        });
-
-        document.querySelectorAll('.sidebar ul a').forEach(link => {
+        document.querySelectorAll('.sidebar ul a.active').forEach((link) => link.classList.remove('active'));
+        document.querySelectorAll('.sidebar ul a').forEach((link) => {
             const href = link.getAttribute('href');
-            if (href && window.location.pathname.startsWith(href)) {
-                // Verifica que sea una coincidencia exacta o comience con la ruta y un separador '/'
-                if (window.location.pathname === href || window.location.pathname.startsWith(`${href}/`)) {
-                    link.classList.add('active');
-                }
+            if (href && (window.location.pathname === href || window.location.pathname.startsWith(`${href}/`))) {
+                link.classList.add('active');
             }
         });
     };
+
     return (
         <div className={semidark ? 'dark' : ''}>
-            <nav
-                className={`sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}
-            >
+            <nav className={`sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}>
                 <div className="h-full bg-white dark:bg-black">
                     <div className="flex items-center justify-between px-4 py-3">
                         <Link href="/" className="main-logo flex shrink-0 items-center">
                             <img className="ml-[5px] w-8 flex-none" src="/assets/images/logo.svg" alt="logo" />
-                            <span className="align-middle text-2xl font-semibold ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light lg:inline">ITEVO</span>
+                            <span className="align-middle text-2xl font-semibold ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light lg:inline">VRISTO</span>
                         </Link>
                         <button
                             type="button"
@@ -100,27 +128,25 @@ const Sidebar = () => {
                         </button>
                     </div>
                     <PerfectScrollbar className="relative h-[calc(100vh-80px)]">
-                        {NavigationConfig.map(({
-                            key,
-                            title,
-                            icon: Icon,
-                            url,
-                            type,
-                            subItems,
-                        }, index) => (
+                        {filteredNavigation.map(({ key, title, icon: Icon, url, type, subItems }, index) => (
                             <ul key={key + index} className="relative space-y-0.5 p-4 py-0 font-semibold">
                                 {type === NAV_ITEM_TYPE_TITLE && (
-                                    <span key={index} className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                                    <span className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                                         <span>{title}</span>
                                     </span>
                                 )}
-                                {type === NAV_ITEM_TYPE_COLLAPSE && (
-                                    <li key={index} className="menu nav-item">
-                                        <button type="button" className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(key)}>
-                                            <div className="flex items-center">
-                                                {Icon && (<Icon className="shrink-0 group-hover:!text-primary" />)}                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{title}</span>
-                                            </div>
 
+                                {type === NAV_ITEM_TYPE_COLLAPSE && (
+                                    <li className="menu nav-item">
+                                        <button
+                                            type="button"
+                                            className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`}
+                                            onClick={() => toggleMenu(key)}
+                                        >
+                                            <div className="flex items-center">
+                                                {Icon && <Icon className="shrink-0 group-hover:!text-primary" />}
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{title}</span>
+                                            </div>
                                             <div className={currentMenu !== key ? '-rotate-90 rtl:rotate-90' : ''}>
                                                 <IconCaretDown />
                                             </div>
@@ -128,19 +154,26 @@ const Sidebar = () => {
 
                                         <AnimateHeight duration={300} height={currentMenu === key ? 'auto' : 0}>
                                             <ul className="sub-menu text-gray-500">
-                                                {subItems.map((subItem, subIndex) => (
-                                                    <li key={subIndex}>
-                                                        <Link href={subItem.url}>{subItem.title}</Link>
-                                                    </li>
-                                                ))}
+                                                {subItems
+                                                    .filter((subItem) => hasAccess(subItem.auth))
+                                                    .map((subItem, subIndex) => (
+                                                        <li key={subIndex}>
+                                                            <Link href={subItem.url}>{subItem.title}</Link>
+                                                        </li>
+                                                    ))}
                                             </ul>
                                         </AnimateHeight>
                                     </li>
                                 )}
+
                                 {type === NAV_ITEM_TYPE_ITEM && (
-                                    <li className="menu nav-item" key={index}>
+                                    <li className="menu nav-item">
                                         <Link href={url}>
-                                            <button type="button" className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu(key)}>
+                                            <button
+                                                type="button"
+                                                className={`${currentMenu === key ? 'active' : ''} nav-link group w-full`}
+                                                onClick={() => toggleMenu(key)}
+                                            >
                                                 <div className="flex items-center">
                                                     {Icon && <Icon className="shrink-0 group-hover:!text-primary" />}
                                                     <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">{title}</span>
