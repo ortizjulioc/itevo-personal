@@ -6,13 +6,16 @@ import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { IoIosFingerPrint } from 'react-icons/io';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import Tooltip from '@/components/ui/tooltip';
 
 interface CompareFingerPrintProps {
-    previousFingerprint: string;
+    previousFingerprint?: string;
     onSuccess?: (score: number) => void;
+    showTitle?: boolean;
+    blackStyle?: boolean
 }
 
-export default function CompareFingerPrint({ previousFingerprint, onSuccess }: CompareFingerPrintProps) {
+export default function CompareFingerPrint({ previousFingerprint, onSuccess, blackStyle = false, showTitle = true }: CompareFingerPrintProps) {
     const [openModal, setOpenModal] = useState(false);
     const [image, setImage] = useState('');
     const [valid, setValid] = useState<boolean | null>(null);
@@ -37,7 +40,7 @@ export default function CompareFingerPrint({ previousFingerprint, onSuccess }: C
             const result = await captureFingerprint();
             setImage(result.image);
 
-            const matchScore = await matchFingerprint(previousFingerprint, result.fingerprintData);
+            const matchScore = await matchFingerprint(previousFingerprint || '', result.fingerprintData);
             setScore(matchScore);
 
             const isValid = matchScore >= 70;
@@ -61,7 +64,7 @@ export default function CompareFingerPrint({ previousFingerprint, onSuccess }: C
         setImage('');
         setValid(null);
         setScore(null);
-        setSuccess(false);
+        //setSuccess(false);
         setError(false);
         setLoading(false);
         setTimeoutError(false);
@@ -71,17 +74,32 @@ export default function CompareFingerPrint({ previousFingerprint, onSuccess }: C
         if (openModal) handleCompare();
     }, [openModal]);
 
+    useEffect(() => {
+        setSuccess(false);
+    }, [previousFingerprint]);
+
     return (
         <div>
-            <Button
-                type="button"
-                onClick={() => setOpenModal(true)}
-                icon={<IoIosFingerPrint className='text-2xl' />}
-                size="md"
-            >
-                Comparar Huella
-            </Button>
-
+            {success ? (
+                <span className="inline-flex items-center text-green-600 font-medium text-sm gap-1">
+                    <FaCheckCircle className="text-lg" /> Huella validada
+                </span>
+            ) : (
+                <Tooltip title="Validar Huella">
+                    <Button
+                        type="button"
+                        onClick={() => setOpenModal(true)}
+                        icon={<IoIosFingerPrint className="text-lg" />}
+                        size="md"
+                        variant="outline"
+                        disabled={!previousFingerprint}
+                        className={`whitespace-nowrap ${blackStyle ? 'border-none text-black hover:bg-white hover:text-black' : ''
+                            }`}
+                    >
+                        {loading ? 'Cargando...' : showTitle && 'Validar Huella'}
+                    </Button>
+                </Tooltip>
+            )}
             <Transition appear show={openModal} as={Fragment}>
                 <Dialog as="div" open={openModal} onClose={resetState}>
                     <div className="fixed inset-0 bg-black/60 z-[999] overflow-y-auto">

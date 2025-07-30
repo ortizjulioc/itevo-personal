@@ -28,29 +28,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
     };
 
-    const handlepayAccount = async (id: string, amount: number) => {
-        const data = {
-            amount,
-            cashRegisterId
-        }
-        try {
-            setLoadingPayment(true)
-
-            const resp = await PayAccount(id, data)
-
-            if (resp.success) {
-                openNotification('success', 'Desembolso exitoso')
-                useFetchpayment(teacher)
-
-            }
-
-        } catch (error) {
-            console.log(error)
-            openNotification('error', 'Ocurrio un error al desembolsar')
-        } finally {
-            setLoadingPayment(false);
-        }
-    }
+   
 
 
 

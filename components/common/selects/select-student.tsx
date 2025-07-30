@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Student } from '@prisma/client';
 import { Select } from '@/components/ui';
-import { GroupBase } from 'react-select';
+import { CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 
 export interface StudentSelect {
   value: string;
@@ -22,9 +22,21 @@ interface SelectStudentProps {
   onChange?: (selected: StudentSelect | null) => void;
   isDisabled?: boolean;
 }
+const customStyles: StylesConfig<StudentSelect, false> = {
+  menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+    ...base,
+    zIndex: 9999,
+  }),
+  menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+    ...base,
+    zIndex: 9999,
+  }),
+};
 
 export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
   const [options, setOptions] = useState<StudentSelect[]>([]);
+
+ 
 
   const fetchStudentData = async (inputValue: string): Promise<StudentSelect[]> => {
     try {
@@ -82,6 +94,8 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
+        styles={customStyles}
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         //asComponent={AsyncSelect}
         {...rest}
       />
