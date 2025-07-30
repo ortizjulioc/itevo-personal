@@ -78,16 +78,11 @@ export const getEnrollments = async (filters: any) => {
                     id: true,
                     courseId: true,
                     branchId: true,
-                    course: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                    branch: {
-                        select: {
-                            name: true,
-                        },
-                    },
+                    teacherId: true,
+                    teacher: { select: { code: true, firstName: true, lastName: true } },
+                    course: { select: { name: true, code: true } },
+                    branch: { select: { name: true } },
+                    schedules: { select: { schedule: true } },
                 },
             },
         },

@@ -1,21 +1,29 @@
-// app/enrollments/enrollment-client.tsx
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { HiOutlineFilter, HiX } from 'react-icons/hi';
-import { Button } from '@/components/ui';
-import { IconPlusCircle } from '@/components/icon';
-import { ViewTitle } from '@/components/common';
-import EnrollmentList from './components/enrollment-list';
-import SearchEnrollments from './components/search-enrollment';
-import { objectToQueryString } from '@/utils';
 
-export default function Enrollment({ searchParams }: { searchParams?: { search?: string; page?: string } }) {
+import { ViewTitle } from "@/components/common";
+import { Button } from "@/components/ui";
+import { IconPlusCircle } from "@/components/icon";
+import { objectToQueryString } from "@/utils";
+
+import CourseBranchList from "./components/course-branch-list";
+import SearchCourseBranch from "./components/search-course-branch";
+
+interface CoursetListProps {
+  searchParams?: {
+    search?: string;
+    page?: string;
+  };
+}
+
+export default function CourseBranchClient({ searchParams }: CoursetListProps) {
   const params = useSearchParams();
   const router = useRouter();
   const showFilters = params.get('showFilters') === 'true';
-
   const query = objectToQueryString(searchParams || {});
 
   const handleFilterChange = () => {
@@ -32,7 +40,7 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
     <div>
       <ViewTitle
         className="mb-6"
-        title="Inscripciones"
+        title="Oferta Académica"
         rightComponent={
           <div className="flex gap-2">
             <Button
@@ -42,14 +50,17 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
             >
               {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
             </Button>
-            <Link href="/enrollments/new">
-              <Button icon={<IconPlusCircle />}>Crear inscripción</Button>
+
+            <Link href="/course-branch/new">
+              <Button icon={<IconPlusCircle />}>Crear Oferta</Button>
             </Link>
           </div>
         }
       />
-      <div>{showFilters && <SearchEnrollments />}</div>
-      <EnrollmentList query={query} />
+
+      <div>{showFilters && <SearchCourseBranch />}</div>
+
+      <CourseBranchList query={query} />
     </div>
   );
 }
