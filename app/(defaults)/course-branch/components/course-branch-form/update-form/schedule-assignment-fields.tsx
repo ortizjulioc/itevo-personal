@@ -59,7 +59,7 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
       </FormItem>
 
       <FormItem name="sessionCount" label="Cantidad de sesiones" invalid={Boolean(errors.sessionCount && touched.sessionCount)} errorMessage={errors.sessionCount}>
-        <Field type="number" name="sessionCount" component={Input} />
+        <Field type="number" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} name="sessionCount" component={Input} />
       </FormItem>
 
       <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>

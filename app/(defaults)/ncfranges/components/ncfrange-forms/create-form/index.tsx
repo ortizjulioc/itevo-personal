@@ -75,11 +75,11 @@ export default function CreateNcfRangeForm() {
                         </FormItem>
 
                         <FormItem name="startSequence" label="Secuencia inicial" invalid={Boolean(errors.startSequence && touched.startSequence)} errorMessage={errors.startSequence}>
-                            <Field type="number" name="startSequence" component={Input} placeholder="Secuencia inicial" />
+                            <Field type="number"  name="startSequence" component={Input} placeholder="Secuencia inicial" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
                         <FormItem name="endSequence" label="Secuencia final" invalid={Boolean(errors.endSequence && touched.endSequence)} errorMessage={errors.endSequence}>
-                            <Field type="number" name="endSequence" component={Input} placeholder="Secuencia final" />
+                            <Field type="number" name="endSequence" component={Input} placeholder="Secuencia final" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
                         <FormItem name='dueDate' label='Fecha de vencimiento' invalid={Boolean(errors.dueDate && touched.dueDate)} errorMessage={errors.dueDate}>

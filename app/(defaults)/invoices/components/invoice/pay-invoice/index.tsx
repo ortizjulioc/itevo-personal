@@ -92,6 +92,7 @@ export default function PayInvoice({
                     className="Input"
                     placeholder="Monto recibido"
                     type="number"
+                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     min="0"
                     value={(invoice.paymentDetails as any)?.receivedAmount || ''}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}

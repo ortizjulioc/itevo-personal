@@ -52,14 +52,14 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                             <Field type="textarea" name="description" component={Input} />
                         </FormItem>
                         <FormItem name="cost" label="Costo" invalid={Boolean(errors.cost && touched.cost)} errorMessage={errors.cost}>
-                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo de la promoción" />
+                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="price" label="Precio" invalid={Boolean(errors.price && touched.price)} errorMessage={errors.price}>
-                            <Field type="number" name="price" component={Input} />
+                            <Field type="number" name="price" component={Input} placeholder="Ingrese el precio del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
                         <FormItem name="stock" label="Stock" invalid={Boolean(errors.stock && touched.stock)} errorMessage={errors.stock}>
-                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock de la promoción" />
+                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="taxRate" label="Tasa de impuestos" invalid={Boolean(errors.taxRate && touched.taxRate)} errorMessage={errors.taxRate}>
                             <Field name="taxRate">

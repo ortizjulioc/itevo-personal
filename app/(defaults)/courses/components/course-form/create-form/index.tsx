@@ -54,7 +54,7 @@ export default function CreateCourseForm({ onClose }: Props) {
               invalid={Boolean(errors.duration && touched.duration)}
               errorMessage={errors.duration}
             >
-              <Field type="number" name="duration" component={Input} />
+              <Field type="number" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} name="duration" component={Input} />
             </FormItem>
 
             <FormItem name="requiresGraduation" label="" invalid={Boolean(errors.requiresGraduation && touched.requiresGraduation)} errorMessage={errors.requiresGraduation}>

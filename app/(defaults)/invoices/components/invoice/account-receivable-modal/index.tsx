@@ -195,6 +195,7 @@ console.log( 'accountReceivables',accountReceivables)
                                                                         <Input
                                                                             id={inputId}
                                                                             type="number"
+                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                             defaultValue={maxAmount}
                                                                             max={maxAmount}
                                                                             min={0}

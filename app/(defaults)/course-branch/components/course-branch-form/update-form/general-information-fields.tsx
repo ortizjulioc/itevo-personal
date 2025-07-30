@@ -126,6 +126,7 @@ export default function GeneralInformationFields({ values, errors, touched, clas
             <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
                 <Field
                     type="number"
+                    onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()}
                     name="capacity"
                     component={Input}
                     placeholder="Ingrese la capacidad de estudiantes para este curso"

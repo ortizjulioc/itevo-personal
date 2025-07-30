@@ -64,11 +64,11 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
         if (resp.success) {
             openNotification('success', 'Oferta academica  creado correctamente');
-            if (isANewCourseBranch) {
-                await askForNewCourseBranch();
-            } else {
-                route.push('/course-branch');
-            }
+            // if (isANewCourseBranch) {
+            //     await askForNewCourseBranch();
+            // } else {
+            //     route.push('/course-branch');
+            // }
         } else {
             openNotification('error', resp.message);
         }

@@ -139,6 +139,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                                                 </div>
                                                                 <Input
                                                                     type="number"
+                                                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                     placeholder="Cantidad"
                                                                     value={quantity === 0 ? '' : quantity}
                                                                     onChange={(e) => {
@@ -175,6 +176,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                                             </label>
                                                             <Input
                                                                 type="number"
+                                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                 placeholder="RD$"
                                                                 value={otherPayments[type as keyof typeof otherPayments] || ''}
                                                                 onChange={(e) => {

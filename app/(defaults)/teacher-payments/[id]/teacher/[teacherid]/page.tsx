@@ -241,6 +241,7 @@ export default function TeacherPayments() {
                                 <Input
                                     id={inputId}
                                     type="number"
+                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                     defaultValue={pendingAmount}
                                     max={pendingAmount}
                                     min={0}
