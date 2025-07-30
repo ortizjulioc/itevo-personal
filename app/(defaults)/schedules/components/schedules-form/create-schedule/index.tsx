@@ -116,10 +116,14 @@ export default function CreateScheduleForm({ onCreated, onClose }: CreateSchedul
                             </div>
 
                         </div>
-                        <div className='mb-4'>
+                        <div className='mt-6 flex justify-end gap-2'>
+                            <Button type="button" color="danger" onClick={() => onClose?.()}>
+                                Cancelar
+                            </Button>
                             <Button loading={isSubmitting} type="submit">
                                 {isSubmitting ? 'Guardando...' : 'Guardar'}
                             </Button>
+
                         </div>
                     </Form>
                 )}
