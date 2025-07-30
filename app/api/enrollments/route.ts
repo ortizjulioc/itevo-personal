@@ -45,7 +45,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        const courseBranch = await findCourseBranchById(body.courseBranchId);
+        let courseBranch = await findCourseBranchById(body.courseBranchId);
         if (!courseBranch) {
             return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
         }
@@ -93,7 +93,6 @@ export async function POST(request: Request) {
                     schedules,
                     holidays
                 );
-                
             }
 
             const accountReceivable = {
