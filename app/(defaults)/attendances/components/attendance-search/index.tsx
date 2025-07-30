@@ -36,7 +36,7 @@ export default function SearchAttendances() {
 
     const [filters, setFilters] = useState({
         studentId: searchParams.get('studentId') || '',
-        courseId: searchParams.get('courseBranchId') || '',
+        courseBranchId: searchParams.get('courseBranchId') || '',
         teacherId: searchParams.get('teacherId') || '',
         status: searchParams.get('status') || '',
         createdAt: searchParams.get('createdAt') || '',
@@ -72,8 +72,8 @@ export default function SearchAttendances() {
                 onChange={(selected) => handleFilterChange('studentId', selected)}
             />
             <SelectCourseBranch
-                value={filters.courseId}
-                onChange={(selected) => handleFilterChange('courseId', selected)}
+                value={filters.courseBranchId}
+                onChange={(selected) => handleFilterChange('courseBranchId', selected)}
             />
 
            
