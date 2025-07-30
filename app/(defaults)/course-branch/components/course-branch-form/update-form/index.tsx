@@ -59,16 +59,15 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-        console.log('Valores del formulario:', values);
         const resp = await updateCourseBranch(initialValues.id, values);
 
         if (resp.success) {
             openNotification('success', 'Oferta academica  creado correctamente');
-            // if (isANewCourseBranch) {
-            //     await askForNewCourseBranch();
-            // } else {
-            //     route.push('/course-branch');
-            // }
+            if (isANewCourseBranch) {
+                await askForNewCourseBranch();
+            } else {
+                route.push('/course-branch');
+            }
         } else {
             openNotification('error', resp.message);
         }
@@ -116,9 +115,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     // Función para eliminar un prerrequisito
     const handleRemovePrerequisite = async (courseId: string) => {
-        //console.log(`Eliminar prerrequisito: ${courseId}`);
         const response = await unassignPrerequisiteToCourseBranch(initialValues.courseId, courseId);
-        //console.log(response);
         if (response.success) {
             openNotification('success', 'Prerrequisito eliminado correctamente');
             fetchPreRequisites(initialValues.courseId);

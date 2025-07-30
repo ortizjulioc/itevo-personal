@@ -1,17 +1,12 @@
 'use client'
 import BranchLabel from '@/components/common/info-labels/branch-label';
-import CourseLabel from '@/components/common/info-labels/course-label';
 import TeacherLabel from '@/components/common/info-labels/teacher-label';
-import { IconEdit, IconTrashLines, IconUserPlus } from '@/components/icon';
-import { Button } from '@/components/ui';
-import Tooltip from '@/components/ui/tooltip';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
-import Link from 'next/link';
 import React from 'react';
 import { deleteCourseBranch } from '../../lib/request';
 import { useRouter } from 'next/navigation';
-import { CourseBranch } from '@prisma/client';
 import { getFormattedDate } from '@/utils/date';
+import { CourseBranchWithRelations } from '@/@types/course-branch';
 
 const modalities = {
     PRESENTIAL: 'Presencial',
@@ -19,8 +14,9 @@ const modalities = {
     HYBRID: 'Hibrido',
 };
 
-export default function CourseBranchDetails({ courseBranch }: { courseBranch: CourseBranch }) {
+export default function CourseBranchDetails({ courseBranch }: { courseBranch: CourseBranchWithRelations }) {
     const router = useRouter();
+    console.log('courseBranch', courseBranch);
     const onDelete = async (id: string) => {
 
         confirmDialog({
@@ -44,7 +40,7 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
         <div className="grid grid-cols-1 gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             {/* Nombre del estudiante */}
             <h2 className="text-xl font-semibold text-center flex justify-center sm:text-left col-span-1 sm:col-span-2">
-                <CourseLabel courseId={courseBranch.courseId} />
+                <span>{courseBranch.course.name}</span>
             </h2>
 
             {[
@@ -60,6 +56,7 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                         : "N/A"
                 },
                 { label: "Capacidad", value: `${courseBranch.capacity} Personas` },
+                { label: "Sesiones", value: courseBranch.sessionCount || "No especificado" },
 
             ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col md:col-span-2">
@@ -68,7 +65,7 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                 </div>
             ))}
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 col-span-2 gap-2">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-3 col-span-2 gap-2">
                 <Tooltip title="Eliminar">
                     <Button
                         onClick={() => onDelete(courseBranch.id)}
@@ -106,7 +103,7 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                         </Button>
                     </Link>
                 </Tooltip>
-            </div>
+            </div> */}
         </div>
 
 
