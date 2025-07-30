@@ -56,6 +56,7 @@ export default function ModalCreateSchedule(
                                         <CreateScheduleForm
                                             onClose={onClose}
                                             onCreated={(schedule) => assignSchedule(schedule.id)}
+                                            layout="vertical" 
                                         />
 
                                     </div>
