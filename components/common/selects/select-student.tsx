@@ -45,7 +45,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         throw new Error(response.message);
       }
 
-      return response.data?.students.map(student => ({ value: student.id, label: `${student.firstName} ${student.lastName}` })) || [];
+      return response.data?.students.map(student => ({ value: student.id, label: `${student.code} - ${student.firstName} ${student.lastName}` })) || [];
     } catch (error) {
       console.error('Error fetching Students data:', error);
       return [];
@@ -67,7 +67,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         try {
           const response = await apiRequest.get<Student>(`/students/${value}`);
           if (response.success && response.data) {
-            const newOption = { value: response.data.id, label: `${response.data.firstName} ${response.data.lastName}` };
+            const newOption = { value: response.data.id, label: `${response.data.code} - ${response.data.firstName} ${response.data.lastName}` };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
         } catch (error) {

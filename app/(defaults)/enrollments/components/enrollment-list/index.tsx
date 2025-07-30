@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialog, getInitials, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, formatScheduleList, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
@@ -10,9 +10,6 @@ import { deleteEnrollment, updateEnrollment } from "../../lib/request";
 import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
 import { EnrollmentStatus } from "@prisma/client";
-import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
-import Avatar from "@/components/common/Avatar";
-import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -69,18 +66,19 @@ export default function EnrollmentList({ className, query = '' }: Props) {
         }
     };
 
-
     console.log(enrollments);
-    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', 'FECHA DE INSCRIPCION']} />;
+    if (loading) return <Skeleton rows={6} columns={['FECHA', 'ESTUDIANTE', 'CURSO', 'PROFESOR', 'HORARIO', 'ESTADO']} />;
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
                 <table className="table-hover">
                     <thead>
                         <tr>
+                            <th>FECHA</th>
                             <th>ESTUDIANTE</th>
-                            <th>OFERTA ACADEMICA</th>
-                            <th>FECHA DE INSCRIPCION</th>
+                            <th>CURSO</th>
+                            <th>PROFESOR</th>
+                            <th>HORARIO</th>
                             <th>ESTADO</th>
                             <th />
                         </tr>
@@ -94,21 +92,13 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                         {enrollments?.map((enrollment) => {
                             return (
                                 <tr key={enrollment.id}>
+                                    <td>{getFormattedDate(new Date(enrollment.enrollmentDate))}</td>
                                     <td>
-                                        <div className="ml-2 flex items-center gap-2 min-w-64 hover:cursor-pointer">
-                                            <Avatar initials={getInitials(enrollment.student.firstName, enrollment.student.lastName)} size="sm" color="primary" />
-                                            <div className="flex flex-col">
-                                                <span>{`${enrollment.student.firstName} ${enrollment.student.lastName}`}</span>
-                                                <span className="font-semibold"><OptionalInfo content={enrollment.student.identification || ''} message="Sin identificación" /></span>
-                                            </div>
-                                        </div>
+                                        <span className="">{`${enrollment.student.code} - ${enrollment.student.firstName} ${enrollment.student.lastName}`}</span>
                                     </td>
-                                    <td>
-                                        <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
-                                    </td>
-                                    <td>
-                                        {getFormattedDate(new Date(enrollment.enrollmentDate))}
-                                    </td>
+                                    <td>{enrollment.courseBranch.course.name}</td>
+                                    <td>{enrollment.courseBranch.teacher.firstName} {enrollment.courseBranch.teacher.lastName}</td>
+                                    <td>{formatScheduleList(enrollment.courseBranch.schedules)}</td>
                                     <td>
                                         <SelectEnrollmentStatus
                                             value={enrollment.status}

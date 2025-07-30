@@ -52,7 +52,7 @@ export default function StudentList({ className, query = '' }: Props) {
     });
   }
 
-  if (loading) return <Skeleton rows={5} columns={['ESTUDIANTE', 'CORREO ELECTRÓNICO', 'TELÉFONO']} />;
+  if (loading) return <Skeleton rows={5} columns={['NOMBRE', 'TELÉFONO', 'DIRECCIÓN']} />;
 
   return (
     <div className={className}>
@@ -62,7 +62,7 @@ export default function StudentList({ className, query = '' }: Props) {
             <tr>
               <th>NOMBRE</th>
               <th>TELEFONO</th>
-              <th>DIRECCION</th>
+              <th>DIRECCIÓN</th>
               <th />
             </tr>
           </thead>
@@ -80,7 +80,7 @@ export default function StudentList({ className, query = '' }: Props) {
                       <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
                       <div className="flex flex-col">
                         <span>{`${student.firstName} ${student.lastName}`}</span>
-                        <span className="font-semibold"><OptionalInfo content={student.identification || ''} message="Sin identificación" /></span>
+                        <span className="font-semibold"><OptionalInfo content={student.code} message="Sin identificación" /></span>
                       </div>
                     </div>
                   </td>
@@ -104,16 +104,6 @@ export default function StudentList({ className, query = '' }: Props) {
                   </td>
                   <td>
                     <div className="flex items-center justify-end gap-3">
-                      {/* <Tooltip title="Eliminar">
-                        <button onClick={() => onDelete(student.id)}>
-                          <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
-                        </button>
-                      </Tooltip>
-                      <CaptureFingerPrint
-                        studentId={student.id}
-                        showTitle={false}
-                        blackStyle={true}
-                      /> */}
                       <details className="relative inline-block text-left group">
                         <summary className="list-none p-2 rounded-full hover:bg-gray-100 cursor-pointer">
                           <IoIosMore className="text-xl rotate-90" />
