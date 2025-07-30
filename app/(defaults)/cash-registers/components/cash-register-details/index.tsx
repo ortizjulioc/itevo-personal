@@ -136,7 +136,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Total Reportado</p>
-                                <p className="text-base font-medium">{formatCurrency(closure.totalIncome)}</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.totalCash +closure.totalCheck +closure.totalCard + closure.totalTransfer)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Diferencia</p>
