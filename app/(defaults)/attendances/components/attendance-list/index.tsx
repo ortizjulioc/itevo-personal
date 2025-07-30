@@ -29,10 +29,10 @@ export default function AttendanceList({ className, query = '' }: Props) {
         openNotification('error', error);
     }
 
-    
+
 
     console.log(attendances);
-    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', 'FECHA DE INSCRIPCION']} />;
+    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA',"ESTADO", 'FECHA DE ASISTENCIA']} />;
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
@@ -41,15 +41,15 @@ export default function AttendanceList({ className, query = '' }: Props) {
                         <tr>
                             <th>ESTUDIANTE</th>
                             <th>OFERTA ACADEMICA</th>
-                            <th>FECHA DE INSCRIPCION</th>
                             <th>ESTADO</th>
+                            <th>FECHA DE ASISTENCIA</th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
                         {attendances?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron Inscripciones registradas</td>
+                                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron asistencias registradas</td>
                             </tr>
                         )}
                         {attendances?.map((attendance) => {
