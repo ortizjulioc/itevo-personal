@@ -64,8 +64,18 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             .reduce((total, m) => total + m.amount, 0);
     }
 
+    function getTotalIncome(cashMovements: any[]) {
+        return cashMovements
+            .filter(m => m.type === 'INCOME')
+            .reduce((total, m) => total + m.amount, 0);
+    }
 
+    const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
+    const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
+
+
+
     const resumenFacturas = getInvoiceSummary(invoices);
 
     return (
@@ -174,7 +184,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos + (cashRegister?.initialBalance || 0))}</p>
+                            <p className="text-base font-medium">{formatCurrency(total)}</p>
                         </div>
 
 
