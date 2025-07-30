@@ -8,6 +8,7 @@ import { Button } from '@/components/ui';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { formatCurrency } from '@/utils';
 import { getFormattedDateTime } from '@/utils/date';
+import useFetchClosure from '../../lib/use-fetch-cash-closure';
 
 
 
@@ -15,7 +16,8 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: Ca
 
     const { cashMovements, loading } = useFetchCashMovements(cashRegister?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id)
-
+    const { closure } = useFetchClosure(cashRegister?.id)
+    console.log(closure)
 
     function getInvoiceSummary(invoices: any[]) {
         const summary = {
@@ -71,9 +73,10 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: Ca
                     <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
                     <div className="panel p-4 space-y-4">
                         <div>
-                            <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos)}</p>
+                            <p className="text-sm text-gray-600">Balance Inicial</p>
+                            <p className="text-base font-medium">{formatCurrency(cashRegister?.initialBalance || 0)}</p>
                         </div>
+
                         <div>
                             <p className="text-sm text-gray-600">Efectivo</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
@@ -93,6 +96,10 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: Ca
                         <div>
                             <p className="text-sm text-gray-600">Egresos</p>
                             <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Total</p>
+                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.total - totalEgresos + (cashRegister?.initialBalance || 0))}</p>
                         </div>
 
 
