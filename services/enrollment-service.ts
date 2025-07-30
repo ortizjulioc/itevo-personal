@@ -43,14 +43,7 @@ export const getEnrollments = async (filters: any) => {
             { enrollmentDate: 'asc' },
         ],
         include: {
-            student: {
-                select: {
-                    id: true,
-                    email: true,
-                    firstName: true,
-                    lastName: true,
-                },
-            },
+            student: true,
             courseBranch: {
                 select: {
                     id: true,

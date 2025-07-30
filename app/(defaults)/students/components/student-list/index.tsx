@@ -10,7 +10,6 @@ import Skeleton from "@/components/common/Skeleton";
 import useFetchStudents from "../../lib/use-fetch-students";
 import { deleteStudent } from "../../lib/request";
 import CaptureFingerPrint from "@/components/common/finger-print/capture-finger-print";
-import { useState } from "react";
 import TextEllipsis from "@/components/common/text-ellipsis";
 import { TbDetails } from "react-icons/tb";
 
@@ -71,13 +70,12 @@ export default function StudentList({ className, query = '' }: Props) {
             {students?.map((student) => {
               return (
                 <tr key={student.id}>
-                    {/* 12 16 */}
-                  <td className="py-1 px-2">
-                    <div className="ml-2 flex items-center gap-2 min-w-64 hover:cursor-pointer hover:bg-slate-100 py-2 px-2 rounded-md">
+                  <td>
+                    <div className="ml-2 flex items-center gap-2 min-w-64">
                       <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
                       <div className="flex flex-col">
                         <span>{`${student.firstName} ${student.lastName}`}</span>
-                        <span className="font-semibold">{student.identification}</span>
+                        <span className="font-semibold"><OptionalInfo content={student.identification || ''} message="Sin identificación" /></span>
                       </div>
                     </div>
                   </td>

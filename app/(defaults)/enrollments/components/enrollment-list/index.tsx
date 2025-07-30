@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, getInitials, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
@@ -7,16 +7,12 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchEnrollments from "../../lib/use-fetch-enrollments";
 import { deleteEnrollment, updateEnrollment } from "../../lib/request";
-import StudentLabel from "@/components/common/info-labels/student-label";
-import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
 import { EnrollmentStatus } from "@prisma/client";
 import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
-
-
-
-
+import Avatar from "@/components/common/Avatar";
+import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -29,7 +25,6 @@ export default function EnrollmentList({ className, query = '' }: Props) {
     if (error) {
         openNotification('error', error);
     }
-
 
     const onDelete = async (id: string) => {
         ;
@@ -50,33 +45,33 @@ export default function EnrollmentList({ className, query = '' }: Props) {
         });
     }
 
-       const onStatusChange = async (id: string, status: EnrollmentStatus) => {
-            try {
-                const enrollment = enrollments?.find(cb => cb.id === id);
-                if (!enrollment) {
-                    openNotification('error', 'No se encontró la oferta académica');
-                    return;
-                }
-    
-                const resp = await updateEnrollment(id, {
-                    ...enrollment,
-                    status, // actualizamos solo el campo necesario
-                });
-    
-                if (resp.success) {
-                    setEnrollments(enrollments.map((cb) =>
-                        cb.id === id ? { ...cb, status } : cb
-                    ));
-                    openNotification('success', 'Estado actualizado correctamente');
-                }
-            } catch (error) {
-                openNotification('error', 'Error al actualizar el estado');
+    const onStatusChange = async (id: string, status: EnrollmentStatus) => {
+        try {
+            const enrollment = enrollments?.find(cb => cb.id === id);
+            if (!enrollment) {
+                openNotification('error', 'No se encontró la oferta académica');
+                return;
             }
-        };
+
+            const resp = await updateEnrollment(id, {
+                ...enrollment,
+                status, // actualizamos solo el campo necesario
+            });
+
+            if (resp.success) {
+                setEnrollments(enrollments.map((cb) =>
+                    cb.id === id ? { ...cb, status } : cb
+                ));
+                openNotification('success', 'Estado actualizado correctamente');
+            }
+        } catch (error) {
+            openNotification('error', 'Error al actualizar el estado');
+        }
+    };
 
 
+    console.log(enrollments);
     if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', 'FECHA DE INSCRIPCION']} />;
-
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
@@ -100,7 +95,13 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                             return (
                                 <tr key={enrollment.id}>
                                     <td>
-                                        <StudentLabel StudentId={enrollment.studentId} />
+                                        <div className="ml-2 flex items-center gap-2 min-w-64 hover:cursor-pointer">
+                                            <Avatar initials={getInitials(enrollment.student.firstName, enrollment.student.lastName)} size="sm" color="primary" />
+                                            <div className="flex flex-col">
+                                                <span>{`${enrollment.student.firstName} ${enrollment.student.lastName}`}</span>
+                                                <span className="font-semibold"><OptionalInfo content={enrollment.student.identification || ''} message="Sin identificación" /></span>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <CourseBranchLabel CourseBranchId={enrollment.courseBranchId} />
@@ -127,12 +128,6 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
-
-                                            {/* ALTERNATIVA */}
-                                            {/* <Button onClick={() => onDelete(Enrollmentt.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/Enrollments/${Enrollmentt.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
                                         </div>
                                     </td>
                                 </tr>
