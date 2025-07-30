@@ -6,7 +6,7 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { EnrollmentStatus } from "@prisma/client";
+import { CourseBranchStatus, EnrollmentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
 import { getCourseEndDate } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
@@ -48,6 +48,14 @@ export async function POST(request: Request) {
         let courseBranch = await findCourseBranchById(body.courseBranchId);
         if (!courseBranch) {
             return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
+        }
+
+        if (courseBranch.status === CourseBranchStatus.DRAFT || courseBranch.status === CourseBranchStatus.CANCELED || courseBranch.status === CourseBranchStatus.COMPLETED) {
+            return NextResponse.json({
+                code: 'E_COURSE_BRANCH_INVALID',
+                error: 'Course branch is not active',
+                message: 'Este curso no está disponible para inscripciones',
+            }, { status: 400 });
         }
 
         if (courseBranch.endDate && new Date(courseBranch.endDate) < new Date()) {
