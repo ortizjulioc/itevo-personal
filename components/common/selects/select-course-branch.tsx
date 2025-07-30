@@ -3,12 +3,26 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Select } from '@/components/ui';
 import { CourseBranch, CourseBranchResponse } from '@/app/(defaults)/course-branch/lib/use-fetch-course-branch';
-import { ActionMeta, components, GroupBase } from 'react-select';
+import { ActionMeta, components, CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 import { TbCheck } from 'react-icons/tb';
 import { formatCurrency } from '@/utils';
 import ModalityTag from '@/app/(defaults)/course-branch/components/modality';
 import { formatSchedule } from '@/utils/schedule';
+import { StudentSelect } from './select-student';
 const { Control } = components
+
+
+const customStyles: StylesConfig<StudentSelect, false> = {
+    menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+        ...base,
+        zIndex: 9999,
+    }),
+    menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+        ...base,
+        zIndex: 9999,
+    }),
+};
+
 
 interface CourseBranchSelect {
     value: string;
@@ -27,7 +41,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
             const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}`);
-          
+
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -135,6 +149,8 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
                 value={options.find((option) => option.value === value) || null}
                 isClearable
                 //asComponent={AsyncSelect}
+                styles={customStyles}
+                menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                 components={{
                     Control: CustomControl,
                     Option: CustomSelectedOption

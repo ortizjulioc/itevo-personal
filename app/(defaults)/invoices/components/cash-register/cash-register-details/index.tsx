@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { openNotification } from '@/utils';
 import { usePathname } from 'next/navigation';
+import AttendanceModal from '../../attendance';
 
 
 interface CashRegister extends CashRegisterPrisma {
@@ -21,6 +22,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
 
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
+    const [openModalAttendance ,setOpenModalAttendance] = React.useState(false);
     const { invoices, fetchInvoicesData } = useFetchInvoices(CashRegister.id);
     const pathname = usePathname();
     useEffect(() => {
@@ -57,6 +59,11 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                 <div className="!min-w-[200px]">
                                     <ul>
                                         <li>
+                                            <button type="button" onClick={() => setOpenModalAttendance(true)} className="dropdown-item">
+                                               Registro de asistencia
+                                            </button>
+                                        </li>
+                                        <li>
                                             <button type="button" onClick={() => setOpenModalTeacher(true)} className="dropdown-item">
                                                 Desembolso a profesor
                                             </button>
@@ -81,6 +88,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
 
                     <TeacherPayment setOpenModal={setOpenModalTeacher} openModal={openModalTeacher} />
+                    <AttendanceModal setOpenModal={setOpenModalAttendance} openModal={openModalAttendance} />
                 </div>
             </div>
         </div>
