@@ -12,9 +12,7 @@ const useFetchAttendances = (query: string) => {
     const [totalAttendances, setTotalAttendances] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchrolesData = async (query: string) => {
+    const fetchAttendanceData = async (query: string) => {
             try {
                 const response = await apiRequest.get<AttendanceResponse>(`/attendances?${query}`);
                 if (!response.success) {
@@ -34,10 +32,13 @@ const useFetchAttendances = (query: string) => {
             }
         };
 
-        fetchrolesData(query);
+    useEffect(() => {
+        
+
+        fetchAttendanceData(query);
     }, [query]);
 
-    return { attendances, totalAttendances, loading, error, setAttendances };
+    return { attendances, totalAttendances, loading, error, setAttendances, fetchAttendanceData };
 };
 
 export default useFetchAttendances;

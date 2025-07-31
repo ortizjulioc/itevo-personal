@@ -14,17 +14,19 @@ import OptionalInfo from "@/components/common/optional-info";
 import useFetchAttendances from "../../lib/use-fetch-attendance";
 import StatusAttendance from "../status-attendance";
 import StudentLabel from "@/components/common/info-labels/student-label";
-import { formAnnotation } from "pdfkit";
-import { format } from "path";
+
+import AttendanceModal from "../attendance-modal";
 
 interface Props {
     className?: string;
     query?: string;
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
 }
 
-export default function AttendanceList({ className, query = '' }: Props) {
+export default function AttendanceList({ className, query = '', openModal, setOpenModal }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, attendances, totalAttendances, setAttendances } = useFetchAttendances(query);
+    const { loading, error, attendances, totalAttendances, fetchAttendanceData } = useFetchAttendances(query);
     if (error) {
         openNotification('error', error);
     }
@@ -32,7 +34,7 @@ export default function AttendanceList({ className, query = '' }: Props) {
 
 
     console.log(attendances);
-    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA',"ESTADO", 'FECHA DE ASISTENCIA']} />;
+    if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', "ESTADO", 'FECHA DE ASISTENCIA']} />;
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
@@ -84,6 +86,11 @@ export default function AttendanceList({ className, query = '' }: Props) {
                     top={parseInt(params?.top || '10')}
                 />
             </div>
+            <AttendanceModal
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                fetchAttendanceData={fetchAttendanceData}
+            />
         </div>
     );
 };

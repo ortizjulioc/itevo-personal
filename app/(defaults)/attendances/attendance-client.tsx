@@ -51,8 +51,12 @@ export default function AttendanceClient({ searchParams }: { searchParams?: { se
         }
       />
       <div>{showFilters && <SearchAttendances />}</div>
-      <AttendanceList query={query} />
-      <AttendanceModal openModal={openModal} setOpenModal={setOpenModal} />
+      <AttendanceList
+        query={query}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      />
+
     </div>
   );
 }

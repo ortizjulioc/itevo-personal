@@ -2,7 +2,7 @@ import CreateAttendanceForm from '@/app/(defaults)/attendances/components/attend
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react'
 
-export default function AttendanceModal({ setOpenModal, openModal }: { setOpenModal: (open: boolean) => void, openModal: boolean }) {
+export default function AttendanceModal({ setOpenModal, openModal, fetchAttendanceData }: { setOpenModal: (open: boolean) => void, openModal: boolean, fetchAttendanceData?: (value: string) => void }) {
 
 
     return (
@@ -25,6 +25,10 @@ export default function AttendanceModal({ setOpenModal, openModal }: { setOpenMo
                             <Dialog.Panel className="panel w-1/2 max-w-5xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                 <CreateAttendanceForm
                                     onCancel={() => setOpenModal(false)}
+                                    onSuccess={() => {
+                                        setOpenModal(false); // ✅ cierra el modal al guardar
+                                        fetchAttendanceData?.(''); // ✅ refresca
+                                    }}
                                 />
                             </Dialog.Panel>
                         </Transition.Child>
