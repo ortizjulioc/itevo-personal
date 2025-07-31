@@ -80,7 +80,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
     };
 
 
-    if (loading) return <TableSkeleton rows={8} columns={['CURSO', 'FECHAS', 'MODALIDAD', 'SESIONES', 'CAPACIDAD', 'COSTO', 'ESTADO']} />;
+    if (loading) return <TableSkeleton rows={8} columns={['FECHAS', 'CURSO', 'PROFESOR', 'SESIONES', 'CAPACIDAD', 'COSTO', 'ESTADO']} />;
 
     return (
         <div className={className}>

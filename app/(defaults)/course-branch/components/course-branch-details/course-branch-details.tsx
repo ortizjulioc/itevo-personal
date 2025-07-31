@@ -1,12 +1,11 @@
 'use client'
-import BranchLabel from '@/components/common/info-labels/branch-label';
-import TeacherLabel from '@/components/common/info-labels/teacher-label';
-import { confirmDialog, formatCurrency, openNotification } from '@/utils';
+import { formatCurrency } from '@/utils';
 import React from 'react';
-import { deleteCourseBranch } from '../../lib/request';
-import { useRouter } from 'next/navigation';
 import { getFormattedDate } from '@/utils/date';
 import { CourseBranchWithRelations } from '@/@types/course-branch';
+import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
+import { CourseBranchStatus } from '@prisma/client';
+import { formatSchedule } from '@/utils/schedule';
 
 const modalities = {
     PRESENTIAL: 'Presencial',
@@ -15,26 +14,6 @@ const modalities = {
 };
 
 export default function CourseBranchDetails({ courseBranch }: { courseBranch: CourseBranchWithRelations }) {
-    const router = useRouter();
-    console.log('courseBranch', courseBranch);
-    const onDelete = async (id: string) => {
-        confirmDialog({
-            title: 'Eliminar oferta academica',
-            text: '¿Seguro que quieres eliminar esta oferta  academica?',
-            confirmButtonText: 'Sí, eliminar',
-            icon: 'error'
-        }, async () => {
-            const resp = await deleteCourseBranch(id);
-            if (resp.success) {
-                openNotification('success', 'oferta  academica eliminada correctamente')
-                router.push('/course-branch')
-                return;
-            } else {
-                openNotification('error', resp.message);
-            }
-        });
-    }
-
     return (
         <div className="grid grid-cols-1 gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             {/* Nombre del estudiante */}
@@ -43,19 +22,21 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
             </h2>
 
             {[
-                { label: "Sucursal", value: <BranchLabel branchId={courseBranch.branchId} /> },
-                { label: "Profesor", value: <TeacherLabel teacherId={courseBranch.teacherId} /> },
-                { label: "Monto", value: formatCurrency(courseBranch.amount) },
+                { label: "Sucursal", value: courseBranch.branch.name },
+                { label: "Profesor", value: `${courseBranch.teacher.firstName} ${courseBranch.teacher.lastName}` },
                 { label: "Modalidad", value: modalities[courseBranch.modality as keyof typeof modalities] || "No especificado" },
-                { label: "Fecha de inicio", value: courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : "No especificado" },
-                { label: "Fecha de finalizacion", value: courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : "No especificado" },
+                { label: "Estado", value: <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} /> },
+                { label: "Monto", value: formatCurrency(courseBranch.amount) },
                 {
                     label: "Comision", value: courseBranch.commissionRate != null
-                        ? `${courseBranch.commissionRate * 100} %`
+                        ? `${formatCurrency(courseBranch.commissionAmount)} (${courseBranch.commissionRate * 100} %)`
                         : "N/A"
                 },
                 { label: "Capacidad", value: `${courseBranch.capacity} Personas` },
                 { label: "Sesiones", value: courseBranch.sessionCount || "No especificado" },
+                { label: "Horario", value: formatSchedule(courseBranch.schedules) },
+                { label: "Fecha de inicio", value: courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : "No especificado" },
+                { label: "Fecha de finalizacion", value: courseBranch.endDate ? getFormattedDate(new Date(courseBranch.endDate)) : "No especificado" },
 
             ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col md:col-span-2">

@@ -1,4 +1,4 @@
-import { Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma as PrismaTypes, Schedule } from "@prisma/client";
 
 export const courseBranchWithRelations = PrismaTypes.validator<PrismaTypes.CourseBranchDefaultArgs>()({
   include: {
@@ -9,4 +9,10 @@ export const courseBranchWithRelations = PrismaTypes.validator<PrismaTypes.Cours
   }
 });
 
-export type CourseBranchWithRelations = PrismaTypes.CourseBranchGetPayload<typeof courseBranchWithRelations>;
+// Tipado original (basado en lo que devuelve Prisma)
+type OriginalCourseBranch = PrismaTypes.CourseBranchGetPayload<typeof courseBranchWithRelations>;
+
+// Tipado corregido para que coincida con la estructura final
+export type CourseBranchWithRelations = Omit<OriginalCourseBranch, "schedules"> & {
+  schedules: Schedule[]; // Ajuste aquí
+};

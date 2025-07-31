@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialog, formatScheduleList, getInitials, openNotification, queryStringToObject } from "@/utils";
+import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
@@ -10,6 +10,7 @@ import { deleteEnrollment, updateEnrollment } from "../../lib/request";
 import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
 import { EnrollmentStatus } from "@prisma/client";
+import { formatScheduleList } from "@/utils/schedule";
 
 interface Props {
     className?: string;

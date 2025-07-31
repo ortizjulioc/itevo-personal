@@ -1,5 +1,6 @@
 // components/pdf/invoice.tsx
-import { formatCurrency, formatPhoneNumber, formatScheduleList } from '@/utils';
+import { formatCurrency, formatPhoneNumber } from '@/utils';
+import { formatScheduleList } from '@/utils/schedule';
 import {
   Document,
   Image,
@@ -89,36 +90,6 @@ const InfoField = ({ title, value }: { title: string; value: string | null }) =>
     </View>
   )
 }
-
-// type Schedule = {
-//   schedule: {
-//     startTime: string; // "08:00"
-//     endTime: string;   // "10:00"
-//     weekday: number;   // 0=Domingo, 1=Lunes, ..., 6=Sábado
-//   };
-// };
-
-// function formatScheduleList(schedules: Schedule[]): string {
-//   const weekdays = [
-//     'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
-//   ];
-
-//   const formatTime = (time24: string) => {
-//     const [hourStr, minute] = time24.split(':');
-//     let hour = parseInt(hourStr, 10);
-//     const ampm = hour >= 12 ? 'PM' : 'AM';
-//     if (hour === 0) hour = 12;
-//     else if (hour > 12) hour -= 12;
-//     return `${hour.toString().padStart(2, '0')}:${minute} ${ampm}`;
-//   };
-
-//   return schedules.map(({ schedule }) => {
-//     const day = weekdays[schedule.weekday];
-//     const start = formatTime(schedule.startTime);
-//     const end = formatTime(schedule.endTime);
-//     return `${day} ${start} - ${end}`;
-//   }).join(', ');
-// }
 
 function formatPhoneList(phoneList: string): string {
   return phoneList
