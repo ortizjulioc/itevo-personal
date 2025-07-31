@@ -13,8 +13,14 @@ export async function getAttendanceRecords(filter: {
     const where: PrismaTypes.AttendanceWhereInput = {
         ...(filter.courseBranchId && { courseBranchId: filter.courseBranchId }),
         ...(filter.studentId && { studentId: filter.studentId }),
-        ...(filter.date && { date: filter.date }),
+        ...(filter.date && {
+            date: {
+                gte: new Date(new Date(filter.date).setHours(0, 0, 0, 0)),
+                lte: new Date(new Date(filter.date).setHours(23, 59, 59, 999)),
+            },
+        }),
     };
+
 
     const [attendanceRecords, totalAttendanceRecords] = await Promise.all([
         Prisma.attendance.findMany({
