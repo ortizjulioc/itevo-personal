@@ -18,7 +18,6 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
     const router = useRouter();
     console.log('courseBranch', courseBranch);
     const onDelete = async (id: string) => {
-
         confirmDialog({
             title: 'Eliminar oferta academica',
             text: '¿Seguro que quieres eliminar esta oferta  academica?',
