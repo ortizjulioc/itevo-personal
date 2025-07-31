@@ -5,7 +5,11 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 
 export async function GET(request: NextRequest, { params }: { params: { code: string } }) {
   try {
-    const { code } = params;
+    const { code: codeFromParams } = params;
+    if (!codeFromParams || isNaN(Number(codeFromParams))) {
+      return NextResponse.json({ code: 'E_INVALID_CODE', message: 'Código de producto inválido' }, { status: 400 });
+    }
+    const code = parseInt(codeFromParams, 10);
 
     const product = await findProductByCode(code);
 
