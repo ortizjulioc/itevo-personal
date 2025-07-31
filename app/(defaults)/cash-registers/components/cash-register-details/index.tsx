@@ -20,8 +20,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
     const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id)
     const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id)
-    // console.log(closure)
-    console.log(cashRegister)
+
     function getInvoiceSummary(invoices: any[]) {
         const summary = {
             total: 0,
@@ -31,6 +30,8 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             cheque: 0,
             credito: 0,
         };
+
+       
 
         invoices.forEach((invoice) => {
             const method = invoice.paymentMethod;
@@ -70,6 +71,21 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             .filter(m => m.type === 'INCOME')
             .reduce((total, m) => total + m.amount, 0);
     }
+     function getCashLabel(key: string): string {
+            const map: Record<string, string> = {
+                one: formatCurrency(1),
+                five: 'RD$5',
+                ten: 'RD$10',
+                twentyfive: 'RD$25',
+                fifty: 'RD$50',
+                hundred: 'RD$100',
+                twoHundred: 'RD$200',
+                fiveHundred: 'RD$500',
+                thousand: 'RD$1,000',
+                twoThousand: 'RD$2,000',
+            };
+            return map[key] || key;
+        }
 
     const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
@@ -152,6 +168,20 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                                     <UserLabel UserId={closure.closedBy} />
                                 </p>
                             </div>
+                        </div>
+                    </div>
+
+                )}
+                {closure && closure.cashBreakdown && (
+                    <div className="col-span-12">
+                        <span className="ml-3 font-bold text-lg">Desglose de Efectivo</span>
+                        <div className="panel p-4 grid grid-cols-4 gap-4 text-sm">
+                            {Object.entries(closure.cashBreakdown).map(([key, value]) => (
+                                <div key={key} className="border rounded p-2 flex justify-between">
+                                    <span className="capitalize">{getCashLabel(key)}</span>
+                                    <span className="font-semibold">{value}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
