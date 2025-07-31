@@ -17,29 +17,42 @@ import { GenericSkeleton } from '@/components/common/Skeleton';
 
 export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
 
-    const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id)
-    const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id)
-    const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id)
+  const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
+    const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id);
+    const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id);
 
-    function getInvoiceSummary(invoices: any[]) {
-        const summary = {
-            total: 0,
-            efectivo: 0,
-            tarjeta: 0,
-            transferencia: 0,
-            cheque: 0,
-            credito: 0,
-        };
+    function getTotalExpenses(cashMovements: any[]) {
+        return cashMovements
+            .filter((m) => m.type === 'EXPENSE')
+            .reduce((total, m) => total + m.amount, 0);
+    }
 
+    function getTotalIncome(cashMovements: any[]) {
+        return cashMovements
+            .filter((m) => m.type === 'INCOME')
+            .reduce((total, m) => total + m.amount, 0);
+    }
+function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
+    const summary = {
+        efectivo: 0,
+        tarjeta: 0,
+        transferencia: 0,
+        cheque: 0,
+        credito: 0,
+        total: 0,
+    };
 
+    const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
 
-        invoices.forEach((invoice) => {
-            const method = invoice.paymentMethod;
+    cashMovements.forEach(movement => {
+        if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
+            const invoice = invoiceMap.get(movement.referenceId);
+            if (!invoice) return;
 
             const amount = invoice.subtotal + invoice.itbis;
             summary.total += amount;
 
-            switch (method) {
+            switch (invoice.paymentMethod) {
                 case 'cash':
                     summary.efectivo += amount;
                     break;
@@ -56,21 +69,13 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                     summary.credito += amount;
                     break;
             }
-        });
+        }
+    });
 
-        return summary;
-    }
-    function getTotalExpenses(cashMovements: any[]) {
-        return cashMovements
-            .filter(m => m.type === 'EXPENSE')
-            .reduce((total, m) => total + m.amount, 0);
-    }
+    return summary;
+}
 
-    function getTotalIncome(cashMovements: any[]) {
-        return cashMovements
-            .filter(m => m.type === 'INCOME')
-            .reduce((total, m) => total + m.amount, 0);
-    }
+
     function getCashLabel(key: string): string {
         const map: Record<string, string> = {
             one: formatCurrency(1),
@@ -86,14 +91,12 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
         };
         return map[key] || key;
     }
+
     const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
     const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
 
-
-
-    const resumenFacturas = getInvoiceSummary(invoices);
-
+    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements,invoices);
     return (
         <>
 
@@ -201,7 +204,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
 
                             <div>
                                 <p className="text-sm text-gray-600">Efectivo</p>
-                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo +cashRegister.initialBalance)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Tarjeta</p>
