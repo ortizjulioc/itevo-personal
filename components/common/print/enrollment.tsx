@@ -11,8 +11,9 @@ import { IoMdPrint } from 'react-icons/io';
 
 type PrintEnrollmentProps = {
   enrollmentId: string;
+  children?: React.ReactNode
 }
-export default function PrintEnrollment({ enrollmentId }: PrintEnrollmentProps) {
+export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollmentProps) {
   const { enrollment, loading: loadingEnrollment } = useFetchEnrollmentById(enrollmentId);
   const { setting, loading: loadingSettings } = useFetchSetting();
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,21 +53,20 @@ export default function PrintEnrollment({ enrollmentId }: PrintEnrollmentProps) 
 
   return (
     <>
-      <Button
-        onClick={onPrint}
-        loading={loading}
-        icon={<IoMdPrint className='text-lg ' />}
+      {children ? (
+        <div onClick={onPrint} className='cursor-pointer'>
+          {children}
+        </div>
+     ) : (
+        <Button
+          onClick={onPrint}
+          loading={loading}
+          icon={<IoMdPrint className='text-lg ' />}
         >
 
-        {loading ? 'Generando documento ...' : 'Imprimir'}
-      </Button>
-
-
-      {/* {!loading && enrollment && setting && (
-        <PDFViewer width="100%" height="600">
-          <EnrollmentPDF enrollment={enrollment} companyInfo={{...setting, logo: null}} />
-        </PDFViewer>
-      )} */}
+          {loading ? 'Generando documento ...' : 'Imprimir'}
+        </Button>
+     )}
     </>
   )
 }
