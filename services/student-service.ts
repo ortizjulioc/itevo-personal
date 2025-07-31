@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from "@prisma/client";
+import { PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -23,6 +23,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
         where: {
             deleted: false,
             OR: [
+                { code: { contains: search } },
                 { firstName: { contains: search } },
                 { lastName: { contains: search } },
                 { identification: { contains: search } },
@@ -45,8 +46,11 @@ export const getStudents = async (search: string, page: number, top: number) => 
     return { students, totalStudents };
 };
 
-export const createStudent = async (data: PrismaTypes.StudentCreateInput) => {
-    const student = await Prisma.student.create({ data: data });
+export const createStudent = async (
+    data: PrismaTypes.StudentCreateInput,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    const student = await prisma.student.create({ data: data });
     return student;
 };
 
@@ -60,9 +64,31 @@ export const findStudentById = async (id: string) => {
     });
 };
 
+export const findStudentByEmail = async (email: string) => {
+    return Prisma.student.findFirst({
+        where: {
+            email: email,
+            deleted: false,
+        },
+    });
+}
+
+export const findStudentByIdentification = async (identification: string) => {
+    return Prisma.student.findFirst({
+        where: {
+            identification: identification,
+            deleted: false,
+        },
+    });
+};
+
 // Actualizar student por ID
-export const updateStudentById = async (id: string, data: any) => {
-    return Prisma.student.update({
+export const updateStudentById = async (
+    id: string,
+    data: any,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    return prisma.student.update({
         where: { id },
         data: { code: data.code, firstName: data.firstName, lastName: data.lastName, identification: data.identification, address: data.address, phone: data.phone, email: data.email, hasTakenCourses: data.hasTakenCourses },
     });
@@ -125,3 +151,35 @@ export const findAccountsReceivableByStudentId = async (studentId: string) => {
         ],
     });
 };
+
+export const addFingerprintToStudent = async (
+    studentId: string,
+    fingerprintData: Omit<PrismaTypes.FingerprintCreateInput, 'studentId' | 'student'>,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+) => {
+    return prisma.fingerprint.create({
+        data: {
+            ...fingerprintData,
+            student: {
+                connect: { id: studentId },
+            },
+        },
+    });
+};
+
+export const findFingerprintByStudentId = async (studentId: string) => {
+    return Prisma.fingerprint.findUnique({
+        where: {
+            studentId: studentId,
+        },
+    });
+};
+
+export const deleteFingerprintByStudentId = async (studentId: string) => {
+    return Prisma.fingerprint.delete({
+        where: {
+            studentId: studentId,
+        },
+    });
+};
+

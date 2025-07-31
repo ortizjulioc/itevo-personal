@@ -13,8 +13,6 @@ export default function CreateProductForm() {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
-
-
         const resp = await createProduct(values);
 
         if (resp.success) {
@@ -31,13 +29,14 @@ export default function CreateProductForm() {
         { value: 0.18, label: 'Grabados con el 18%' },
     ]
 
-    
+
     interface TaxRateOptions
     {
         value: number;
         label: string;
     }
 
+    console.log(initialValues);
 
     return (
         <div className="panel">
@@ -45,10 +44,6 @@ export default function CreateProductForm() {
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-
-                        <FormItem name="code" label="Código" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
-                            <Field type="text" name="code" component={Input} />
-                        </FormItem>
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
                             <Field type="text" name="name" component={Input} />
                         </FormItem>
@@ -56,10 +51,10 @@ export default function CreateProductForm() {
                             <Field type="textarea" name="description" component={Input} />
                         </FormItem>
                         <FormItem name="cost" label="Costo" invalid={Boolean(errors.cost && touched.cost)} errorMessage={errors.cost}>
-                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo de la promoción" />
+                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="price" label="Precio" invalid={Boolean(errors.price && touched.price)} errorMessage={errors.price}>
-                            <Field type="number" name="price" component={Input} />
+                            <Field type="number" name="price" component={Input} placeholder="Ingrese el precio del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="taxRate" label="Tasa de impuestos" invalid={Boolean(errors.taxRate && touched.taxRate)} errorMessage={errors.taxRate}>
                             <Field name="taxRate">
@@ -78,7 +73,7 @@ export default function CreateProductForm() {
 
 
                         <FormItem name="stock" label="Stock" invalid={Boolean(errors.stock && touched.stock)} errorMessage={errors.stock}>
-                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock de la promoción" />
+                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
 
@@ -88,6 +83,12 @@ export default function CreateProductForm() {
                             </Field>
                         </FormItem>
 
+                        <FormItem name="billingWithoutStock" label="" invalid={Boolean(errors.billingWithoutStock && touched.billingWithoutStock)} errorMessage={errors.billingWithoutStock}>
+                            <Field type="checkbox" name="billingWithoutStock" component={Checkbox} >
+                                Facturar sin existencias
+                            </Field>
+                            <p className="text-xs text-gray-500">Si está habilitado, se podrá facturar sin tener existencias disponibles.</p>
+                        </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>

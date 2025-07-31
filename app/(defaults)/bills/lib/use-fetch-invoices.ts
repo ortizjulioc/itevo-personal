@@ -12,9 +12,7 @@ const useFetchInvoices = (query: string) => {
     const [totalInvoices, setTotalInvoices] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchInvoicesData = async (query: string) => {
+     const fetchInvoicesData = async (query: string) => {
             try {
                 const response = await apiRequest.get<InvoiceResponse>(`/invoices?${query}`);
                 if (!response.success) {
@@ -33,10 +31,13 @@ const useFetchInvoices = (query: string) => {
             }
         };
 
+    useEffect(() => {
+       
+
         fetchInvoicesData(query);
     }, [query]);
 
-    return { invoices, totalInvoices, loading, error, setInvoices };
+    return { invoices, totalInvoices, loading, error, setInvoices,fetchInvoicesData};
 };
 
 export const useFetchInvoiceById = (id: string) => {

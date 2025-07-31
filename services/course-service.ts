@@ -1,5 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
+import { Prisma as PrismaTypes } from '@prisma/client';
 
 export const getCourses = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -33,14 +34,14 @@ export const getCourses = async (search: string, page: number, top: number) => {
     return { courses, totalCourses };
 };
 
-export const createCourse = async (data: any) => {
+export const createCourse = async (data: PrismaTypes.CourseCreateInput) => {
     const course = await Prisma.course.create({ data: data });
     return course;
 };
 
-export const findCourseByCode= async (data: any) => {
+export const findCourseByCode= async (code: number) => {
     const courseCodeExists = await Prisma.course.findUnique({
-        where: { code: data.code },
+        where: { code: code },
     });
     return courseCodeExists
 };
@@ -94,11 +95,7 @@ export const deleteCourseById = async (id: string) => {
 };
 
 // Agregar prerequisito a un curso
-
-
 export const addPrerequisite = async (courseId: string, prerequisiteId: string) => {
-
-    console.log("Entrando a addPrerequisite");
     return Prisma.course.update({
         where: { id: courseId },
         data: {
@@ -119,11 +116,9 @@ export const updatePrerequisite = async (courseId: string, prerequisiteId: strin
         },
     });
 };
-// findByPrequisiteId
 
 
 export const findPrerequisiteById = async (courseId: string, prerequisiteId: string) => {
-    console.log("Entrando a findPrerequisiteById");
     return Prisma.prerequisite.findUnique({
         where: {
             courseId_prerequisiteId: {
@@ -133,9 +128,6 @@ export const findPrerequisiteById = async (courseId: string, prerequisiteId: str
         }
     });
 };
-
-// Buscar todos los prerequisitos de un curso
-
 export const findPrerequisitesByCourseId = async (courseId: string) => {
     return Prisma.prerequisite.findMany({
         where: {
@@ -153,8 +145,6 @@ export const findPrerequisitesByCourseId = async (courseId: string) => {
     });
 };
 
-// Eliminar prerequisito de un curso
-
 export const deletePrerequisite = async (courseId: string, prerequisiteId: string) => {
     return Prisma.prerequisite.delete({
         where: {
@@ -165,5 +155,3 @@ export const deletePrerequisite = async (courseId: string, prerequisiteId: strin
         },
     });
 };
-
-

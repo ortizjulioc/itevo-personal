@@ -7,6 +7,7 @@ import Link from "next/link";
 import useFetchPromotions from "../../lib/use-fetch-promotions";
 import { deletePromotion } from "../../lib/request";
 import Skeleton from "@/components/common/Skeleton";
+import { getFormattedDate } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -65,10 +66,10 @@ export default function PromotionList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{promotion.description}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{new Date(promotion.startDate).toLocaleDateString()}</div>
+                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(promotion.startDate))}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{new Date(promotion.endDate).toLocaleDateString()}</div>
+                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(promotion.endDate))}</div>
                                     </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">

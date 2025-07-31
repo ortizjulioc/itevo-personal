@@ -3,14 +3,43 @@ import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from "@prisma/c
 import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {
-    const { studentId, courseBranchId, status, enrollmentDate, page, top } = filters;
+    const {
+        studentId,
+        courseId,
+        teacherId,
+        branchId,
+        promotionId,
+        modality,
+        status,
+        enrollmentDate,
+        page,
+        top,
+    } = filters;
     const skip = (page - 1) * top;
 
-    let where: any = {};
 
-    where = {
-        studentId: studentId,
-        courseBranchId: courseBranchId,
+    const where: PrismaTypes.EnrollmentWhereInput = {
+        deleted: false,
+        ...(studentId && { studentId }),
+        ...(status && {
+            status: (Object.values(EnrollmentStatus) as string[]).includes(status.toUpperCase())
+                ? (status.toUpperCase() as EnrollmentStatus)
+                : undefined,
+        }),
+        ...(enrollmentDate && {
+            enrollmentDate: {
+                gte: new Date(new Date(enrollmentDate).setHours(0, 0, 0, 0)),
+                lte: new Date(new Date(enrollmentDate).setHours(23, 59, 59, 999)),
+            },
+        }),
+        courseBranch: {
+            deleted: false,
+            ...(courseId && { courseId }),
+            ...(teacherId && { teacherId }),
+            ...(branchId && { branchId }),
+            ...(promotionId && { promotionId }),
+            ...(modality && { modality }),
+        },
     };
 
     // Filtrar por enrollmentDate
@@ -43,29 +72,17 @@ export const getEnrollments = async (filters: any) => {
             { enrollmentDate: 'asc' },
         ],
         include: {
-            student: {
-                select: {
-                    id: true,
-                    email: true,
-                    firstName: true,
-                    lastName: true,
-                },
-            },
+            student: true,
             courseBranch: {
                 select: {
                     id: true,
                     courseId: true,
                     branchId: true,
-                    course: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                    branch: {
-                        select: {
-                            name: true,
-                        },
-                    },
+                    teacherId: true,
+                    teacher: { select: { code: true, firstName: true, lastName: true } },
+                    course: { select: { name: true, code: true } },
+                    branch: { select: { name: true } },
+                    schedules: { select: { schedule: true } },
                 },
             },
         },
@@ -99,7 +116,7 @@ export const findEnrollmentById = async (id: string) => {
     const enrollment = await Prisma.enrollment.findUnique({
         where: {
             id: id,
-            // deleted: false,
+            deleted: false,
         },
         include: {
             student: {
@@ -108,6 +125,7 @@ export const findEnrollmentById = async (id: string) => {
                     email: true,
                     firstName: true,
                     lastName: true,
+                    phone: true,
                 },
             },
             courseBranch: {
@@ -115,9 +133,11 @@ export const findEnrollmentById = async (id: string) => {
                     id: true,
                     courseId: true,
                     branchId: true,
+                    amount: true,
                     course: {
                         select: {
                             name: true,
+                            code: true,
                         },
                     },
                     branch: {
@@ -125,16 +145,21 @@ export const findEnrollmentById = async (id: string) => {
                             name: true,
                         },
                     },
+                    schedules: {
+                        select: {
+                            schedule: {
+                                select: {
+                                    startTime: true,
+                                    endTime: true,
+                                    weekday: true,
+                                },
+                            }
+                        },
+                    }
                 },
             },
         },
     });
-
-    // Devolviendo prerequisites como un arreglo de IDs
-
-    // if (course) {
-    //     course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite.id);
-    // }
 
     return enrollment;
 
@@ -156,7 +181,8 @@ export const updateEnrollmentById = async (id: string, data: any) => {
 
 // Eliminar enrollment por ID (soft delete)
 export const deleteEnrollmentById = async (id: string) => {
-    return Prisma.enrollment.delete({
+    return Prisma.enrollment.update({
         where: { id },
+        data: { deleted: true },
     });
 };

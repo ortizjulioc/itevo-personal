@@ -51,13 +51,14 @@ export default function CreateCashRegisterForm() {
             userId: user.id,
             initialBalance: Number(values.initialBalance),
             openingDate: new Date(),
+            closedAt: null,
         };
 
         try {
             const resp = await createCashRegister(valuesToSend);
 
             if (resp.success) {
-                openNotification('success', 'CashRegister creado correctamente');
+                openNotification('success', 'Caja creada correctamente');
                 const cashRegister = resp.data as any;
 
                 if (cashRegister?.id) {
@@ -91,7 +92,7 @@ export default function CreateCashRegisterForm() {
                             <Field type="text" name="name" component={Input} />
                         </FormItem>
                         <FormItem name="initialBalance" label="Saldo Inicial" invalid={Boolean(errors.initialBalance && touched.initialBalance)} errorMessage={errors.initialBalance}>
-                            <Field type="number" name="initialBalance" component={Input} placeholder="Ingrese el saldo inicial" />
+                            <Field type="number" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} name="initialBalance" component={Input} placeholder="Ingrese el saldo inicial" />
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">

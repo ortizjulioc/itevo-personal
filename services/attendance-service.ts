@@ -2,13 +2,25 @@ import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { AttendanceStatus, Prisma as PrismaTypes } from '@prisma/client';
 
-// Obtener todos los registros de asistencia con búsqueda por enrollmentId, paginación y conteo total
-export async function getAttendanceRecords(enrollmentId = '', page = 1, top = 10) {
+// Obtener todos los registros de asistencia con búsqueda por courseBranchId, paginación y conteo total
+export async function getAttendanceRecords(filter: {
+    courseBranchId?: string;
+    studentId?: string;
+    date?: Date;
+}, page = 1, top = 10) {
     const skip = (page - 1) * top;
 
     const where: PrismaTypes.AttendanceWhereInput = {
-        enrollmentId: enrollmentId || undefined, // se ignora si está vacío
+        ...(filter.courseBranchId && { courseBranchId: filter.courseBranchId }),
+        ...(filter.studentId && { studentId: filter.studentId }),
+        ...(filter.date && {
+            date: {
+                gte: new Date(new Date(filter.date).setHours(0, 0, 0, 0)),
+                lte: new Date(new Date(filter.date).setHours(23, 59, 59, 999)),
+            },
+        }),
     };
+
 
     const [attendanceRecords, totalAttendanceRecords] = await Promise.all([
         Prisma.attendance.findMany({
@@ -23,27 +35,9 @@ export async function getAttendanceRecords(enrollmentId = '', page = 1, top = 10
     return { attendanceRecords, totalAttendanceRecords };
 }
 
-//verificar si existe el curso
-export async function courseExists(courseId: string) {
-    const course = await Prisma.course.findUnique({ where: { id: courseId } });
-    return !!course;
-}
-
 // Crear un nuevo registro de asistencia
-export async function createAttendanceRecord(data: {
-    enrollment: string;
-    date: Date;
-    status: AttendanceStatus;
-    schedule: string;
-}) {
-    return await Prisma.attendance.create({
-        data: {
-            enrollment: { connect: { id: data.enrollment } },
-            date: data.date,
-            status: data.status,
-            schedule: { connect: { id: data.schedule } },
-        },
-    });
+export async function createAttendanceRecord(data: PrismaTypes.AttendanceCreateInput) {
+    return await Prisma.attendance.create({ data });
 }
 
 // Buscar un registro de asistencia por ID

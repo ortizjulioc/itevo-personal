@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -43,15 +44,15 @@ model Role {
 }
 
 model Branch {
-  id           String           @id @default(uuid())
-  name         String
-  address      String
-  phone        String?
-  deleted      Boolean          @default(false)
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String?
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  students       Student[]
+  students     Student[]
   CashRegister CashRegister[]
   courseBranch CourseBranch[]
   userRole     UserRoleBranch[]
@@ -83,7 +84,7 @@ model Teacher {
   prefix         String?          @default("P") @map("prefix")
   address        String?
   phone          String?
-  email          String?          @unique
+  email          String?
   commissionRate Float?           @map("commission_rate")
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
@@ -95,36 +96,49 @@ model Teacher {
 }
 
 model Student {
-  id                String              @id @default(uuid())
-  code              String              @unique
-  firstName         String              @map("first_name")
-  lastName          String              @map("last_name")
-  identification    String?
-  phone             String?
-  email             String?             @unique
-  address           String?
-  hasTakenCourses   Boolean             @default(false) @map("has_taken_courses")
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  deleted           Boolean             @default(false)
-  branchId          String              @map("branch_id")
+  id              String   @id @default(uuid())
+  code            String   @unique
+  firstName       String   @map("first_name")
+  lastName        String   @map("last_name")
+  identification  String?
+  phone           String?
+  email           String?
+  address         String?
+  hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deleted         Boolean  @default(false)
+  branchId        String   @map("branch_id")
 
-  branch            Branch?              @relation(fields: [branchId], references: [id])
+  branch            Branch?             @relation(fields: [branchId], references: [id])
   accountReceivable AccountReceivable[]
   enrollment        Enrollment[]
   graduation        Graduation[]
   Invoice           Invoice[]
   Quotation         Quotation[]
+  attendance        Attendance[]
+  fingerprint       Fingerprint?
 
   @@map("students")
 }
 
+model Fingerprint {
+  id         String   @id @default(uuid())
+  studentId  String   @unique
+  template   Bytes    // Plantilla biométrica
+  sensorType String?  @map("sensor_type") // Tipo de sensor (opcional )
+  createdAt  DateTime @default(now())
+
+  student    Student  @relation(fields: [studentId], references: [id])
+}
+
+
 model Course {
   id                 String         @id @default(uuid())
-  code               String         @unique
+  code               Int            @unique @default(autoincrement())
   name               String
   description        String?
-  duration           Int?
+  duration           Int?           @default(0) // Duración en semanas
   requiresGraduation Boolean        @default(false) @map("requires_graduation")
   createdAt          DateTime       @default(now()) @map("created_at")
   updatedAt          DateTime       @updatedAt @map("updated_at")
@@ -157,6 +171,8 @@ model Promotion {
   endDate      DateTime       @map("end_date")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
+  deleted      Boolean        @default(false)
+
   courseBranch CourseBranch[]
   graduation   Graduation[]
 
@@ -174,6 +190,7 @@ model CourseBranch {
   startDate         DateTime?           @map("start_date")
   endDate           DateTime?           @map("end_date")
   commissionRate    Float               @default(0) @map("commission_rate")
+  commissionAmount  Float               @default(0) @map("commission_amount")
   capacity          Int                 @default(0)
   sessionCount      Int                 @default(0) @map("session_count")
   status            CourseBranchStatus
@@ -181,6 +198,8 @@ model CourseBranch {
   updatedAt         DateTime            @updatedAt @map("updated_at")
   isTaxIncluded     Boolean             @default(true) @map("is_tax_included")
   taxRate           Float               @default(0) @map("tax_rate")
+  deleted           Boolean             @default(false)
+
   accountPayable    AccountPayable[]
   accountReceivable AccountReceivable[]
   branch            Branch              @relation(fields: [branchId], references: [id])
@@ -190,6 +209,7 @@ model CourseBranch {
   schedules         CourseSchedule[]
   enrollment        Enrollment[]
   QuotationItem     QuotationItem[]
+  attendance        Attendance[]
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
@@ -206,7 +226,7 @@ model Schedule {
   createdAt  DateTime         @default(now()) @map("created_at")
   updatedAt  DateTime         @updatedAt @map("updated_at")
   deleted    Boolean          @default(false)
-  attendance Attendance[]
+
   courses    CourseSchedule[]
 
   @@map("schedules")
@@ -233,9 +253,9 @@ model Enrollment {
   status         EnrollmentStatus
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
-  attendance     Attendance[]
   courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
   student        Student          @relation(fields: [studentId], references: [id])
+  deleted        Boolean          @default(false)
 
   @@index([courseBranchId], map: "enrollments_course_branch_id_fkey")
   @@index([studentId], map: "enrollments_student_id_fkey")
@@ -243,18 +263,18 @@ model Enrollment {
 }
 
 model Attendance {
-  id           String           @id @default(uuid())
-  enrollmentId String           @map("enrollment_id")
-  scheduleId   String           @map("schedule_id")
-  date         DateTime
-  status       AttendanceStatus
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
-  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id])
-  schedule     Schedule         @relation(fields: [scheduleId], references: [id])
+  id                  String           @id @default(uuid())
+  courseBranchId      String           @map("course_branch_id")
+  studentId           String           @map("student_id")
+  date                DateTime
+  status              AttendanceStatus
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+  courseBranch        CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  student             Student          @relation(fields: [studentId], references: [id])
 
-  @@index([enrollmentId], map: "attendances_enrollment_id_fkey")
-  @@index([scheduleId], map: "attendances_schedule_id_fkey")
+  @@index([courseBranchId], map: "attendances_course_branch_id_fkey")
+  @@index([studentId], map: "attendances_student_id_fkey")
   @@map("attendances")
 }
 
@@ -315,32 +335,55 @@ model ReceivablePayment {
   accountReceivableId String            @map("account_receivable_id")
   amount              Float
   paymentDate         DateTime          @map("payment_date")
-  cashMovementId      String            @unique @map("cash_movement_id")
+  invoiceId           String            @map("invoice_id")
+  deleted             Boolean           @default(false)
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
-  accountReceivable   AccountReceivable @relation(fields: [accountReceivableId], references: [id])
-  cashMovement        CashMovement      @relation(fields: [cashMovementId], references: [id])
 
+  accountReceivable   AccountReceivable @relation(fields: [accountReceivableId], references: [id])
+  invoice             Invoice           @relation(fields: [invoiceId], references: [id])
+  PayableEarning      PayableEarning?
+
+  @@unique([accountReceivableId, invoiceId], map: "receivable_payments_account_receivable_invoice_unique")
   @@index([accountReceivableId], map: "receivable_payments_account_receivable_id_fkey")
   @@map("receivable_payments")
 }
 
 model AccountPayable {
-  id             String           @id @default(uuid())
-  teacherId      String           @map("teacher_id")
-  courseBranchId String           @map("course_branch_id")
+  id             String        @id @default(uuid())
+  teacherId      String        @map("teacher_id")
+  courseBranchId String        @map("course_branch_id")
   amount         Float
-  dueDate        DateTime         @map("due_date")
-  status         PaymentStatus    @default(PENDING)
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
-  teacher        Teacher          @relation(fields: [teacherId], references: [id])
-  PayablePayment PayablePayment[]
+  amountDisbursed    Float         @default(0) @map("amount_disbursed")
+  status         PaymentStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
+  courseBranch CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  teacher      Teacher          @relation(fields: [teacherId], references: [id])
+  earings      PayableEarning[]
+  payments     PayablePayment[]
+
+  @@unique([teacherId, courseBranchId], map: "accounts_payable_teacher_course_branch_unique")
   @@index([courseBranchId], map: "accounts_payable_course_branch_id_fkey")
   @@index([teacherId], map: "accounts_payable_teacher_id_fkey")
   @@map("accounts_payable")
+}
+
+model PayableEarning {
+  id                  String   @id @default(uuid())
+  date                DateTime
+  accountPayableId    String   @map("account_payable_id")
+  receivablePaymentId String   @unique @map("receivable_payment_id")
+  amount              Float
+  deleted             Boolean @default(false)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  accountPayable    AccountPayable    @relation(fields: [accountPayableId], references: [id])
+  receivablePayment ReceivablePayment @relation(fields: [receivablePaymentId], references: [id])
+
+  @@map("payable_earnings")
 }
 
 model PayablePayment {
@@ -349,6 +392,7 @@ model PayablePayment {
   amount           Float
   paymentDate      DateTime       @map("payment_date")
   cashMovementId   String         @unique @map("cash_movement_id")
+  deleted          Boolean        @default(false)
   createdAt        DateTime       @default(now()) @map("created_at")
   updatedAt        DateTime       @updatedAt @map("updated_at")
   accountPayable   AccountPayable @relation(fields: [accountPayableId], references: [id])
@@ -359,17 +403,20 @@ model PayablePayment {
 }
 
 model Setting {
-  id              String   @id @default(uuid())
-  rnc             String   @unique
-  companyName     String   @map("company_name")
-  address         String
-  phone           String
-  email           String
-  logo            String
-  defaultPassword String?  @map("default_password")
-  deleted         Boolean  @default(false)
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id                String  @id @default(uuid())
+  rnc               String  @unique
+  companyName       String  @map("company_name")
+  address           String
+  phone             String
+  email             String
+  logo              String
+  defaultPassword   String? @map("default_password")
+  billingWithoutNcf Boolean @default(true) @map("billing_without_ncf")
+  billingWithoutStock Boolean @default(true) @map("billing_without_stock")
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
 }
@@ -392,11 +439,12 @@ model CashRegister {
   status         CashRegisterStatus    @default(OPEN)
   userId         String                @map("user_id")
   initialBalance Float                 @default(0) @map("initial_balance")
-  cashBreakdown  String?               @map("cash_breakdown") @db.LongText
   openingDate    DateTime              @default(now()) @map("opening_date")
   createdAt      DateTime              @default(now()) @map("created_at")
+  closedAt       DateTime?             @map("closed_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
   deleted        Boolean               @default(false)
+
   movements      CashMovement[]
   closures       CashRegisterClosure[]
   branch         Branch                @relation(fields: [branchId], references: [id])
@@ -419,10 +467,11 @@ model CashMovement {
   createdBy         String                     @map("created_by")
   createdAt         DateTime                   @default(now()) @map("created_at")
   updatedAt         DateTime                   @updatedAt @map("updated_at")
+  deleted           Boolean                    @default(false)
+
   cashRegister      CashRegister               @relation(fields: [cashRegisterId], references: [id])
   user              User                       @relation(fields: [createdBy], references: [id])
   PayablePayment    PayablePayment?
-  ReceivablePayment ReceivablePayment?
 
   @@index([cashRegisterId], map: "cash_movements_cash_register_id_fkey")
   @@index([createdBy], map: "cash_movements_created_by_fkey")
@@ -436,7 +485,13 @@ model CashRegisterClosure {
   initialBalance Float        @default(0) @map("initial_balance")
   totalIncome    Float        @default(0) @map("total_income")
   totalExpense   Float        @default(0) @map("total_expense")
-  cashBreakdown  String?      @map("cash_breakdown") @db.LongText
+  cashBreakdown  Json?        @map("cash_breakdown")
+  totalCash      Float        @default(0) @map("total_cash")
+  totalCheck     Float        @default(0) @map("total_check")
+  totalCard      Float        @default(0) @map("total_card")
+  totalTransfer  Float        @default(0) @map("total_transfer")
+  totalExpected  Float        @default(0) @map("total_expected")
+  difference     Float        @default(0) @map("difference")
   closedBy       String       @map("closed_by")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
@@ -486,6 +541,7 @@ model Invoice {
   cashRegister   CashRegister  @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
   user           User          @relation(fields: [createdBy], references: [id])
   student        Student?      @relation(fields: [studentId], references: [id])
+  receivablePayment ReceivablePayment[]
 
   @@index([cashRegisterId], map: "invoices_cash_register_id_fkey")
   @@index([createdBy], map: "invoices_created_by_fkey")
@@ -518,7 +574,7 @@ model InvoiceItem {
 
 model Product {
   id            String          @id @default(uuid())
-  code          String          @unique
+  code          Int             @unique @default(autoincrement())
   name          String
   description   String?
   price         Float
@@ -526,6 +582,8 @@ model Product {
   stock         Int             @default(0)
   taxRate       Float           @default(0) @map("tax_rate")
   isTaxIncluded Boolean         @default(true) @map("is_tax_included")
+  billingWithoutStock Boolean   @default(true) @map("billing_without_stock")
+
   deleted       Boolean         @default(false)
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")

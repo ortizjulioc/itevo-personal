@@ -1,41 +1,12 @@
-import { SearchInput, ViewTitle } from "@/components/common";
-import { IconUserPlus } from "@/components/icon";
-import { Button } from "@/components/ui";
-import { Metadata } from "next";
-import Link from "next/link";
-import { objectToQueryString } from "@/utils";
-import EnrollmentList from "./components/enrollment-list";
-import SearchEnrollments from "./components/search-enrollment";
+// app/enrollments/page.tsx
+
+import Enrollment from "./enrollment-client";
 
 
-
-export const metadata: Metadata = {
-  title: 'Cursos',
+export const metadata = {
+  title: 'Inscripciones',
 };
-interface EnrollmentListProps {
-  searchParams?: {
-    search?: string;
-    page?: string;
-  };
-}
-export default function Enrollment({ searchParams }: EnrollmentListProps) {
-  const query = objectToQueryString(searchParams || {});
-  return (
-    <div>
-      <ViewTitle className='mb-6' title="Inscripciones" rightComponent={
-        <>
-        
-          <Link href="/enrollments/new">
-            <Button icon={<IconUserPlus />}>Crear inscripcion</Button>
-          </Link>
 
-
-        </>
-      } />
-      <div>
-        <SearchEnrollments />
-      </div>
-      <EnrollmentList query={query} />
-    </div>
-  )
+export default function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {
+  return <Enrollment searchParams={searchParams} />;
 }

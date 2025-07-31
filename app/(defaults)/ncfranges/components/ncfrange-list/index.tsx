@@ -8,6 +8,7 @@ import Skeleton from "@/components/common/Skeleton";
 import useFetchNcfRanges from "../../libs/use-fetch-nfcranges";
 import { deleteNcfRange } from "../../libs/request";
 import NcfStatus from "./NcfStatus";
+import { getFormattedDate } from "@/utils/date";
 
 interface Props {
     className?: string;
@@ -70,7 +71,7 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{ncfRange.authorizationNumber}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{new Date(ncfRange.dueDate).toLocaleDateString()}</div>
+                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(ncfRange.dueDate))}</div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfRange.startSequence}`}</div>

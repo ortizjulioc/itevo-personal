@@ -12,12 +12,14 @@ import {
     NcfType,
     PrismaClient,
     User,
-    Prisma as PrismaTypes
+    Prisma as PrismaTypes,
+    CashRegister
 } from "@prisma/client";
 const USE_NCF = false;
 export interface InvoiceWithItems extends Invoice {
     items: InvoiceItem[];
     user: Pick<User, 'id' | 'name' | 'email' | 'lastName'>;
+    cashRegister?: CashRegister | null; // Incluye la caja registradora si es necesario
 }
 export interface InvoiceCreateDataType {
     invoiceNumber: string;
@@ -31,6 +33,7 @@ export interface InvoiceCreateDataType {
     subtotal?: number; // Si no se especifica, se calculará al agregar ítems
     itbis?: number; // Si no se especifica, se calculará al agregar ítems
     status?: InvoiceStatus; // DRAFT, PAID, VOID
+    type?: NcfType; // Si no se especifica, se mantendrá el tipo por defecto
 }
 
 export interface InvoiceItemCreateData {
@@ -59,6 +62,7 @@ interface InvoiceFilter {
     toDate?: Date;
     studentId?: string;
     createdBy?: string;
+    cashRegisterId?: string;
     page?: number;
     pageSize?: number;
 }
@@ -77,6 +81,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         toDate,
         studentId,
         createdBy,
+        cashRegisterId,
         page = 1,
         pageSize = 10,
     } = filter;
@@ -87,6 +92,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (status) where.status = status;
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
+    if (cashRegisterId) where.cashRegisterId = cashRegisterId;
 
     if (fromDate || toDate) {
         where.date = {};
@@ -152,7 +158,20 @@ export const updateInvoice = async (
     data: Partial<InvoiceCreateDataType>,
     prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ): Promise<Invoice> => {
-    const { invoiceNumber, ncf, studentId, createdBy, cashRegisterId, status, subtotal, itbis } = data;
+    const {
+        invoiceNumber,
+        ncf,
+        studentId,
+        createdBy,
+        cashRegisterId,
+        status,
+        subtotal,
+        itbis,
+        type,
+        paymentDate,
+        paymentMethod,
+        paymentDetails
+    } = data;
 
     return await prisma.invoice.update({
         where: { id },
@@ -164,6 +183,10 @@ export const updateInvoice = async (
             cashRegisterId,
             subtotal,
             itbis,
+            type,
+            paymentDate,
+            paymentMethod,
+            paymentDetails,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
         },
     });
@@ -171,20 +194,22 @@ export const updateInvoice = async (
 
 export const findInvoiceById = async (
     id: string,
-    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+    include: PrismaTypes.InvoiceInclude = {}
 ): Promise<InvoiceWithItems | null> => {
     return await prisma.invoice.findUnique({
         where: { id },
         include: {
-            items: true,
-            user: {
+            ...include,
+            items: include.items ?? true, // Asegura que items sea true si no se especifica
+            user: include.user ?? {
                 select: {
                     id: true,
                     name: true,
                     email: true,
                     lastName: true,
-                },
-            }
+                }
+            },
         },
     });
 }

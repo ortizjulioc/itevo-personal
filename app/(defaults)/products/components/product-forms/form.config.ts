@@ -3,7 +3,6 @@ import * as Yup from 'yup';
 
 
 export const createValidationSchema = Yup.object().shape({
-    code: Yup.string().required('El código es requerido'),
     name: Yup.string().required('El nombre es requerido'),
     description: Yup.string(),
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
@@ -11,10 +10,10 @@ export const createValidationSchema = Yup.object().shape({
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
     taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
+    billingWithoutStock: Yup.boolean(),
 });
 
 export const updateValidationSchema = Yup.object().shape({
-    code: Yup.string().required('El código es requerido'),
     name: Yup.string().required('El nombre es requerido'),
     description: Yup.string(),
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
@@ -22,10 +21,10 @@ export const updateValidationSchema = Yup.object().shape({
     stock: Yup.number().required('El stock es requerido').integer('El stock debe ser un número entero'),
     taxRate: Yup.number().required('La tasa de impuestos es requerida'),
     isTaxIncluded: Yup.boolean(),
+    billingWithoutStock: Yup.boolean(),
 });
 
 export const initialValues = {
-    code: '',
     name: '',
     description: '',
     cost: 0,
@@ -33,4 +32,5 @@ export const initialValues = {
     stock: 0,
     taxRate: 0.18,
     isTaxIncluded: true,
+    billingWithoutStock: true,
 };

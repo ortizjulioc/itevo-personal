@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import { Enrollment } from "@prisma/client";
+import { EnrollmentWithRelations } from '@/@types/enrollment';
 
 export interface EnrollmentResponse {
-  enrollments: Enrollment[];
+  enrollments: EnrollmentWithRelations[];
   totalEnrollments: number;
 }
 
 const useFetchEnrollments = (query: string) => {
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [enrollments, setEnrollments] = useState<EnrollmentWithRelations[]>([]);
   const [totalEnrollments, setTotalEnrollments] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,7 @@ const useFetchEnrollments = (query: string) => {
   useEffect(() => {
     const fetchrolesData = async (query: string) => {
       try {
-     
+
         const response = await apiRequest.get<EnrollmentResponse>(`/enrollments?${query}`);
        ;
         if (!response.success) {

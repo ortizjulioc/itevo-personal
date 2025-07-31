@@ -19,10 +19,9 @@ export default function InvoiceCard({
         <Link
             href={`/invoices/${cashRegisterId}/bill/${invoice.id}`}
             className={`mb-4 flex flex-col items-start justify-between max-w-[22rem] w-full shadow-md rounded-lg border p-4 transition duration-150
-                ${
-                    isSelected
-                        ? 'border border-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-500'
-                        : 'border border-gray-200 bg-white dark:border-[#1b2e4b] dark:bg-[#191e3a]'
+                ${isSelected
+                    ? 'border border-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-500'
+                    : 'border border-gray-200 bg-white dark:border-[#1b2e4b] dark:bg-[#191e3a]'
                 }
                 hover:scale-[1.01] hover:shadow-lg`}
         >
@@ -33,12 +32,12 @@ export default function InvoiceCard({
                 <MdOutlineReceiptLong className="text-gray-500 dark:text-gray-300" size={18} />
             </div>
 
-            <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">
+            <p className="text-xs text-gray-500 dark:text-gray-300 mb-1 capitalize">
                 {invoice.type.replace(/_/g, ' ').toLowerCase()}
             </p>
 
-            <p className={`text-xs font-medium ${invoice.status === 'DRAFT' ? 'text-yellow-500' : 'text-green-600'}`}>
-                {invoice.status}
+            <p className={`text-xs font-medium text-yellow-500`}>
+                Pendiente
             </p>
         </Link>
     )

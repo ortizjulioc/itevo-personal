@@ -478,7 +478,7 @@ hover:text-primary hover:before:!bg-primary ltr:before:mr-2 rtl:before:ml-2 dark
     table thead tr th,
     table tfoot tr th,
     table tbody tr td {
-        @apply px-4 py-3 ltr:text-left rtl:text-right;
+        @apply px-3 py-2 ltr:text-left rtl:text-right;
     }
     table thead tr th,
     table tfoot tr th {

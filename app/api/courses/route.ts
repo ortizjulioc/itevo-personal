@@ -25,19 +25,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ',body);
-
         // Validate the request body
-        const {isValid, message} = validateObject(body, ['name', 'code']);
+        const {isValid, message} = validateObject(body, ['name']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-
-        const courseCodeExists = await findCourseByCode(body);
-        if (courseCodeExists) {
-            return NextResponse.json({ error: 'Este curso ya está registrado' }, { status: 400 });
-        }
         const course = await createCourse(body);
 
         // Enviar log de auditoría

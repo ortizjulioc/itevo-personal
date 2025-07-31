@@ -32,8 +32,7 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
         { value: 0.18, label: 'Grabados con el 18%' },
     ]
 
-    interface TaxRateOptions
-    {
+    interface TaxRateOptions {
         value: number;
         label: string;
     }
@@ -46,10 +45,6 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-
-                        <FormItem name="code" label="Código" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
-                            <Field type="text" name="code" component={Input} />
-                        </FormItem>
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
                             <Field type="text" name="name" component={Input} />
                         </FormItem>
@@ -57,14 +52,14 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                             <Field type="textarea" name="description" component={Input} />
                         </FormItem>
                         <FormItem name="cost" label="Costo" invalid={Boolean(errors.cost && touched.cost)} errorMessage={errors.cost}>
-                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo de la promoción" />
+                            <Field type="number" name="cost" component={Input} placeholder="Ingrese el costo del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="price" label="Precio" invalid={Boolean(errors.price && touched.price)} errorMessage={errors.price}>
-                            <Field type="number" name="price" component={Input} />
+                            <Field type="number" name="price" component={Input} placeholder="Ingrese el precio del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
                         <FormItem name="stock" label="Stock" invalid={Boolean(errors.stock && touched.stock)} errorMessage={errors.stock}>
-                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock de la promoción" />
+                            <Field type="number" name="stock" component={Input} placeholder="Ingrese el stock del producto" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
                         <FormItem name="taxRate" label="Tasa de impuestos" invalid={Boolean(errors.taxRate && touched.taxRate)} errorMessage={errors.taxRate}>
                             <Field name="taxRate">
@@ -73,7 +68,7 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                                         {...field}
                                         options={TAX_RATE_OPTIONS}
                                         value={TAX_RATE_OPTIONS.find((option) => option.value === values.taxRate)}
-                                        onChange={(option:TaxRateOptions) => {
+                                        onChange={(option: TaxRateOptions) => {
                                             setFieldValue('taxRate', option?.value);
                                         }}
                                     />
@@ -86,6 +81,13 @@ export default function UpdateProductForm({ initialValues }: { initialValues: Pr
                             <Field type="checkbox" name="isTaxIncluded" component={Checkbox} >
                                 Tiene los impuestos incluidos
                             </Field>
+                        </FormItem>
+
+                        <FormItem name="billingWithoutStock" label="" invalid={Boolean(errors.billingWithoutStock && touched.billingWithoutStock)} errorMessage={errors.billingWithoutStock}>
+                            <Field type="checkbox" name="billingWithoutStock" component={Checkbox} >
+                                Facturar sin existencias
+                            </Field>
+                            <p className="text-xs text-gray-500">Si está habilitado, se podrá facturar sin tener existencias disponibles.</p>
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">

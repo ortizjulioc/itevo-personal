@@ -1,3 +1,4 @@
+
 export const formatPhoneNumber = (phone?: string | null): string => {
   // Si no hay número de teléfono, retornamos un string vacío
   if (!phone) {
@@ -22,7 +23,7 @@ export const getInitials = (name?: string | null, lastName?: string | null): str
   // Verificar si name o lastName son nulos o indefinidos, y asignar un valor por defecto
   const firstInitial = name ? name[0].toUpperCase() : '';
   const lastInitial = lastName ? lastName[0].toUpperCase() : '';
-  
+
   return `${firstInitial}${lastInitial}`;
 }
 
@@ -33,4 +34,8 @@ export const formatCurrency = (amount: number): string => {
     currency: 'DOP',
     minimumFractionDigits: 2,
   }).format(amount);
+}
+
+export function base64ToUint8Array(base64: string): Uint8Array {
+  return new Uint8Array(Buffer.from(base64, 'base64'));
 }

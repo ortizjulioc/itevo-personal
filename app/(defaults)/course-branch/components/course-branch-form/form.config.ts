@@ -8,6 +8,7 @@ export const createValidationSchema = Yup.object().shape({
     teacherId: Yup.string().required('El profesor es obligatorio'),
     courseId: Yup.string().required('El curso es obligatorio'),
     capacity: Yup.number().required('La capacidad es obligatoria').nullable(),
+    sessionCount: Yup.number().min(1, 'La cantidad de sesiones debe ser al menos 1').required('La cantidad de sesiones es obligatoria').nullable(),
 });
 
 export const updateValidationSchema = Yup.object().shape({
@@ -26,6 +27,10 @@ export const updateValidationSchema = Yup.object().shape({
         .min(0, 'La comisión no puede ser menor a 0')
         .max(100, 'La comisión no puede ser mayor a 100')
         .required('La comisión es obligatoria'),
+    commissionAmount: Yup.number()
+        .typeError('El monto de comisión debe ser un número')
+        .min(0, 'El monto de comisión no puede ser menor a 0')
+        .required('El monto de comisión es obligatorio'),
     capacity: Yup.number().required('La capacidad es obligatoria'),
     status: Yup.string()
         .oneOf(Object.values(CourseBranchStatus), 'El estado no es válido')
@@ -43,8 +48,10 @@ export const updateInitialValues = {
     startDate: null,
     endDate: null,
     commissionRate: '',
+    commissionAmount: '',
     capacity: '',
     status: '',
+    sessionCount: '',
 };
 
 export const createInitialValues = {
@@ -53,6 +60,7 @@ export const createInitialValues = {
     teacherId: '',
     courseId: '',
     capacity: '',
+    sessionCount: '',
 };
 
 export type CreateCourseBranchFormType = {
@@ -61,6 +69,7 @@ export type CreateCourseBranchFormType = {
     teacherId: string;
     courseId: string;
     capacity: number | string;
+    sessionCount:number | string;
 }
 
 export type CourseBranchFormType = {
@@ -73,6 +82,7 @@ export type CourseBranchFormType = {
     startDate: Date | null;
     endDate: Date | null;
     commissionRate: number;
+    commissionAmount: number;
     capacity: number;
     status: CourseBranchStatus;
     sessionCount: number;

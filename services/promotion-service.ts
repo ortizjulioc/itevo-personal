@@ -16,6 +16,7 @@ export const getPromotions = async (search: string, page: number, top: number) =
         },
         where: {
             description: { contains: search },
+            deleted: false,
         },
         skip: skip,
         take: top,
@@ -45,7 +46,7 @@ export const findPromotionById = async (id: string) => {
             startDate: true,
             endDate: true,
         },
-        where: { id },
+        where: { id, deleted: false },
     });
 };
 
@@ -59,7 +60,19 @@ export const updatePromotionById = async (id: string, data: any) => {
 
 // Eliminar promoción por ID (soft delete no especificado, eliminación directa)
 export const deletePromotionById = async (id: string) => {
-    return Prisma.promotion.delete({
+    return Prisma.promotion.update({
         where: { id },
+        data: { deleted: true }, // Asumiendo que hay un campo 'deleted' para soft delete
     });
 };
+
+export const getCurrentPromotion = async () => {
+    const today = new Date();
+    return Prisma.promotion.findFirst({
+        where: {
+            startDate: { lte: today },
+            endDate: { gte: today },
+        },
+        orderBy: { startDate: 'asc' },
+    });
+}

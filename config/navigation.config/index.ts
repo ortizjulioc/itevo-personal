@@ -1,5 +1,25 @@
 import { NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE } from '@/constants/navigation.constant';
-import { TbFileText, TbHome, TbLiveView, TbSpeakerphone, TbUserCog, TbUserEdit, TbUserScreen, TbUserShield,TbSchool, TbEdit, TbSettings, TbShoppingCart, TbReceiptTax, TbBrandCashapp, TbReportMoney } from 'react-icons/tb';
+import {
+    TbFileText,
+    TbHome,
+    TbLiveView,
+    TbSpeakerphone,
+    TbUserCog,
+    TbUserEdit,
+    TbUserScreen,
+    TbUserShield,
+    TbSchool,
+    TbEdit,
+    TbSettings,
+    TbShoppingCart,
+    TbReceiptTax,
+    TbBrandCashapp,
+    TbReportMoney,
+    TbCheckupList,
+    TbCashRegister,
+} from 'react-icons/tb';
+
+import { ADMIN, USER, CASHIER } from '@/constants/role.constant';
 
 const navigationConfig = [
     {
@@ -9,14 +29,16 @@ const navigationConfig = [
         url: '/',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER, CASHIER]
     },
     {
         key: 'course-branch',
-        title: 'Oferta Academica',
+        title: 'Oferta Académica',
         icon: TbSchool,
         url: '/course-branch',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
     },
     {
         key: 'enrollments',
@@ -25,6 +47,16 @@ const navigationConfig = [
         url: '/enrollments',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
+    },
+    {
+        key: 'attendances',
+        title: 'Asistencia',
+        icon: TbCheckupList,
+        url: '/attendances',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [ADMIN, USER]
     },
     {
         key: 'teachers',
@@ -33,6 +65,7 @@ const navigationConfig = [
         url: '/teachers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
     },
     {
         key: 'students',
@@ -41,6 +74,7 @@ const navigationConfig = [
         url: '/students',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
     },
     {
         key: 'courses',
@@ -49,6 +83,7 @@ const navigationConfig = [
         url: '/courses',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
     },
     {
         key: 'branches',
@@ -57,6 +92,7 @@ const navigationConfig = [
         url: '/branches',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN]
     },
     {
         key: 'promotions',
@@ -65,13 +101,15 @@ const navigationConfig = [
         url: '/promotions',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, USER]
     },
 
     {
         key: 'maintenance',
-        title: 'Mantenimentos',
+        title: 'Mantenimientos',
         icon: TbSettings,
         type: NAV_ITEM_TYPE_COLLAPSE,
+        auth: [ADMIN, USER],
         subItems: [
             {
                 key: 'schedules',
@@ -79,6 +117,7 @@ const navigationConfig = [
                 url: '/schedules',
                 type: NAV_ITEM_TYPE_ITEM,
                 subItems: [],
+                auth: [ADMIN, USER],
             },
             {
                 key: 'holidays',
@@ -86,6 +125,7 @@ const navigationConfig = [
                 url: '/holidays',
                 type: NAV_ITEM_TYPE_ITEM,
                 subItems: [],
+                auth: [ADMIN],
             },
         ],
     },
@@ -94,24 +134,35 @@ const navigationConfig = [
         title: 'Facturación',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
-    }
-    ,
+        auth: [ADMIN, CASHIER]
+    },
     {
         key: 'invoices',
-        title: 'Facturacion',
-        icon: TbBrandCashapp ,
+        title: 'Facturación',
+        icon: TbBrandCashapp,
         url: '/invoices',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-    },{
+        auth: [ADMIN, CASHIER]
+    },
+    {
         key: 'bills',
         title: 'Facturas',
         icon: TbReportMoney,
         url: '/bills',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-    }
-    ,
+        auth: [ADMIN, CASHIER]
+    },
+    {
+        key: 'cashRegisters',
+        title: 'Cajas',
+        icon: TbCashRegister,
+        url: '/cash-registers',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [ADMIN, CASHIER]
+    },
     {
         key: 'products',
         title: 'Productos',
@@ -119,6 +170,7 @@ const navigationConfig = [
         url: '/products',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, CASHIER]
     },
     {
         key: 'ncf',
@@ -127,12 +179,14 @@ const navigationConfig = [
         url: '/ncfranges',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN, CASHIER]
     },
     {
         key: 'auth',
         title: 'Autorización',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
+        auth: [ADMIN]
     },
     {
         key: 'users',
@@ -141,6 +195,7 @@ const navigationConfig = [
         url: '/users',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
+        auth: [ADMIN]
     },
     {
         key: 'roles',
@@ -149,15 +204,8 @@ const navigationConfig = [
         url: '/roles',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-    },
-    // {
-    //   key: 'page3',
-    //   title: 'Page 3',
-    //   icon: TbUserCog,
-    //   url: '',
-    //   type: NAV_ITEM_TYPE_TITLE,
-    //   subItems: [],
-    // }
+        auth: [ADMIN]
+    }
 ];
 
 export default navigationConfig;

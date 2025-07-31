@@ -39,10 +39,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         // Validación de campos requeridos
         const { isValid, message } = validateObject(body, [
-            'enrollmentId',
-            'date',
+            'courseBranchId',
+            'studentId',
             'status',
-            'scheduleId',
+            'date',
         ]);
 
         if (!isValid) {
@@ -56,10 +56,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         const attendanceRecord = await updateAttendanceRecordById(id, {
-            enrollment: { connect: { id: body.enrollmentId } },
+            courseBranch: { connect: { id: body.courseBranchId } },
+            student: { connect: { id: body.studentId } },
             date: new Date(body.date),
             status: body.status,
-            schedule: { connect: { id: body.scheduleId } },
         });
 
         return NextResponse.json(attendanceRecord, { status: 200 });

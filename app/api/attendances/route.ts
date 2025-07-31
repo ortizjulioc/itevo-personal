@@ -2,19 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { Attendance } from '@prisma/client';
 import { getAttendanceRecords, createAttendanceRecord, findAttendanceRecordById, updateAttendanceRecordById, deleteAttendanceRecordById } from '@/services/attendance-service';
 import { findEnrollmentById } from '@/services/enrollment-service';
-
+import { findCourseBranchById } from '@/services/course-branch-service';
 //obtener todos los registros de asistencia con búsqueda y paginación
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const top = parseInt(searchParams.get('top') || '10', 10);
-    
+    const courseBranchId = searchParams.get('courseBranchId') || undefined;
+    const studentId = searchParams.get('studentId') || undefined;
+    const date = searchParams.get('date') || undefined;
+
+    const filter = {
+        courseBranchId,
+        studentId,
+        date: date ? new Date(date) : undefined,
+    };
+
     try {
-        const { attendanceRecords, totalAttendanceRecords } = await getAttendanceRecords(search, page, top);
+        const { attendanceRecords, totalAttendanceRecords } = await getAttendanceRecords(filter, page, top);
         return NextResponse.json({
             attendanceRecords,
             totalAttendanceRecords,
@@ -28,7 +35,6 @@ export async function GET(request: NextRequest) {
         });
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
-    
 }
 
 // Crear un nuevo registro de asistencia
@@ -38,32 +44,28 @@ export async function POST(request: NextRequest) {
 
         // Validación de campos requeridos
         const { isValid, message } = validateObject(body, [
-            'enrollmentId',
-            'date',
+            'courseBranchId',
+            'studentId',
             'status',
-            'scheduleId',
+            'date',
         ]);
-
-
 
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
         // Verificar si el curso existe
-       const enrollment = await findEnrollmentById(body.enrollmentId)
-       if (!enrollment) {
-           return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND', error: 'Enrollment not found' }, { status: 404 });
+       const courseBranch = await findCourseBranchById(body.courseBranchId);
+       if (!courseBranch) {
+         return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
        }
 
-        console.log('FECHA:',new Date(body.date));
         const attendanceRecord = await createAttendanceRecord({
-            enrollment: body.enrollmentId,
+            courseBranch: { connect: { id: body.courseBranchId } },
             date: new Date(body.date),
+            student: { connect: { id: body.studentId } },
             status: body.status,
-            schedule: body.scheduleId,
         });
-        console.log('FECHA:', attendanceRecord.date);               
 
         return NextResponse.json(attendanceRecord, { status: 201 });
     } catch (error) {

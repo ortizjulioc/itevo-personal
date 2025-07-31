@@ -3,11 +3,17 @@ import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useParams } from 'next/navigation';
 import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
-import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
+import { convertTimeFrom24To12Format, getFormattedDate, getHoursDifferenceText } from '@/utils/date';
 import PromotionLabel from '@/components/common/info-labels/promotion-label';
 import CourseLabel from '@/components/common/info-labels/course-label';
 import BranchLabel from '@/components/common/info-labels/branch-label';
 import TeacherLabel from '@/components/common/info-labels/teacher-label';
+import { useURLSearchParams } from '@/utils/hooks';
+import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
+import { useCourseBranch } from './course-branch-provider';
+import { Course, CourseBranchStatus } from '@prisma/client';
+import { MODALITIES } from '@/constants/modality.constant';
+import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
 
 interface ConfirmationFieldsProps {
   values: CourseBranchFormType;
@@ -17,32 +23,14 @@ interface ConfirmationFieldsProps {
   className?: string;
 }
 
-const data = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  promotionId: "promo-001",
-  branchId: "branch-001",
-  teacherId: "teacher-001",
-  courseId: "course-001",
-  amount: 200.0,
-  modality: "Presencial", // Opciones: "Presencial", "Virtual", "Híbrido"
-  startDate: new Date("2023-09-01T09:00:00.000Z"),
-  endDate: new Date("2023-12-31T17:00:00.000Z"),
-  commissionRate: 15.0,
-  capacity: 40,
-  sessionCount: 20,
-  status: "ACTIVE", // Ejemplo: "ACTIVE", "INACTIVE", "DRAFT"
-  schedules: [
-    { day: "Lunes", startTime: "09:00", endTime: "11:00" },
-    { day: "Miércoles", startTime: "09:00", endTime: "11:00" }
-  ],
-  // Los arreglos siguientes se pueden dejar vacíos para efectos de prueba:
-  enrollment: [],
-  accountReceivable: [],
-  accountPayable: []
-};
-
 const weekdayNames = [
   'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+];
+
+const MODALITIES_OPTIONS = [
+  { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
+  { value: MODALITIES.VIRTUAL, label: 'Virtual' },
+  { value: MODALITIES.HYBRID, label: 'Híbrida' },
 ];
 
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
@@ -50,6 +38,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
+  const params = useURLSearchParams();
+  const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
+  const { preRequisites } = useCourseBranch();
 
 
   return (
@@ -79,7 +70,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Estado:</p>
-              <p className="text-gray-800">{values.status}</p>
+              <p className="text-gray-800">
+                <StatusCourseBranch status={values.status as CourseBranchStatus} />
+              </p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Capacidad:</p>
@@ -97,22 +90,29 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-medium text-gray-600">Modalidad:</p>
-              <p className="text-gray-800">{values.modality}</p>
-            </div>
-            <div>
-              <p className="font-medium text-gray-600">Sesiones:</p>
-              <p className="text-gray-800">{values.sessionCount}</p>
-              <p className="text-xs text-gray-500 italic mt-1">
-                Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
+              <p className="text-gray-800">
+                {MODALITIES_OPTIONS.find(opt => opt.value === values.modality)?.label}
               </p>
             </div>
             <div>
+              <p className="font-medium text-gray-600">Sesiones:</p>
+              <p className="text-gray-800">
+                {values.sessionCount}
+              </p>
+              {/* <p className="text-xs text-gray-500 italic mt-1">
+                Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
+              </p> */}
+            </div>
+            <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
-              <p className="text-gray-800">{values?.startDate ? new Date(values.startDate).toLocaleDateString() : ''}</p>
+              <p className="text-gray-800">{values?.startDate ? getFormattedDate(new Date(values.startDate)) : ''}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Fin:</p>
-              <p className="text-gray-800">{values?.endDate ? new Date(values.endDate).toLocaleDateString() : ''}</p>
+              <p className="text-gray-800">{values?.endDate ? getFormattedDate(new Date(values.endDate)) : ''}</p>
+              <p className="text-xs text-gray-500 italic mt-1">
+                **Fecha de fin calculada automáticamente según la fecha de inicio, el número de sesiones y los horarios.
+              </p>
             </div>
           </div>
           {courseSchedules && courseSchedules.length > 0 && (
@@ -132,6 +132,27 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           </button>
         </div>
 
+        {/* Sección: Configuración de Prerequisitos */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-2">Prerrequisitos</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {preRequisites.length > 0 ? (
+              <ul>
+                {preRequisites.map(({ prerequisite }: { prerequisite: Course }) => (
+                  <li key={prerequisite.id} className="flex justify-between items-center py-1">
+                    <span className="text-sm">{prerequisite.code} {prerequisite.name}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 text-sm italic">Este curso no tiene prerrequisitos</p>
+            )}
+
+          </div>
+          <button type='button' onClick={() => onChangeTab(2)} className="mt-2 text-blue-600 hover:underline">
+            Editar Prerrequistos
+          </button>
+        </div>
         {/* Sección: Configuración Financiera */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Configuración Financiera</h3>
@@ -142,7 +163,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Comisión:</p>
-              <p className="text-gray-800">{values.commissionRate * 100}%</p>
+              <p className="text-gray-800">RD${values.commissionAmount} ({values.commissionRate * 100}%)</p>
             </div>
           </div>
           <button type='button' onClick={() => onChangeTab(3)} className="mt-2 text-blue-600 hover:underline">

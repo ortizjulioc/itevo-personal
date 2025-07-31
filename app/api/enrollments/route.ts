@@ -6,20 +6,26 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { EnrollmentStatus } from "@prisma/client";
+import { CourseBranchStatus, EnrollmentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
+import { getCourseEndDate } from "@/utils/date";
+import { getHolidays } from "@/services/holiday-service";
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
 
         const filters = {
-            studentId: searchParams.get('studentId') || undefined,
-            courseBranchId: searchParams.get('courseBranchId') || undefined,
-            status: searchParams.get('status') || '',
-            enrollmentDate: searchParams.get('enrollmentDate') || '',
             page: parseInt(searchParams.get('page') || '1', 10),
             top: parseInt(searchParams.get('top') || '10', 10),
+            studentId: searchParams.get('studentId') || undefined,
+            courseId: searchParams.get('courseId') || undefined,
+            teacherId: searchParams.get('teacherId') || undefined,
+            branchId: searchParams.get('branchId') || undefined,
+            promotionId: searchParams.get('promotionId') || undefined,
+            modality: searchParams.get('modality') || undefined,
+            status: searchParams.get('status') || undefined,
+            enrollmentDate: searchParams.get('enrollmentDate') || undefined,
         }
 
         const { enrollments, totalEnrollments } = await getEnrollments(filters);
@@ -43,9 +49,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        const courseBranch = await findCourseBranchById(body.courseBranchId);
+        let courseBranch = await findCourseBranchById(body.courseBranchId);
         if (!courseBranch) {
             return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
+        }
+
+        if (courseBranch.status === CourseBranchStatus.DRAFT || courseBranch.status === CourseBranchStatus.CANCELED || courseBranch.status === CourseBranchStatus.COMPLETED) {
+            return NextResponse.json({
+                code: 'E_COURSE_BRANCH_INVALID',
+                error: 'Course branch is not active',
+                message: 'Este curso no está disponible para inscripciones',
+            }, { status: 400 });
         }
 
         if (courseBranch.endDate && new Date(courseBranch.endDate) < new Date()) {
@@ -61,7 +75,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
         }
 
-        if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount  && courseBranch.sessionCount > 0) {
+        if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount && courseBranch.sessionCount > 0) {
             // Check if the student is already enrolled in the course branch
             const existingEnrollment = await Prisma.enrollment.findFirst({
                 where: {
@@ -79,6 +93,18 @@ export async function POST(request: Request) {
                     error: 'Student is already enrolled in this course branch',
                     message: 'El estudiante ya está inscrito en este curso',
                 }, { status: 400 });
+            }
+
+            if (!courseBranch.endDate && courseBranch.sessionCount > 0) {
+                // Calculate the end date based on the session count and schedules
+                const schedules = courseBranch.schedules || [];
+                const { holidays } = await getHolidays(1, 365, '');
+                courseBranch.endDate = getCourseEndDate(
+                    new Date(body.enrollmentDate),
+                    courseBranch.sessionCount,
+                    schedules,
+                    holidays
+                );
             }
 
             const accountReceivable = {

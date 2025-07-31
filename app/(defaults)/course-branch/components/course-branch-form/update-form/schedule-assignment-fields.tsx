@@ -1,15 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CourseBranchFormType } from '../form.config'
 import { Field, FormikErrors, FormikTouched } from 'formik';
-import { FormItem, Select } from '@/components/ui';
+import { FormItem, Input, Select } from '@/components/ui';
 import DatePicker from '@/components/ui/date-picker';
 import { MODALITIES } from '@/constants/modality.constant';
 import ScheduleField from './schedule-field';
+import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
+import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
+import { getCourseEndDate } from '@/utils/date';
+import { useParams } from 'next/navigation';
 
 interface ScheduleAssignmentProps {
   values: CourseBranchFormType;
   errors: FormikErrors<CourseBranchFormType>;
   touched: FormikTouched<CourseBranchFormType>;
+  setFieldValue?: (field: string, value: any, shouldValidate?: boolean) => void;
   className?: string;
 }
 
@@ -19,7 +24,21 @@ const MODALITIES_OPTIONS = [
   { value: MODALITIES.HYBRID, label: 'Híbrida' },
 ];
 
-export default function ScheduleAssignmentFields({ values, errors, touched, className }: ScheduleAssignmentProps) {
+export default function ScheduleAssignmentFields({ values, errors, touched, className, setFieldValue }: ScheduleAssignmentProps) {
+    const { id } = useParams();
+  const { holidays } = useFetchHolidays('top=365');
+  const { schedules } = useFetchScheduleByCourseId(id as string);
+  useEffect(() => {
+    console.log(values.startDate, values.sessionCount, schedules, holidays);
+    if (values.startDate && values.sessionCount && schedules && holidays) {
+      const endDate = getCourseEndDate(values.startDate, values.sessionCount, schedules, holidays);
+      if (endDate) {
+        // Set the end date in the form
+        setFieldValue?.('endDate', endDate);
+      }
+    }
+    console.log('useEffect ScheduleAssignmentFields');
+  }, [values.startDate, values.sessionCount, schedules, holidays, setFieldValue]);
   return (
     <div className={className}>
       <FormItem name='modality' label='Modalidad' invalid={Boolean(errors.modality && touched.modality)} errorMessage={errors.modality}>
@@ -39,6 +58,10 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
         </Field>
       </FormItem>
 
+      <FormItem name="sessionCount" label="Cantidad de sesiones" invalid={Boolean(errors.sessionCount && touched.sessionCount)} errorMessage={errors.sessionCount}>
+        <Field type="number" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} name="sessionCount" component={Input} />
+      </FormItem>
+
       <FormItem name='startDate' label='Fecha de inicio' invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
         <Field name='startDate'>
           {({ form, field }: any) => (
@@ -56,7 +79,13 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
         </Field>
       </FormItem>
 
-      <FormItem name='endDate' label='Fecha de fin' invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
+      {/* <FormItem
+        name='endDate'
+        label='Fecha de fin'
+        extra={<span className='text-gray-500'>(se calculara automaticamente al selecicionar horarios)</span>}
+        invalid={Boolean(errors.endDate && touched.endDate)}
+        errorMessage={errors.endDate}
+      >
         <Field name='endDate'>
           {({ form, field }: any) => (
             <DatePicker
@@ -71,7 +100,7 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
             />
           )}
         </Field>
-      </FormItem>
+      </FormItem> */}
 
       <ScheduleField values={values} errors={errors} touched={touched} />
     </div>

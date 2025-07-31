@@ -29,7 +29,7 @@ export default function AccountReceivableModal({
     const [loadingId, setLoadingId] = React.useState<string | null>(null);
 
 
-
+console.log( 'accountReceivables',accountReceivables)
     const grouped = React.useMemo(() => {
         return accountReceivables.reduce<Record<string, any[]>>((acc, curr) => {
             if (!acc[curr.courseBranchId]) acc[curr.courseBranchId] = [];
@@ -195,6 +195,7 @@ export default function AccountReceivableModal({
                                                                         <Input
                                                                             id={inputId}
                                                                             type="number"
+                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                             defaultValue={maxAmount}
                                                                             max={maxAmount}
                                                                             min={0}
@@ -244,8 +245,8 @@ export default function AccountReceivableModal({
                                 </div>
 
                                 <div className="mt-8 flex justify-end">
-                                    <Button type="button" onClick={() => setOpenModal(false)}>
-                                        Cerrar
+                                    <Button type="button" onClick={() => setOpenModal(false)} variant="outline" color="danger">
+                                        Cancelar
                                     </Button>
                                 </div>
                             </Dialog.Panel>

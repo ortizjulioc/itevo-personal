@@ -85,7 +85,6 @@ export const findCashRegisterById = async (id: string) => {
       status: true,
       openingDate: true,
       initialBalance: true,
-      cashBreakdown: true,
       deleted: true,
       branch: {
         select: { id: true, name: true }
@@ -114,3 +113,82 @@ export const deleteCashRegisterById = async (id: string) => {
     data: { deleted: true },
   });
 };
+
+export const calculateExpectedTotalForCashRegister = async (cashRegisterId: string) => {
+  const cashRegister = await Prisma.cashRegister.findUnique({
+    where: { id: cashRegisterId, deleted: false },
+    select: {
+      id: true,
+      initialBalance: true,
+      openingDate: true,
+    },
+  });
+
+  if (!cashRegister) throw new Error('Cash register not found');
+
+
+  // Filtrar movimientos dentro del rango válido
+  const cashMovements = await Prisma.cashMovement.findMany({
+    where: {
+      cashRegisterId,
+    },
+    select: {
+      amount: true,
+      type: true,
+    },
+  });
+
+  const totalMovements = cashMovements.reduce((total, movement) => {
+    return movement.type === 'INCOME'
+      ? total + movement.amount
+      : total - movement.amount;
+  }, 0);
+
+  const expectedTotal = cashRegister.initialBalance + totalMovements;
+
+  return expectedTotal;
+};
+
+export const getCashRegisterMovementSummary = async (cashRegisterId: string) => {
+  const cashRegister = await Prisma.cashRegister.findUnique({
+    where: { id: cashRegisterId, deleted: false },
+    select: {
+      id: true,
+      initialBalance: true,
+      openingDate: true,
+    },
+  });
+
+  if (!cashRegister) throw new Error('Cash register not found');
+
+  const cashMovements = await Prisma.cashMovement.findMany({
+    where: {
+      cashRegisterId,
+    },
+    select: {
+      amount: true,
+      type: true,
+    },
+  });
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  for (const movement of cashMovements) {
+    if (movement.type === 'INCOME') {
+      totalIncome += movement.amount;
+    } else {
+      totalExpense += movement.amount;
+    }
+  }
+
+  const expectedTotal = cashRegister.initialBalance + totalIncome - totalExpense;
+
+  return {
+    initialBalance: cashRegister.initialBalance,
+    totalIncome,
+    totalExpense,
+    expectedTotal,
+  };
+};
+

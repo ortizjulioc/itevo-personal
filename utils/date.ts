@@ -15,22 +15,22 @@ export function getHoursDifference(startTime: string, endTime: string): number {
     // Convertir las horas a minutos para facilitar el cálculo
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     const [endHours, endMinutes] = endTime.split(':').map(Number);
-    
+
     // Calcular total de minutos para cada hora
     const startTotalMinutes = startHours * 60 + startMinutes;
     const endTotalMinutes = endHours * 60 + endMinutes;
-    
+
     // Calcular la diferencia en minutos
     let diffMinutes = endTotalMinutes - startTotalMinutes;
-    
+
     // Si la diferencia es negativa, asumimos que pasa al día siguiente
     if (diffMinutes < 0) {
         diffMinutes += 24 * 60; // Agregar 24 horas en minutos
     }
-    
+
     // Convertir a horas con decimales
     const diffHours = diffMinutes / 60;
-    
+
     return diffHours;
 }
 
@@ -39,14 +39,14 @@ export function hoursToText(hours: number): string {
     const fullHours = Math.floor(hours);
     // Obtener los minutos (parte decimal * 60)
     const minutes = Math.round((hours - fullHours) * 60);
-    
+
     let result = '';
-    
+
     // Construir la parte de las horas
     if (fullHours > 0) {
         result += `${fullHours} ${fullHours === 1 ? 'hora' : 'horas'}`;
     }
-    
+
     // Agregar la parte de los minutos si existen
     if (minutes > 0) {
         if (fullHours > 0) {
@@ -54,12 +54,12 @@ export function hoursToText(hours: number): string {
         }
         result += `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
     }
-    
+
     // Caso especial: si es 0 horas y 0 minutos
     if (fullHours === 0 && minutes === 0) {
         result = '0 horas';
     }
-    
+
     return result;
 }
 
@@ -135,6 +135,64 @@ export function getClassSessions(
     return { count: sessionCount, dates: sessionDates };
 }
 
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getDate() === b.getDate() &&
+         a.getMonth() === b.getMonth() &&
+         a.getFullYear() === b.getFullYear();
+}
+
+/**
+ * Calcula la fecha de finalización de un curso, dado un número de sesiones,
+ * una fecha de inicio, horarios semanales y días feriados.
+ *
+ * @param startDate Fecha de inicio del curso.
+ * @param sessionCount Número total de clases a impartir.
+ * @param schedules Array de objetos con la propiedad `weekday` (0 = Domingo, 6 = Sábado).
+ * @param holidays Array de feriados con propiedades `date` (Date) e `isRecurring` (boolean).
+ * @returns Fecha de finalización del curso.
+ */
+export function getCourseEndDate(
+    startDate: Date,
+    sessionCount: number,
+    schedules: { weekday: number; startTime: string; endTime: string }[],
+    holidays: { date: Date; isRecurring: boolean }[]
+): Date {
+  if (schedules.length === 0) {
+    // si no hay horarios, devolvemos la fecha de inicio + el número de sesiones como semanas
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + sessionCount * 7); // Asumimos que cada sesión es semanal
+    return endDate;
+  }
+
+  let currentDate = toLocalDate(new Date(startDate));
+  let sessionsAdded = 0;
+
+  while (sessionsAdded < sessionCount) {
+    console.log('Current Date:', currentDate, 'Sessions Added:', sessionsAdded);
+    for (const schedule of schedules) {
+      if (currentDate.getDay() === schedule.weekday) {
+        const isHoliday = holidays.some((holiday) => {
+          const holidayDate = toLocalDate(new Date(holiday.date));
+          return holiday.isRecurring
+            ? currentDate.getMonth() === holidayDate.getMonth() &&
+              currentDate.getDate() === holidayDate.getDate()
+            : isSameDay(currentDate, holidayDate);
+        });
+
+        if (!isHoliday) {
+          sessionsAdded++;
+          if (sessionsAdded === sessionCount) {
+            return new Date(currentDate);
+          }
+        }
+      }
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return new Date(currentDate); // fallback
+}
+
 
 /**
  * Esta función recibe un objeto Date y devuelve la hora en formato HH:mm.
@@ -147,7 +205,7 @@ export function getClassSessions(
  * const fechaActual = new Date();
  * console.log(getFormattedTime(fechaActual)); // "14:30" (dependiendo de la hora actual)
  */
-export function getFormattedTime(fecha: Date): string {
+export function getFormattedTime(fecha: Date, options?: Intl.DateTimeFormatOptions): string {
     // Verificamos que la fecha proporcionada sea válida.
     if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
         throw new Error('Fecha inválida proporcionada.');
@@ -157,11 +215,12 @@ export function getFormattedTime(fecha: Date): string {
     return fecha.toLocaleTimeString('es-ES', {
         hour: '2-digit',      // Asegura que la hora siempre tenga dos dígitos (ej. 09, 18).
         minute: '2-digit',    // Asegura que los minutos siempre tengan dos dígitos (ej. 05, 45).
-        hour12: false         // Usa el formato de 24 horas (ej. 14:30 en vez de 2:30 PM).
+        hour12: false,         // Usa el formato de 24 horas (ej. 14:30 en vez de 2:30 PM).
+        ...options,           // Permite pasar opciones adicionales para personalizar el formato.
     });
 }
 
-export function getFormattedDate(fecha: Date): string {
+export function getFormattedDate(fecha: Date, options?: Intl.DateTimeFormatOptions): string {
     // Verificamos que la fecha proporcionada sea válida.
     if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
         return 'fecha inválida';
@@ -171,16 +230,17 @@ export function getFormattedDate(fecha: Date): string {
     return fecha.toLocaleDateString('es-ES', {
         day: '2-digit',       // Asegura que el día siempre tenga dos dígitos (ej. 01, 31).
         month: '2-digit',     // Asegura que el mes siempre tenga dos dígitos (ej. 01, 12).
-        year: 'numeric'       // Usa el formato de año completo (ej. 2022 en vez de 22).
+        year: 'numeric',       // Usa el formato de año completo (ej. 2022 en vez de 22).
+        ...options
     });
 }
 
-export function getFormattedDateTime(fecha: Date): string {
+export function getFormattedDateTime(fecha: Date, options?: Intl.DateTimeFormatOptions): string {
     // Verificamos que la fecha proporcionada sea válida.
     if (!(fecha instanceof Date) || isNaN(fecha.getTime())) {
         return 'fecha inválida';
     }
 
     // Convertimos la fecha a una cadena de texto con formato de fecha y hora.
-    return `${getFormattedDate(fecha)} ${getFormattedTime(fecha)}`;
+    return `${getFormattedDate(fecha, options)} ${getFormattedTime(fecha, options)}`;
 }

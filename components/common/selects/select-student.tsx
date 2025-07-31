@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Student } from '@prisma/client';
 import { Select } from '@/components/ui';
-import { GroupBase } from 'react-select';
+import { CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 
 export interface StudentSelect {
   value: string;
@@ -22,9 +22,21 @@ interface SelectStudentProps {
   onChange?: (selected: StudentSelect | null) => void;
   isDisabled?: boolean;
 }
+const customStyles: StylesConfig<StudentSelect, false> = {
+  menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+    ...base,
+    zIndex: 9999,
+  }),
+  menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+    ...base,
+    zIndex: 9999,
+  }),
+};
 
 export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
   const [options, setOptions] = useState<StudentSelect[]>([]);
+
+ 
 
   const fetchStudentData = async (inputValue: string): Promise<StudentSelect[]> => {
     try {
@@ -33,7 +45,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         throw new Error(response.message);
       }
 
-      return response.data?.students.map(student => ({ value: student.id, label: `${student.firstName} ${student.lastName}` })) || [];
+      return response.data?.students.map(student => ({ value: student.id, label: `${student.code} - ${student.firstName} ${student.lastName}` })) || [];
     } catch (error) {
       console.error('Error fetching Students data:', error);
       return [];
@@ -55,7 +67,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         try {
           const response = await apiRequest.get<Student>(`/students/${value}`);
           if (response.success && response.data) {
-            const newOption = { value: response.data.id, label: `${response.data.firstName} ${response.data.lastName}` };
+            const newOption = { value: response.data.id, label: `${response.data.code} - ${response.data.firstName} ${response.data.lastName}` };
             setOptions(prevOptions => [...prevOptions, newOption]);
           }
         } catch (error) {
@@ -82,6 +94,8 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
+        styles={customStyles}
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         //asComponent={AsyncSelect}
         {...rest}
       />

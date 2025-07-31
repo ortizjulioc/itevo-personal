@@ -6,17 +6,19 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { MODALITIES } from '@/constants/modality.constant';
 import { Select } from '@/components/ui';
+import ModalityTag from '../modality';
+import { Modality } from '@prisma/client';
 
 
 interface SelectOption {
     value: string;
-    label: string;
+    label: string | React.ReactNode;
 }
 
 const modalities: SelectOption[] = [
-    { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
-    { value: MODALITIES.VIRTUAL, label: 'Virtual' },
-    { value: MODALITIES.HYBRID, label: 'Hibrido' },
+    { value: MODALITIES.PRESENTIAL, label: <ModalityTag modality={MODALITIES.PRESENTIAL as Modality} /> },
+    { value: MODALITIES.VIRTUAL, label: <ModalityTag modality={MODALITIES.VIRTUAL as Modality} /> },
+    { value: MODALITIES.HYBRID, label: <ModalityTag modality={MODALITIES.HYBRID as Modality} /> },
 ];
 
 

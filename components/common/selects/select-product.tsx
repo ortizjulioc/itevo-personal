@@ -100,7 +100,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
         defaultOptions={options}
         placeholder="-Productos-"
         noOptionsMessage={() => 'No hay opciones'}
-        value={options.find(option => option.value === value) || undefined}
+        value={value ? options.find(option => option.value === value) || undefined : null}
         isClearable
         asComponent={AsyncSelect}
         onChange={(newValue, _actionMeta) => {

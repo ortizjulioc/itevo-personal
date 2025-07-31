@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findStudentById, updateStudentById, deleteStudentById } from '@/services/student-service';
-import { validateObject } from '@/utils';
+import { findStudentById, updateStudentById, deleteStudentById, findStudentByEmail, addFingerprintToStudent, findFingerprintByStudentId, deleteFingerprintByStudentId } from '@/services/student-service';
+import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { Prisma } from '@/utils/lib/prisma';
 
 // Obtener estudiante por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(student, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
@@ -28,19 +29,52 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
-        const { isValid, message } = validateObject(body, ['firstName', 'lastName', 'identification']);
+        const { isValid, message } = validateObject(body, ['firstName', 'lastName']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
-
+        
         // Verificar si el estudiante existe
         const student = await findStudentById(id);
         if (!student) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND' }, { status: 404 });
         }
 
-        // Actualizar el estudiante
-        const updatedStudent = await updateStudentById(id, body);
+        if (body.email && body.email !== student.email) {
+            // Validar que no se repita el email
+            const existingStudent = await findStudentByEmail(body.email);
+            if (existingStudent) {
+                return NextResponse.json({ code: 'E_EMAIL_EXISTS', error: 'El email ya está en uso por otro estudiante.' }, { status: 400 });
+            }
+        }
+
+        const updatedStudent = await Prisma.$transaction(async (prisma) => {
+            // Actualizar el estudiante
+            const updatedStudent = await updateStudentById(id, {
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                identification: body.identification,
+                address: body.address,
+                phone: body.phone,
+                hasTakenCourses: body.hasTakenCourses,
+                branch: { connect: { id: body.branchId } },
+            }, prisma);
+            if (body.fingerprint) {
+                // Eliminar huella dactilar existente si existe
+                const existingFingerprint = await findFingerprintByStudentId(id);
+                if (existingFingerprint) {
+                    await deleteFingerprintByStudentId(id);
+                }
+                // Actualizar la huella dactilar si se proporciona
+                await addFingerprintToStudent(id, {
+                    template: base64ToUint8Array(body.fingerprint),
+                    sensorType: body.sensorType,
+                }, prisma);
+            }
+
+            return updatedStudent;
+        });
 
         // Enviar log de auditoría
 
@@ -65,7 +99,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
@@ -106,6 +140,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }

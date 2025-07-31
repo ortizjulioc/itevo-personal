@@ -2,14 +2,13 @@
 import React from 'react';
 import {
   Document,
+  Image,
   Page,
   StyleSheet,
   Text,
   View,
 } from '@react-pdf/renderer';
 import { getFormattedDateTime } from '@/utils/date';
-import { NCF_TYPES } from '@/constants/ncfType.constant';
-import { NcfType } from '@prisma/client';
 
 const styles = StyleSheet.create({
   page: {
@@ -59,8 +58,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo: any }) => {
-  const { invoiceNumber, ncf, type, date, paymentDetails, paymentMethod, subtotal, itbis, items, user } = invoice;
+const PAYMENT_METHODS_OPTIONS = [
+  { value: 'cash', label: 'Efectivo' },
+  { value: 'credit_card', label: 'TC' },
+  { value: 'bank_transfer', label: 'Transferencia' },
+  { value: 'check', label: 'Cheque' },
+];
+
+export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, companyInfo: any, logo: Blob | null }) => {
+  const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user } = invoice;
 
   const total = subtotal + itbis;
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
@@ -70,12 +76,24 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
     <Document>
       <Page size={'A4'} style={styles.page}>
         <View style={styles.container}>
+          <View>
+            {logo && (
+              // eslint-disable-next-line jsx-a11y/alt-text
+              <Image
+                src={logo}
+                style={{ height: 80, objectFit: 'contain', }}
+              />
+            )}
+          </View>
 
           <View style={styles.header}>
             <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{companyInfo.companyName}</Text>
-            <Text>{companyInfo.email}</Text>
-            <Text>{`${companyInfo.email} - `}{companyInfo.phone}</Text>
             <Text>RNC: {companyInfo.rnc}</Text>
+            <Text>{companyInfo.address}</Text>
+            <Text>
+                {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
+            </Text>
+            <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
           </View>
 
           {/* <View style={styles.line} />
@@ -84,8 +102,8 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
           <View style={styles.line} /> */}
 
           <Text>Factura No. {invoiceNumber}</Text>
-          <Text>Fecha: {getFormattedDateTime(new Date(date))}</Text>
-          <Text>Cliente: </Text>
+          <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
+          <Text>Cliente: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>
           <View style={styles.line} />
@@ -126,7 +144,7 @@ export const InvoicePDF = ({ invoice, companyInfo }: { invoice: any, companyInfo
 
           <View style={styles.line} />
 
-          <Text>{paymentMethod?.toUpperCase()}: {receivedAmount.toFixed(2)}</Text>
+          <Text>{PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)?.label}: {receivedAmount.toFixed(2)}</Text>
           <Text>Recibido: {receivedAmount.toFixed(2)}</Text>
           <Text>Devuelta: {returned.toFixed(2)}</Text>
           <Text style={{ marginTop: 4 }}>Le atendió: {user.name} {user.lastName}</Text>

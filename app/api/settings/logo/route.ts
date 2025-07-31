@@ -1,7 +1,10 @@
-import { writeFile, unlink } from 'fs/promises';
+import { writeFile, unlink, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { changeLogo } from '@/services/settings-service';
+import { normalizeString } from '@/utils/normalize-string';
+import { createLog } from '@/utils/log';
+import { formatErrorMessage } from '@/utils/error-to-string';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +27,14 @@ export async function POST(request: NextRequest) {
 
     // Definir la ruta donde se guardará la imagen
     const uploadDir = join(process.cwd(), 'public/uploads/logo');
-    const fileName = `${Date.now()}-${file.name}`;
+    // Asegurarse de que el directorio exista
+    await mkdir(uploadDir, { recursive: true });
+
+    const originalName = file.name;
+    const extension = originalName.split('.').pop(); // última parte
+    const baseName = originalName.replace(/\.[^/.]+$/, ''); // quita solo la última extensión
+
+    const fileName = `${Date.now()}-${normalizeString(baseName, { replacement: '-' })}.${extension}`;
     const filePath = join(uploadDir, fileName);
 
     // Guardar el archivo en el servidor
@@ -35,10 +45,25 @@ export async function POST(request: NextRequest) {
 
     // Aquí podrías guardar la URL en la base de datos si es necesario
     await changeLogo(fileUrl);
+
+    await createLog({
+      action: 'POST',
+      description: `Logo cambiado a ${fileName}`,
+      origin: 'settings/logo',
+      success: true,
+      elementId: fileName,
+    });
     return NextResponse.json({ message: 'Archivo subido con éxito.', url: fileUrl });
   } catch (error) {
     console.error('Error al subir el archivo:', error);
-    return NextResponse.json({ error: 'Error al procesar la subida.' }, { status: 500 });
+    await createLog({
+      action: 'POST',
+      description: `Error al cambiar el logo: ${formatErrorMessage(error)}`,
+      origin: 'settings/logo',
+      success: false,
+      elementId: '',
+    });
+    return NextResponse.json({ message: formatErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -56,19 +81,34 @@ export async function DELETE(request: NextRequest) {
 
     // Verificar si el archivo existe y eliminarlo
     try {
-      await unlink(filePath);
+        await unlink(filePath);
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        return NextResponse.json({ error: 'El archivo no existe.' }, { status: 404 });
-      }
-      throw error; // Lanzar otros errores
+        await createLog({
+            action: 'DELETE',
+            description: `Error al eliminar el archivo (${fileName}). Detalles del error: ${formatErrorMessage(error)}`,
+            origin: 'settings/logo',
+            success: false,
+            elementId: fileName,
+        });
     }
-    // Por ejemplo, podrías eliminar el archivo del servidor y actualizar la base de datos
-    await changeLogo(''); // Asumiendo que pasar una cadena vacía elimina el logo
 
+    await changeLogo(''); // Asumiendo que pasar una cadena vacía elimina el logo
+    await createLog({
+      action: 'DELETE',
+      description: `Logo eliminado: ${fileName}`,
+      origin: 'settings/logo',
+      success: true,
+      elementId: fileName,
+    });
     return NextResponse.json({ message: 'Logo eliminado con éxito.' }, { status: 200 });
   } catch (error) {
     console.error('Error al eliminar el logo:', error);
-    return NextResponse.json({ error: 'Error al procesar la eliminación.' }, { status: 500 });
+    await createLog({
+      action: 'DELETE',
+      description: `Error al eliminar el logo: ${formatErrorMessage(error)}`,
+      origin: 'settings/logo',
+      success: false,
+    });
+    return NextResponse.json({ message: formatErrorMessage(error) }, { status: 500 });
   }
 }

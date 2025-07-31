@@ -80,25 +80,37 @@ export default function AddItemsInvoices({
 
 
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (): Promise<boolean> => {
         if (!invoice) {
             openNotification('error', 'No hay información de la factura');
-            return;
+            return false;
         }
+
+        const totalFactura = invoice.subtotal + invoice.itbis;
+        const montoRecibido = invoice?.paymentDetails?.receivedAmount;
+
+        if (montoRecibido === undefined || montoRecibido < totalFactura) {
+            openNotification('error', 'El monto recibido es menor al total de la factura');
+            return false;
+        }
+
         setPaymentLoading(true);
+
         const resp = await payInvoice(InvoiceId, invoice);
+
+        setPaymentLoading(false);
 
         if (resp.success) {
             openNotification("success", "Factura pagada correctamente");
-            setOpenModal(false);
-            setOpenPrintModal(true);
-
+            setOpenPrintModal(true)
+            return true; // ✅ pago exitoso
         } else {
             openNotification("error", resp.message);
             console.log(resp);
+            return false; // ❌ fallo en el backend
         }
-        setPaymentLoading(false);
-    }
+    };
+
     const handleAddItem = async (item: any) => {
         setItemloading(true);
         if (!item?.quantity) {
@@ -171,7 +183,7 @@ export default function AddItemsInvoices({
         }
         setSearchLoading(true);
         try {
-            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}`);
+            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}&top=1000`);
             if (!res.success) {
                 openNotification('error', res.message);
                 return;
@@ -314,31 +326,42 @@ export default function AddItemsInvoices({
                                     <div className="flex-1">
                                         <SelectProduct
                                             ref={productRef}
-                                            value={item?.productId ?? undefined}
+                                            value={item?.productId ?? ''}
                                             onChange={onSelectProduct}
                                             disabled={itemLoading}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/4">
-                                        <Input
-                                            ref={quantityRef}
-                                            placeholder="Cantidad"
-                                            type="number"
-                                            value={item?.quantity ?? ''}
-                                            disabled={itemLoading}
-                                            onChange={(e) => {
-                                                setItem((prev) => ({
-                                                    ...prev!,
-                                                    quantity: Number(e.target.value),
-                                                }));
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleAddItem(item);
-                                                }
-                                            }}
-                                        />
+                                        <div className="relative w-full">
+                                            <Input
+                                                ref={quantityRef}
+                                                placeholder="Cantidad"
+                                                type="number"
+                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                value={item?.quantity ?? ''}
+                                                disabled={itemLoading}
+                                                onChange={(e) => {
+                                                    setItem((prev) => ({
+                                                        ...prev!,
+                                                        quantity: Number(e.target.value),
+                                                    }));
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddItem(item);
+                                                    }
+                                                }}
+                                                className={`${itemLoading ? 'pr-10 opacity-60 pointer-events-none' : ''}`}
+                                            />
+
+                                            {itemLoading && (
+                                                <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                                    <div className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                </div>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </div>
                             </Tab.Panel>

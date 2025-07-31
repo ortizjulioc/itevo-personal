@@ -1,10 +1,12 @@
-import { findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
+import { addNewEarningToAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
+import { processReceivablePayment } from '@/services/account-receivable';
+import { findCourseBranchById } from '@/services/course-branch-service';
 import { addNewItemToInvoice, findInvoiceById } from '@/services/invoice-service';
 import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { AccountReceivable, CourseBranch, InvoiceItemType, PaymentStatus } from '@prisma/client';
+import { InvoiceItemType } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -16,10 +18,6 @@ interface InvoiceItemInput {
     quantity: number;
     unitPrice: number;
     concept: string;
-}
-
-interface AccountReceivableWithCourseBranch extends AccountReceivable {
-    courseBranch: CourseBranch;
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -43,16 +41,18 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         await Prisma.$transaction(async (prisma) => {
             // Validar y calcular impuestos según el tipo de ítem
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-                // TODO: cambiar implementacion por la version con servicios, cuando este disponible
                 const product = await findProductById(body.productId);
-    
+
                 if (!product) {
                     throw new Error(`Producto ${body.productId} no encontrado`);
                 }
-                if (product.stock < body.quantity) {
-                    throw new Error(`Stock insuficiente para el producto ${body.productId} (disponible: ${product.stock})`);
+
+                if (!product.billingWithoutStock) {
+                    if (product.stock < body.quantity) {
+                        throw new Error(`No hay suficiente existencia para el producto ${product.name}. Existencias: ${product.stock}, Solicitada: ${body.quantity}`);
+                    }
                 }
-    
+
                 if (product.isTaxIncluded) {
                     const total = subtotal;
                     subtotal = total / (1 + product.taxRate);
@@ -60,33 +60,42 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 } else {
                     itbis = subtotal * product.taxRate;
                 }
-    
+
                 body.concept = product.name;
+                // Actualizar el stock del producto
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
-                const receivable = await findAccountReceivableById(body.accountReceivableId);
-    
-                if (!receivable) {
-                    throw new Error(`Cuenta por cobrar ${body.accountReceivableId} no encontrada`);
-                }
-                if (receivable.status !== PaymentStatus.PENDING) {
-                    throw new Error(`La cuenta por cobrar ${body.accountReceivableId} ya no está pendiente`);
+                const { accountReceivable, receivablePayment } = await processReceivablePayment({
+                    unitPrice: body.unitPrice,
+                    accountReceivableId: body.accountReceivableId,
+                    invoiceId: id,
+                    prisma,
+                })
+
+                const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                if (!courseBranch) {
+                    throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
                 }
 
-                const amountPending = receivable.amount - receivable.amountPaid;
-                console.log(`Monto pendiente: ${amountPending}, Cantidad a agregar: ${body.unitPrice}`);
-                if (amountPending < body.unitPrice) {
-                    throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${body.accountReceivableId} (pendiente: ${amountPending})`);
-                }
+                // Crear/actualizar cuenta por pagar
+                const accountPayable = await getAccountPayableByCourseBranchId({
+                    courseBranchId: accountReceivable.courseBranchId,
+                    prisma,
+                });
 
-                const newAmountPending = amountPending - body.unitPrice;
-                const amountPaid = receivable.amount - newAmountPending;
-                await updateAccountReceivableById(body.accountReceivableId, {
-                    amountPaid,
-                    status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
-                }, prisma);
+                // Agregar ganancia a la cuenta por pagar
+                await addNewEarningToAccountsPayable(
+                    accountPayable.id,
+                    courseBranch.commissionAmount || (body.unitPrice * (courseBranch.commissionRate || 0)) || 0,
+                    receivablePayment.id,
+                    prisma
+                );
+
+                if (!accountPayable) {
+                    throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                }
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
@@ -109,10 +118,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 elementId: invoiceUpdated.id,
                 success: true,
             });
-    
         });
         return NextResponse.json({ status: 200 });
-            
     } catch (error) {
         // Registrar log de error
         await createLog({

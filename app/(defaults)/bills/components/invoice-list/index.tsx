@@ -8,6 +8,8 @@ import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import InvoiceStatusField from "./invoice-status";
+import { getFormattedDateTime } from "@/utils/date";
+import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -24,7 +26,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
 
 
     if (loading) return <Skeleton rows={7} columns={['N. DE FACTURA', 'NCF', 'TIPO', 'TOTAL', 'FECHA', 'FECHA DE PAGO', 'ESTADO']} />;
-
+ 
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
@@ -52,23 +54,25 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             return (
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
-                                    <td className="text-left">{invoice.ncf.includes('TEMP' ) ? 'No disponible' : invoice.ncf}</td>
-                                    <td className="text-left">{ NCF_TYPES[invoice.type as keyof typeof NCF_TYPES].label}</td>
+                                    <td className="text-left">
+                                        <OptionalInfo content={invoice.ncf.includes('TEMP') ? '' : invoice.ncf} message="No disponible" />
+                                    </td>
+                                    <td className="text-left">{NCF_TYPES[invoice.type as keyof typeof NCF_TYPES].label}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
-                                    <td className="text-left">{new Date(invoice.createdAt).toLocaleString()}</td>
-                                    <td className={`text-left ${invoice.paymentDate ? '' : 'italic'}`}>{invoice.paymentDate ? new Date(invoice.paymentDate).toLocaleString() : 'No pagado'}</td>
+                                    <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
+                                    <td className="text-left">
+                                        <OptionalInfo content={invoice.paymentDate ? getFormattedDateTime(new Date(invoice.paymentDate)) : ''} message="No pagado" />
+                                    </td>
                                     <td className="text-left">
                                         <InvoiceStatusField status={invoice.status} />
                                     </td>
                                     <td>
-                                        <div className="flex gap-2 justify-end">
-                                            
+                                        <div className="flex justify-end gap-2">
                                             <Tooltip title="detalles">
                                                 <Link href={`/bills/${invoice.id}`}>
                                                     <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
                                                 </Link>
                                             </Tooltip>
-                                         
                                         </div>
                                     </td>
                                 </tr>

@@ -3,6 +3,7 @@ import { useFetchInvoiceById } from '@/app/(defaults)/bills/lib/use-fetch-invoic
 import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 import { InvoicePDF } from '@/components/pdf/invoice';
 import { Button } from '@/components/ui';
+import { fetchImageAsBase64 } from '@/utils/image';
 import { pdf } from '@react-pdf/renderer';
 import React, { useEffect } from 'react'
 import { IoMdPrint } from 'react-icons/io';
@@ -29,7 +30,20 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
 
   const handlePrintPDF = async (invoice: any) => {
     try {
-      const blob = await pdf(<InvoicePDF invoice={invoice} companyInfo={setting} />).toBlob();
+      let companyInfo = {
+        companyName: setting?.companyName,
+        address: invoice.cashRegister?.branch?.address || setting?.address,
+        phone: invoice.cashRegister?.branch?.phone || setting?.phone,
+        email: invoice.cashRegister?.branch?.email || setting?.email,
+        logoUrl: setting?.logo,
+        rnc: setting?.rnc,
+      }
+
+      let blobLogo = null;
+      if (companyInfo.logoUrl) {
+        blobLogo = await fetchImageAsBase64(companyInfo.logoUrl);
+      }
+      const blob = await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob();
       const blobUrl = URL.createObjectURL(blob);
 
       const isKioskMode = navigator.userAgent.includes('Chrome') && window.location.search.includes('kiosk-printing');
@@ -87,8 +101,8 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
 
   return (
     <>
-      <Button 
-        onClick={onPrint} 
+      <Button
+        onClick={onPrint}
         loading={loading}
         icon={<IoMdPrint className='text-lg ' />}
         >

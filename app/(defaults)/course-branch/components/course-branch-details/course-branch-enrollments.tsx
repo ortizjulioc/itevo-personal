@@ -1,5 +1,5 @@
 'use client';
-import { openNotification, queryStringToObject } from "@/utils";
+import { getInitials, openNotification, queryStringToObject } from "@/utils";
 
 import Skeleton from "@/components/common/Skeleton";
 import StudentLabel from "@/components/common/info-labels/student-label";
@@ -8,6 +8,10 @@ import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enro
 import { Pagination } from "@/components/ui";
 import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
 import { EnrollmentStatus } from "@prisma/client";
+import { getFormattedDateTime } from "@/utils/date";
+import Avatar from "@/components/common/Avatar";
+import OptionalInfo from "@/components/common/optional-info";
+import Link from "next/link";
 
 
 
@@ -20,7 +24,7 @@ interface Props {
 
 export default function CourseBranchEnrollments({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, enrollments, totalEnrollments, setEnrollments } = useFetchEnrollments(query);
+    const { loading, error, enrollments, totalEnrollments } = useFetchEnrollments(query);
     if (error) {
         openNotification('error', error);
     }
@@ -31,6 +35,7 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
         { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
         { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
     ];
+    console.log('enrollments', enrollments);
 
     if (loading) return <Skeleton rows={3} columns={['ESTUDIANTE', 'FECHA DE INSCRIPCION', 'ESTADO']} />;
 
@@ -57,10 +62,16 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
                             return (
                                 <tr key={enrollment.id}>
                                     <td>
-                                        <StudentLabel StudentId={enrollment.studentId} />
+                                        <Link href={`/students/view/${enrollment.student.id}`} className="ml-2 flex items-center gap-2 min-w-64 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-2 py-1 transition-colors">
+                                            <Avatar initials={getInitials(enrollment.student.firstName, enrollment.student.lastName)} size="sm" color="primary" />
+                                            <div className="flex flex-col">
+                                                <span>{`${enrollment.student.firstName} ${enrollment.student.lastName}`}</span>
+                                                <span className="font-semibold"><OptionalInfo content={enrollment.student.code} message="Sin identificación" /></span>
+                                            </div>
+                                        </Link>
                                     </td>
                                     <td>
-                                        {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                                        {getFormattedDateTime(new Date(enrollment.enrollmentDate), { hour12: true })}
                                     </td>
                                     <td>
                                         <StatusEnrollment status={enrollment.status as any} />

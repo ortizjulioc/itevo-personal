@@ -1,12 +1,17 @@
 // components/CourseScheduleAssigner.tsx
+import { Button } from '@/components/ui';
+import Tooltip from '@/components/ui/tooltip';
 import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
 import { Schedule } from '@prisma/client';
 import React from 'react';
+import { IoMdAdd, IoMdAddCircleOutline } from 'react-icons/io';
 
 interface CourseScheduleAssignerProps {
   availableSchedules: Schedule[]; // Horarios existentes en el sistema
   assignedSchedules: string[]; // IDs de horarios ya asignados al curso
   onChange: (scheduleId: string) => void; // Callback para actualizar asignaciones
+  modal?: boolean,
+  setModal: (modal: boolean) => void
 }
 
 const weekdayNames = [
@@ -16,7 +21,8 @@ const weekdayNames = [
 const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
   availableSchedules,
   assignedSchedules,
-  onChange
+  onChange,
+  setModal
 }) => {
   const groupedSchedules = groupSchedulesByWeekday(availableSchedules);
 
@@ -50,7 +56,16 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
         )}
       </div>
 
-      <h3 className="text-lg font-medium text-gray-700 mb-2">Horarios disponibles</h3>
+
+      <div className='flex  items-center  gap-2 mb-4'>
+        <h3 className="text-lg font-medium text-gray-700 leading-none">Horarios disponibles</h3>
+        <Tooltip title='Agregar nuevo Horario'>
+          <button type="button" className="p-0.5 text-primary transition-colors duration-200 hover:text-primary/80" onClick={() => setModal(true)}>
+            <IoMdAddCircleOutline className="h-6 w-6 align-middle" />
+          </button>
+        </Tooltip>
+      </div>
+
 
       {/* Lista de horarios disponibles */}
       <div className="space-y-4">

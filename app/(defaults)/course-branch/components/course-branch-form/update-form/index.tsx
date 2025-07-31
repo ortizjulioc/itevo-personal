@@ -1,13 +1,13 @@
 'use client';
 import { Button } from '@/components/ui';
 import { Form, Formik } from 'formik';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch } from '@prisma/client';
 import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch, updateCourseBranch } from '../../../lib/request';
 import { Tab } from '@headlessui/react';
-import { createContext, Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import GeneralInformationFields from './general-information-fields';
 import FinancialConfigFields from './financial-config-fields';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
@@ -17,9 +17,11 @@ import ConfirmationFields from './confirmation-fields';
 import StickyFooter from '@/components/common/sticky-footer';
 import { useURLSearchParams } from '@/utils/hooks';
 import PrerequisitesFields from './prerequisites-fields';
-import CourseBranchContext, { CourseBranchProvider } from './course-branch-provider';
-import { set } from 'lodash';
+import { CourseBranchProvider } from './course-branch-provider';
 import { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
+import { getCourseEndDate } from '@/utils/date';
+import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
+import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
@@ -44,7 +46,6 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
     const isANewCourseBranch = params.get('new') === 'true';
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { preRequisites, fetchPreRequisites } = useFetchPreRequisites(initialValues.courseId);
- 
 
     const handleTabChange = (index: number) => {
         setSelectedIndex(index);
@@ -114,9 +115,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     // Función para eliminar un prerrequisito
     const handleRemovePrerequisite = async (courseId: string) => {
-        //console.log(`Eliminar prerrequisito: ${courseId}`);
         const response = await unassignPrerequisiteToCourseBranch(initialValues.courseId, courseId);
-        //console.log(response);
         if (response.success) {
             openNotification('success', 'Prerrequisito eliminado correctamente');
             fetchPreRequisites(initialValues.courseId);
@@ -139,7 +138,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de oferta academica</h4>
 
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
-                {({ isSubmitting, values, errors, touched }) => (
+                {({ isSubmitting, values, errors, touched,setFieldValue }) => (
                     <CourseBranchProvider value={{
                         selectedIndex,
                         changeTab,
@@ -147,6 +146,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                         handleErrors,
                         handleAddPrerequisite,
                         handleRemovePrerequisite,
+                        setFieldValue,
                         preRequisites
                     }}>
                         <Form className="form">
@@ -205,7 +205,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                     </Tab.Panel>
 
                                     <Tab.Panel>
-                                        <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} />
+                                        <ScheduleAssignmentFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                     </Tab.Panel>
 
                                     <Tab.Panel>

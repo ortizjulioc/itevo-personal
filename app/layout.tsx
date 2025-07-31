@@ -8,8 +8,8 @@ import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | VRISTO - Multipurpose Tailwind Dashboard Template',
-        default: 'VRISTO - Multipurpose Tailwind Dashboard Template',
+        template: '%s | ITEVO - Software de facturación y gestión de cursos',
+        default: 'ITEVO - Software de facturación y gestión de cursos',
     },
 };
 const nunito = Nunito({

@@ -9,6 +9,14 @@ import OptionalInfo from "@/components/common/optional-info";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchStudents from "../../lib/use-fetch-students";
 import { deleteStudent } from "../../lib/request";
+import CaptureFingerPrint from "@/components/common/finger-print/capture-finger-print";
+import TextEllipsis from "@/components/common/text-ellipsis";
+import { TbDetails } from "react-icons/tb";
+import Dropdown from "@/components/dropdown";
+import { IRootState } from "@/store";
+import { useSelector } from "react-redux";
+import { IoIosMore } from "react-icons/io";
+import { useState } from "react";
 
 
 
@@ -19,6 +27,7 @@ interface Props {
 
 export default function StudentList({ className, query = '' }: Props) {
   const params = queryStringToObject(query);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const { loading, error, students, totalStudents, setStudents } = useFetchStudents(query);
   if (error) {
     openNotification('error', error);
@@ -44,7 +53,7 @@ export default function StudentList({ className, query = '' }: Props) {
     });
   }
 
-  if (loading) return <Skeleton rows={5} columns={['ESTUDIANTE', 'CORREO ELECTRÓNICO', 'TELÉFONO']} />;
+  if (loading) return <Skeleton rows={5} columns={['NOMBRE', 'TELÉFONO', 'DIRECCIÓN']} />;
 
   return (
     <div className={className}>
@@ -53,8 +62,8 @@ export default function StudentList({ className, query = '' }: Props) {
           <thead>
             <tr>
               <th>NOMBRE</th>
-              <th>CORREO ELECTRÓNICO</th>
               <th>TELEFONO</th>
+              <th>DIRECCIÓN</th>
               <th />
             </tr>
           </thead>
@@ -68,40 +77,84 @@ export default function StudentList({ className, query = '' }: Props) {
               return (
                 <tr key={student.id}>
                   <td>
-                    <div className="flex gap-2 items-center ml-2">
+                    <div className="ml-2 flex items-center gap-2 min-w-64">
                       <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
-                      <div className='flex flex-col'>
+                      <div className="flex flex-col">
                         <span>{`${student.firstName} ${student.lastName}`}</span>
-                        <span className='font-semibold'>{student.identification}</span>
+                        <span className="font-semibold"><OptionalInfo content={student.code} message="Sin identificación" /></span>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div className="whitespace-nowrap">{student.email}</div>
+                    <div>
+                      {student.phone ? student.phone.split(',').map((phone, index) => (
+                        <span key={index} className="block min-w-max">
+                          {formatPhoneNumber(phone.trim())}
+                        </span>
+                      )) : (
+                        <OptionalInfo />
+                      )}
+                    </div>
                   </td>
                   <td>
-                    <OptionalInfo content={formatPhoneNumber(student.phone)} />
+                    <div className="whitespace-nowrap">
+                      {student.address ? (
+                        <TextEllipsis text={student.address} maxLength={30} />
+                      ) : <OptionalInfo />}
+                    </div>
                   </td>
                   <td>
-                    <div className="flex gap-2 justify-end">
-                      <Tooltip title="Eliminar">
-                        <Button onClick={() => onDelete(student.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                      </Tooltip>
+                    <div className="flex items-center justify-end gap-3">
+                      <div className="relative inline-block text-left">
+                        <button
+                          className="p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenDropdownId(prev => (prev === student.id ? null : student.id));
+                          }}
+                        >
+                          <IoIosMore className="text-xl rotate-90" />
+                        </button>
+
+                        {openDropdownId === student.id && (
+                          <div
+                            className="fixed right-4 mt-2 w-auto z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="py-1">
+                              <div className="hover:bg-gray-100">
+                                <CaptureFingerPrint
+                                  studentId={student.id}
+                                  showTitle={true}
+                                  blackStyle={true}
+                                />
+                              </div>
+
+                              <Button
+                                onClick={() => onDelete(student.id)}
+                                className="flex w-full items-start justify-start text-sm shadow-none bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
+                                icon={<IconTrashLines className="text-lg" />}
+                              >
+                                Eliminar
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+
+
+
                       <Tooltip title="Editar">
                         <Link href={`/students/${student.id}`}>
-                          <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                          <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                         </Link>
                       </Tooltip>
-                      <Tooltip title="Ver">
+                      <Tooltip title="Detalles">
                         <Link href={`/students/view/${student.id}`}>
-                          <Button variant="outline" color='success' size="sm" icon={<IconEye className="size-4" />} />
+                          <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                         </Link>
                       </Tooltip>
-                      {/* ALTERNATIVA */}
-                      {/* <Button onClick={() => onDelete(Student.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/Students/${Student.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
                     </div>
                   </td>
                 </tr>
