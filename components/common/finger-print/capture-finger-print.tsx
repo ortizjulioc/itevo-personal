@@ -186,18 +186,18 @@ export default function CaptureFingerPrint({ studentId, showTitle = true, onChan
     }, []);
     return (
         <div>
-            <Tooltip title="Registrar Huella">
-                <Button
-                    type="button"
-                    onClick={handleButtonClick}
-                    icon={<IoIosFingerPrint className="text-lg" />}
-                    size="md"
-                    variant="outline"
-                    className={`whitespace-nowrap ${blackStyle ? 'border-none text-black hover:bg-white hover:text-black' : ''}`}
-                >
-                    {existingFingerprint ? 'Huella registrada' : showTitle && 'Registrar Huella'}
-                </Button>
-            </Tooltip>
+
+            <Button
+                type="button"
+                onClick={handleButtonClick}
+                icon={<IoIosFingerPrint className="text-lg" />}
+                size="md"
+                variant="outline"
+                className={`whitespace-nowrap ${blackStyle ? 'border-none text-black hover:bg-white hover:text-black' : ''}`}
+            >
+                {existingFingerprint ? 'Huella registrada' : showTitle && 'Registrar Huella'}
+            </Button>
+
 
             <Transition appear show={openModal} as={Fragment}>
                 <Dialog as="div" open={openModal} onClose={resetState}>

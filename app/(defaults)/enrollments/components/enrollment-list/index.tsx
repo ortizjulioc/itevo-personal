@@ -11,6 +11,9 @@ import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
 import { EnrollmentStatus } from "@prisma/client";
 import { formatScheduleList } from "@/utils/schedule";
+import { useState } from "react";
+import { IoIosMore } from "react-icons/io";
+import PrintEnrollment from "@/components/common/print/enrollment";
 
 interface Props {
     className?: string;
@@ -19,6 +22,7 @@ interface Props {
 
 export default function EnrollmentList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const { loading, error, enrollments, totalEnrollments, setEnrollments } = useFetchEnrollments(query);
     if (error) {
         openNotification('error', error);
@@ -110,13 +114,38 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                         />
                                     </td>
                                     <td>
-                                        <div className="flex gap-2 justify-end">
+                                        <div className="flex items-center gap-3 justify-end">
+                                            <div className="relative inline-block text-left">
+                                                <button
+                                                    className="p-2 rounded-full hover:bg-gray-100 cursor-pointer left-auto right-full "
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setOpenDropdownId(prev => (prev === enrollment.id ? null : enrollment.id));
+                                                    }}
+                                                >
+                                                    <IoIosMore className="text-xl rotate-90" />
+                                                </button>
+
+                                                {openDropdownId === enrollment.id && (
+                                                    <div
+                                                        className="fixed right-4 mt-2 w-auto  z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <div className="py-1">
+
+                                                            <PrintEnrollment enrollmentId={enrollment.id} />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(enrollment.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                <button onClick={() => onDelete(enrollment.id)}>
+                                                    <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                                                </button>
                                             </Tooltip>
                                             <Tooltip title="Editar">
                                                 <Link href={`/enrollments/${enrollment.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                    <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                                                 </Link>
                                             </Tooltip>
                                         </div>

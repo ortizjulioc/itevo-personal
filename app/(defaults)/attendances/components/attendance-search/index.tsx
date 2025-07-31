@@ -39,7 +39,7 @@ export default function SearchAttendances() {
         courseBranchId: searchParams.get('courseBranchId') || '',
         teacherId: searchParams.get('teacherId') || '',
         status: searchParams.get('status') || '',
-        createdAt: searchParams.get('createdAt') || '',
+        date: searchParams.get('date') || '',
     });
 
 
@@ -89,16 +89,16 @@ export default function SearchAttendances() {
 
             <DatePicker
 
-                value={filters.createdAt ? new Date(filters.createdAt) : undefined}
+                value={filters.date ? new Date(filters.date) : undefined}
                 onChange={(date: Date | Date[]) => {
                   
                     if (date instanceof Date) {
                         
-                        setFilters(prev => ({ ...prev, createdAt: date.toISOString() }));
+                        setFilters(prev => ({ ...prev, date: date.toISOString() }));
                     } else if (Array.isArray(date) && date.length > 0) {
-                        setFilters(prev => ({ ...prev, createdAt: date[0].toISOString() }));
+                        setFilters(prev => ({ ...prev, date: date[0].toISOString() }));
                     } else {
-                        setFilters(prev => ({ ...prev, createdAt: '' }));
+                        setFilters(prev => ({ ...prev, date: '' }));
                     }
                  
                     

@@ -44,6 +44,7 @@ export default function SelectEnrollmentStatus({ value, ...rest }: SelectEnrollm
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 }}
+                isSearchable={false}
                 {...rest}
             />
         </div>

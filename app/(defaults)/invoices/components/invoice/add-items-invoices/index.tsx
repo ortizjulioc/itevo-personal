@@ -183,7 +183,7 @@ export default function AddItemsInvoices({
         }
         setSearchLoading(true);
         try {
-            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}`);
+            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}&top=1000`);
             if (!res.success) {
                 openNotification('error', res.message);
                 return;

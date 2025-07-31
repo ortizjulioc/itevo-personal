@@ -16,6 +16,7 @@ import Dropdown from "@/components/dropdown";
 import { IRootState } from "@/store";
 import { useSelector } from "react-redux";
 import { IoIosMore } from "react-icons/io";
+import { useState } from "react";
 
 
 
@@ -26,7 +27,7 @@ interface Props {
 
 export default function StudentList({ className, query = '' }: Props) {
   const params = queryStringToObject(query);
-  const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const { loading, error, students, totalStudents, setStudents } = useFetchStudents(query);
   if (error) {
     openNotification('error', error);
@@ -104,31 +105,43 @@ export default function StudentList({ className, query = '' }: Props) {
                   </td>
                   <td>
                     <div className="flex items-center justify-end gap-3">
-                      <details className="relative inline-block text-left group">
-                        <summary className="list-none p-2 rounded-full hover:bg-gray-100 cursor-pointer">
+                      <div className="relative inline-block text-left">
+                        <button
+                          className="p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenDropdownId(prev => (prev === student.id ? null : student.id));
+                          }}
+                        >
                           <IoIosMore className="text-xl rotate-90" />
-                        </summary>
+                        </button>
 
-                        <div className="fixed right-4 mt-2 w-auto z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 group-open:block hidden">
-                          <div className="py-1">
-                            <div className="hover:bg-gray-100">
-                              <CaptureFingerPrint
-                                studentId={student.id}
-                                showTitle={true}
-                                blackStyle={true}
-                              />
+                        {openDropdownId === student.id && (
+                          <div
+                            className="fixed right-4 mt-2 w-auto z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="py-1">
+                              <div className="hover:bg-gray-100">
+                                <CaptureFingerPrint
+                                  studentId={student.id}
+                                  showTitle={true}
+                                  blackStyle={true}
+                                />
+                              </div>
+
+                              <Button
+                                onClick={() => onDelete(student.id)}
+                                className="flex w-full items-start justify-start text-sm shadow-none bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
+                                icon={<IconTrashLines className="text-lg" />}
+                              >
+                                Eliminar
+                              </Button>
                             </div>
-
-                            <Button
-                              onClick={() => onDelete(student.id)}
-                              className="flex w-full items-start justify-start text-sm shadow-none bg-white border-none text-red-600 hover:bg-white hover:text-red-600"
-                              icon={<IconTrashLines className="text-lg" />}
-                            >
-                              Eliminar
-                            </Button>
                           </div>
-                        </div>
-                      </details>
+                        )}
+                      </div>
+
 
 
 
