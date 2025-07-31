@@ -32,12 +32,12 @@ export default function InvoiceCard({
                 <MdOutlineReceiptLong className="text-gray-500 dark:text-gray-300" size={18} />
             </div>
 
-            <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">
+            <p className="text-xs text-gray-500 dark:text-gray-300 mb-1 capitalize">
                 {invoice.type.replace(/_/g, ' ').toLowerCase()}
             </p>
 
             <p className={`text-xs font-medium text-yellow-500`}>
-                PRE-FACTURA
+                Pendiente
             </p>
         </Link>
     )
