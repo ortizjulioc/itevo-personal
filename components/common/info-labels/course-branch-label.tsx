@@ -20,7 +20,7 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
       try {
         const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
         if (response.success && response.data) {
-          // console.log('response course branch', response);
+          console.log('response course branch', response);
           setCourseBranch(response.data);
         }
       } catch (error) {
@@ -38,17 +38,17 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
       <div className="flex flex-col">
         <div>
           <span className="font-semibold text-base text-black dark:text-white mr-2">
-            {courseBranch.course.name}
+            {courseBranch?.course?.name}
           </span>
           <ModalityTag modality={courseBranch.modality} />
         </div>
         <span className="text-sm text-gray-600 dark:text-gray-400">
           {showTeacher && (
             <>
-              {courseBranch.teacher.firstName} {courseBranch.teacher.lastName} |{' '}
+              {courseBranch?.teacher?.firstName} {courseBranch?.teacher?.lastName} |{' '}
             </>
           )}
-          {courseBranch.branch.name}
+          {courseBranch?.branch?.name}
         </span>
 
         {courseBranch.schedules && (

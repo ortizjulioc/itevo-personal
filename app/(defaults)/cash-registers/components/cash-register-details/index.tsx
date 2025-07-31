@@ -31,7 +31,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             credito: 0,
         };
 
-       
+
 
         invoices.forEach((invoice) => {
             const method = invoice.paymentMethod;
@@ -71,22 +71,21 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             .filter(m => m.type === 'INCOME')
             .reduce((total, m) => total + m.amount, 0);
     }
-     function getCashLabel(key: string): string {
-            const map: Record<string, string> = {
-                one: formatCurrency(1),
-                five: 'RD$5',
-                ten: 'RD$10',
-                twentyfive: 'RD$25',
-                fifty: 'RD$50',
-                hundred: 'RD$100',
-                twoHundred: 'RD$200',
-                fiveHundred: 'RD$500',
-                thousand: 'RD$1,000',
-                twoThousand: 'RD$2,000',
-            };
-            return map[key] || key;
-        }
-
+    function getCashLabel(key: string): string {
+        const map: Record<string, string> = {
+            one: formatCurrency(1),
+            five: formatCurrency(5),
+            ten: formatCurrency(10),
+            twentyfive: formatCurrency(25),
+            fifty: formatCurrency(50),
+            hundred: formatCurrency(100),
+            twoHundred: formatCurrency(200),
+            fiveHundred: formatCurrency(500),
+            thousand: formatCurrency(1000),
+            twoThousand: formatCurrency(2000),
+        };
+        return map[key] || key;
+    }
     const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
     const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
