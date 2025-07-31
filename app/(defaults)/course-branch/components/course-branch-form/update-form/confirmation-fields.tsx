@@ -11,7 +11,9 @@ import TeacherLabel from '@/components/common/info-labels/teacher-label';
 import { useURLSearchParams } from '@/utils/hooks';
 import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { useCourseBranch } from './course-branch-provider';
-import { Course } from '@prisma/client';
+import { Course, CourseBranchStatus } from '@prisma/client';
+import { MODALITIES } from '@/constants/modality.constant';
+import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
 
 interface ConfirmationFieldsProps {
   values: CourseBranchFormType;
@@ -25,6 +27,12 @@ const weekdayNames = [
   'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
 ];
 
+const MODALITIES_OPTIONS = [
+  { value: MODALITIES.PRESENTIAL, label: 'Presencial' },
+  { value: MODALITIES.VIRTUAL, label: 'Virtual' },
+  { value: MODALITIES.HYBRID, label: 'Híbrida' },
+];
+
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
 
   const { id } = useParams();
@@ -33,6 +41,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
   const params = useURLSearchParams();
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
   const { preRequisites } = useCourseBranch();
+
 
   return (
     <div className={className}>
@@ -61,7 +70,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Estado:</p>
-              <p className="text-gray-800">{values.status}</p>
+              <p className="text-gray-800">
+                <StatusCourseBranch status={values.status as CourseBranchStatus} />
+              </p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Capacidad:</p>
@@ -79,7 +90,9 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-medium text-gray-600">Modalidad:</p>
-              <p className="text-gray-800">{values.modality}</p>
+              <p className="text-gray-800">
+                {MODALITIES_OPTIONS.find(opt => opt.value === values.modality)?.label}
+              </p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Sesiones:</p>
@@ -133,7 +146,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
                   .map((course) => (
                     <li key={course.id} className="flex justify-between items-center py-1">
                       <span className="text-sm">{course.code} {course.name}</span>
-                      
+
                     </li>
                   ))}
               </ul>

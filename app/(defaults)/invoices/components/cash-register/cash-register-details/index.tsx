@@ -10,7 +10,7 @@ import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { openNotification } from '@/utils';
 import { usePathname } from 'next/navigation';
 import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-modal';
-
+import Swal from 'sweetalert2';
 
 
 interface CashRegister extends CashRegisterPrisma {
@@ -34,6 +34,23 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     const hasPendingInvoices = draftInvoices.length > 0;
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (CashRegister.status === 'CLOSED') {
+            Swal.fire({
+                title: 'Caja cerrada',
+                text: 'Esta caja ya fue cerrada y no puede ser modificada.',
+                icon: 'warning',
+                confirmButtonText: 'Ir a facturacion',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            }).then(() => {
+                router.push('/invoices');
+            });
+        } else {
+            fetchInvoicesData(CashRegister.id); // solo si la caja NO está cerrada
+        }
+    }, [pathname]);
 
 
 
