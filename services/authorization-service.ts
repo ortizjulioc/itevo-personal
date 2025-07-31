@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-const Prisma = new PrismaClient();
+import 'server-only';
+import { Prisma } from "@/utils/lib/prisma";
 
 // Asignar rol a un usuario en una sucursal
 export const assignRoleToUserInBranch = async (userId: string, branchId: string, roleId: string) => {

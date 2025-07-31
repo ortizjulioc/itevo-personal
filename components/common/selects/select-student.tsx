@@ -1,12 +1,12 @@
 
 import apiRequest from '@/utils/lib/api-request/request';
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Student } from '@prisma/client';
 import { Select } from '@/components/ui';
 import { GroupBase } from 'react-select';
 
-interface StudentSelect {
+export interface StudentSelect {
   value: string;
   label: string;
 }
@@ -18,7 +18,9 @@ export interface StudentsResponse {
 
 interface SelectStudentProps {
   value?: string;
+  loading?: boolean;
   onChange?: (selected: StudentSelect | null) => void;
+  isDisabled?: boolean;
 }
 
 export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
@@ -30,7 +32,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
       if (!response.success) {
         throw new Error(response.message);
       }
-   
+
       return response.data?.students.map(student => ({ value: student.id, label: `${student.firstName} ${student.lastName}` })) || [];
     } catch (error) {
       console.error('Error fetching Students data:', error);
@@ -63,22 +65,24 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
     };
 
     fetchData();
-  
+
   }, [value]);
 
- 
+
 
   return (
     <div>
-      <Select<StudentSelect, false, GroupBase<StudentSelect>>
+      <AsyncSelect<StudentSelect, false, GroupBase<StudentSelect>>
         loadOptions={loadOptions}
-        cacheOptions
+        //cacheOptions
         defaultOptions={options}
+        isLoading={rest.loading}
+        //isDisabled={rest.disabled}
         placeholder="-Estudiantes-"
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
-        asComponent={AsyncSelect}
+        //asComponent={AsyncSelect}
         {...rest}
       />
     </div>

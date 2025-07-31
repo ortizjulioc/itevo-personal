@@ -1,4 +1,4 @@
-import { NcfType } from "@prisma/client";
+import { NcfType, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
 
 // Mapeo de NcfType a sus códigos de dos dígitos
 const ncfTypeToCode: Record<NcfType, string> = {
@@ -21,7 +21,7 @@ const ncfTypeToCode: Record<NcfType, string> = {
  * @param ncfType Tipo de NCF requerido
  * @returns NCF generado
  */
-export async function generateNcf(tx: any, ncfType: NcfType): Promise<string> {
+export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClient, ncfType: NcfType): Promise<string> {
     const maxRetries = 5; // Límite de reintentos para evitar bucles infinitos
     let attempt = 0;
 

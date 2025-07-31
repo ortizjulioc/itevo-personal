@@ -61,9 +61,10 @@ export default function CreateScheduleForm({  onCreated }: CreateScheduleFormPro
                                             className="min-w-[200px]"
                                             options={weekOptions}
                                             value={weekOptions.find((opt) => opt.value === values.weekday)}
-                                            onChange={(option: WeekOption | null) => {
-                                                form.setFieldValue('weekday', option?.value ?? null);
-                                            }}
+                                           onChange={(newValue, _actionMeta) => {
+    const option = newValue as WeekOption | null;
+    form.setFieldValue('weekday', option?.value ?? null);
+}}
                                         />
                                     )}
                                 </Field>

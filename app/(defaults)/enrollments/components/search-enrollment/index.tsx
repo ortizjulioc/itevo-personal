@@ -96,8 +96,7 @@ export default function SearchEnrollments() {
 
                 value={filters.enrollmentDate ? new Date(filters.enrollmentDate) : undefined}
                 onChange={(date: Date | Date[]) => {
-                    console.log('date', date)
-
+                  
                     if (date instanceof Date) {
                         
                         setFilters(prev => ({ ...prev, enrollmentDate: date.toISOString() }));

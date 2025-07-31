@@ -13,9 +13,7 @@ interface GeneralInformationFieldsProps {
 }
 
 export default function GeneralInformationFields({ values, errors, touched }: GeneralInformationFieldsProps) {
-    console.log('values', values);
-    console.log('errors', errors);
-    console.log('touched', touched);
+  
     return (
         <div className="mt-6">
             <FormItem name="promotionId" label="Promocion" invalid={Boolean(errors.promotionId && touched.promotionId)} errorMessage={errors.promotionId}>

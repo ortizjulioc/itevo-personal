@@ -7,7 +7,7 @@ export interface SettingResponse {
 }
 
 const useFetchSetting = () => {
-    const [Setting, setSetting] = useState<Setting>();
+    const [setting, setSetting] = useState<Setting>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +37,7 @@ const useFetchSetting = () => {
         fetchSettingsData();
     }, []);
 
-    return { Setting, loading, error, setSetting };
+    return { setting, loading, error, setSetting };
 };
 
 export default useFetchSetting;

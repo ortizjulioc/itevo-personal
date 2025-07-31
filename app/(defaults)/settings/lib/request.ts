@@ -6,3 +6,16 @@ export const updateSetting = async (id: string, Setting: Setting) => {
     return await apiRequest.put<Setting>(`/settings/${id}`, Setting);
 }
 
+export const uploadLogo = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  
+  return await apiRequest.post<FormData>('/settings/logo',formData);
+};
+
+
+ export const deleteLogo = async (fileName:string) => {
+    return await apiRequest.remove(`/settings/logo`, { data: { fileName } });
+}
+

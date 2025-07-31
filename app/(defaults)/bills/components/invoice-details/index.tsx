@@ -4,6 +4,9 @@ import UserLabel from '@/components/common/info-labels/user-label'
 import ProductLabel from '@/components/common/info-labels/product-label'
 import { Button } from '@/components/ui'
 import { TbCancel, TbPrinter } from 'react-icons/tb'
+import PrintInvoice from '@/components/common/print/invoice'
+import { IoMdPrint } from 'react-icons/io'
+import Tooltip from '@/components/ui/tooltip'
 
 export default function InvoiceDetails({ invoice }: { invoice: any }) {
     console.log(invoice, 'invoice')
@@ -15,12 +18,12 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
         'check': 'Cheque',
     }
     const PAYMENT_PROPERTIES = {
-        receivedAmount: 'Monto Recibido',
-        cardHolderName: 'Nombre del Titular',
-        cardNumber: 'Número de Tarjeta',
-        bankName: 'Nombre del Banco',
-        accountNumber: 'Número de Cuenta',
-        checkNumber: 'Número de Cheque',
+        verifone: "Verifone",
+        type: "Tipo de Tarjeta",
+        reference: "Referencia de Tarjeta",
+        TransferNumber: "Numero de Transferencia",
+        bankName: "Nombre del Banco",
+        receivedAmount: "Monto Recibido"
 
     }
     return (
@@ -64,7 +67,7 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                         <table className="min-w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-100 dark:bg-gray-700 text-sm">
-                                    <th className="text-left px-2 py-2">PRODUCTO</th>
+                                    <th className="text-left px-2 py-2">DESCRIPCION</th>
                                     <th className="text-left px-2 py-2">CANTIDAD</th>
                                     <th className="text-left px-2 py-2">PRECIO</th>
                                     <th className="text-left px-2 py-2">SUBTOTAL</th>
@@ -83,11 +86,17 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                                 )}
                                 {invoice?.items?.map((item: any) => (
                                     <tr key={item.id} className="border-t text-sm">
-                                        <td className="px-2 py-2">
-                                            <ProductLabel
-                                                ProductId={item.productId}
-                                            />
+                                        <td>
+                                            {item.productId ? (
+                                                <ProductLabel
+                                                    ProductId={item.productId}
+                                                />
 
+                                            ) : (
+                                                <span >
+                                                    {item.concept || 'Cuenta por cobrar'}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
                                         <td className="px-2 py-2">{item.unitPrice}</td>
@@ -125,12 +134,31 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
             </div>
             <div className="panel sticky mt-5 bottom-0 bg-white dark:bg-gray-900 p-4 shadow-md z-10">
                 <div className="flex justify-between">
-                    <Button icon={<TbCancel />} type="button" color="danger" className="w-full md:w-auto"> 
+                    <Button icon={<TbCancel />} type="button" color="danger" className="w-full md:w-auto">
                         Cancelar
                     </Button>
-                    <Button icon={<TbPrinter />} type="button" color="primary"  className="w-full md:w-auto">
-                        Imprimir
-                    </Button>
+                    {invoice.status === 'PAID' ? (
+                        <PrintInvoice
+                            invoiceId={invoice.id}
+
+                        />
+                    ) : (
+                        <Tooltip
+                            title={"solo es posile imprimir facturas con el estado PAGADO"}
+                        >
+                            <div>
+                                <Button
+                                    disabled={true}
+                                    icon={<IoMdPrint className='text-lg ' />}
+                                >
+                                    Imprimir
+                                </Button>
+                            </div>
+                        </Tooltip>
+                    )
+
+                    }
+
                 </div>
             </div>
         </>

@@ -27,7 +27,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
             const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}`);
-            console.log('response', response);
+          
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -126,7 +126,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
 
     return (
         <div>
-            <Select<CourseBranchSelect, false, GroupBase<CourseBranchSelect>>
+            <AsyncSelect<CourseBranchSelect, false, GroupBase<CourseBranchSelect>>
                 loadOptions={loadOptions}
                 cacheOptions
                 defaultOptions={options}
@@ -134,7 +134,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
                 noOptionsMessage={() => 'No hay opciones'}
                 value={options.find((option) => option.value === value) || null}
                 isClearable
-                asComponent={AsyncSelect}
+                //asComponent={AsyncSelect}
                 components={{
                     Control: CustomControl,
                     Option: CustomSelectedOption

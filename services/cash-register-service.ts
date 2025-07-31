@@ -1,7 +1,6 @@
 import 'server-only';
-import { CashRegister as PrismaCashRegister, PrismaClient, CashRegisterStatus } from "@prisma/client";
-
-const Prisma = new PrismaClient();
+import { CashRegister as PrismaCashRegister, CashRegisterStatus } from "@prisma/client";
+import { Prisma } from '@/utils/lib/prisma';
 
 export type CashRegisterCreateInput = Omit<
   PrismaCashRegister,

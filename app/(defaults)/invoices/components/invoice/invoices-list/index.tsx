@@ -7,9 +7,13 @@ import { usePathname } from 'next/navigation'
 export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
     const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
     const pathname = usePathname();
+    const [newCardloading, setnewCardloading] = React.useState(false);
     useEffect(() => {
-       
+
         fetchInvoicesData('status=DRAFT');
+        return () => {
+            setnewCardloading(false);
+        }
     }, [pathname]);
 
 
@@ -21,12 +25,15 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
                 <NewinvoiceCard
                     cashRegisterId={cashRegisterId}
                     userId={userId}
+                    loading={newCardloading}
+                    setLoading={setnewCardloading}
                 />
                 {loading ? (
                     <p className="text-center mt-4">Cargando facturas...</p>
                 ) : (
                     invoices.map((invoice) => (
                         <InvoiceCard
+                            key={invoice.id}
                             invoice={invoice}
                             cashRegisterId={cashRegisterId}
                         />

@@ -3,6 +3,7 @@ import { findEnrollmentById, updateEnrollmentById, deleteEnrollmentById } from '
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { getCourseBranch } from '@/services/course-branch-service';
 
 // Obtener enrollment por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -39,11 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND'}, { status: 404 });
         }
 
-        // Actualizar el enrollment
         const updatedEnrollment = await updateEnrollmentById(id, body);
-
-        // Enviar log de auditoría
-
         await createLog({
             action: "PUT",
             description: `Se actualizó un enrollment. Información anterior: ${JSON.stringify(enrollment, null, 2)}. Información actualizada: ${JSON.stringify(updatedEnrollment, null, 2)}`,
