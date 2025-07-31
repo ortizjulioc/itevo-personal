@@ -1,18 +1,13 @@
 'use client';
-import SelectTeacher from '@/components/common/selects/select-teacher';
-import SelectCourse from '@/components/common/selects/select-course';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { MODALITIES } from '@/constants/modality.constant';
 import { Select } from '@/components/ui';
 import SelectStudent from '@/components/common/selects/select-student';
 import DatePicker from '@/components/ui/date-picker';
-import { set } from 'lodash';
 
 import { AttendanceStatus } from '@prisma/client';
 import StatusAttendance from '../status-attendance';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
-
 
 interface SelectOption {
     value: string;

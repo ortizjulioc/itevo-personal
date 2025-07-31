@@ -20,6 +20,7 @@ import {
 } from 'react-icons/tb';
 
 import { ADMIN, USER, CASHIER } from '@/constants/role.constant';
+import { HiOutlineCurrencyDollar } from 'react-icons/hi';
 
 const navigationConfig = [
     {
@@ -159,6 +160,15 @@ const navigationConfig = [
         title: 'Cajas',
         icon: TbCashRegister,
         url: '/cash-registers',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [ADMIN, CASHIER]
+    },
+    {
+        key: 'accounts-receivable',
+        title: 'Cuentas por cobrar',
+        icon: HiOutlineCurrencyDollar,
+        url: '/accounts-receivable',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: [ADMIN, CASHIER]

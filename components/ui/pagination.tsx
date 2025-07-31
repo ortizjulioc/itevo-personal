@@ -50,7 +50,7 @@ const Pagination: React.FC<PaginationProps> = ({
             <div>
                 <div className="dropdown">
                     <Dropdown
-                        placement={`top-end`}
+                        placement={`top-start`}
                         btnClassName="btn btn-primary btn-sm dropdown-toggle inline-flex"
                         button={
                             <>

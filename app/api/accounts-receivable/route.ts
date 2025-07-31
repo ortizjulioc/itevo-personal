@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
       courseId,
       studentId,
     };
-
     const { accountsReceivable, totalAccountsReceivable } = await getAccountsReceivable(filters, page, top);
 
     return NextResponse.json({
