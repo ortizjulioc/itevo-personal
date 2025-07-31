@@ -26,6 +26,8 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     const [openModalAttendance, setOpenModalAttendance] = React.useState(false);
     const { invoices, fetchInvoicesData } = useFetchInvoices(CashRegister.id);
     const pathname = usePathname();
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
+    const [loadingAction, setLoadingAction] = React.useState<string | null>(null);
     useEffect(() => {
         fetchInvoicesData('CashRegister.id'); // vuelve a cargar las facturas cada vez que cambia la URL
     }, [pathname]);
@@ -73,34 +75,86 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                     </div>
                     <div className="mb-4 flex items-center justify-end gap-2 md:mb-0">
                         <div className="dropdown">
-                            <Dropdown button={<HiOutlineDotsVertical size={20} />} btnClassName="" placement="bottom-end">
+                            <Dropdown
+                                open={dropdownOpen}
+                                onToggle={setDropdownOpen}
+                                button={
+                                    loadingAction ? (
+                                        <span className="w-5 h-5 border-2 border-t-transparent border-blue-500 rounded-full animate-spin inline-block" />
+                                    ) : (
+                                        <HiOutlineDotsVertical size={20} />
+                                    )
+                                }
+                                btnClassName=""
+                                placement="bottom-end"
+                            >
                                 <div className="!min-w-[200px]">
-                                    <ul>
+                                    <ul className="divide-y divide-white-light dark:divide-white-light/10">
                                         <li>
-                                            <button type="button" onClick={() => setOpenModalAttendance(true)} className="dropdown-item">
+                                            <button
+                                                type="button"
+                                                disabled={loadingAction !== null}
+                                                onClick={async () => {
+                                                    setLoadingAction('attendance');
+                                                    await new Promise((res) => setTimeout(res, 200));
+                                                    setOpenModalAttendance(true);
+                                                    setLoadingAction(null);
+                                                }}
+                                                className="dropdown-item w-full flex items-center gap-2"
+                                            >
+                                                {loadingAction === 'attendance' && (
+                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                )}
                                                 Registro de asistencia
                                             </button>
                                         </li>
                                         <li>
-                                            <button type="button" onClick={() => setOpenModalTeacher(true)} className="dropdown-item">
+                                            <button
+                                                type="button"
+                                                disabled={loadingAction !== null}
+                                                onClick={async () => {
+                                                    setLoadingAction('teacher');
+                                                    await new Promise((res) => setTimeout(res, 200));
+                                                    setOpenModalTeacher(true);
+                                                    setLoadingAction(null);
+                                                }}
+                                                className="dropdown-item w-full flex items-center gap-2"
+                                            >
+                                                {loadingAction === 'teacher' && (
+                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                )}
                                                 Desembolso a profesor
                                             </button>
                                         </li>
-                                        <li className="border-t border-white-light dark:border-white-light/10">
-                                            <button type="button" onClick={() => {
-                                                if (hasPendingInvoices) {
-                                                    openNotification('error', ' No puede hacer cierre de caja, aún tiene facturas pendientes')
-                                                } else {
-                                                    router.push(`/cash-registers/close/${CashRegister.id}`)
-                                                }
-                                            }
-                                            } className="dropdown-item">
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={loadingAction !== null}
+                                                onClick={async () => {
+                                                    setLoadingAction('close');
+                                                    if (hasPendingInvoices) {
+                                                        openNotification('error', 'No puede hacer cierre de caja, aún tiene facturas pendientes');
+                                                        setLoadingAction(null);
+                                                        return;
+                                                    }
+
+                                                    await new Promise((res) => setTimeout(res, 500));
+                                                    router.push(`/cash-registers/close/${CashRegister.id}`);
+                                                }}
+                                                className="dropdown-item w-full flex items-center gap-2"
+                                            >
+                                                {loadingAction === 'close' && (
+                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                )}
                                                 Cerrar caja
                                             </button>
                                         </li>
                                     </ul>
                                 </div>
                             </Dropdown>
+
+
+
                         </div>
                     </div>
 

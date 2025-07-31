@@ -326,32 +326,42 @@ export default function AddItemsInvoices({
                                     <div className="flex-1">
                                         <SelectProduct
                                             ref={productRef}
-                                            value={item?.productId ?? undefined}
+                                            value={item?.productId ?? ''}
                                             onChange={onSelectProduct}
                                             disabled={itemLoading}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/4">
-                                        <Input
-                                            ref={quantityRef}
-                                            placeholder="Cantidad"
-                                            type="number"
-                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                            value={item?.quantity ?? ''}
-                                            disabled={itemLoading}
-                                            onChange={(e) => {
-                                                setItem((prev) => ({
-                                                    ...prev!,
-                                                    quantity: Number(e.target.value),
-                                                }));
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleAddItem(item);
-                                                }
-                                            }}
-                                        />
+                                        <div className="relative w-full">
+                                            <Input
+                                                ref={quantityRef}
+                                                placeholder="Cantidad"
+                                                type="number"
+                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                value={item?.quantity ?? ''}
+                                                disabled={itemLoading}
+                                                onChange={(e) => {
+                                                    setItem((prev) => ({
+                                                        ...prev!,
+                                                        quantity: Number(e.target.value),
+                                                    }));
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddItem(item);
+                                                    }
+                                                }}
+                                                className={`${itemLoading ? 'pr-10 opacity-60 pointer-events-none' : ''}`}
+                                            />
+
+                                            {itemLoading && (
+                                                <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                                    <div className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                </div>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </div>
                             </Tab.Panel>

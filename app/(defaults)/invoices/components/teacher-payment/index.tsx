@@ -9,6 +9,7 @@ import { PayAccount } from '../../lib/accounts-payable/request'
 import { useParams } from 'next/navigation'
 import CourseBranchLabel from '@/components/common/info-labels/course-branch-label'
 import { useRouter } from 'next/navigation'
+import { GenericSkeleton } from '@/components/common/Skeleton'
 interface SelectTeacherType {
     value: string
     label: string
@@ -28,7 +29,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
     };
 
-   
+
 
 
 
@@ -77,6 +78,8 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
                                 {/* Tarjetas de pagos */}
                                 <div className="px-5">
+                                    {teacher && loading && (<GenericSkeleton lines={2} withHeader className="mb-4" />)}
+
                                     {!loading && teacher && accountsPayable.map((item) => {
                                         const paidAmount = item.amountDisbursed;
                                         const pendingAmount = item.amount - item.amountDisbursed;
@@ -86,12 +89,10 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                 key={item.id}
                                                 className="mb-5 w-full rounded-md border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-[#1E1E2D]"
                                             >
-                                                {/* Nombre del curso */}
                                                 <div className="mb-4 text-sm font-semibold text-gray-800 dark:text-white">
                                                     <CourseBranchLabel CourseBranchId={item.courseBranchId} showTeacher={false} />
                                                 </div>
 
-                                                {/* Totales */}
                                                 <div className="flex flex-wrap gap-6 justify-between">
                                                     {/* Adeudado */}
                                                     <div className="flex items-center gap-2">
@@ -100,7 +101,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                             <div className="text-base font-semibold text-gray-900 dark:text-white">
                                                                 {formatCurrency(item.amount)}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">Total </div>
+                                                            <div className="text-sm text-gray-500">Total</div>
                                                         </div>
                                                     </div>
 
@@ -136,12 +137,19 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                             Cancelar
                                         </Button>
                                         <Button
-                                            onClick={() => router.push(`/teacher-payments/${cashRegisterId}/teacher/${teacher}`)}
-                                            disabled={!teacher}
-                                            loading={loadingPayment}
-                                          
-                                            color='primary'>
-                                            Desembolsar
+                                            onClick={async () => {
+                                                setLoadingPayment(true);
+                                                await new Promise((res) => setTimeout(res, 500)); // opcional, solo para mostrar loading
+                                                router.push(`/teacher-payments/${cashRegisterId}/teacher/${teacher}`);
+                                            }}
+                                            disabled={!teacher || loadingPayment}
+                                            color="primary"
+                                            className="flex items-center gap-2 justify-center min-w-[120px]"
+                                        >
+                                            {loadingPayment && (
+                                                <span className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                                            )}
+                                            <span>{loadingPayment ? 'Redirigiendo...' : 'Desembolsar'}</span>
                                         </Button>
                                     </div>
                                 </div>

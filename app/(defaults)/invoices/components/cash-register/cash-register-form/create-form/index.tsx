@@ -51,13 +51,14 @@ export default function CreateCashRegisterForm() {
             userId: user.id,
             initialBalance: Number(values.initialBalance),
             openingDate: new Date(),
+            closedAt: null,
         };
 
         try {
             const resp = await createCashRegister(valuesToSend);
 
             if (resp.success) {
-                openNotification('success', 'CashRegister creado correctamente');
+                openNotification('success', 'Caja creada correctamente');
                 const cashRegister = resp.data as any;
 
                 if (cashRegister?.id) {

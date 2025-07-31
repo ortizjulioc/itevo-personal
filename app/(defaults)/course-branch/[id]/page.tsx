@@ -9,7 +9,7 @@ export default function EditCourseBranch({ params }: { params: { id: string } })
 
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar Curso" showBackPage />
+            <ViewTitle className='mb-6' title="Editar Oferta Academica" showBackPage />
 
             {loading && <FormSkeleton />}
             {courseBranch && <UpdateCourseBranchForm initialValues={courseBranch} />}
