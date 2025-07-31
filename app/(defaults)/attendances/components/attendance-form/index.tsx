@@ -17,7 +17,7 @@ import CompareFingerPrint from '@/components/common/finger-print/compare-finger-
 import { useState } from 'react';
 
 interface statusOption {
-    value: string
+    value: string;
     label: JSX.Element;
 }
 const customStyles: StylesConfig<statusOption, false> = {
@@ -31,19 +31,19 @@ const customStyles: StylesConfig<statusOption, false> = {
     }),
 };
 interface CreateAttendanceFormProps {
-  onCancel?: () => void;
+    onCancel?: () => void;
+    onSuccess?: () => void;
 }
 
+export default function CreateAttendanceForm({ onCancel, onSuccess }: CreateAttendanceFormProps) {
+    //const route = useRouter();
+    const [fingerPrint, setFingerPrint] = useState('');
+    const [validate, setValidate] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormProps)  {
-    const route = useRouter();
-    const [fingerPrint, setFingerPrint] = useState('')
-    const [validate, setValidate] = useState(false)
-    const [loading, setLoading] = useState(false)
-
-    const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
         setSubmitting(true);
-        console.log(values)
+        console.log(values);
 
         // Si es PRESENT y no hay validación biométrica
         if (values.status === AttendanceStatus.PRESENT && !validate) {
@@ -64,11 +64,17 @@ export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormP
 
         const data = { ...values };
         const resp = await createAttendance(data);
+        console.log('Respuesta:', resp); // <-- esto deberías verlo
 
         if (resp.success) {
+            console.log('¡Success detectado!'); // <-- esto debería verse también
             openNotification('success', 'Asistencia registrada correctamente');
-            route.push('/attendances');
+            onSuccess?.();
+            resetForm();
+            setFingerPrint('');
+            setValidate(false);
         } else {
+            console.log('¡Success FALSO!');
             openNotification('error', resp.message);
         }
 
@@ -79,13 +85,9 @@ export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormP
         { value: AttendanceStatus.PRESENT, label: <StatusAttendance status={AttendanceStatus.PRESENT} /> },
         { value: AttendanceStatus.ABSENT, label: <StatusAttendance status={AttendanceStatus.ABSENT} /> },
         { value: AttendanceStatus.EXCUSED, label: <StatusAttendance status={AttendanceStatus.EXCUSED} /> },
-    ]
+    ];
 
-
-    const handleStudentChange = async (
-        option: StudentSelect | null,
-        setFieldValue: (field: string, value: any) => void
-    ) => {
+    const handleStudentChange = async (option: StudentSelect | null, setFieldValue: (field: string, value: any) => void) => {
         setFieldValue('studentId', option?.value || '');
 
         if (!option?.value) {
@@ -118,15 +120,12 @@ export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormP
         }
     };
 
-
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Asistencia</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
-
-
                         <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
                             <Field>
                                 {({ form, field }: any) => (
@@ -140,26 +139,12 @@ export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormP
                                 )}
                             </Field>
                         </FormItem>
-                        <FormItem
-                            name="studentId"
-                            label="Estudiante"
-                            invalid={Boolean(errors.studentId && touched.studentId)}
-                            errorMessage={errors.studentId}
-                        >
+                        <FormItem name="studentId" label="Estudiante" invalid={Boolean(errors.studentId && touched.studentId)} errorMessage={errors.studentId}>
                             <Field>
-                                {({ form, field }: any) => (
-                                    <SelectStudent
-                                        value={values.studentId}
-                                        onChange={(option) => handleStudentChange(option, form.setFieldValue)}
-                                        loading={loading}
-
-                                    />
-
-                                )}
+                                {({ form, field }: any) => <SelectStudent value={values.studentId} onChange={(option) => handleStudentChange(option, form.setFieldValue)} loading={loading} />}
                             </Field>
                         </FormItem>
                         <FormItem name="status" label="Estado" invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
-
                             <Field>
                                 {({ form, field }: any) => (
                                     <Select
@@ -188,12 +173,7 @@ export default function CreateAttendanceForm({ onCancel }: CreateAttendanceFormP
                             </Field>
                         </FormItem>
 
-                        <CompareFingerPrint
-                            previousFingerprint={fingerPrint}
-                            onSuccess={() => setValidate(true)}
-                        />
-
-
+                        <CompareFingerPrint previousFingerprint={fingerPrint} onSuccess={() => setValidate(true)} />
 
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => onCancel?.()}>
