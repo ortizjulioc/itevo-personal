@@ -11,14 +11,15 @@ import { getFormattedDateTime } from '@/utils/date';
 import useFetchClosure from '../../lib/use-fetch-cash-closure';
 import UserLabel from '@/components/common/info-labels/user-label';
 import { TbPointFilled } from 'react-icons/tb';
+import { GenericSkeleton } from '@/components/common/Skeleton';
 
 
 
 export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
 
-    const { cashMovements, loading } = useFetchCashMovements(cashRegister?.id)
+    const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id)
-    const { closure } = useFetchClosure(cashRegister?.id)
+    const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id)
     // console.log(closure)
     console.log(cashRegister)
     function getInvoiceSummary(invoices: any[]) {
@@ -120,7 +121,8 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                         </div>
                     </div>
                 </div>
-                {closure && (
+                {closureLoading && <div className="col-span-12"> <GenericSkeleton className="mb-6" lines={2} withHeader={false} /> </div>}
+                {!closureLoading && closure && (
                     <div className="col-span-12">
                         <span className="ml-3 font-bold text-lg">Detalles de Cierre</span>
                         <div className="panel p-4 grid grid-cols-6 gap-4">
@@ -136,7 +138,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Total Reportado</p>
-                                <p className="text-base font-medium">{formatCurrency(closure.totalCash +closure.totalCheck +closure.totalCard + closure.totalTransfer)}</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.totalCash + closure.totalCheck + closure.totalCard + closure.totalTransfer)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Diferencia</p>
@@ -154,42 +156,49 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                     </div>
                 )}
 
-                <div className='col-span-3'>
-                    <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
-                    <div className="panel p-4 space-y-4">
-                        <div>
-                            <p className="text-sm text-gray-600">Balance Inicial</p>
-                            <p className="text-base font-medium">{formatCurrency(cashRegister?.initialBalance || 0)}</p>
-                        </div>
+                {cashMovementsLoading &&
+                    <div className='col-span-3'>
+                        <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
+                        <GenericSkeleton className="w-full" lines={8} withHeader={false} />
+                    </div>}
+                {!cashMovementsLoading &&
+                    <div className='col-span-3'>
+                        <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
+                        <div className="panel p-4 space-y-4">
+                            <div>
+                                <p className="text-sm text-gray-600">Balance Inicial</p>
+                                <p className="text-base font-medium">{formatCurrency(cashRegister?.initialBalance || 0)}</p>
+                            </div>
 
-                        <div>
-                            <p className="text-sm text-gray-600">Efectivo</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Tarjeta</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.tarjeta)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Transferencia</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.transferencia)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Cheque</p>
-                            <p className="text-base font-medium">{formatCurrency(resumenFacturas.cheque)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Egresos</p>
-                            <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(total)}</p>
-                        </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Efectivo</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Tarjeta</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.tarjeta)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Transferencia</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.transferencia)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Cheque</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.cheque)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Egresos</p>
+                                <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Total</p>
+                                <p className="text-base font-medium">{formatCurrency(total)}</p>
+                            </div>
 
 
+                        </div>
                     </div>
-                </div>
+                }
                 <div className='col-span-9'>
                     <span className='ml-3 font-bold text-lg'>Historial de movimentos</span>
                     <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
@@ -203,14 +212,14 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                                     <th />
                                 </tr>
                             </thead>
-                            <tbody>
 
-                                {cashMovements?.length === 0 && (
-                                    <tr>
-                                        <td colSpan={7} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron movimentos de caja</td>
-                                    </tr>
-                                )}
-                                {cashMovements?.map((cashMovement) => {
+                            <tbody>
+                                {cashMovementsLoading && <tr>
+                                    <td colSpan={5}>
+                                        <GenericSkeleton className="w-full" lines={8} withHeader={false} />
+                                    </td>
+                                </tr>}
+                                {!cashMovementsLoading && cashMovements?.map((cashMovement) => {
                                     return (
                                         <tr key={cashMovement.id}>
                                             <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt))}</td>

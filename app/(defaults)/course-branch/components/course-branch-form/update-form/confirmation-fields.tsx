@@ -136,30 +136,18 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
         <div className="mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Prerrequisitos</h3>
           <div className="grid grid-cols-2 gap-4">
-            {courses.length > 0 && (
+            {preRequisites.length > 0 ? (
               <ul>
-                {courses.filter(
-                  course =>
-                    course.id !== values.courseId && // Excluir el curso actual
-                    !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id) // Excluir los prerrequisitos seleccionados
-                )
-                  .map((course) => (
-                    <li key={course.id} className="flex justify-between items-center py-1">
-                      <span className="text-sm">{course.code} {course.name}</span>
-
-                    </li>
-                  ))}
+                {preRequisites.map(({ prerequisite }: { prerequisite: Course }) => (
+                  <li key={prerequisite.id} className="flex justify-between items-center py-1">
+                    <span className="text-sm">{prerequisite.code} {prerequisite.name}</span>
+                  </li>
+                ))}
               </ul>
+            ) : (
+              <p className="text-gray-500 text-sm italic">Este curso no tiene prerrequisitos</p>
             )}
-            {
-              courses.filter(
-                course =>
-                  course.id !== values.courseId &&
-                  !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id) // Excluir los prerrequisitos seleccionados
-              ).length === 0 && (
-                <p className="text-gray-500 text-sm italic">No hay Prerrequisitos</p>
-              )
-            }
+
           </div>
           <button type='button' onClick={() => onChangeTab(2)} className="mt-2 text-blue-600 hover:underline">
             Editar Prerrequistos
