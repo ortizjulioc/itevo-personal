@@ -52,7 +52,11 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
         <>
             <ViewTitle className='mb-6' title="Facturacion" rightComponent={
                 <>
-                    <CashRegisterModal />
+                    {cashRegisters?.length === 0 && (
+                        <CashRegisterModal />
+                    )}
+                        
+                    
                 </>
             } />
 

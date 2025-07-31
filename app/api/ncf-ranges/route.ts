@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     if (!Object.values(NcfType).includes(body.type)) {
         return NextResponse.json({
-          code: 'E_INVALID_TYPE',
+          code: 'E_INVALID_TYPE_NCF',
           message: `El tipo de NCF debe ser uno de los siguientes: ${Object.values(NcfType).join(', ')}`,
         }, { status: 400 });
       }

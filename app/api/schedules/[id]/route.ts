@@ -12,13 +12,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const schedule = await findScheduleById(id);
 
         if (!schedule) {
-            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND', message: 'Schedule no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(schedule, { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ code: 'E_SERVER_ERROR', message: 'Error buscando el schedule', details: error.message }, { status: 500 });
+            return NextResponse.json({ code: 'E_SERVER_ERROR_SHEDULE', message: 'Error buscando el schedule', details: error.message }, { status: 500 });
         } else {
             return NextResponse.json(error, { status: 500 });
         }
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Verificar si el schedule existe
         const schedule = await findScheduleById(id);
         if (!schedule) {
-            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND', message: 'schedule no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND' }, { status: 404 });
         }
 
         // Actualizar el schedule
@@ -81,7 +81,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Verificar si el rol existe
         const schedule = await findScheduleById(id);
         if (!schedule) {
-            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND', message: 'schedule no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_SCHEDULE_NOT_FOUND'}, { status: 404 });
         }
 
         // Eliminar el rol

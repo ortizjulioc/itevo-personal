@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const teacher = await findTeacherById(id);
 
         if (!teacher) {
-            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND', message: 'Maestro no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND' }, { status: 404 });
         }
 
         return NextResponse.json(teacher, { status: 200 });
@@ -36,7 +36,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Verificar si el maestro existe
         const teacher = await findTeacherById(id);
         if (!teacher) {
-            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND', message: 'Maestro no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND'}, { status: 404 });
         }
 
         // Actualizar el TEACHER
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         // Verificar si el teacher existe
         const teacher = await findTeacherById(id);
         if (!teacher) {
-            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND', message: 'Maestro no encontrado' }, { status: 404 });
+            return NextResponse.json({ code: 'E_TEACHER_NOT_FOUND' }, { status: 404 });
         }
 
         // Eliminar el teacher

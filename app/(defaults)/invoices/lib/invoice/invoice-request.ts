@@ -19,6 +19,9 @@ export const updateInvoice = async (id: string, invoice: InvoicePrisma) => {
 export const addItemsInvoice = async (id: string, invoiceItem: InvoiceItem) => {
     return await apiRequest.post<InvoiceItem>(`/invoices/${id}/items`, invoiceItem);
 };
+export const removeItemsInvoice = async (id: string, invoiceItemId: string) => {
+    return await apiRequest.remove<InvoiceItem>(`/invoices/${id}/items/${invoiceItemId}`);
+};
 
 export const payInvoice = async (id: string, invoice: Invoice) => {
     return await apiRequest.post<Invoice>(`/invoices/${id}/pay`, invoice);

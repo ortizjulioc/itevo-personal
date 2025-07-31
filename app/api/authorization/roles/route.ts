@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         const branchId = searchParams.get('branchId');
 
         if (!userId || !branchId) {
-            return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
+            return NextResponse.json({ code: 'E_MISSING_FIELDS' ,message:'Los campos userId y branchId son obligatorios.' }, { status: 400 });
         }
 
         const roles = await getUserRolesInBranch(userId, branchId);
