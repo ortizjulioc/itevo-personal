@@ -32,7 +32,7 @@ export interface PaymentsResponse {
 export default function TeacherPayments() {
     const { id: cashRegisterId, teacherid } = useParams();
     const teacherId = Array.isArray(teacherid) ? teacherid[0] : teacherid;
-    const { accountsPayable, loading, fetchAccountsPayableData} = useFetchAccountsPayable(`teacherId=${teacherid}`);
+    const { accountsPayable, loading, fetchAccountsPayableData} = useFetchAccountsPayable(`teacherId=${teacherid}&top=1000`);
     const [loadingPayment, setLoadingPayment] = useState(false)
 
     const [earningsMap, setEarningsMap] = useState<Record<string, PayableEarning[]>>({});
