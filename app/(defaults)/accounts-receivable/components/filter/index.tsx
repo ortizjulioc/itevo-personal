@@ -5,6 +5,7 @@ import SelectReceivableStatus from "../list/select-status";
 import DatePicker from "@/components/ui/date-picker";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { PaymentStatus } from "@prisma/client";
 
 export default function AccountReceivableFilter() {
     const searchParams = useSearchParams();
@@ -37,7 +38,7 @@ export default function AccountReceivableFilter() {
                 onChange={(selected) => handleFilterChange('studentId', selected?.value || '')}
             />
             <SelectReceivableStatus
-                value={searchParams.get('status') || ''}
+                value={searchParams.get('status') as PaymentStatus || ''}
                 onChange={(selected) => handleFilterChange('status', selected?.value || '')}
                 isClearable
             />
