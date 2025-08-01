@@ -71,7 +71,6 @@ export default function UpdateStudentForm({ initialValues }: { initialValues: St
               label="Dirección"
               invalid={Boolean(errors.address && touched.address)}
               errorMessage={errors.address}
-              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
             >
               <Field type="text" name="address" component={Input} />
             </FormItem>
