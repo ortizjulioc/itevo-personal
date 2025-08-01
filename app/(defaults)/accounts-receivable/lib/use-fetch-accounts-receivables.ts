@@ -41,6 +41,7 @@ export default function useFetchAccountsReceivables(query: string) {
     totalAccountsReceivable,
     loading,
     error,
-    fetchAccountsReceivables
+    fetchAccountsReceivables,
+    setAccountsReceivable
   };
 }

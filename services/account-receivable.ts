@@ -3,10 +3,10 @@ import { Prisma } from '@/utils/lib/prisma';
 import { AccountReceivable, PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 type processReceivablePaymentProps = {
-    unitPrice: number;
-    accountReceivableId: string;
-    invoiceId: string;
-    prisma: PrismaTypes.TransactionClient;
+  unitPrice: number;
+  accountReceivableId: string;
+  invoiceId: string;
+  prisma: PrismaTypes.TransactionClient;
 };
 
 export const getAccountsReceivable = async (
@@ -50,12 +50,16 @@ export const getAccountsReceivable = async (
 
   // Add due date range filter
   if (filters.dueDateStart || filters.dueDateEnd) {
-    whereClause.dueDate = {};
+    const dueDate: Record<string, Date> = {};
     if (filters.dueDateStart) {
-      whereClause.dueDate.gte = filters.dueDateStart;
+      dueDate.gte = filters.dueDateStart;
     }
     if (filters.dueDateEnd) {
-      whereClause.dueDate.lte = filters.dueDateEnd;
+      dueDate.lte = filters.dueDateEnd;
+    }
+
+    if (Object.keys(dueDate).length > 0) {
+      whereClause.dueDate = dueDate;
     }
   }
 
@@ -70,7 +74,8 @@ export const getAccountsReceivable = async (
   const [accountsReceivable, totalAccountsReceivable] = await Promise.all([
     Prisma.accountReceivable.findMany({
       orderBy: [
-        { createdAt: 'asc' },
+        { dueDate: 'asc' },
+        { createdAt: 'desc' },
       ],
       select: {
         id: true,
@@ -241,48 +246,48 @@ export const cancelAccountReceivableById = async (id: string) => {
 }
 
 export const processReceivablePayment = async ({
-    unitPrice,
-    accountReceivableId,
-    invoiceId,
-    prisma,
+  unitPrice,
+  accountReceivableId,
+  invoiceId,
+  prisma,
 }: processReceivablePaymentProps) => {
-    const receivable = await findAccountReceivableById(accountReceivableId, prisma);
+  const receivable = await findAccountReceivableById(accountReceivableId, prisma);
 
-    if (!receivable) {
-        throw new Error(`Cuenta por cobrar ${accountReceivableId} no encontrada`);
-    }
-    if (receivable.status !== PaymentStatus.PENDING) {
-        throw new Error(`La cuenta por cobrar ${accountReceivableId} ya no está pendiente`);
-    }
+  if (!receivable) {
+    throw new Error(`Cuenta por cobrar ${accountReceivableId} no encontrada`);
+  }
+  if (receivable.status !== PaymentStatus.PENDING) {
+    throw new Error(`La cuenta por cobrar ${accountReceivableId} ya no está pendiente`);
+  }
 
-    const amountPending = receivable.amount - receivable.amountPaid;
-    if (amountPending < unitPrice) {
-        throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${accountReceivableId} (pendiente: ${amountPending})`);
-    }
+  const amountPending = receivable.amount - receivable.amountPaid;
+  if (amountPending < unitPrice) {
+    throw new Error(`No puede agregar más cantidad que el monto pendiente de la cuenta por cobrar ${accountReceivableId} (pendiente: ${amountPending})`);
+  }
 
-    const newAmountPending = amountPending - unitPrice;
-    const amountPaid = receivable.amount - newAmountPending;
+  const newAmountPending = amountPending - unitPrice;
+  const amountPaid = receivable.amount - newAmountPending;
 
-    // Actualizamos cuenta por cobrar
-    const accountReceivableUpdated = await updateAccountReceivableById(accountReceivableId, {
-        amountPaid,
-        status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
-    }, prisma);
+  // Actualizamos cuenta por cobrar
+  const accountReceivableUpdated = await updateAccountReceivableById(accountReceivableId, {
+    amountPaid,
+    status: amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING,
+  }, prisma);
 
-    // Crear pago de cuenta por cobrar
-    const receivablePayment = await prisma.receivablePayment.create({
-        data: {
-        accountReceivableId,
-        amount: unitPrice,
-        paymentDate: new Date(),
-        invoiceId, // Asociar el pago a la factura
-        },
-    });
+  // Crear pago de cuenta por cobrar
+  const receivablePayment = await prisma.receivablePayment.create({
+    data: {
+      accountReceivableId,
+      amount: unitPrice,
+      paymentDate: new Date(),
+      invoiceId, // Asociar el pago a la factura
+    },
+  });
 
-    return {
-        receivablePayment,
-        accountReceivable: accountReceivableUpdated,
-    };
+  return {
+    receivablePayment,
+    accountReceivable: accountReceivableUpdated,
+  };
 }
 
 export const annularReceivablePayment = async ({
@@ -291,32 +296,44 @@ export const annularReceivablePayment = async ({
   invoiceId,
   prisma,
 }: processReceivablePaymentProps) => {
-    const receivable = await findAccountReceivableById(accountReceivableId, prisma);
+  const receivable = await findAccountReceivableById(accountReceivableId, prisma);
 
-    if (!receivable) {
-        throw new Error(`Cuenta por cobrar ${accountReceivableId} no encontrada`);
-    }
+  if (!receivable) {
+    throw new Error(`Cuenta por cobrar ${accountReceivableId} no encontrada`);
+  }
 
-    const amountPaid = receivable.amountPaid - unitPrice;
-    if (amountPaid < 0) {
-        throw new Error(`No puede anular más cantidad que el monto pagado de la cuenta por cobrar ${accountReceivableId} (pagado: ${receivable.amountPaid})`);
-    }
+  const amountPaid = receivable.amountPaid - unitPrice;
+  if (amountPaid < 0) {
+    throw new Error(`No puede anular más cantidad que el monto pagado de la cuenta por cobrar ${accountReceivableId} (pagado: ${receivable.amountPaid})`);
+  }
 
-    const newStatus = amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING;
+  const newStatus = amountPaid >= receivable.amount ? PaymentStatus.PAID : PaymentStatus.PENDING;
 
-    // Actualizamos cuenta por cobrar
-    const accountReceivableUpdated = await updateAccountReceivableById(accountReceivableId, {
-        amountPaid,
-        status: newStatus,
-    }, prisma);
+  // Actualizamos cuenta por cobrar
+  const accountReceivableUpdated = await updateAccountReceivableById(accountReceivableId, {
+    amountPaid,
+    status: newStatus,
+  }, prisma);
 
-    // Anular pago de cuenta por cobrar
-    const receivablePayment = await prisma.receivablePayment.update({
-        where: { accountReceivableId_invoiceId:
-            { accountReceivableId: accountReceivableId, invoiceId: invoiceId }
-        },
-        data: { deleted: true, },
-    });
+  // Anular pago de cuenta por cobrar
+  const receivablePayment = await prisma.receivablePayment.update({
+    where: {
+      accountReceivableId_invoiceId:
+        { accountReceivableId: accountReceivableId, invoiceId: invoiceId }
+    },
+    data: { deleted: true, },
+  });
 
-    return { accountReceivable: accountReceivableUpdated, receivablePayment  };
+  return { accountReceivable: accountReceivableUpdated, receivablePayment };
 }
+
+export const changeAccountReceivableStatus = async (
+  id: string,
+  status: PaymentStatus,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  return prisma.accountReceivable.update({
+    where: { id },
+    data: { status },
+  });
+};

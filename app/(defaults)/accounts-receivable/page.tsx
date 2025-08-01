@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: 'Cuentas por cobrar',
 };
 
-export default function AccountsReceivable() {
-  return <AccountsReceivableClient />;
+export default function AccountsReceivable({ searchParams }: { searchParams?: { [key: string]: string } }) {
+  return <AccountsReceivableClient searchParams={searchParams} />;
 }

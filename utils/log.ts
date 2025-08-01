@@ -42,7 +42,7 @@ export const createLog = async (logData: LogData): Promise<void> => {
             description: logData.description,
             origin: logData.origin,
             elementId: logData.elementId,
-            authorId: session?.user?.id || "system", // Usar "system" si no hay sesión
+            authorId: session?.user?.id || "unknown", // Usar "unknown" si no hay sesión
         };
 
         await fs.mkdir(path.dirname(logFilePath), { recursive: true });

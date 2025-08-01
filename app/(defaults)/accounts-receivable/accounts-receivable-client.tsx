@@ -13,7 +13,6 @@ export default function AccountsReceivableClient({ searchParams }: { searchParam
   const showFilters = params.get('showFilters') === 'true';
 
   const query = objectToQueryString(searchParams || {});
-
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());
     if (showFilters) {

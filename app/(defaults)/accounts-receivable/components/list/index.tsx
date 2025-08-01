@@ -1,6 +1,5 @@
 import { queryStringToObject } from '@/utils/object-to-query-string';
 import React from 'react'
-import useFetchAccountsReceivables from '../../lib/use-fetch-accounts-receivables';
 import { formatCurrency, getInitials, openNotification } from '@/utils';
 import Skeleton from '@/components/common/Skeleton';
 import { Pagination } from '@/components/ui';
@@ -9,6 +8,9 @@ import Link from 'next/link';
 import Avatar from '@/components/common/Avatar';
 import { getFormattedDate } from '@/utils/date';
 import SelectReceivableStatus from './select-status';
+import useFetchAccountsReceivables from '../../lib/use-fetch-accounts-receivables';
+import { changeAccountReceivableStatus } from '../../lib/request';
+import { PaymentStatus } from '@prisma/client';
 
 type AccountsReceivableListProps = {
   className?: string;
@@ -16,19 +18,35 @@ type AccountsReceivableListProps = {
 }
 
 export default function AccountsReceivableList({ className, query }: AccountsReceivableListProps) {
-  console.log('AccountsReceivableList query:', query);
   const params = queryStringToObject(query || '');
   const {
     loading,
     error,
     accountsReceivable,
     totalAccountsReceivable,
+    setAccountsReceivable
   } = useFetchAccountsReceivables(query || '');
+  const [changingStatus, setChangingStatus] = React.useState<{ [key: string]: boolean }>({});
 
-  const onChangeStatus = (selected: { value: string; label: string | JSX.Element } | null) => {
-    if (selected) {
+  const onChangeStatus = async(id: string, status: PaymentStatus | null) => {
+    if (status) {
       // Handle status change logic here
-      console.log('Selected status:', selected.value);
+      setChangingStatus((prev) => ({ ...prev, [id]: true }));
+      const resp = await changeAccountReceivableStatus(id, status);
+      setChangingStatus((prev) => ({ ...prev, [id]: false }));
+      if (resp.success) {
+        openNotification('success', 'Estado de cuenta actualizado correctamente');
+        setAccountsReceivable((prev) => {
+          return prev.map((receivable) => {
+            if (receivable.id === id) {
+              return { ...receivable, status };
+            }
+            return receivable;
+          });
+        });
+      } else {
+        openNotification('error', resp.message);
+      }
     }
   }
 
@@ -36,14 +54,15 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
     console.error(error);
     openNotification('error', error);
   }
-  if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'CURSO', 'FECHA DE VENCIMIENTO', 'MONTO', 'ESTADO']} />;
+  if (loading) return <Skeleton rows={6} columns={['#', 'ESTUDIANTE', 'CURSO', 'FECHA DE VENCIMIENTO', 'MONTO', 'ESTADO']} />;
 
   return (
     <div className={className}>
-      <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+      <div className="table-responsive mb-5 panel p-0 border-0">
         <table className="table-hover">
           <thead>
             <tr>
+              <th>#</th>
               <th>ESTUDIANTE</th>
               <th>CURSO</th>
               <th>FECHA DE VENCIMIENTO</th>
@@ -57,9 +76,10 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
                 <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron cuentas por cobrar registradas</td>
               </tr>
             )}
-            {accountsReceivable?.map((receivable: AccountReceivableWithRelations) => {
+            {accountsReceivable?.map((receivable: AccountReceivableWithRelations, index: number) => {
               return (
                 <tr key={receivable.id}>
+                  <td>{index + 1}</td>
                   <td>
                     <Link href={`/students/view/${receivable.student.id}`} className="ml-2 flex items-center gap-2 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-2 py-1 transition-colors">
                       <Avatar initials={getInitials(receivable.student.firstName, receivable.student.lastName)} size="sm" color="primary" />
@@ -73,7 +93,13 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
                   <td>{getFormattedDate(new Date(receivable.dueDate))}</td>
                   <td><span className='font-bold'>{formatCurrency(receivable.amount)}</span></td>
                   <td>
-                    <SelectReceivableStatus className='w-44' value={receivable.status} onChange={onChangeStatus} minimal />
+                    <SelectReceivableStatus
+                      isLoading={changingStatus[receivable.id] || false}
+                      className='w-44'
+                      value={receivable.status}
+                      onChange={(selected) => onChangeStatus(receivable.id, selected?.value as PaymentStatus)}
+                      minimal
+                    />
                   </td>
                 </tr>
               );

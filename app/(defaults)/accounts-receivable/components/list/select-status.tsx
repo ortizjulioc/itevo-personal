@@ -9,16 +9,18 @@ export type SelectEnrollmentStatusType = {
 };
 
 interface SelectEnrollmentStatusProps {
-    value?: string;
+    value?: PaymentStatus;
     onChange?: (selected: SelectEnrollmentStatusType | null) => void;
     minimal?: boolean;
     className?: string;
     isClearable?: boolean;
+    isLoading?: boolean;
+    isDisabled?: boolean;
 }
 
 export default function SelectReceivableStatus({ value, minimal = false, ...rest }: SelectEnrollmentStatusProps) {
     const options = Object.values(PaymentStatus).map((status) => ({
-        value: status,
+        value: status as PaymentStatus,
         label: <StatusPayment status={status} />,
     }));
 
