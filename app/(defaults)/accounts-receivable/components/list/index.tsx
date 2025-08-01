@@ -8,6 +8,7 @@ import { AccountReceivableWithRelations } from '@/@types/accounts-receivables';
 import Link from 'next/link';
 import Avatar from '@/components/common/Avatar';
 import { getFormattedDate } from '@/utils/date';
+import SelectReceivableStatus from './select-status';
 
 type AccountsReceivableListProps = {
   className?: string;
@@ -15,6 +16,7 @@ type AccountsReceivableListProps = {
 }
 
 export default function AccountsReceivableList({ className, query }: AccountsReceivableListProps) {
+  console.log('AccountsReceivableList query:', query);
   const params = queryStringToObject(query || '');
   const {
     loading,
@@ -23,12 +25,18 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
     totalAccountsReceivable,
   } = useFetchAccountsReceivables(query || '');
 
+  const onChangeStatus = (selected: { value: string; label: string | JSX.Element } | null) => {
+    if (selected) {
+      // Handle status change logic here
+      console.log('Selected status:', selected.value);
+    }
+  }
+
   if (error) {
     console.error(error);
     openNotification('error', error);
   }
-  console.log(accountsReceivable);
-  if (loading) return <Skeleton rows={6} columns={['FECHA DE VENCIMIENTO', 'ESTUDIANTE', 'CURSO', "ESTADO"]} />;
+  if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'CURSO', 'FECHA DE VENCIMIENTO', 'MONTO', 'ESTADO']} />;
 
   return (
     <div className={className}>
@@ -41,7 +49,6 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
               <th>FECHA DE VENCIMIENTO</th>
               <th>MONTO</th>
               <th>ESTADO</th>
-              <th/>
             </tr>
           </thead>
           <tbody>
@@ -65,8 +72,8 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
                   <td>{receivable.courseBranch.course.name}</td>
                   <td>{getFormattedDate(new Date(receivable.dueDate))}</td>
                   <td><span className='font-bold'>{formatCurrency(receivable.amount)}</span></td>
-                  <td>{receivable.status}</td>
-                  <td><span>Detalles</span>
+                  <td>
+                    <SelectReceivableStatus className='w-44' value={receivable.status} onChange={onChangeStatus} minimal />
                   </td>
                 </tr>
               );

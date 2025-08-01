@@ -5,6 +5,7 @@ import { Button } from '@/components/ui';
 import { ViewTitle } from '@/components/common';
 import { objectToQueryString } from '@/utils';
 import AccountsReceivableList from './components/list';
+import AccountReceivableFilter from './components/filter';
 
 export default function AccountsReceivableClient({ searchParams }: { searchParams?: { search?: string; page?: string } }) {
   const params = useSearchParams();
@@ -40,7 +41,7 @@ export default function AccountsReceivableClient({ searchParams }: { searchParam
           </div>
         }
       />
-      <div>{showFilters && <span>Mostrar filtros</span>}</div>
+      <div>{showFilters && <AccountReceivableFilter />}</div>
       <AccountsReceivableList query={query} />
     </div>
   );
