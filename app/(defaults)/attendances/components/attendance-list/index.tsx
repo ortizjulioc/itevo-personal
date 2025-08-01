@@ -1,16 +1,9 @@
 'use client';
-import { confirmDialog, getInitials, openNotification, queryStringToObject } from "@/utils";
-import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
-import Tooltip from "@/components/ui/tooltip";
-import Link from "next/link";
+import { openNotification, queryStringToObject } from "@/utils";
+import { Pagination } from "@/components/ui";
 import Skeleton from "@/components/common/Skeleton";
-import { deleteAttendance, updateAttendance } from "../../lib/request";
 import { getFormattedDate } from "@/utils/date";
-import { AttendanceStatus } from "@prisma/client";
 import CourseBranchLabel from "@/components/common/info-labels/course-branch-label";
-import Avatar from "@/components/common/Avatar";
-import OptionalInfo from "@/components/common/optional-info";
 import useFetchAttendances from "../../lib/use-fetch-attendance";
 import StatusAttendance from "../status-attendance";
 import StudentLabel from "@/components/common/info-labels/student-label";
@@ -30,14 +23,10 @@ export default function AttendanceList({ className, query = '', openModal, setOp
     if (error) {
         openNotification('error', error);
     }
-
-
-
-    console.log(attendances);
     if (loading) return <Skeleton rows={6} columns={['ESTUDIANTE', 'OFERTA ACADEMICA', "ESTADO", 'FECHA DE ASISTENCIA']} />;
     return (
         <div className={className}>
-            <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+            <div className="table-responsive mb-5 panel p-0 border-0 ">
                 <table className="table-hover">
                     <thead>
                         <tr>
@@ -65,11 +54,9 @@ export default function AttendanceList({ className, query = '', openModal, setOp
                                     </td>
                                     <td>
                                         <StatusAttendance status={attendance.status} />
-
                                     </td>
                                     <td>
                                         {getFormattedDate(new Date(attendance.createdAt))}
-
                                     </td>
 
                                 </tr>

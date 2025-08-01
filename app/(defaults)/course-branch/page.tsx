@@ -2,7 +2,7 @@ import CourseBranchClient from './course-branch-client';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cursos',
+  title: 'Oferta Académica',
 };
 
 export default function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {

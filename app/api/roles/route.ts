@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('BODY: ',body);
 
         // Validate the request body
         const {isValid, message} = validateObject(body, ['name', 'normalizedName']);

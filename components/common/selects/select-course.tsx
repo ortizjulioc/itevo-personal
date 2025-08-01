@@ -24,9 +24,11 @@ interface SelectCourseProps {
 
 export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
   const [options, setOptions] = useState<SelectCourseType[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchCourseData = async (inputValue: string): Promise<SelectCourseType[]> => {
     try {
+      setLoading(true);
       const response = await apiRequest.get<CoursesResponse>(`/courses?search=${inputValue}`);
       if (!response.success) {
         throw new Error(response.message);
@@ -36,6 +38,8 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
     } catch (error) {
       console.error('Error fetching Courses data:', error);
       return [];
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const fetchedOptions = await fetchCourseData('');
       setOptions(fetchedOptions);
 
@@ -59,6 +64,7 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
           console.error('Error fetching single Course:', error);
         }
       }
+      setLoading(false);
     };
 
     fetchData();
@@ -77,7 +83,6 @@ export default function SelectCourse({ value, ...rest }: SelectCourseProps) {
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
-        //asComponent={AsyncSelect}
         {...rest}
       />
     </div>

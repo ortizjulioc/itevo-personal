@@ -26,25 +26,30 @@ export default function CloseCashRegister({ params }: Props) {
     const { CashRegister } = useFetchCashRegistersById(params?.id);
     const { cashMovements, loading } = useFetchCashMovements(params?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(params?.id)
+    console.log('cashMovements', cashMovements)
 
 
-    function getInvoiceSummary(invoices: any[]) {
-        const summary = {
-            total: 0,
-            efectivo: 0,
-            tarjeta: 0,
-            transferencia: 0,
-            cheque: 0,
-            credito: 0,
-        };
+    function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
+    const summary = {
+        efectivo: 0,
+        tarjeta: 0,
+        transferencia: 0,
+        cheque: 0,
+        credito: 0,
+        total: 0,
+    };
 
-        invoices.forEach((invoice) => {
-            const method = invoice.paymentMethod;
+    const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
+
+    cashMovements.forEach(movement => {
+        if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
+            const invoice = invoiceMap.get(movement.referenceId);
+            if (!invoice) return;
 
             const amount = invoice.subtotal + invoice.itbis;
             summary.total += amount;
 
-            switch (method) {
+            switch (invoice.paymentMethod) {
                 case 'cash':
                     summary.efectivo += amount;
                     break;
@@ -61,17 +66,19 @@ export default function CloseCashRegister({ params }: Props) {
                     summary.credito += amount;
                     break;
             }
-        });
+        }
+    });
 
-        return summary;
-    }
+    return summary;
+}
+
     function getTotalExpenses(cashMovements: any[]) {
         return cashMovements
             .filter(m => m.type === 'EXPENSE')
             .reduce((total, m) => total + m.amount, 0);
     }
 
-function getTotalIncome(cashMovements: any[]) {
+    function getTotalIncome(cashMovements: any[]) {
         return cashMovements
             .filter(m => m.type === 'INCOME')
             .reduce((total, m) => total + m.amount, 0);
@@ -80,7 +87,7 @@ function getTotalIncome(cashMovements: any[]) {
     const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
     const total = totalIngresos - totalEgresos + (CashRegister?.initialBalance || 0);
-    const resumenFacturas = getInvoiceSummary(invoices);
+    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements,invoices);
 
 
 

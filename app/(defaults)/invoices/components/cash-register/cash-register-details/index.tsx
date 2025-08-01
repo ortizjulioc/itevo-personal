@@ -11,6 +11,7 @@ import { openNotification } from '@/utils';
 import { usePathname } from 'next/navigation';
 import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-modal';
 import Swal from 'sweetalert2';
+import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/modal-cash-register-close';
 
 
 interface CashRegister extends CashRegisterPrisma {
@@ -28,6 +29,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [loadingAction, setLoadingAction] = React.useState<string | null>(null);
+    const [openModalClose, setOpenModalClose] = React.useState(false);
     useEffect(() => {
         fetchInvoicesData('CashRegister.id'); // vuelve a cargar las facturas cada vez que cambia la URL
     }, [pathname]);
@@ -132,14 +134,18 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 disabled={loadingAction !== null}
                                                 onClick={async () => {
                                                     setLoadingAction('close');
+
                                                     if (hasPendingInvoices) {
                                                         openNotification('error', 'No puede hacer cierre de caja, aún tiene facturas pendientes');
                                                         setLoadingAction(null);
                                                         return;
                                                     }
 
-                                                    await new Promise((res) => setTimeout(res, 500));
-                                                    router.push(`/cash-registers/close/${CashRegister.id}`);
+                                                    await new Promise((res) => setTimeout(res, 200));
+                                                    setOpenModalClose(true);
+
+                                                    // 🔧 Soluciona el "loading" permanente:
+                                                    setLoadingAction(null);
                                                 }}
                                                 className="dropdown-item w-full flex items-center gap-2"
                                             >
@@ -161,6 +167,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
                     <TeacherPayment setOpenModal={setOpenModalTeacher} openModal={openModalTeacher} />
                     <AttendanceModal setOpenModal={setOpenModalAttendance} openModal={openModalAttendance} />
+                    <ModalCashRegisterClose setOpenModal={setOpenModalClose} openModal={openModalClose} />
                 </div>
             </div>
         </div>
