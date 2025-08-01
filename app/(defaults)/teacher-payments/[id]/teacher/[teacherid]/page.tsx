@@ -73,7 +73,8 @@ export default function TeacherPayments() {
     const handlepayAccount = async (id: string, amount: number) => {
         const data = {
             amount,
-            cashRegisterId
+            cashRegisterId,
+            description: `Pago de cuenta por pagar al profesor ${teacherId}`,
         }
         try {
             setLoadingPayment(true)
