@@ -66,7 +66,7 @@ const PAYMENT_METHODS_OPTIONS = [
 ];
 
 export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, companyInfo: any, logo: Blob | null }) => {
-  const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user } = invoice;
+  const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user, comment } = invoice;
 
   const total = subtotal + itbis;
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
@@ -147,6 +147,7 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
           <Text>{PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)?.label}: {receivedAmount.toFixed(2)}</Text>
           <Text>Recibido: {receivedAmount.toFixed(2)}</Text>
           <Text>Devuelta: {returned.toFixed(2)}</Text>
+          <Text style={{ marginTop: 4 }}>Comentario: {comment}</Text>
           <Text style={{ marginTop: 4 }}>Le atendió: {user.name} {user.lastName}</Text>
 
           <View style={styles.footer}>
