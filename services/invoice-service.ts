@@ -34,6 +34,7 @@ export interface InvoiceCreateDataType {
     itbis?: number; // Si no se especifica, se calculará al agregar ítems
     status?: InvoiceStatus; // DRAFT, PAID, VOID
     type?: NcfType; // Si no se especifica, se mantendrá el tipo por defecto
+    comment?: string; // Comentario opcional para la factura
 }
 
 export interface InvoiceItemCreateData {
@@ -170,7 +171,8 @@ export const updateInvoice = async (
         type,
         paymentDate,
         paymentMethod,
-        paymentDetails
+        paymentDetails,
+        comment
     } = data;
 
     return await prisma.invoice.update({
@@ -187,6 +189,7 @@ export const updateInvoice = async (
             paymentDate,
             paymentMethod,
             paymentDetails,
+            comment,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
         },
     });
