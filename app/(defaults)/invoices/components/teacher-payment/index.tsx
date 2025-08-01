@@ -23,7 +23,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
     const { accountsPayable, fetchAccountsPayableData, loading } = useFetchAccountsPayable('')
 
     const useFetchpayment = async (id: string) => {
-        const data = await fetchAccountsPayableData(`teacherId=${id}`);
+        const data = await fetchAccountsPayableData(`teacherId=${id}&top=1000`);
         console.log(data)
         return data
 

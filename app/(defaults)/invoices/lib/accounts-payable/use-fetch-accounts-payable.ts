@@ -13,7 +13,6 @@ export interface PaymentsResponse {
     payments: PayablePayment[];
 }
 
-
 export interface ItemsResponse {
     items: AccountPayable[];
     totalItems: number;
@@ -46,13 +45,14 @@ const useFetchAccountsPayable = (query: string) => {
         }
     };
     useEffect(() => {
+        if (!query) return;
         fetchAccountsPayableData(query);
     }, [query]);
 
     return { accountsPayable, setTotalAccountsPayable, loading, error, setAccountsPayable, totalAccountsPayable, fetchAccountsPayableData };
 };
 
- export const useFetchAccountsPayableByPayments = (id: string) => {
+export const useFetchAccountsPayableByPayments = (id: string) => {
     const [payments, setPayments] = useState<PayablePayment[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,9 +64,7 @@ const useFetchAccountsPayable = (query: string) => {
                 throw new Error(response.message);
             }
 
-           
             setPayments(response.data?.payments || []);
-           
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);

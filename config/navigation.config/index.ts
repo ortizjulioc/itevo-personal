@@ -30,7 +30,7 @@ const navigationConfig = [
         url: '/',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER, CASHIER]
+        auth: []
     },
     {
         key: 'course-branch',
@@ -66,7 +66,7 @@ const navigationConfig = [
         url: '/teachers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: [ADMIN]
     },
     {
         key: 'students',
@@ -153,7 +153,7 @@ const navigationConfig = [
         url: '/bills',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: [ADMIN]
     },
     {
         key: 'cashRegisters',
@@ -162,7 +162,7 @@ const navigationConfig = [
         url: '/cash-registers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: [ADMIN]
     },
     {
         key: 'accounts-receivable',
@@ -171,7 +171,7 @@ const navigationConfig = [
         url: '/accounts-receivable',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: [ADMIN]
     },
     {
         key: 'products',
@@ -180,7 +180,7 @@ const navigationConfig = [
         url: '/products',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: [ADMIN]
     },
     {
         key: 'ncf',
@@ -189,7 +189,7 @@ const navigationConfig = [
         url: '/ncfranges',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: [ADMIN]
     },
     {
         key: 'auth',

@@ -48,7 +48,7 @@ export default function HolidayList({ className, query = '' }: Props) {
 
     return (
         <div className={className}>
-            <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+            <div className="table-responsive mb-5 panel p-0 border-0 ">
                 <table className="table-hover">
                     <thead>
                         <tr>

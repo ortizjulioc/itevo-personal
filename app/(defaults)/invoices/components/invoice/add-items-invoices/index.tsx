@@ -19,6 +19,7 @@ import apiRequest from '@/utils/lib/api-request/request';
 import AccountReceivableModal from '../account-receivable-modal';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 import { set } from 'lodash';
+import { HiOutlinePlusCircle } from 'react-icons/hi';
 
 export interface AccountsReceivablesResponse {
     accountsReceivable: AccountReceivable[];
@@ -216,10 +217,10 @@ export default function AddItemsInvoices({
                 studentId: studentId,
             } as Invoice);
             if (resp.success) {
-                openNotification('success', 'Estudiante actualizado correctamente');
+                openNotification('success', 'Estudiante encontrado correctamente');
             }
             await handleSearchAccountReceivables(studentId);
-            setOpenAccountReceivableModal(true);
+            //setOpenAccountReceivableModal(true);
         } catch (error) {
             console.error('Error updating invoice with student:', error);
             openNotification('error', 'Error al actualizar el estudiante en la factura');
@@ -259,115 +260,88 @@ export default function AddItemsInvoices({
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-9 col-span-12">
-                    <Tab.Group>
-                        <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
-                            <Tab as={Fragment}>
-                                {({ selected }) => (
-                                    <button
-                                        className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
-                        dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}>
-                                        Estudiantes
-                                    </button>
+
+                    <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+                        <div className="w-full md:w-[calc(100%-220px)]">
+                            <SelectStudent
+                                value={student ?? undefined}
+                                loading={searchLoading}
+                                onChange={(selected: StudentSelect | null) => {
+                                    if (!selected) {
+                                        setStudent(null);
+                                        setInvoice((prev: IvoicebyId) => ({
+                                            ...prev!,
+                                            studentId: null,
+                                        }));
+                                        return;
+                                    }
+                                    onChangeStudent(selected);
+                                }}
+                                isDisabled={Boolean(student)}
+                            />
+                        </div>
+
+                        <div className="w-full md:w-[220px] flex items-center justify-start">
+                            {student ? (
+                                <Button
+                                    type="button"
+                                    color="primary"
+                                    className="w-full md:w-auto"
+                                    icon={<HiOutlinePlusCircle className="text-lg" />}
+                                    onClick={async () => {
+                                        setOpenAccountReceivableModal(true);
+                                    }}
+                                >
+                                    Agregar Pagos
+                                </Button>
+                            ) : (
+                                <div className="h-10" />
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Sección de Productos */}
+                    <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+                        <div className="w-full md:w-[calc(100%-220px)]">
+                            <SelectProduct
+                                ref={productRef}
+                                value={item?.productId ?? ''}
+                                onChange={onSelectProduct}
+                                disabled={itemLoading}
+                            />
+                        </div>
+
+                        <div className="w-full md:w-[220px]">
+                            <div className="relative w-full">
+                                <Input
+                                    ref={quantityRef}
+                                    placeholder="Cantidad"
+                                    type="number"
+                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                    value={item?.quantity ?? ''}
+                                    disabled={itemLoading}
+                                    onChange={(e) => {
+                                        setItem((prev) => ({
+                                            ...prev!,
+                                            quantity: Number(e.target.value),
+                                        }));
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddItem(item);
+                                        }
+                                    }}
+                                    className={`w-full ${itemLoading ? 'pr-10 opacity-60 pointer-events-none' : ''}`}
+                                />
+                                {itemLoading && (
+                                    <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                        <div className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                    </div>
                                 )}
-                            </Tab>
-                            <Tab as={Fragment}>
-                                {({ selected }) => (
-                                    <button
-                                        className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
-                        dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}>
-                                        Productos
-                                    </button>
-                                )}
-                            </Tab>
-
-                        </Tab.List>
-
-                        <Tab.Panels>
-                            <Tab.Panel>
-                                <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 mt-4">
-                                    <div className="flex-1 w-full ">
-                                        <SelectStudent
-                                            value={student ?? undefined}
-                                            loading={searchLoading}
-                                            //className="w-full md:w-1/3"
-                                            onChange={(selected: StudentSelect | null) => {
-                                                if (!selected) {
-                                                    setStudent(null);
-                                                    setInvoice((prev: IvoicebyId) => ({
-                                                        ...prev!,
-                                                        studentId: null,
-                                                    }));
-                                                    return;
-                                                }
-                                                onChangeStudent(selected);
-                                            }}
-                                            isDisabled={Boolean(student)}
-                                        />
-
-                                    </div>
-                                    <div className="w-full md:w-1/3  flex items-center justify-center mr-2">
-                                        {student && (
-                                            <Button
-                                                type="button"
-                                                color="primary"
-
-                                                onClick={async () => {
-                                                    setOpenAccountReceivableModal(true);
-                                                }}
-                                            >
-                                                Agregar Pagos
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </Tab.Panel>
-                            <Tab.Panel>
-                                <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
-                                    <div className="flex-1">
-                                        <SelectProduct
-                                            ref={productRef}
-                                            value={item?.productId ?? ''}
-                                            onChange={onSelectProduct}
-                                            disabled={itemLoading}
-                                        />
-                                    </div>
-                                    <div className="w-full md:w-1/4">
-                                        <div className="relative w-full">
-                                            <Input
-                                                ref={quantityRef}
-                                                placeholder="Cantidad"
-                                                type="number"
-                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                value={item?.quantity ?? ''}
-                                                disabled={itemLoading}
-                                                onChange={(e) => {
-                                                    setItem((prev) => ({
-                                                        ...prev!,
-                                                        quantity: Number(e.target.value),
-                                                    }));
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        handleAddItem(item);
-                                                    }
-                                                }}
-                                                className={`${itemLoading ? 'pr-10 opacity-60 pointer-events-none' : ''}`}
-                                            />
-
-                                            {itemLoading && (
-                                                <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                                                    <div className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
-                                                </div>
-                                            )}
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </Tab.Panel>
-                        </Tab.Panels>
-                    </Tab.Group>
-
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="overflow-x-auto mt-4">
                         <table className="min-w-full table-auto">

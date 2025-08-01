@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import StudentLabel from '@/components/common/info-labels/student-label';
 import { Button, Input } from '@/components/ui';
 import { formatCurrency, openNotification } from '@/utils';
+import { TbX } from 'react-icons/tb';
 
 
 
@@ -29,7 +30,7 @@ export default function AccountReceivableModal({
     const [loadingId, setLoadingId] = React.useState<string | null>(null);
 
 
-console.log( 'accountReceivables',accountReceivables)
+    console.log('accountReceivables', accountReceivables)
     const grouped = React.useMemo(() => {
         return accountReceivables.reduce<Record<string, any[]>>((acc, curr) => {
             if (!acc[curr.courseBranchId]) acc[curr.courseBranchId] = [];
@@ -124,10 +125,21 @@ console.log( 'accountReceivables',accountReceivables)
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all max-h-[90vh] overflow-y-auto">
+                                {/* Botón de cerrar */}
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    onClick={() => setOpenModal(false)}
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400 transition"
+                                    color='danger'
+                                    icon={<TbX className="text-lg text-black" />}
+                                />
+                                   
+
+                                {/* Título */}
                                 <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                                     Cuentas por cobrar del estudiante: <StudentLabel StudentId={studentId} showNumber={false} />
                                 </Dialog.Title>
-
                                 <div className="space-y-6">
                                     {Object.entries(grouped).map(([courseBranchId, items]) => {
                                         const courseName = items[0].courseBranch.course.name;
@@ -246,7 +258,7 @@ console.log( 'accountReceivables',accountReceivables)
 
                                 <div className="mt-8 flex justify-end">
                                     <Button type="button" onClick={() => setOpenModal(false)} variant="outline" color="danger">
-                                        Cancelar
+                                        Cerrar
                                     </Button>
                                 </div>
                             </Dialog.Panel>
