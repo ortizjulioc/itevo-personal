@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "seed": "ts-node prisma/seed.ts",
+        "seed": "ts-node scripts/seed.ts",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -70,6 +70,6 @@
         "typescript": "^5.6.2"
     },
     "prisma": {
-        "seed": "ts-node prisma/seed.ts"
+        "seed": "ts-node scripts/seed.ts"
     }
 }
