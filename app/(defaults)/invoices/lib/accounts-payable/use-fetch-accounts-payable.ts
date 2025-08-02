@@ -21,7 +21,7 @@ export interface ItemsResponse {
 const useFetchAccountsPayable = (query: string) => {
     const [accountsPayable, setAccountsPayable] = useState<AccountPayable[]>([]);
     const [totalAccountsPayable, setTotalAccountsPayable] = useState<number>(0);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const fetchAccountsPayableData = async (query: string) => {
         setLoading(true);
