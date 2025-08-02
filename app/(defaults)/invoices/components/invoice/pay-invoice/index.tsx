@@ -253,7 +253,7 @@ export default function PayInvoice({
                                                     })
                                                 }
                                                 placeholder="-Modalidades-"
-                                               
+
                                             />
 
                                             {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
@@ -286,6 +286,20 @@ export default function PayInvoice({
                                             />
                                             {renderPaymentDetails()}
                                         </div>
+                                    </div>
+                                    {/* Comentario */}
+                                    <div className="mt-6">
+                                        <label className="text-lg font-bold block mb-1">Comentario</label>
+                                        <Input
+                                            placeholder="Comentario adicional"
+                                            value={invoice.comment || ''}
+                                            onChange={(e) =>
+                                                setInvoice({
+                                                    ...invoice,
+                                                    comment: e.target.value,
+                                                })
+                                            }
+                                        />
                                     </div>
 
                                     {/* Totales y resumen (se mantiene como estaba) */}
