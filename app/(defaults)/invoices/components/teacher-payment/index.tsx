@@ -50,7 +50,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="panel w-1/2 max-w-5xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                            <Dialog.Panel className="panel w-1/2 max-w-5xl max-h-[90vh] overflow-y-auto rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                                     <h5 className="text-lg font-bold">Desembolso a Profesor</h5>
                                 </div>

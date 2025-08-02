@@ -253,7 +253,7 @@ export default function PayInvoice({
                                                     })
                                                 }
                                                 placeholder="-Modalidades-"
-                                               
+
                                             />
 
                                             {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
@@ -287,6 +287,7 @@ export default function PayInvoice({
                                             {renderPaymentDetails()}
                                         </div>
                                     </div>
+                                   
 
                                     {/* Totales y resumen (se mantiene como estaba) */}
                                     <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 text-lg">

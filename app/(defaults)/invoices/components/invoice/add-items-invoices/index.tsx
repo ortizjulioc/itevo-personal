@@ -54,7 +54,7 @@ export default function AddItemsInvoices({
     const [accountReceivables, setAccountReceivables] = useState<AccountReceivable[] | null>(null);
     const [openAccountReceivableModal, setOpenAccountReceivableModal] = useState(false);
 
-
+    const commentRef = useRef<NodeJS.Timeout | null>(null);
 
 
     const onSelectProduct = (selected: ProductSelect | null) => {
@@ -96,6 +96,7 @@ export default function AddItemsInvoices({
         }
 
         setPaymentLoading(true);
+
 
         const resp = await payInvoice(InvoiceId, invoice);
 
@@ -256,10 +257,25 @@ export default function AddItemsInvoices({
 
 
 
+    useEffect(() => {
+
+
+        if (commentRef.current) {
+            clearTimeout(commentRef.current);
+        }
+
+        commentRef.current = setTimeout(async () => {
+            const resp = await updateInvoice(InvoiceId, { ...invoice, comment: invoice.comment } as Invoice);
+            if (!resp.success) {
+                openNotification('error', resp.message || 'Error al guardar el comentario');
+            }
+        }, 800); // ⏱️ espera 800ms después de que el usuario deje de escribir
+    }, [invoice?.comment]);
+
     return (
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="md:col-span-9 col-span-12">
+                <div className="md:col-span-8 col-span-12">
 
                     <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
                         <div className="w-full md:w-[calc(100%-220px)]">
@@ -399,24 +415,43 @@ export default function AddItemsInvoices({
                         </table>
                     </div>
                 </div>
-                <div className="md:col-span-3 col-span-12 space-y-2">
-                    <div className="flex justify-between text-sm">
-                        <span className="font-medium text-gray-600 dark:text-gray-300">Subtotal:</span>
-                        <span className="text-right">{invoice?.subtotal?.toFixed(2) ?? '0.00'}</span>
+                <div className="md:col-span-4 col-span-12 space-y-2">
+                    <div className="mb-4 mt-4">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Comentario
+                        </label>
+                        <textarea
+                            rows={2}
+                            value={invoice?.comment ?? ''}
+                            onChange={(e) =>
+                                setInvoice((prev: Invoice) => ({
+                                    ...prev!,
+                                    comment: e.target.value,
+                                }))
+                            }
+                            placeholder="Escribe un comentario..."
+                            className="form-input py-2 px-4 w-full rounded-md border border-gray-300 dark:border-[#1b2e4b] bg-white dark:bg-[#191e3a] text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b]"
+                        />
                     </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="font-medium text-gray-600 dark:text-gray-300">ITBS:</span>
-                        <span className="text-right">{invoice?.itbis?.toFixed(2) ?? '0.00'}</span>
+                    <div>
+                        <div className="flex justify-between text-sm">
+                            <span className="font-medium text-gray-600 dark:text-gray-300">Subtotal:</span>
+                            <span className="text-right">{invoice?.subtotal?.toFixed(2) ?? '0.00'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="font-medium text-gray-600 dark:text-gray-300">ITBS:</span>
+                            <span className="text-right">{invoice?.itbis?.toFixed(2) ?? '0.00'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                            <span className="text-gray-800 dark:text-gray-100">Total:</span>
+                            <span className="text-right"
+                            >
+                                {((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)).toFixed(2)}
+                            </span>
+                        </div>
                     </div>
-                    <div className="flex justify-between text-sm font-semibold border-t pt-2">
-                        <span className="text-gray-800 dark:text-gray-100">Total:</span>
-                        <span className="text-right"
-                        >
-                            {((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)).toFixed(2)}
-                        </span>
-                    </div>
-                </div>
 
+                </div>
             </div>
 
             <div className="mt-6 flex flex-col md:flex-row justify-end gap-2">
