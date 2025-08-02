@@ -96,6 +96,7 @@ export default function AddItemsInvoices({
         }
 
         setPaymentLoading(true);
+        
 
         const resp = await payInvoice(InvoiceId, invoice);
 
