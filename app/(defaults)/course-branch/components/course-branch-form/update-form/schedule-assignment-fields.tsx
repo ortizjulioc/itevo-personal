@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { CourseBranchFormType } from '../form.config'
 import { Field, FormikErrors, FormikTouched } from 'formik';
 import { FormItem, Input, Select } from '@/components/ui';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { MODALITIES } from '@/constants/modality.constant';
 import ScheduleField from './schedule-field';
 import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
@@ -70,10 +70,7 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
               form={form}
               placeholder='Selecciona una fecha'
               value={values.startDate ? new Date(values.startDate) : undefined}
-              onChange={(date: Date | Date[]) => {
-                const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                form.setFieldValue('startDate', selectedDate);
-              }}
+              onChange={(date: Date | [Date | null, Date | null] | null) => form.setFieldValue('startDate', extractDate(date))} // Usamos extractDate para manejar el formato
             />
           )}
         </Field>

@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { MODALITIES } from '@/constants/modality.constant';
 import { Select } from '@/components/ui';
 import SelectStudent from '@/components/common/selects/select-student';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { set } from 'lodash';
 import StatusEnrollment ,{ EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
 
@@ -64,7 +64,7 @@ export default function SearchEnrollments() {
         router.push(`${pathname}?${params.toString()}`);
     }, [filters, pathname, router, searchParams]);
 
-    
+
 
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">
@@ -95,22 +95,10 @@ export default function SearchEnrollments() {
             <DatePicker
 
                 value={filters.enrollmentDate ? new Date(filters.enrollmentDate) : undefined}
-                onChange={(date: Date | Date[]) => {
-                  
-                    if (date instanceof Date) {
-                        
-                        setFilters(prev => ({ ...prev, enrollmentDate: date.toISOString() }));
-                    } else if (Array.isArray(date) && date.length > 0) {
-                        setFilters(prev => ({ ...prev, enrollmentDate: date[0].toISOString() }));
-                    } else {
-                        setFilters(prev => ({ ...prev, enrollmentDate: '' }));
-                    }
-                 
-                    
-                }}
+                onChange={(date) => setFilters(prev => ({ ...prev, enrollmentDate: extractDate(date) }))}
                 placeholder="Fecha de inscripcion"
                 isClearable
-              
+
             />
         </div>
     );

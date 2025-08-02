@@ -7,9 +7,9 @@ import { updateValidationSchema } from '../form.config';
 import type { NcfRange } from '@prisma/client';
 import { updateNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
- 
+
 
 
 export default function UpdateNcfRangeForm({ initialValues }: { initialValues: NcfRange }) {
@@ -85,10 +85,7 @@ export default function UpdateNcfRangeForm({ initialValues }: { initialValues: N
                                         form={form}
                                         placeholder='Selecciona una fecha'
                                         value={values.dueDate ? new Date(values.dueDate) : undefined}
-                                        onChange={(date: Date | Date[]) => {
-                                            const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                            form.setFieldValue('dueDate', selectedDate);
-                                        }}
+                                        onChange={(date) => form.setFieldValue('dueDate', extractDate(date))}
                                     />
                                 )}
                             </Field>

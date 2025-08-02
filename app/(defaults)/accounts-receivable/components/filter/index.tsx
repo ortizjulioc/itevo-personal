@@ -2,7 +2,7 @@
 import SelectCourse from "@/components/common/selects/select-course";
 import SelectStudent from "@/components/common/selects/select-student";
 import SelectReceivableStatus from "../list/select-status";
-import DatePicker from "@/components/ui/date-picker";
+import DatePicker, { extractDate } from "@/components/ui/date-picker";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { PaymentStatus } from "@prisma/client";
@@ -49,11 +49,7 @@ export default function AccountReceivableFilter() {
                         ? new Date(searchParams.get('dueDateStart')!)
                         : undefined
                 }
-                onChange={(date: Date | Date[]) => {
-                    if (date instanceof Date) handleFilterChange('dueDateStart', date.toISOString());
-                    else if (Array.isArray(date) && date.length > 0) handleFilterChange('dueDateStart', date[0].toISOString());
-                    else handleFilterChange('dueDateStart', '');
-                }}
+                onChange={(date) => handleFilterChange('dueDateStart', extractDate(date))}
                 placeholder="Desde (vencimiento)"
                 isClearable
             />
@@ -64,11 +60,7 @@ export default function AccountReceivableFilter() {
                         ? new Date(searchParams.get('dueDateEnd')!)
                         : undefined
                 }
-                onChange={(date: Date | Date[]) => {
-                    if (date instanceof Date) handleFilterChange('dueDateEnd', date.toISOString());
-                    else if (Array.isArray(date) && date.length > 0) handleFilterChange('dueDateEnd', date[0].toISOString());
-                    else handleFilterChange('dueDateEnd', '');
-                }}
+                onChange={(date) => handleFilterChange('dueDateEnd', extractDate(date))}
                 placeholder="Hasta (vencimiento)"
                 isClearable
             />

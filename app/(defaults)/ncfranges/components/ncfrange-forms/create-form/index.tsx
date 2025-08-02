@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 
 
@@ -24,7 +24,7 @@ export default function CreateNcfRangeForm() {
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
 
-        const valuesToSend = 
+        const valuesToSend =
         {
             ...values,
             currentSequence: values.startSequence,
@@ -90,10 +90,7 @@ export default function CreateNcfRangeForm() {
                                         form={form}
                                         placeholder='Selecciona una fecha'
                                         value={values.dueDate ? new Date(values.dueDate) : undefined}
-                                        onChange={(date: Date | Date[]) => {
-                                            const selectedDate = Array.isArray(date) ? date[0] : date; // Garantizamos que sea un único Date
-                                            form.setFieldValue('dueDate', selectedDate);
-                                        }}
+                                        onChange={(date) => form.setFieldValue('dueDate', extractDate(date))}
                                     />
                                 )}
                             </Field>

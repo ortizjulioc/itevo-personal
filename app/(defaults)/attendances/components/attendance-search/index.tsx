@@ -3,7 +3,7 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { Select } from '@/components/ui';
 import SelectStudent from '@/components/common/selects/select-student';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 import { AttendanceStatus } from '@prisma/client';
 import StatusAttendance from '../status-attendance';
@@ -14,11 +14,11 @@ interface SelectOption {
     label: React.ReactNode;
 }
 
-  const statusOptions = [
-        { value: AttendanceStatus.PRESENT, label: <StatusAttendance status={AttendanceStatus.PRESENT} /> },
-        { value: AttendanceStatus.ABSENT, label: <StatusAttendance status={AttendanceStatus.ABSENT} /> },
-        { value: AttendanceStatus.EXCUSED, label: <StatusAttendance status={AttendanceStatus.EXCUSED} /> },
-    ]
+const statusOptions = [
+    { value: AttendanceStatus.PRESENT, label: <StatusAttendance status={AttendanceStatus.PRESENT} /> },
+    { value: AttendanceStatus.ABSENT, label: <StatusAttendance status={AttendanceStatus.ABSENT} /> },
+    { value: AttendanceStatus.EXCUSED, label: <StatusAttendance status={AttendanceStatus.EXCUSED} /> },
+]
 
 
 
@@ -39,10 +39,10 @@ export default function SearchAttendances() {
 
 
     const handleFilterChange = (key: keyof typeof filters, selected: SelectOption | null) => {
-        if(selected?.value) {
-        setFilters(prev => ({ ...prev, [key]: selected?.value || '' }));
+        if (selected?.value) {
+            setFilters(prev => ({ ...prev, [key]: selected?.value || '' }));
         }
-        else setFilters(prev => ({ ...prev, [key]: selected || ''  }));
+        else setFilters(prev => ({ ...prev, [key]: selected || '' }));
     };
 
 
@@ -57,7 +57,7 @@ export default function SearchAttendances() {
         router.push(`${pathname}?${params.toString()}`);
     }, [filters, pathname, router, searchParams]);
 
-    
+
 
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">
@@ -71,7 +71,7 @@ export default function SearchAttendances() {
                 onChange={(selected) => handleFilterChange('courseBranchId', selected)}
             />
 
-           
+
 
             <Select
 
@@ -83,24 +83,11 @@ export default function SearchAttendances() {
             />
 
             <DatePicker
-
                 value={filters.date ? new Date(filters.date) : undefined}
-                onChange={(date: Date | Date[]) => {
-                  
-                    if (date instanceof Date) {
-                        
-                        setFilters(prev => ({ ...prev, date: date.toISOString() }));
-                    } else if (Array.isArray(date) && date.length > 0) {
-                        setFilters(prev => ({ ...prev, date: date[0].toISOString() }));
-                    } else {
-                        setFilters(prev => ({ ...prev, date: '' }));
-                    }
-                 
-                    
-                }}
+                onChange={(date) => setFilters(prev => ({ ...prev, date: extractDate(date) }))}
                 placeholder="Fecha de asistencia"
                 isClearable
-              
+
             />
         </div>
     );

@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Holiday } from '@prisma/client';
 import { updateHoliday } from '../../../lib/request';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 
 
@@ -18,7 +18,7 @@ export default function UpdateHolidayForm({ initialValues }: { initialValues: Ho
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-     
+
 
 
         const resp = await updateHoliday(initialValues.id, data);
@@ -46,13 +46,7 @@ export default function UpdateHolidayForm({ initialValues }: { initialValues: Ho
                             <DatePicker
 
                                 value={values.date}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('date', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('date', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('date', extractDate(date))}
                             />
                         </FormItem>
 

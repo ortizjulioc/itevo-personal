@@ -18,6 +18,14 @@ export interface DatePickerProps {
   className?: string;
 }
 
+export const extractDate = (
+  input: Date | [Date | null, Date | null] | null
+): string => {
+  if (input instanceof Date) return input.toISOString();
+  if (Array.isArray(input) && input[0] instanceof Date) return input[0].toISOString();
+  return '';
+};
+
 const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({
   mode = 'single',
   value,

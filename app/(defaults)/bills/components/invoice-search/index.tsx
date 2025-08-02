@@ -3,8 +3,7 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
-import InvoiceStatusField from '../invoice-list/invoice-status';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { InvoiceStatus } from '@prisma/client';
 
 
@@ -63,17 +62,7 @@ export default function SearchInvoice() {
             <DatePicker
 
                 value={filters.fromDate ? new Date(filters.fromDate) : undefined}
-                onChange={(date: Date | Date[]) => {
-
-                    if (date instanceof Date) {
-
-                        setFilters(prev => ({ ...prev, fromDate: date.toISOString() }));
-                    } else if (Array.isArray(date) && date.length > 0) {
-                        setFilters(prev => ({ ...prev, fromDate: date[0].toISOString() }));
-                    } else {
-                        setFilters(prev => ({ ...prev, fromDate: '' }));
-                    }
-                }}
+                onChange={(date) => setFilters(prev => ({ ...prev, fromDate: extractDate(date) }))}
                 placeholder="Fecha Desde"
                 isClearable
 
@@ -81,17 +70,7 @@ export default function SearchInvoice() {
             <DatePicker
 
                 value={filters.toDate ? new Date(filters.toDate) : undefined}
-                onChange={(date: Date | Date[]) => {
-
-                    if (date instanceof Date) {
-
-                        setFilters(prev => ({ ...prev, toDate: date.toISOString() }));
-                    } else if (Array.isArray(date) && date.length > 0) {
-                        setFilters(prev => ({ ...prev, toDate: date[0].toISOString() }));
-                    } else {
-                        setFilters(prev => ({ ...prev, toDate: '' }));
-                    }
-                }}
+                onChange={(date) => setFilters(prev => ({ ...prev, toDate: extractDate(date) }))}
                 placeholder="Fecha Hasta"
                 isClearable
             />

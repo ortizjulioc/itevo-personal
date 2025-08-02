@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { updatePromotion } from '../../../lib/request';
 import type { Promotion } from '@prisma/client';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 export default function UpdatePromotionForm({ initialValues }: { initialValues: Promotion }) {
 
@@ -18,7 +18,7 @@ export default function UpdatePromotionForm({ initialValues }: { initialValues: 
         data.endDate = new Date(data.endDate).toISOString();
 
         const resp = await updatePromotion(initialValues.id, data);
-     
+
 
         if (resp.success) {
             openNotification('success', 'Promoción editada correctamente');
@@ -50,13 +50,7 @@ export default function UpdatePromotionForm({ initialValues }: { initialValues: 
                         >
                             <DatePicker
                                 value={values.startDate}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('startDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('startDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('startDate', extractDate(date))}
                             />
                         </FormItem>
                         <FormItem
@@ -67,13 +61,7 @@ export default function UpdatePromotionForm({ initialValues }: { initialValues: 
                         >
                             <DatePicker
                                 value={values.endDate}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('endDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('endDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('endDate', extractDate(date))}
                             />
                         </FormItem>
                         <div className="mt-6 flex justify-end gap-2">

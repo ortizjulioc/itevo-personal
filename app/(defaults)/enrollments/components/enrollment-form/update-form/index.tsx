@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { CourseBranch, Enrollment } from '@prisma/client';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { updateEnrollment } from '../../../lib/request';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 import SelectCourseBranch, { } from '@/components/common/selects/select-course-branch';
@@ -103,13 +103,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                             <DatePicker
 
                                 value={values.enrollmentDate}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('enrollmentDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('enrollmentDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))}
                             />
                         </FormItem>
 

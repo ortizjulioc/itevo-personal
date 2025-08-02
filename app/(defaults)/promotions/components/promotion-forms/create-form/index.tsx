@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createPromotion } from '../../../lib/request';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 
 export default function CreatePromotionForm() {
@@ -41,28 +41,13 @@ export default function CreatePromotionForm() {
                         <FormItem name="startDate" label="Fecha de inicio" invalid={Boolean(errors.startDate && touched.startDate)} errorMessage={errors.startDate}>
                             <DatePicker
                                 value={values.startDate}
-                                onChange={(date: Date | Date[]) => {
-                                    // Verificar si "date" es un objeto `Date` o un array
-                                    if (date instanceof Date) {
-                                        setFieldValue('startDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        // Si es un array, tomar el primer elemento como el valor
-                                        setFieldValue('startDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('startDate', extractDate(date))}
                             />
                         </FormItem>
                         <FormItem name="endDate" label="Fecha fin" invalid={Boolean(errors.endDate && touched.endDate)} errorMessage={errors.endDate}>
                             <DatePicker
-
                                 value={values.endDate}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('endDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('endDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('endDate', extractDate(date))}
                             />
                         </FormItem>
 

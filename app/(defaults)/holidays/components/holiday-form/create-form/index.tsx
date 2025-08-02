@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
 import { createHoliday } from '../../../lib/request';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 
 
@@ -15,7 +15,7 @@ export default function CreateHolidayForm() {
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-     
+
 
         const resp = await createHoliday(data);
 
@@ -43,13 +43,7 @@ export default function CreateHolidayForm() {
                             <DatePicker
 
                                 value={values.date}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('date', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('date', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('date', extractDate(date))}
                             />
                         </FormItem>
 

@@ -1,6 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
-import { Select } from '@/components/ui';
 import { CourseBranch, CourseBranchResponse } from '@/app/(defaults)/course-branch/lib/use-fetch-course-branch';
 import ReactSelect, { ActionMeta, components, CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 import { TbCheck } from 'react-icons/tb';
@@ -11,7 +10,6 @@ import { StudentSelect } from './select-student';
 import { getCustomStyles } from '@/components/ui/select';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
-// import ReactSelect, { GroupBase, Props as ReactSelectProps, StylesConfig } from 'react-select';
 const { Control } = components
 
 

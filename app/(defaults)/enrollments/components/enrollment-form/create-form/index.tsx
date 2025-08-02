@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
-import DatePicker from '@/components/ui/date-picker';
+import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { createEnrollment } from '../../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
@@ -123,13 +123,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                         >
                             <DatePicker
                                 value={values.enrollmentDate}
-                                onChange={(date: Date | Date[]) => {
-                                    if (date instanceof Date) {
-                                        setFieldValue('enrollmentDate', date);
-                                    } else if (Array.isArray(date) && date.length > 0) {
-                                        setFieldValue('enrollmentDate', date[0]);
-                                    }
-                                }}
+                                onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))}
                             />
                         </FormItem>
 
