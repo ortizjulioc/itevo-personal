@@ -1,13 +1,13 @@
-const fsModule = require("fs");
-const pathModule = require("path");
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
+import fs from "fs";
+import path from "path";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 // 📌 Cargar el archivo settings.json
-const settingsPath = pathModule.join(__dirname, "../settings.json");
-const settings = JSON.parse(fsModule.readFileSync(settingsPath, "utf-8"));
+const settingsPath = path.join(__dirname, "../settings.json");
+const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
 
 async function main() {
     console.log("🔹 Iniciando seed...");
