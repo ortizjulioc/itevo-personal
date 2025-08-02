@@ -1,86 +1,74 @@
 'use client';
 
-import React from 'react';
-import Flatpickr from 'react-flatpickr';
-import 'flatpickr/dist/flatpickr.css';
+import React, { forwardRef } from 'react';
+import ReactDatePicker from 'react-datepicker';
 import { FieldProps } from 'formik';
+import 'react-datepicker/dist/react-datepicker.css';
+import '@/styles/datepicker-custom.css'; // Custom styles for react-datepicker
+import { HiX } from 'react-icons/hi';
 
-interface DatePickerProps {
-  mode?: 'single' | 'datetime' | 'range' | 'time';
-  value?: Date | Date[];
-  onChange?: (date: Date | Date[]) => void;
+type Mode = 'single' | 'range' | 'time' | 'datetime';
+
+export interface DatePickerProps {
+  mode?: Mode;
+  value?: Date | [Date | null, Date | null] | null;
+  onChange?: (value: Date | [Date | null, Date | null] | null) => void;
   placeholder?: string;
   isClearable?: boolean;
+  className?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps & Partial<FieldProps>> = ({
   mode = 'single',
   value,
   onChange,
+  placeholder,
+  isClearable = false,
+  className = '',
   field,
   form,
-  isClearable = false,
   ...rest
 }) => {
-  const handleChange = (dates: Date[] | Date) => {
-    let formattedDate: Date | Date[];
+  const isRange = mode === 'range';
 
-    if (Array.isArray(dates)) {
-      formattedDate = mode === 'range' ? dates : dates[0];
-    } else {
-      formattedDate = dates;
-    }
-
-    if (onChange) onChange(formattedDate);
-    if (form && field) {
-      form.setFieldValue(field.name, formattedDate);
-    }
+  const handleChange = (
+    date: Date | [Date | null, Date | null] | null
+  ) => {
+    if (onChange) onChange(date);
+    if (form && field) form.setFieldValue(field.name, date);
   };
-
-  const handleClear = () => {
-    const clearedValue = '' as unknown as Date;
-  
-    if (onChange) onChange(clearedValue);
-    if (form && field) {
-      form.setFieldValue(field.name, clearedValue);
-    }
-  };
-  
-
-  const getOptions = () => {
-    if (mode === 'datetime') {
-      return { enableTime: true, dateFormat: 'Y-m-d H:i' };
-    }
-    return {
-      mode: mode as 'single' | 'range' | 'time' | 'multiple',
-      enableTime: mode === 'time',
-      noCalendar: mode === 'time',
-      dateFormat: mode === 'time' ? 'H:i' : 'Y-m-d',
-    };
-  };
-
-  const hasValue = Array.isArray(value) ? value.length > 0 : !!value;
 
   return (
-    <div className="relative w-full">
-      <Flatpickr
-        value={value || ''}
-        options={getOptions()}
-        className="form-input pr-10 w-full"
+    // <div className="relative w-full">
+      <ReactDatePicker
+        {...(isRange
+          ? {
+              selectsRange: true,
+              startDate: (value as [Date | null, Date | null])?.[0],
+              endDate: (value as [Date | null, Date | null])?.[1],
+              selected: (value as [Date | null, Date | null])?.[0],
+            }
+          : {
+          selected: value as Date | null,
+        })}
+        selected={!isRange ? (value as Date | null) : (value as [Date | null, Date | null])[0]}
+        startDate={isRange ? (value as [Date | null, Date | null])?.[0] : undefined}
+        endDate={isRange ? (value as [Date | null, Date | null])?.[1] : undefined}
         onChange={handleChange}
+        showTimeSelect={mode === 'time' || mode === 'datetime'}
+        showTimeSelectOnly={mode === 'time'}
+        dateFormat={
+          mode === 'datetime' ? 'yyyy-MM-dd HH:mm' :
+          mode === 'time' ? 'HH:mm' :
+          'yyyy-MM-dd'
+        }
+        placeholderText={placeholder}
+        isClearable={isClearable}
+        className={`form-input w-full ${className}`}
         {...rest}
       />
-      {(isClearable && hasValue) && (
-        <button
-          type="button"
-          onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 text-sm"
-        >
-          ✕
-        </button>
-      )}
-    </div>
+    // </div>
   );
 };
 
-export default DatePicker;
+DatePicker.displayName = 'DatePicker';export default DatePicker;
