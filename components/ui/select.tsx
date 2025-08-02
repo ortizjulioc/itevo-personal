@@ -24,7 +24,7 @@ interface OptionType {
 }
 
 // Estilos personalizados para modo claro y oscuro
-const getCustomStyles = <Option, IsMulti extends boolean, Group extends GroupBase<Option>>(
+export const getCustomStyles = <Option, IsMulti extends boolean, Group extends GroupBase<Option>>(
   isDarkMode: boolean
 ): StylesConfig<Option, IsMulti, Group> => ({
   control: (provided, state) => ({

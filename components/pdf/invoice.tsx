@@ -12,7 +12,7 @@ import { getFormattedDateTime } from '@/utils/date';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 4,
+    padding: 2,
     fontSize: 8,
     fontFamily: 'Courier',
   },

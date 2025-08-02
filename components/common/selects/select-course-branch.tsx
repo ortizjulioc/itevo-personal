@@ -1,14 +1,17 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
-import AsyncSelect from 'react-select/async';
 import { Select } from '@/components/ui';
 import { CourseBranch, CourseBranchResponse } from '@/app/(defaults)/course-branch/lib/use-fetch-course-branch';
-import { ActionMeta, components, CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
+import ReactSelect, { ActionMeta, components, CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 import { TbCheck } from 'react-icons/tb';
 import { formatCurrency } from '@/utils';
 import ModalityTag from '@/app/(defaults)/course-branch/components/modality';
 import { formatSchedule } from '@/utils/schedule';
 import { StudentSelect } from './select-student';
+import { getCustomStyles } from '@/components/ui/select';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
+// import ReactSelect, { GroupBase, Props as ReactSelectProps, StylesConfig } from 'react-select';
 const { Control } = components
 
 
@@ -37,10 +40,11 @@ interface SelectCourseBranchProps {
 
 export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranchProps) {
     const [options, setOptions] = useState<CourseBranchSelect[]>([]);
+    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
-            const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}`);
+            const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}&top=1000`);
 
             if (!response.success) {
                 throw new Error(response.message);
@@ -140,21 +144,22 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
 
     return (
         <div>
-            <AsyncSelect<CourseBranchSelect, false, GroupBase<CourseBranchSelect>>
-                loadOptions={loadOptions}
-                cacheOptions
-                defaultOptions={options}
+            <ReactSelect<CourseBranchSelect, false, GroupBase<CourseBranchSelect>>
+                // loadOptions={loadOptions}
+                // cacheOptions
+                // defaultOptions={options}
+                options={options}
+                className="w-full"
                 placeholder="-Ofertas Academicas-"
                 noOptionsMessage={() => 'No hay opciones'}
                 value={options.find((option) => option.value === value) || null}
-                isClearable
-                //asComponent={AsyncSelect}
-                styles={customStyles}
                 menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                 components={{
                     Control: CustomControl,
                     Option: CustomSelectedOption
                 }}
+                styles={getCustomStyles(Boolean(themeConfig.isDarkMode))}
+                isClearable
                 {...rest}
             />
         </div>

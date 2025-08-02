@@ -1,10 +1,9 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from "@prisma/client";
-
 export const getCourseBranch = async (filters: any) => {
 
-    const { page, top, promotionId, branchId, teacherId, courseId, modality } = filters;
+    const { page, top, promotionId, branchId, teacherId, courseId, modality, search } = filters;
     const skip = (page - 1) * top;
     const whereClause: PrismaTypes.CourseBranchWhereInput = {
         deleted: false,
@@ -13,7 +12,16 @@ export const getCourseBranch = async (filters: any) => {
         ...(teacherId && { teacherId }),
         ...(courseId && { courseId }),
         ...(modality && { modality }),
+        ...(search && {
+            OR: [
+                { course: { name: { contains: search } } },
+                { teacher: { firstName: { contains: search } } },
+                { teacher: { lastName: { contains: search } } },
+            ],
+        }),
     };
+
+    console.log('Fetching course branches with filters:', whereClause);
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
             { courseId: 'asc' },
@@ -21,7 +29,7 @@ export const getCourseBranch = async (filters: any) => {
         where: whereClause,
         include: {
             branch: { select: { id: true, name: true } },
-            teacher: { select: { id: true, firstName: true, lastName: true  } },
+            teacher: { select: { id: true, firstName: true, lastName: true } },
             course: { select: { id: true, name: true } },
             schedules: { select: { schedule: true } },
         },
@@ -73,7 +81,7 @@ export const findCourseBranchById = async (
         where: { id, deleted: false },
         include: {
             branch: { select: { id: true, name: true } },
-            teacher: { select: { id: true, firstName: true, lastName: true  } },
+            teacher: { select: { id: true, firstName: true, lastName: true } },
             course: { select: { id: true, name: true } },
             schedules: { select: { schedule: true } },
         }

@@ -62,12 +62,12 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                     <div className=" flex flex-col items-end text-lg  md:col-span-4">
                         <h3 className="mb-2 text-xl font-bold">Consumidores finales</h3>
                         <p>
-                            <strong>NCF: </strong> 
+                            <strong>NCF: </strong>
                             <OptionalInfo content={invoice.ncf.includes('TEMP') ? '' : invoice.ncf} message='No disponible' />
-                         
+
                         </p>
                         <p>
-                            <strong>Tipo:</strong> {invoice.type}
+                            <strong>Tipo:</strong> <span className='capitalize'>{invoice.type.replace(/_/g, ' ').toLowerCase()}</span>
                         </p>
                         <p>
                             <strong>N. Factura:</strong> {invoice.invoiceNumber}

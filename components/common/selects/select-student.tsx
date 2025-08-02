@@ -3,8 +3,10 @@ import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Student } from '@prisma/client';
-import { Select } from '@/components/ui';
 import { CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
+import { getCustomStyles } from '@/components/ui/select';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
 export interface StudentSelect {
   value: string;
@@ -36,6 +38,7 @@ const customStyles: StylesConfig<StudentSelect, false> = {
 export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
   const [options, setOptions] = useState<StudentSelect[]>([]);
   const [loading, setLoading] = useState(false);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   const fetchStudentData = async (inputValue: string): Promise<StudentSelect[]> => {
     try {
@@ -94,7 +97,10 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         isClearable
-        styles={customStyles}
+        styles={{
+            ...customStyles,
+            ...getCustomStyles(Boolean(themeConfig.isDarkMode)),
+        }}
         menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         {...rest}
       />
