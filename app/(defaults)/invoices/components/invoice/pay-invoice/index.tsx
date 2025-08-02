@@ -287,20 +287,7 @@ export default function PayInvoice({
                                             {renderPaymentDetails()}
                                         </div>
                                     </div>
-                                    {/* Comentario */}
-                                    <div className="mt-6">
-                                        <label className="text-lg font-bold block mb-1">Comentario</label>
-                                        <Input
-                                            placeholder="Comentario adicional"
-                                            value={invoice.comment || ''}
-                                            onChange={(e) =>
-                                                setInvoice({
-                                                    ...invoice,
-                                                    comment: e.target.value,
-                                                })
-                                            }
-                                        />
-                                    </div>
+                                   
 
                                     {/* Totales y resumen (se mantiene como estaba) */}
                                     <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 text-lg">
