@@ -103,10 +103,10 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
             <div className=' grid grid-cols-12 gap-5' >
                 <div className="col-span-12">
                     <span className="ml-3 font-bold text-lg">Detalles de Caja</span>
-                    <div className="panel p-4 grid grid-cols-6 gap-4">
+                    <div className="panel p-4 flex items-center justify-between gap-4">
                         <div>
                             <p className="text-sm text-gray-600">Fecha de Apertura</p>
-                            <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.openingDate))}</p>
+                            <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.openingDate), { hour12: true})}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Nombre</p>
@@ -120,18 +120,18 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                         {cashRegister.closedAt && (
                             <div>
                                 <p className="text-sm text-gray-600">Fecha de Cierre</p>
-                                <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.closedAt))}</p>
+                                <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.closedAt), { hour12: true })}</p>
                             </div>
                         )}
                         <div>
                             <p className="text-sm text-gray-600">Estado</p>
                             {cashRegister.status === 'OPEN' ? (
-                                <p className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>
+                                <p className={`flex items-center gap-1 font-bold min-w-max text-green-600`}>
                                     <TbPointFilled />
                                     Abierto
                                 </p>
                             ) : (
-                                <p className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                <p className={`flex items-center gap-1 font-bold min-w-max text-red-600`}>
                                     <TbPointFilled />
                                     Cerrado
                                 </p>
@@ -143,10 +143,10 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                 {!closureLoading && closure && (
                     <div className="col-span-12">
                         <span className="ml-3 font-bold text-lg">Detalles de Cierre</span>
-                        <div className="panel p-4 grid grid-cols-6 gap-4">
+                        <div className="panel p-4 flex items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm text-gray-600">Fecha de Cierre</p>
-                                <p className="text-base font-medium">{getFormattedDateTime(new Date(closure.closureDate))}</p>
+                                <p className="text-base font-medium">{getFormattedDateTime(new Date(closure.closureDate), { hour12: true })}</p>
                             </div>
 
 
@@ -254,7 +254,7 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                                 {!cashMovementsLoading && cashMovements?.map((cashMovement) => {
                                     return (
                                         <tr key={cashMovement.id}>
-                                            <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt))}</td>
+                                            <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt), { hour12: true })}</td>
                                             <td className="text-left ">{cashMovement.description}</td>
                                             <td className="text-left font-bold  whitespace-nowrap">
                                                 {cashMovement.type === "EXPENSE"
