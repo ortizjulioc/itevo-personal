@@ -6,8 +6,12 @@ export const updateSetting = async (id: string, Setting: Setting) => {
     return await apiRequest.put<Setting>(`/settings/${id}`, Setting);
 }
 
-export const uploadLogo = async (file: string) => {
-  return await apiRequest.post('/settings/logo', { file });
+export const uploadLogo = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  
+  return await apiRequest.post<FormData>('/settings/logo',formData);
 };
 
 

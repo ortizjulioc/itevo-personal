@@ -9,7 +9,6 @@ import { FormatPatterInput } from '@/components/common';
 import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
-import { imageToBase64 } from '@/utils/image';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
@@ -28,21 +27,18 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
     }
 
     const handleUploadLogo = async (file: File, setFieldValue: (path: string, value: any) => void) => {
-        await imageToBase64(file, async (base64) => {
-            if (!base64) {
-                openNotification('error', 'No se pudo convertir la imagen a base64');
+        const resp = await uploadLogo(file);
+        if (resp.success) {
+            openNotification('success', 'Logo actualizado correctamente');
+            const url = (resp as any).data.url as string;
+            if (!url) {
+                openNotification('error', 'No se pudo obtener la URL del logo');
                 return;
             }
-            // Aquí haces el post al endpoint enviando el base64 (en vez de FormData)
-            const response = await uploadLogo(base64 as string);
-
-            if (response.success) {
-                openNotification('success', 'Logo actualizado correctamente');
-                setFieldValue('logo', base64); // O usa la URL que retorne el backend
-            } else {
-                openNotification('error', response.message || 'Error al subir el logo');
-            }
-        });
+            setFieldValue('logo', url);
+        } else {
+            openNotification('error', resp.message);
+        }
     }
 
     const handleDeleteLogo = async (file: string) => {
@@ -70,7 +66,8 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 <Tab
                                     as="button"
                                     className={({ selected }) =>
-                                        `${selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
                                         } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
                                     }
                                 >
@@ -79,7 +76,8 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 <Tab
                                     as="button"
                                     className={({ selected }) =>
-                                        `${selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
                                         } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
                                     }
                                 >
