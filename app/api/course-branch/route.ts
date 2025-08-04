@@ -23,9 +23,7 @@ export async function GET(request: NextRequest) {
             endDate: searchParams.get('endDate') || undefined,
             search: searchParams.get('search') || undefined,
         }
-        console.log('GET /course-branch with filters:', filters);
         const { courseBranches, totalCourseBranches } = await getCourseBranch(filters);
-        console.log('Course branches retrieved:', courseBranches);
 
         return NextResponse.json(
             {

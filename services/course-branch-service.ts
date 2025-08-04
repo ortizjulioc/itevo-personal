@@ -21,7 +21,6 @@ export const getCourseBranch = async (filters: any) => {
         }),
     };
 
-    console.log('Fetching course branches with filters:', whereClause);
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
             { courseId: 'asc' },

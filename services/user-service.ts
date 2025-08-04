@@ -75,7 +75,6 @@ export const findUserByEmail = async (email: string) => {
     });
 
     if (!user) {
-        console.log('No se encontró el usuario');
         return null;
     }
 

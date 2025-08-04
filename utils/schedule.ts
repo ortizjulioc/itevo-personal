@@ -25,7 +25,6 @@ export const formatSchedule = (schedule: { weekday: number; startTime: string; e
 };
 
 export function formatScheduleList(schedules: Schedule[]): string {
-    console.log("Schedules:", schedules);
   if (!schedules || schedules.length === 0 || !schedules[0].schedule) {
     return "";
   }

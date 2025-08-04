@@ -17,7 +17,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         // Verificar que la factura existe
         await Prisma.$transaction(async (tx) => {
             const invoice = await findInvoiceById(id, tx, { cashRegister: true });
-            console.log('Factura encontrada:', invoice);
             if (!invoice) throw new Error(`Factura con ID ${id} no encontrada`);
             if (invoice.status !== InvoiceStatus.DRAFT) throw new Error(`Solo se pueden pagar facturas en estado DRAFT (actual: ${invoice.status})`);
             if (invoice.items.length === 0) throw new Error('No se puede pagar una factura sin ítems');

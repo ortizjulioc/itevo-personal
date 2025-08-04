@@ -168,7 +168,6 @@ export function getCourseEndDate(
   let sessionsAdded = 0;
 
   while (sessionsAdded < sessionCount) {
-    console.log('Current Date:', currentDate, 'Sessions Added:', sessionsAdded);
     for (const schedule of schedules) {
       if (currentDate.getDay() === schedule.weekday) {
         const isHoliday = holidays.some((holiday) => {

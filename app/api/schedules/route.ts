@@ -30,7 +30,6 @@ export async function POST(request: Request) {
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
-        console.log(body);
         const schedule = await createSchedule(body);
 
         // Enviar log de auditoría

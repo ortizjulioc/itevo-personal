@@ -75,7 +75,6 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = req.nextUrl;
-        console.log('Parámetros de búsqueda:', searchParams.toString());
 
         const filters = {
             search: searchParams.get('search') || undefined,

@@ -40,15 +40,11 @@ export const createrRole = async (data: any) => {
 };
 
 export const findRoleByNormalizedName = async (data: any) => {
-    console.log("Este es el normalizedName sin normalizar: ", data.normalizedName);
     data.normalizedName = normalizeString(data.normalizedName, { replacement: '-' });
-
-    console.log("Este es el normalizedName normalizado: ", data.normalizedName);
     const roleNormalizedNameExists = await Prisma.role.findUnique({
         where: { normalizedName: data.normalizedName },
     });
 
-    console.log("Este es el roleNormalizedNameExists: ", roleNormalizedNameExists);
     return roleNormalizedNameExists
 };
 

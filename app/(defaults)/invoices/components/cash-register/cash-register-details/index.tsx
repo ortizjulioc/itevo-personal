@@ -91,7 +91,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                 placement="bottom-end"
                             >
                                 <div className="!min-w-[200px]">
-                                    <ul className="divide-y divide-white-light dark:divide-white-light/10">
+                                    <ul className=" divide-white-light dark:divide-white-light/10">
                                         <li>
                                             <button
                                                 type="button"
@@ -128,7 +128,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 Desembolso a profesor
                                             </button>
                                         </li>
-                                        <li>
+                                        <li className='border-t'>
                                             <button
                                                 type="button"
                                                 disabled={loadingAction !== null}

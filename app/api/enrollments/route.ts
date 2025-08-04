@@ -114,7 +114,6 @@ export async function POST(request: Request) {
                 dueDate: courseBranch.endDate,
             };
             const accountReceivableToCreate = Array.from({ length: courseBranch.sessionCount }).map(() => (accountReceivable));
-            console.log('Account Receivable to create: ', accountReceivableToCreate);
             const [enrollment, accountReceivableCreatedCount] = await Prisma.$transaction(async (tx) => [
                 await createEnrollment(body, tx),
                 await createManyAccountsReceivable(accountReceivableToCreate, tx),

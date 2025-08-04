@@ -69,7 +69,6 @@ export const getAccountsReceivable = async (
       courseId: filters.courseId,
     };
   }
-  console.log('whereClause', whereClause);
 
   const [accountsReceivable, totalAccountsReceivable] = await Promise.all([
     Prisma.accountReceivable.findMany({

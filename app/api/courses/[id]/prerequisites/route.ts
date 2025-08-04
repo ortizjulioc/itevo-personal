@@ -28,7 +28,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
         const prerequisiteRelationship = await findPrerequisiteById(id, body.prerequisiteId);
         // Agregar prerequisitos al curso enviado por id
-        console.log('prerequisito para evaular', prerequisiteRelationship);
         if (prerequisiteRelationship) {
             return NextResponse.json({ error: 'El curso ya tiene este prerequisito asignado' }, { status: 400 });
         }
