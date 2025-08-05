@@ -7,7 +7,7 @@ import Skeleton from "@/components/common/Skeleton";
 import { TbPointFilled } from "react-icons/tb";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import { ViewTitle } from "@/components/common";
-import { getFormattedDate } from "@/utils/date";
+import { getFormattedDateTime } from "@/utils/date";
 
 import useFetchCashRegisters from "@/app/(defaults)/invoices/lib/cash-register/use-fetch-cash-register";
 
@@ -67,15 +67,15 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                                     <tr key={CashRegister.id}>
                                         <td className="text-left">{CashRegister.name}</td>
                                         <td className="text-left">{CashRegister.user.name}</td>
-                                        <td className="text-left">{getFormattedDate(new Date(CashRegister.openingDate))}</td>
+                                        <td className="text-left">{getFormattedDateTime(new Date(CashRegister.openingDate), { hour12: true })}</td>
                                         <td className="text-left">
                                             {CashRegister.status === 'OPEN' ? (
-                                                <span className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>
+                                                <span className={`flex items-center gap-1 font-bold min-w-max text-green-600`}>
                                                     <TbPointFilled />
                                                     Abierto
                                                 </span>
                                             ) : (
-                                                <span className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                                <span className={`flex items-center gap-1 font-bold min-w-max text-red-600`}>
                                                     <TbPointFilled />
                                                     Cerrado
                                                 </span>

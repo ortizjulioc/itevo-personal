@@ -132,7 +132,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                             <Tab.Panel>
                                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'>
                                                     {Object.entries(bills).map(([key, { quantity, total }]) => (
-                                                        <div key={key} className="mb-5">
+                                                        <div key={key} className="">
                                                             <div className="flex">
                                                                 <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b] min-w-[100px]">
                                                                     RD${billsList[key as keyof typeof billsList]}
@@ -142,6 +142,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                                                     onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                     placeholder="Cantidad"
                                                                     value={quantity === 0 ? '' : quantity}
+                                                                    className='rounded-l-none w-full'
                                                                     onChange={(e) => {
                                                                         const qty = parseInt(e.target.value) || 0;
                                                                         const denomination = billsList[key as keyof typeof billsList];
@@ -154,8 +155,8 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                                                         }));
                                                                     }}
                                                                 />
-                                                                <div className="text-sm text-gray-700 dark:text-gray-300 ml-4">
-                                                                    Total: RD${total.toLocaleString()}
+                                                                <div className="text-sm text-right text-gray-700 dark:text-gray-300 ml-4">
+                                                                    Total: <span className="font-semibold block"></span>RD${total.toLocaleString()}
                                                                 </div>
                                                             </div>
                                                         </div>
