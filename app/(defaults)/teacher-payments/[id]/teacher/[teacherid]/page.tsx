@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import apiRequest from '@/utils/lib/api-request/request';
 import { Button, Input } from '@/components/ui';
 import { PayAccount } from '@/app/(defaults)/invoices/lib/accounts-payable/request';
+import { getFormattedDate } from '@/utils/date';
 
 interface PayableEarning {
     id: string;
@@ -80,12 +81,11 @@ export default function TeacherPayments() {
             setLoadingPayment(true)
 
             const resp = await PayAccount(id, data)
-
+            console.log('resp', resp)
             if (resp.success) {
                 openNotification('success', 'Desembolso exitoso')
                 const teacherId = Array.isArray(teacherid) ? teacherid[0] : teacherid;
                 fetchAccountsPayableData(`teacherId=${teacherId}`)
-
             }
 
         } catch (error) {
@@ -211,7 +211,7 @@ export default function TeacherPayments() {
                                                     key={earning.id}
                                                     className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
                                                 >
-                                                    <span>{new Date(earning.date).toLocaleDateString('es-DO')}</span>
+                                                    <span>{getFormattedDate(new Date(earning.date))}</span>
                                                     <span>{formatCurrency(earning.amount)}</span>
                                                 </li>
                                             ))}
@@ -229,7 +229,7 @@ export default function TeacherPayments() {
                                                     key={payment.id}
                                                     className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
                                                 >
-                                                    <span>{new Date(payment.paymentDate).toLocaleDateString('es-DO')}</span>
+                                                    <span>{getFormattedDate(new Date(payment.paymentDate))}</span>
                                                     <span>{formatCurrency(payment.amount)}</span>
                                                 </li>
                                             ))}
@@ -261,7 +261,7 @@ export default function TeacherPayments() {
 
                                 <Button
                                     type="button"
-                                   
+
                                     className="min-w-[100px]"
                                     loading={loadingPayment}
                                     disabled={loadingPayment || isPaid}

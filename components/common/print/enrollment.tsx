@@ -18,7 +18,6 @@ export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollm
   const { setting, loading: loadingSettings } = useFetchSetting();
   const [loading, setLoading] = useState<boolean>(true);
   const { printPDF } = usePrintPDF();
-  console.log('PrintEnrollment', { enrollment, setting });
 
   const onPrint = () => {
     if (!enrollment) {

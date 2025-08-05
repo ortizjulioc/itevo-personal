@@ -29,10 +29,6 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
 
     };
 
-
-
-
-
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
@@ -90,7 +86,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                 className="mb-5 w-full rounded-md border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-[#1E1E2D]"
                                             >
                                                 <div className="mb-4 text-sm font-semibold text-gray-800 dark:text-white">
-                                                    <CourseBranchLabel CourseBranchId={item.courseBranchId} showTeacher={false} />
+                                                    <CourseBranchLabel CourseBranchId={item.courseBranchId} showTeacher={false} clickable={false} />
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-6 justify-between">
@@ -101,7 +97,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                             <div className="text-base font-semibold text-gray-900 dark:text-white">
                                                                 {formatCurrency(item.amount)}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">Total</div>
+                                                            <div className="text-sm text-gray-500">Total generado</div>
                                                         </div>
                                                     </div>
 
@@ -112,7 +108,7 @@ export default function TeacherPayment({ setOpenModal, openModal }: { setOpenMod
                                                             <div className="text-base font-semibold text-gray-900 dark:text-white">
                                                                 {formatCurrency(paidAmount)}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">Total Abonado</div>
+                                                            <div className="text-sm text-gray-500">Total pagado</div>
                                                         </div>
                                                     </div>
 

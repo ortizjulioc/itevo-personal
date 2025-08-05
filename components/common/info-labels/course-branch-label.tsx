@@ -10,10 +10,10 @@ type Props = {
   CourseBranchId: string;
   isSelected?: boolean;
   showTeacher?: boolean;
-
+  clickable?: boolean;
 };
 
-export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeacher = true }: Props) {
+export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeacher = true, clickable = true }: Props) {
   const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(null);
   const [noData, setNoData] = useState(false);
   useEffect(() => {
@@ -54,8 +54,9 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
 
   return courseBranch ? (
     <div
-      className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition px-4
-        ${isSelected ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-600'}`}
+      className={`flex items-center justify-between p-2 rounded-md  transition px-4
+        ${isSelected ? 'bg-gray-100 dark:bg-gray-700' : ''}
+        ${clickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600' : ''}`}
     >
       <div className="flex flex-col">
         <div>

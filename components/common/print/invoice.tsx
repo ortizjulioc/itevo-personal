@@ -29,6 +29,7 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
   }
 
   const handlePrintPDF = async (invoice: any) => {
+    setLoading(true);
     try {
       let companyInfo = {
         companyName: setting?.companyName,

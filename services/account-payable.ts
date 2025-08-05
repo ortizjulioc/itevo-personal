@@ -228,6 +228,22 @@ export const getPayablePaymentsByAccountPayableId = async (
   });
 };
 
+export const getPayablePaymentById = async (
+  id: string,
+  prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+  return prisma.payablePayment.findUnique({
+    where: {
+      id: id,
+      deleted: false,
+    },
+    include: {
+      cashMovement: { include: { user: true } },
+      accountPayable: { include: { teacher: true } },
+    },
+  });
+};
+
 export const getPayableEarningsByAccountPayableId = async (
   accountPayableId: string,
   prisma: PrismaTypes.TransactionClient = Prisma

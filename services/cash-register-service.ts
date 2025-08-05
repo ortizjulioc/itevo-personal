@@ -57,7 +57,7 @@ export const getCashRegisters = async ({
           select: { id: true, name: true },
         },
         user: {
-          select: { id: true, name: true },
+          select: { id: true, name: true, lastName: true },
         },
       },
     }),

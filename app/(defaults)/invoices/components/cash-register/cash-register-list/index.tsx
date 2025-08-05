@@ -12,7 +12,6 @@ import CashRegisterModal from "../cash-register-modal";
 import { useSession } from 'next-auth/react';
 import { getFormattedDate } from "@/utils/date";
 
-
 interface Props {
     className?: string;
     query?: string;
@@ -40,12 +39,12 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
 
     const finalQuery = new URLSearchParams(rawParams).toString();
 
-    const { loading, error, cashRegisters, totalCashRegisters, setCashRegisters } = useFetchCashRegisters(finalQuery);
+    const { loading, error, cashRegisters, totalCashRegisters } = useFetchCashRegisters(finalQuery);
     if (error) {
         openNotification('error', error);
     }
 
-  
+
   console.log(cashRegisters)
     if (loading) return <Skeleton rows={4} columns={['CAJA', 'USUARIO', 'FECHA DE CREACION', 'ESTADO']} />;
 
@@ -84,16 +83,16 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                                 return (
                                     <tr key={CashRegister.id}>
                                         <td className="text-left">{CashRegister.name}</td>
-                                        <td className="text-left">{CashRegister.user.name}</td>
+                                        <td className="text-left">{CashRegister.user.name} {CashRegister.user.lastName}</td>
                                         <td className="text-left">{getFormattedDate(new Date(CashRegister.openingDate))}</td>
                                         <td className="text-left">
                                             {CashRegister.status === 'OPEN' ? (
-                                                <span className={`flex items-center gap-1 font-bold min-w-max text-green-600 italic`}>
+                                                <span className={`flex items-center gap-1 font-bold min-w-max text-green-600`}>
                                                     <TbPointFilled />
                                                     Abierto
                                                 </span>
                                             ) : (
-                                                <span className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
+                                                <span className={`flex items-center gap-1 font-bold min-w-max text-red-600`}>
                                                     <TbPointFilled />
                                                     Cerrado
                                                 </span>
