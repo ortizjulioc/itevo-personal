@@ -43,7 +43,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
         try {
             const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}&top=1000`);
-
+            console.log('response', response);
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -118,6 +118,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     useEffect(() => {
         const fetchData = async () => {
             const fetchedOptions = await fetchCourseBranchData('');
+            console.log('fetchedOptions', fetchedOptions);
             setOptions(fetchedOptions);
 
             if (value && !fetchedOptions.some(option => option.value === value)) {
@@ -156,7 +157,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
                     Control: CustomControl,
                     Option: CustomSelectedOption
                 }}
-                styles={getCustomStyles(Boolean(themeConfig.isDarkMode))}
+                styles={{...getCustomStyles(Boolean(themeConfig.isDarkMode)), ...customStyles}}
                 isClearable
                 {...rest}
             />

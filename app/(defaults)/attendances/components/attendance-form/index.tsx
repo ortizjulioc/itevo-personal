@@ -98,7 +98,6 @@ export default function CreateAttendanceForm({ onCancel, onSuccess }: CreateAtte
         try {
             setLoading(true);
             const fingerPrint = await getFingerPrintById(option.value);
-            console.log(fingerPrint);
 
             const template = fingerPrint.data?.template;
 
@@ -128,9 +127,9 @@ export default function CreateAttendanceForm({ onCancel, onSuccess }: CreateAtte
                     <Form className="form">
                         <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
                             <Field>
-                                {({ form, field }: any) => (
+                                {({ form }: any) => (
                                     <SelectCourseBranch
-                                        {...field}
+                                        // {...field}
                                         value={values.courseBranchId}
                                         onChange={(option: CourseBranchSelectOption | null) => {
                                             form.setFieldValue('courseBranchId', option?.value || '');

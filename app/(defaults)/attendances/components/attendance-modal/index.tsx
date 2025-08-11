@@ -3,8 +3,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react'
 
 export default function AttendanceModal({ setOpenModal, openModal, fetchAttendanceData }: { setOpenModal: (open: boolean) => void, openModal: boolean, fetchAttendanceData?: (value: string) => void }) {
-
-
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
