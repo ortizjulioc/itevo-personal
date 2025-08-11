@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import apiRequest from '@/utils/lib/api-request/request';
-import type { AccountPayable, Invoice, InvoiceItem, PayableEarning, PayablePayment, User } from '@prisma/client';
+import type { AccountPayable, PayableEarning, PayablePayment } from '@prisma/client';
+import { AccountPayableWithRelations } from '@/@types/accounts-payables';
 
 export interface AccountsPayableResponse {
-    accountsPayable: AccountPayable[];
+    accountsPayable: AccountPayableWithRelations[];
     totalAccountsPayable: number;
 }
 export interface EarningsResponse {
@@ -19,7 +20,7 @@ export interface ItemsResponse {
 }
 
 const useFetchAccountsPayable = (query: string) => {
-    const [accountsPayable, setAccountsPayable] = useState<AccountPayable[]>([]);
+    const [accountsPayable, setAccountsPayable] = useState<AccountPayableWithRelations[]>([]);
     const [totalAccountsPayable, setTotalAccountsPayable] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

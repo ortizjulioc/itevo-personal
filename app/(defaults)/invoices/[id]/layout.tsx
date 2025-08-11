@@ -23,12 +23,12 @@ export default function layout({ children, params }: { children: React.ReactNode
 
                 <div className="mt-6">
                     <h2 className="mb-3 text-2xl font-bold">Facturas</h2>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-                        <div className="md:col-span-2">
+                    <div className="flex gap-4 flex-col md:flex-row">
+                        <div className="w-full md:w-[15rem]">
                             <InvoiceList cashRegisterId={id} userId={CashRegister?.user.id} />
                         </div>
 
-                        <div className="md:col-span-10">{children}</div>
+                        <div className="w-full">{children}</div>
                     </div>
                 </div>
             </>

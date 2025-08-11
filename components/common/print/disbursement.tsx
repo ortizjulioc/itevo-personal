@@ -14,7 +14,7 @@ import { getFormattedDateTime } from '@/utils/date';
 type PrintDisbursementProps = {
   paymentId: string;
   payableId?: string;
-  children?: React.ReactNode
+  children?: (props: { loading: boolean; onPrint: () => void }) => React.ReactNode;
 }
 
 type DisbursementData = {
@@ -39,6 +39,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
   const [loading, setLoading] = useState<boolean>(true);
   const { setting, loading: loadingSettings } = useFetchSetting();
   const { printPDF } = usePrintPDF();
+  console.log('setting', setting);
 
   const onPrint = () => {
     handlePrintPDF(setting);
@@ -99,7 +100,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
     <>
       {children ? (
         <div onClick={onPrint} className='cursor-pointer'>
-          {children}
+          {children && children({ loading, onPrint })}
         </div>
      ) : (
         <Button

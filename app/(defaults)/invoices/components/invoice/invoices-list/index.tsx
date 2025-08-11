@@ -21,7 +21,7 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
 
     return (
         <div className="mb-5 flex items-center justify-center">
-            <div className="w-full max-w-[22rem] ">
+            <div className="w-full">
                 <NewinvoiceCard cashRegisterId={cashRegisterId} userId={userId} loading={newCardloading} setLoading={setnewCardloading} />
                 {loading ? <GenericSkeleton lines={8} withHeader={false} /> : invoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} cashRegisterId={cashRegisterId} />)}
             </div>

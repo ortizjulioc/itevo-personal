@@ -430,7 +430,7 @@ export default function AddItemsInvoices({
                                 }))
                             }
                             placeholder="Escribe un comentario..."
-                            className="form-input py-2 px-4 w-full rounded-md border border-gray-300 dark:border-[#1b2e4b] bg-white dark:bg-[#191e3a] text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b]"
+                            className="form-input "
                         />
                     </div>
                     <div>

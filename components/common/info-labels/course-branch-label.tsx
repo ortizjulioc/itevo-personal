@@ -11,38 +11,40 @@ type Props = {
   isSelected?: boolean;
   showTeacher?: boolean;
   clickable?: boolean;
+  courseBranch?: CourseBranch | null;
 };
 
-export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeacher = true, clickable = true }: Props) {
-  const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(null);
+export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeacher = true, clickable = false, courseBranch: courseBranchFromProps }: Props) {
+  const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(courseBranchFromProps || null);
   const [noData, setNoData] = useState(false);
   useEffect(() => {
-    const fetchCourseBranchById = async () => {
-      try {
-        const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
-        console.log('data course branch', response)
-        const data = response.data;
-
-        if (
-          response.success &&
-          data &&
-          typeof data === 'object' &&
-          Object.keys(data).length > 0
-        ) {
-          setCourseBranch(data);
-          setNoData(false);
-        } else {
-          setNoData(true);
-          setCourseBranch(null);
+    if (!courseBranchFromProps ) {
+      const fetchCourseBranchById = async () => {
+        try {
+          const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
+          const data = response.data;
+  
+          if (
+            response.success &&
+            data &&
+            typeof data === 'object' &&
+            Object.keys(data).length > 0
+          ) {
+            setCourseBranch(data);
+            setNoData(false);
+          } else {
+            setNoData(true);
+            setCourseBranch(null);
+          }
+        } catch (error) {
+          console.error('Error fetching single courseBranch:', error);
+          setNoData(true); // podrías separar errores reales si lo deseas
         }
-      } catch (error) {
-        console.error('Error fetching single courseBranch:', error);
-        setNoData(true); // podrías separar errores reales si lo deseas
-      }
-    };
+      };
+      fetchCourseBranchById();
+    }
 
-    fetchCourseBranchById();
-  }, [CourseBranchId]);
+  }, [CourseBranchId, courseBranchFromProps]);
 
   if (noData) {
     return (

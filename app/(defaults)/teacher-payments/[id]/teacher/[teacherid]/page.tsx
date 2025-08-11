@@ -10,6 +10,8 @@ import apiRequest from '@/utils/lib/api-request/request';
 import { Button, Input } from '@/components/ui';
 import { PayAccount } from '@/app/(defaults)/invoices/lib/accounts-payable/request';
 import { getFormattedDate } from '@/utils/date';
+import { IoMdPrint } from 'react-icons/io';
+import PrintDisbursement from '@/components/common/print/disbursement';
 
 interface PayableEarning {
     id: string;
@@ -33,11 +35,19 @@ export interface PaymentsResponse {
 export default function TeacherPayments() {
     const { id: cashRegisterId, teacherid } = useParams();
     const teacherId = Array.isArray(teacherid) ? teacherid[0] : teacherid;
-    const { accountsPayable, loading, fetchAccountsPayableData} = useFetchAccountsPayable(`teacherId=${teacherid}&top=1000`);
+    const { accountsPayable, loading, fetchAccountsPayableData } = useFetchAccountsPayable(`teacherId=${teacherid}&top=1000`);
     const [loadingPayment, setLoadingPayment] = useState(false)
-
     const [earningsMap, setEarningsMap] = useState<Record<string, PayableEarning[]>>({});
     const [paymentsMap, setPaymentsMap] = useState<Record<string, PayablePayment[]>>({});
+    const [openDetailsMap, setOpenDetailsMap] = useState<Record<string, boolean>>({});
+
+    const toggleDetails = (id: string) => {
+        setOpenDetailsMap(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
+
 
     useEffect(() => {
         const fetchAllEarningsAndPayments = async () => {
@@ -71,7 +81,7 @@ export default function TeacherPayments() {
     }, [accountsPayable]);
 
 
-    const handlepayAccount = async (id: string, amount: number) => {
+    const handlePayAccount = async (id: string, amount: number) => {
         const data = {
             amount,
             cashRegisterId,
@@ -81,7 +91,7 @@ export default function TeacherPayments() {
             setLoadingPayment(true)
 
             const resp = await PayAccount(id, data)
-            console.log('resp', resp)
+            console.log('resp desembolso', resp)
             if (resp.success) {
                 openNotification('success', 'Desembolso exitoso')
                 const teacherId = Array.isArray(teacherid) ? teacherid[0] : teacherid;
@@ -96,43 +106,43 @@ export default function TeacherPayments() {
         }
     }
 
-    function getInvoiceSummary(invoices: any[]) {
-    const summary = {
-        total: 0,
-        efectivo: 0,
-        tarjeta: 0,
-        transferencia: 0,
-        cheque: 0,
-        credito: 0,
-    };
+    // function getInvoiceSummary(invoices: any[]) {
+    //     const summary = {
+    //         total: 0,
+    //         efectivo: 0,
+    //         tarjeta: 0,
+    //         transferencia: 0,
+    //         cheque: 0,
+    //         credito: 0,
+    //     };
 
-    invoices.forEach((invoice) => {
-        const method = invoice.paymentMethod;
+    //     invoices.forEach((invoice) => {
+    //         const method = invoice.paymentMethod;
 
-        const amount = invoice.subtotal + invoice.itbis;
-        summary.total += amount;
+    //         const amount = invoice.subtotal + invoice.itbis;
+    //         summary.total += amount;
 
-        switch (method) {
-            case 'cash':
-                summary.efectivo += amount;
-                break;
-            case 'credit_card':
-                summary.tarjeta += amount;
-                break;
-            case 'bank_transfer':
-                summary.transferencia += amount;
-                break;
-            case 'check':
-                summary.cheque += amount;
-                break;
-            default:
-                summary.credito += amount;
-                break;
-        }
-    });
+    //         switch (method) {
+    //             case 'cash':
+    //                 summary.efectivo += amount;
+    //                 break;
+    //             case 'credit_card':
+    //                 summary.tarjeta += amount;
+    //                 break;
+    //             case 'bank_transfer':
+    //                 summary.transferencia += amount;
+    //                 break;
+    //             case 'check':
+    //                 summary.cheque += amount;
+    //                 break;
+    //             default:
+    //                 summary.credito += amount;
+    //                 break;
+    //         }
+    //     });
 
-    return summary;
-}
+    //     return summary;
+    // }
 
 
 
@@ -153,6 +163,7 @@ export default function TeacherPayments() {
 
                     const earnings = earningsMap[item.id] || [];
                     const payments = paymentsMap[item.id] || [];
+                    console.log('payments', payments)
                     const isPaid = item.amount === item.amountDisbursed;
                     const inputId = `amount-${item.id}`;
                     console.log(isPaid)
@@ -185,7 +196,7 @@ export default function TeacherPayments() {
                                         <div className="text-base font-semibold text-gray-900 dark:text-white">
                                             {formatCurrency(paidAmount)}
                                         </div>
-                                        <div className="text-sm text-gray-500">Total Abonado</div>
+                                        <div className="text-sm text-gray-500">Total Desembolsado</div>
                                     </div>
                                 </div>
 
@@ -200,44 +211,6 @@ export default function TeacherPayments() {
                                 </div>
                             </div>
 
-                            <div className='grid grid-cols-2 gap-4'>
-                                {/* Lista de Aplicaciones */}
-                                {earnings.length > 0 && (
-                                    <div className="mt-6">
-                                        <h4 className="mb-2 text-sm font-bold ">Ganancias</h4>
-                                        <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-100">
-                                            {earnings.map((earning) => (
-                                                <li
-                                                    key={earning.id}
-                                                    className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
-                                                >
-                                                    <span>{getFormattedDate(new Date(earning.date))}</span>
-                                                    <span>{formatCurrency(earning.amount)}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {/* Lista de Desembolsos */}
-                                {payments.length > 0 && (
-                                    <div className="mt-6">
-                                        <h4 className="mb-2 text-sm font-bold">Desembolsos</h4>
-                                        <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-100">
-                                            {payments.map((payment) => (
-                                                <li
-                                                    key={payment.id}
-                                                    className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
-                                                >
-                                                    <span>{getFormattedDate(new Date(payment.paymentDate))}</span>
-                                                    <span>{formatCurrency(payment.amount)}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                            </div>
                             <div className="mt-6 flex justify-end items-center gap-4 flex-nowrap">
                                 <Input
                                     id={inputId}
@@ -261,7 +234,6 @@ export default function TeacherPayments() {
 
                                 <Button
                                     type="button"
-
                                     className="min-w-[100px]"
                                     loading={loadingPayment}
                                     disabled={loadingPayment || isPaid}
@@ -269,17 +241,72 @@ export default function TeacherPayments() {
                                         const inputEl = document.getElementById(inputId) as HTMLInputElement;
                                         const value = parseFloat(inputEl?.value || '0');
                                         if (value > 0 && value <= pendingAmount) {
-                                            handlepayAccount(item.id, value);
+                                            handlePayAccount(item.id, value);
                                         } else {
                                             alert('Por favor, ingrese un monto válido.');
                                         }
                                     }}
                                 >
-                                    {isPaid ? 'Pagado' : 'Agregar'}
+                                    {isPaid ? 'Pagado' : 'Desembolsar'}
                                 </Button>
                             </div>
 
 
+                            <button
+                                type="button"
+                                onClick={() => toggleDetails(item.id)}
+                                className="text-sm text-primary hover:underline transition"
+                            >
+                                {openDetailsMap[item.id] ? 'Ocultar detalles' : 'Ver detalles'}
+                            </button>
+                            {openDetailsMap[item.id] && (
+                                <div className='grid grid-cols-2 gap-4'>
+                                    {earnings.length > 0 && (
+                                        <div className="mt-6">
+                                            <h4 className="mb-2 text-sm font-bold ">Ganancias</h4>
+                                            <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-100">
+                                                {earnings.map((earning) => (
+                                                    <li
+                                                        key={earning.id}
+                                                        className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
+                                                    >
+                                                        <span>{getFormattedDate(new Date(earning.date))}</span>
+                                                        <span>{formatCurrency(earning.amount)}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {payments.length > 0 && (
+                                        <div className="mt-6">
+                                            <h4 className="mb-2 text-sm font-bold">Desembolsos</h4>
+                                            <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-100">
+                                                {payments.map((payment) => (
+                                                    <li
+                                                        key={payment.id}
+                                                        className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1"
+                                                    >
+                                                        <span>{getFormattedDate(new Date(payment.paymentDate))}</span>
+                                                        <span>{formatCurrency(payment.amount)}</span>
+                                                        <PrintDisbursement paymentId={payment.id}>
+                                                            {({ loading }) => (
+                                                                <Button
+                                                                    loading={loading}
+                                                                    type="button"
+                                                                    size='sm'
+                                                                    icon={<IoMdPrint className='text-sm ' />}
+                                                                    className="text-sm"
+                                                                />
+                                                            )}
+                                                        </PrintDisbursement>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     );
                 })}

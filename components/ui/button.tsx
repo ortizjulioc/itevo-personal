@@ -91,7 +91,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
             className={btnClasses}
             {...rest}
         >
-            {loading && (<span className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle"></span>)}
+            {/* {loading && (<span className={`animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle`}></span>)} */}
+            {loading && (
+                <span className={classNames(
+                    `animate-spin border-2 border-white border-l-transparent rounded-full inline-block align-middle `,
+                    { 'ltr:mr-4 rtl:ml-4': Boolean(children) },
+                    { 'w-5 h-5': Boolean(!size || size === 'md') },
+                    { 'w-4 h-4': Boolean(size === 'sm') },
+                    { 'w-6 h-6': Boolean(size === 'lg') }
+                )} />
+            )}
             {(icon && !loading) && <span className={`${children && 'mr-2'}`}>{icon}</span>}
             {children}
         </button>

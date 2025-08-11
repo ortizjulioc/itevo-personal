@@ -31,7 +31,6 @@ const ViewTitle: React.FC<ViewTitleProps> = ({ title, showBackPage = false, righ
                     {rightComponent}
                 </div>
             </div>
-            <PrintDisbursement paymentId={'fa756aa1-36b2-47e6-b601-6912cba49d33'} payableId={'5dad2454-66fc-421e-bf58-0acd35fa29b3'} />
         </>
     );
 };

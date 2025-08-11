@@ -45,4 +45,18 @@ export const payablePaymentWithRelations = PrismaTypes.validator<PrismaTypes.Pay
   },
 });
 
+export const accountPayableWithRelations = PrismaTypes.validator<PrismaTypes.AccountPayableDefaultArgs>()({
+  include: {
+    courseBranch: {
+      select: {
+        id: true,
+        branch: true,
+        course: true,
+      },
+    },
+    teacher: true,
+  },
+});
+
+export type AccountPayableWithRelations = PrismaTypes.AccountPayableGetPayload<typeof accountPayableWithRelations>;
 export type PayablePaymentWithRelations = PrismaTypes.PayablePaymentGetPayload<typeof payablePaymentWithRelations>;

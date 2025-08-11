@@ -57,6 +57,10 @@ export const getAccountsPayable = async (
       skip: (page - 1) * top,
       take: top,
       orderBy: { createdAt: 'desc' },
+      include: {
+        courseBranch: { select: { id: true, branch: true , course: true} },
+        teacher: true,
+      },
     }),
     prisma.accountPayable.count({ where }),
   ]);
