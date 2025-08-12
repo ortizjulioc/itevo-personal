@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
+import { IdentificationType, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -90,7 +90,16 @@ export const updateStudentById = async (
 ) => {
     return prisma.student.update({
         where: { id },
-        data: { code: data.code, firstName: data.firstName, lastName: data.lastName, identification: data.identification, address: data.address, phone: data.phone, email: data.email, hasTakenCourses: data.hasTakenCourses },
+        data: { code: data.code,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            identification: data.identification,
+            address: data.address,
+            phone: data.phone,
+            email: data.email,
+            hasTakenCourses: data.hasTakenCourses,
+            identificationType: data.identificationType || IdentificationType.CEDULA,
+        },
     });
 };
 

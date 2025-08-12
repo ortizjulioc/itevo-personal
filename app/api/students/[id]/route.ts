@@ -4,6 +4,7 @@ import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { Prisma } from '@/utils/lib/prisma';
+import { IdentificationType } from '@prisma/client';
 
 // Obtener estudiante por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -59,6 +60,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
                 phone: body.phone,
                 hasTakenCourses: body.hasTakenCourses,
                 branch: { connect: { id: body.branchId } },
+                identificationType: body.identificationType || IdentificationType.CEDULA,
             }, prisma);
             if (body.fingerprint) {
                 // Eliminar huella dactilar existente si existe

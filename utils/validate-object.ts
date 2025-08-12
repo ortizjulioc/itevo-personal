@@ -1,34 +1,34 @@
 
-  interface ValidationResult {
-    isValid: boolean;
-    message: string;
+interface ValidationResult {
+  isValid: boolean;
+  message: string;
+}
+
+export const validateObject = (object: Record<string, any>, keysRequired: string[]): ValidationResult => {
+  const emptyFields: string[] = [];
+
+  for (const key of keysRequired) {
+    if (object[key] === null || object[key] === undefined || object[key] === '') {
+      emptyFields.push(key);
+    }
   }
 
-  export const validateObject = (object: Record<string, any>, keysRequired: string[]): ValidationResult => {
-    const emptyFields: string[] = [];
+  const isValid = emptyFields.length === 0;
 
-    for (const key of keysRequired) {
-      if (object[key] === null || object[key] === undefined || object[key] === '') {
-        emptyFields.push(key);
-      }
+  const message = (): string => {
+    if (isValid) {
+      return '';
+    }
+    if (emptyFields.length === 1) {
+      return `El campo '${emptyFields[0]}' es requerido.`;
     }
 
-    const isValid = emptyFields.length === 0;
-
-    const message = (): string => {
-      if (isValid) {
-        return '';
-      }
-      if (emptyFields.length === 1) {
-        return `El campo '${emptyFields[0]}' es requerido.`;
-      }
-
-      const fieldMessage = `Los campos '${emptyFields.join(', ')}' son requeridos`;
-      return fieldMessage.split('').reverse().join('').replace(',', 'y ').split('').reverse().join('');
-    };
-
-    return {
-      isValid,
-      message: message(),
-    };
+    const fieldMessage = `Los campos '${emptyFields.join(', ')}' son requeridos`;
+    return fieldMessage.split('').reverse().join('').replace(',', 'y ').split('').reverse().join('');
   };
+
+  return {
+    isValid,
+    message: message(),
+  };
+};

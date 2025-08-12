@@ -6,7 +6,13 @@ import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/auth-options";
 import { Prisma } from "@/utils/lib/prisma";
-import { Student } from "@prisma/client";
+import { IdentificationType } from "@prisma/client";
+
+const mapIdentificationType: Record<string, IdentificationType> = {
+    cedula: IdentificationType.CEDULA,
+    pasaporte: IdentificationType.PASAPORTE,
+    otro: IdentificationType.OTRO,
+};
 
 export async function GET(request: NextRequest) {
     try {
@@ -67,6 +73,7 @@ export async function POST(request: Request) {
                 address: body.address,
                 phone: body.phone,
                 hasTakenCourses: body.hasTakenCourses,
+                identificationType: body.identificationType ? mapIdentificationType[body.identificationType] : IdentificationType.CEDULA,
                 branch: { connect: { id: body.branchId } },
             }, prisma);
 

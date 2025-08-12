@@ -5,10 +5,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   field?: any;
   icon?: React.ElementType;
   className?: string;
+  textArea?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ field, className = '', icon: Icon, ...rest }, ref) => {
+  ({ field, className = '', icon: Icon, textArea, ...rest }, ref) => {
     const inputClasses = classNames(
       'form-input py-2 pr-11 peer disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b]',
       { 'cursor-not-allowed text-gray-600 dark:text-gray-500': rest.disabled },
@@ -31,6 +32,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <Icon className="mx-auto" />
           </button>
         </div>
+      );
+    }
+
+    if (textArea) {
+      return (
+        <textarea
+          ref={ref}
+          className={inputClasses}
+          {...field}
+          {...rest}
+        />
       );
     }
 

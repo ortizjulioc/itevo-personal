@@ -1,3 +1,4 @@
+import { IdentificationType } from "@prisma/client";
 
 export const formatPhoneNumber = (phone?: string | null): string => {
   // Si no hay número de teléfono, retornamos un string vacío
@@ -38,4 +39,17 @@ export const formatCurrency = (amount: number): string => {
 
 export function base64ToUint8Array(base64: string): Uint8Array {
   return new Uint8Array(Buffer.from(base64, 'base64'));
+}
+
+export function formatIdentification(identification: string, type?: IdentificationType): string {
+  if (type === IdentificationType.CEDULA) {
+    return identification.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
+  if (type === IdentificationType.PASAPORTE) {
+    return identification.toUpperCase();
+  }
+  if (type === IdentificationType.OTRO) {
+    return identification;
+  }
+  return identification;
 }

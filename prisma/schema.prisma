@@ -96,19 +96,20 @@ model Teacher {
 }
 
 model Student {
-  id              String   @id @default(uuid())
-  code            String   @unique
-  firstName       String   @map("first_name")
-  lastName        String   @map("last_name")
-  identification  String?
-  phone           String?
-  email           String?
-  address         String?
-  hasTakenCourses Boolean  @default(false) @map("has_taken_courses")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  deleted         Boolean  @default(false)
-  branchId        String   @map("branch_id")
+  id                 String              @id @default(uuid())
+  code               String              @unique
+  firstName          String              @map("first_name")
+  lastName           String              @map("last_name")
+  identification     String?
+  identificationType IdentificationType? @default(CEDULA) @map("identification_type")
+  phone              String?
+  email              String?
+  address            String?
+  hasTakenCourses    Boolean             @default(false) @map("has_taken_courses")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  deleted            Boolean             @default(false)
+  branchId           String              @map("branch_id")
 
   branch            Branch?             @relation(fields: [branchId], references: [id])
   accountReceivable AccountReceivable[]
@@ -125,13 +126,12 @@ model Student {
 model Fingerprint {
   id         String   @id @default(uuid())
   studentId  String   @unique
-  template   Bytes    // Plantilla biométrica
+  template   Bytes // Plantilla biométrica
   sensorType String?  @map("sensor_type") // Tipo de sensor (opcional )
   createdAt  DateTime @default(now())
 
-  student    Student  @relation(fields: [studentId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
 }
-
 
 model Course {
   id                 String         @id @default(uuid())
@@ -165,13 +165,13 @@ model Prerequisite {
 }
 
 model Promotion {
-  id           String         @id @default(uuid())
-  description  String
-  startDate    DateTime       @map("start_date")
-  endDate      DateTime       @map("end_date")
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-  deleted      Boolean        @default(false)
+  id          String   @id @default(uuid())
+  description String
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deleted     Boolean  @default(false)
 
   courseBranch CourseBranch[]
   graduation   Graduation[]
@@ -180,25 +180,25 @@ model Promotion {
 }
 
 model CourseBranch {
-  id                String              @id @default(uuid())
-  promotionId       String              @map("promotion_id")
-  branchId          String              @map("branch_id")
-  teacherId         String              @map("teacher_id")
-  courseId          String              @map("course_id")
-  amount            Float               @default(0)
-  modality          Modality
-  startDate         DateTime?           @map("start_date")
-  endDate           DateTime?           @map("end_date")
-  commissionRate    Float               @default(0) @map("commission_rate")
-  commissionAmount  Float               @default(0) @map("commission_amount")
-  capacity          Int                 @default(0)
-  sessionCount      Int                 @default(0) @map("session_count")
-  status            CourseBranchStatus
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  isTaxIncluded     Boolean             @default(true) @map("is_tax_included")
-  taxRate           Float               @default(0) @map("tax_rate")
-  deleted           Boolean             @default(false)
+  id               String             @id @default(uuid())
+  promotionId      String             @map("promotion_id")
+  branchId         String             @map("branch_id")
+  teacherId        String             @map("teacher_id")
+  courseId         String             @map("course_id")
+  amount           Float              @default(0)
+  modality         Modality
+  startDate        DateTime?          @map("start_date")
+  endDate          DateTime?          @map("end_date")
+  commissionRate   Float              @default(0) @map("commission_rate")
+  commissionAmount Float              @default(0) @map("commission_amount")
+  capacity         Int                @default(0)
+  sessionCount     Int                @default(0) @map("session_count")
+  status           CourseBranchStatus
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
+  taxRate          Float              @default(0) @map("tax_rate")
+  deleted          Boolean            @default(false)
 
   accountPayable    AccountPayable[]
   accountReceivable AccountReceivable[]
@@ -219,15 +219,15 @@ model CourseBranch {
 }
 
 model Schedule {
-  id         String           @id @default(uuid())
-  startTime  String           @map("start_time")
-  endTime    String           @map("end_time")
-  weekday    Int
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @updatedAt @map("updated_at")
-  deleted    Boolean          @default(false)
+  id        String   @id @default(uuid())
+  startTime String   @map("start_time")
+  endTime   String   @map("end_time")
+  weekday   Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deleted   Boolean  @default(false)
 
-  courses    CourseSchedule[]
+  courses CourseSchedule[]
 
   @@map("schedules")
 }
@@ -263,15 +263,15 @@ model Enrollment {
 }
 
 model Attendance {
-  id                  String           @id @default(uuid())
-  courseBranchId      String           @map("course_branch_id")
-  studentId           String           @map("student_id")
-  date                DateTime
-  status              AttendanceStatus
-  createdAt           DateTime         @default(now()) @map("created_at")
-  updatedAt           DateTime         @updatedAt @map("updated_at")
-  courseBranch        CourseBranch     @relation(fields: [courseBranchId], references: [id])
-  student             Student          @relation(fields: [studentId], references: [id])
+  id             String           @id @default(uuid())
+  courseBranchId String           @map("course_branch_id")
+  studentId      String           @map("student_id")
+  date           DateTime
+  status         AttendanceStatus
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  student        Student          @relation(fields: [studentId], references: [id])
 
   @@index([courseBranchId], map: "attendances_course_branch_id_fkey")
   @@index([studentId], map: "attendances_student_id_fkey")
@@ -331,18 +331,18 @@ model AccountReceivable {
 }
 
 model ReceivablePayment {
-  id                  String            @id @default(uuid())
-  accountReceivableId String            @map("account_receivable_id")
+  id                  String   @id @default(uuid())
+  accountReceivableId String   @map("account_receivable_id")
   amount              Float
-  paymentDate         DateTime          @map("payment_date")
-  invoiceId           String            @map("invoice_id")
-  deleted             Boolean           @default(false)
-  createdAt           DateTime          @default(now()) @map("created_at")
-  updatedAt           DateTime          @updatedAt @map("updated_at")
+  paymentDate         DateTime @map("payment_date")
+  invoiceId           String   @map("invoice_id")
+  deleted             Boolean  @default(false)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
 
-  accountReceivable   AccountReceivable @relation(fields: [accountReceivableId], references: [id])
-  invoice             Invoice           @relation(fields: [invoiceId], references: [id])
-  PayableEarning      PayableEarning?
+  accountReceivable AccountReceivable @relation(fields: [accountReceivableId], references: [id])
+  invoice           Invoice           @relation(fields: [invoiceId], references: [id])
+  PayableEarning    PayableEarning?
 
   @@unique([accountReceivableId, invoiceId], map: "receivable_payments_account_receivable_invoice_unique")
   @@index([accountReceivableId], map: "receivable_payments_account_receivable_id_fkey")
@@ -350,14 +350,14 @@ model ReceivablePayment {
 }
 
 model AccountPayable {
-  id             String        @id @default(uuid())
-  teacherId      String        @map("teacher_id")
-  courseBranchId String        @map("course_branch_id")
-  amount         Float
-  amountDisbursed    Float         @default(0) @map("amount_disbursed")
-  status         PaymentStatus @default(PENDING)
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  id              String        @id @default(uuid())
+  teacherId       String        @map("teacher_id")
+  courseBranchId  String        @map("course_branch_id")
+  amount          Float
+  amountDisbursed Float         @default(0) @map("amount_disbursed")
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
 
   courseBranch CourseBranch     @relation(fields: [courseBranchId], references: [id])
   teacher      Teacher          @relation(fields: [teacherId], references: [id])
@@ -376,7 +376,7 @@ model PayableEarning {
   accountPayableId    String   @map("account_payable_id")
   receivablePaymentId String   @unique @map("receivable_payment_id")
   amount              Float
-  deleted             Boolean @default(false)
+  deleted             Boolean  @default(false)
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
@@ -403,15 +403,15 @@ model PayablePayment {
 }
 
 model Setting {
-  id                String  @id @default(uuid())
-  rnc               String  @unique
-  companyName       String  @map("company_name")
-  address           String
-  phone             String
-  email             String
-  logo              String
-  defaultPassword   String? @map("default_password")
-  billingWithoutNcf Boolean @default(true) @map("billing_without_ncf")
+  id                  String  @id @default(uuid())
+  rnc                 String  @unique
+  companyName         String  @map("company_name")
+  address             String
+  phone               String
+  email               String
+  logo                String
+  defaultPassword     String? @map("default_password")
+  billingWithoutNcf   Boolean @default(true) @map("billing_without_ncf")
   billingWithoutStock Boolean @default(true) @map("billing_without_stock")
 
   deleted   Boolean  @default(false)
@@ -433,23 +433,23 @@ model Holiday {
 }
 
 model CashRegister {
-  id             String                @id @default(uuid())
+  id             String             @id @default(uuid())
   name           String
-  branchId       String                @map("branch_id")
-  status         CashRegisterStatus    @default(OPEN)
-  userId         String                @map("user_id")
-  initialBalance Float                 @default(0) @map("initial_balance")
-  openingDate    DateTime              @default(now()) @map("opening_date")
-  createdAt      DateTime              @default(now()) @map("created_at")
-  closedAt       DateTime?             @map("closed_at")
-  updatedAt      DateTime              @updatedAt @map("updated_at")
-  deleted        Boolean               @default(false)
+  branchId       String             @map("branch_id")
+  status         CashRegisterStatus @default(OPEN)
+  userId         String             @map("user_id")
+  initialBalance Float              @default(0) @map("initial_balance")
+  openingDate    DateTime           @default(now()) @map("opening_date")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  closedAt       DateTime?          @map("closed_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  deleted        Boolean            @default(false)
 
-  movements      CashMovement[]
-  closures       CashRegisterClosure[]
-  branch         Branch                @relation(fields: [branchId], references: [id])
-  user           User                  @relation(fields: [userId], references: [id])
-  invoices       Invoice[]             @relation("CashRegisterInvoices")
+  movements CashMovement[]
+  closures  CashRegisterClosure[]
+  branch    Branch                @relation(fields: [branchId], references: [id])
+  user      User                  @relation(fields: [userId], references: [id])
+  invoices  Invoice[]             @relation("CashRegisterInvoices")
 
   @@index([branchId], map: "cash_registers_branch_id_fkey")
   @@index([userId], map: "cash_registers_user_id_fkey")
@@ -457,21 +457,21 @@ model CashRegister {
 }
 
 model CashMovement {
-  id                String                     @id @default(uuid())
-  cashRegisterId    String                     @map("cash_register_id")
-  type              CashMovementType
-  amount            Float
-  description       String?
-  referenceType     CashMovementReferenceType? @default(INVOICE) @map("reference_type")
-  referenceId       String?                    @map("reference_id")
-  createdBy         String                     @map("created_by")
-  createdAt         DateTime                   @default(now()) @map("created_at")
-  updatedAt         DateTime                   @updatedAt @map("updated_at")
-  deleted           Boolean                    @default(false)
+  id             String                     @id @default(uuid())
+  cashRegisterId String                     @map("cash_register_id")
+  type           CashMovementType
+  amount         Float
+  description    String?
+  referenceType  CashMovementReferenceType? @default(INVOICE) @map("reference_type")
+  referenceId    String?                    @map("reference_id")
+  createdBy      String                     @map("created_by")
+  createdAt      DateTime                   @default(now()) @map("created_at")
+  updatedAt      DateTime                   @updatedAt @map("updated_at")
+  deleted        Boolean                    @default(false)
 
-  cashRegister      CashRegister               @relation(fields: [cashRegisterId], references: [id])
-  user              User                       @relation(fields: [createdBy], references: [id])
-  PayablePayment    PayablePayment?
+  cashRegister   CashRegister    @relation(fields: [cashRegisterId], references: [id])
+  user           User            @relation(fields: [createdBy], references: [id])
+  PayablePayment PayablePayment?
 
   @@index([cashRegisterId], map: "cash_movements_cash_register_id_fkey")
   @@index([createdBy], map: "cash_movements_created_by_fkey")
@@ -521,27 +521,27 @@ model NcfRange {
 }
 
 model Invoice {
-  id             String        @id @default(uuid())
-  invoiceNumber  String        @unique @map("invoice_number")
-  ncf            String        @unique
-  type           NcfType       @default(FACTURA_CONSUMO)
-  studentId      String?       @map("student_id")
-  cashRegisterId String        @map("cash_register_id")
-  date           DateTime      @default(now())
-  subtotal       Float         @default(0)
-  itbis          Float         @default(0)
-  paymentDate    DateTime?     @map("payment_date")
-  paymentMethod  String?       @default("") @map("payment_method")
-  paymentDetails Json?         @default("{}") @map("payment_details")
-  status         InvoiceStatus @default(DRAFT)
-  comment        String?       @default("")
-  createdBy      String        @map("created_by")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  items          InvoiceItem[]
-  cashRegister   CashRegister  @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
-  user           User          @relation(fields: [createdBy], references: [id])
-  student        Student?      @relation(fields: [studentId], references: [id])
+  id                String              @id @default(uuid())
+  invoiceNumber     String              @unique @map("invoice_number")
+  ncf               String              @unique
+  type              NcfType             @default(FACTURA_CONSUMO)
+  studentId         String?             @map("student_id")
+  cashRegisterId    String              @map("cash_register_id")
+  date              DateTime            @default(now())
+  subtotal          Float               @default(0)
+  itbis             Float               @default(0)
+  paymentDate       DateTime?           @map("payment_date")
+  paymentMethod     String?             @default("") @map("payment_method")
+  paymentDetails    Json?               @default("{}") @map("payment_details")
+  status            InvoiceStatus       @default(DRAFT)
+  comment           String?             @default("")
+  createdBy         String              @map("created_by")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  items             InvoiceItem[]
+  cashRegister      CashRegister        @relation("CashRegisterInvoices", fields: [cashRegisterId], references: [id])
+  user              User                @relation(fields: [createdBy], references: [id])
+  student           Student?            @relation(fields: [studentId], references: [id])
   receivablePayment ReceivablePayment[]
 
   @@index([cashRegisterId], map: "invoices_cash_register_id_fkey")
@@ -574,16 +574,16 @@ model InvoiceItem {
 }
 
 model Product {
-  id            String          @id @default(uuid())
-  code          Int             @unique @default(autoincrement())
-  name          String
-  description   String?
-  price         Float
-  cost          Float
-  stock         Int             @default(0)
-  taxRate       Float           @default(0) @map("tax_rate")
-  isTaxIncluded Boolean         @default(true) @map("is_tax_included")
-  billingWithoutStock Boolean   @default(true) @map("billing_without_stock")
+  id                  String  @id @default(uuid())
+  code                Int     @unique @default(autoincrement())
+  name                String
+  description         String?
+  price               Float
+  cost                Float
+  stock               Int     @default(0)
+  taxRate             Float   @default(0) @map("tax_rate")
+  isTaxIncluded       Boolean @default(true) @map("is_tax_included")
+  billingWithoutStock Boolean @default(true) @map("billing_without_stock")
 
   deleted       Boolean         @default(false)
   createdAt     DateTime        @default(now()) @map("created_at")
@@ -727,4 +727,10 @@ enum QuotationStatus {
   ACCEPTED @map("accepted")
   REJECTED @map("rejected")
   CANCELED @map("canceled")
+}
+
+enum IdentificationType {
+  CEDULA    @map("cedula")
+  PASAPORTE @map("pasaporte")
+  OTRO      @map("otro")
 }

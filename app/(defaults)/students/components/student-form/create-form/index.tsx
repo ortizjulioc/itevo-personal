@@ -9,10 +9,18 @@ import { FormatPatterInput } from '@/components/common';
 import MultiPhoneInput from '@/components/common/multi-phone-input';
 import { useState } from 'react';
 import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
+import Dropdown from '@/components/dropdown';
 
 interface CreateStudentFormProps {
   onClose?: (id: string) => void;
 }
+
+const mapIdentificationType: Record<string, string> = {
+  cedula: 'Cédula',
+  pasaporte: 'Pasaporte',
+  otro: 'Otro',
+};
+
 export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
   const route = useRouter();
   const [fingerprint, setFingerprint] = useState('')
@@ -68,15 +76,49 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
             <FormItem name="identification" label="Identificación" invalid={Boolean(errors.identification && touched.identification)} errorMessage={errors.identification}>
               <Field name="identification">
                 {({ form }: any) => (
-                  <FormatPatterInput
-                    format="###-#######-#"
-                    placeholder="000-0000000-0"
-                    className="form-input"
-                    value={values.identification}
-                    onValueChange={(value: any) => {
-                      form.setFieldValue('identification', value.value);
-                    }}
-                  />
+                  <>
+                    <div className="flex">
+                      <div className="dropdown">
+                        <Dropdown
+                          offset={[0, 5]}
+                          placement={`bottom-start`}
+                          btnClassName="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] cursor-pointer pt-2 pb-2"
+                          button={<span className='w-24'>{mapIdentificationType[values.identificationType]}</span>}
+                        >
+                          <ul className="!min-w-[170px]">
+                            <li>
+                              <button type="button" onClick={() => form.setFieldValue('identificationType', 'cedula')}>Cédula</button>
+                            </li>
+                            <li>
+                              <button type="button" onClick={() => form.setFieldValue('identificationType', 'pasaporte')}>Pasaporte</button>
+                            </li>
+                            <li>
+                              <button type="button" onClick={() => form.setFieldValue('identificationType', 'otro')}>Otro</button>
+                            </li>
+                          </ul>
+                        </Dropdown>
+                      </div>
+                      {values.identificationType === 'cedula' ? (
+                        <FormatPatterInput
+                          format="###-#######-#"
+                          placeholder="000-0000000-0"
+                          className="form-input ltr:rounded-l-none rtl:rounded-r-none"
+                          value={values.identification}
+                          onValueChange={(value: any) => {
+                            form.setFieldValue('identification', value.value);
+                          }}
+                        />
+                      ) : (
+                        <Input
+                          type="text"
+                          placeholder=""
+                          value={values.identification}
+                          onChange={(e) => form.setFieldValue('identification', e.target.value)}
+                          className="ltr:rounded-l-none rtl:rounded-r-none"
+                        />
+                      )}
+                    </div>
+                  </>
                 )}
               </Field>
             </FormItem>
@@ -85,9 +127,8 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
               label="Dirección"
               invalid={Boolean(errors.address && touched.address)}
               errorMessage={errors.address}
-              extra={<span className="text-sm text-gray-500">(Opcional)</span>}
             >
-              <Field type="text" name="address" component={Input} />
+              <Field type="text" name="address" component={Input} textArea />
             </FormItem>
 
             <FormItem name="phone" label="Teléfono" invalid={Boolean(errors.phone && touched.phone)} errorMessage={errors.phone}>
