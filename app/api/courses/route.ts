@@ -1,8 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { validateObject } from "@/utils";
-import { getCourses, createCourse, findCourseByCode } from "@/services/course-service";
+import { getCourses, createCourse, findCourseByCode, addPrerequisite } from "@/services/course-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
+import { Prisma } from "@/utils/lib/prisma";
+import { Course } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
     try {
@@ -31,7 +33,21 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        const course = await createCourse(body);
+        const course = await Prisma.$transaction(async (prisma) => {
+            const data = { ...body }
+            data?.prerequisites && delete data.prerequisites;
+            let course = await createCourse(data, prisma);
+
+            if (body.prerequisites && body.prerequisites.length > 0) {
+                await Promise.all(
+                    body.prerequisites.map((prerequisite: Course) =>
+                        addPrerequisite(course.id, prerequisite.id, prisma)
+                    )
+                );
+            }
+
+            return { ...course, prerequisites: body.prerequisites };
+        });
 
         // Enviar log de auditoría
 

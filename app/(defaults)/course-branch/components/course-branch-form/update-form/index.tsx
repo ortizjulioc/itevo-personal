@@ -19,9 +19,6 @@ import { useURLSearchParams } from '@/utils/hooks';
 import PrerequisitesFields from './prerequisites-fields';
 import { CourseBranchProvider } from './course-branch-provider';
 import { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
-import { getCourseEndDate } from '@/utils/date';
-import useFetchHolidays from '@/app/(defaults)/holidays/lib/use-fetch-holidays';
-import { useFetchScheduleByCourseId } from '@/app/(defaults)/schedules/lib/use-fetch-schedules';
 
 const COURSE_BRANCH_TABS = [
     'general-information',

@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from '@prisma/client';
+import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 export const getCourses = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
@@ -34,8 +34,11 @@ export const getCourses = async (search: string, page: number, top: number) => {
     return { courses, totalCourses };
 };
 
-export const createCourse = async (data: PrismaTypes.CourseCreateInput) => {
-    const course = await Prisma.course.create({ data: data });
+export const createCourse = async (
+    data: PrismaTypes.CourseCreateInput,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+    const course = await prisma.course.create({ data: data });
     return course;
 };
 
@@ -95,8 +98,12 @@ export const deleteCourseById = async (id: string) => {
 };
 
 // Agregar prerequisito a un curso
-export const addPrerequisite = async (courseId: string, prerequisiteId: string) => {
-    return Prisma.course.update({
+export const addPrerequisite = async (
+    courseId: string,
+    prerequisiteId: string,
+    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.course.update({
         where: { id: courseId },
         data: {
             prerequisites: {
