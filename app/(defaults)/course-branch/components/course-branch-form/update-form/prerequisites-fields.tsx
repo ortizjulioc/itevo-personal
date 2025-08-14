@@ -17,58 +17,44 @@ interface ScheduleAssignmentProps {
 }
 
 
-export default function PrerequisitesFields({ className, values, touched, errors }: ScheduleAssignmentProps) {
-
-  const { handleAddPrerequisite, handleRemovePrerequisite, preRequisites } = useCourseBranch();
-  const params = useURLSearchParams();
- 
-  const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
-
-
+export default function PrerequisitesFields({ className }: ScheduleAssignmentProps) {
+  const { preRequisites } = useCourseBranch();
 
 
   return (
     <div className={`${className} max-w-2xl`}>
-      <label className="block text-sm font-medium text-gray-700">Prerrequisitos</label>
+      <span className="block text-lg font-bold ">Prerrequisitos:</span>
 
       {/* Lista de prerrequisitos seleccionados */}
       <div className="mb-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="">
           {preRequisites.length === 0 && (
             <p className="text-gray-500 text-sm italic">Este curso no tiene prerrequisitos</p>
           )}
-          {preRequisites.map(({ prerequisite }: { prerequisite: Course }) => (
-            <span key={prerequisite.id} className="badge bg-primary text-white flex items-center">
-              {prerequisite.code} {prerequisite.name}
-              <button
-                type="button"
-                className="ml-2 text-white hover:cursor-pointer"
-                onClick={() => handleRemovePrerequisite(prerequisite.id)}
-              >
-                <Tooltip title='Eliminar prerrequisito'>
-                  <span><TbX className='' /></span>
-                </Tooltip>
-              </button>
-            </span>
-          ))}
+
+          <div className=''>
+            {preRequisites.map(({ prerequisite }: { prerequisite: Course }) => (
+              <span key={prerequisite.id} className="block px-2 py-1 border-b border-gray-200">
+                {prerequisite.code} - {prerequisite.name}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
 
-      <div className='flex justify-between items-center '>
+      {/* <div className='flex justify-between items-center '>
         <label className="block text-lg font-bold min-w-max">Agregar prerrequisitos</label>
-        {/* Campo de búsqueda */}
         <SearchInput searchKey='prerequisite' placeholder='Buscar curso...' />
       </div>
 
-      {/* Lista de cursos filtrados */}
       <div className="mt-2 max-h-40 overflow-y-auto border rounded-md p-2">
         {courses.length > 0 && (
           <ul>
             {courses.filter(
               course =>
-                course.id !== values.courseId && // Excluir el curso actual
-                !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id) // Excluir los prerrequisitos seleccionados
+                course.id !== values.courseId &&
+                !preRequisites.some(({ prerequisite }: { prerequisite: Course }) => prerequisite.id === course.id)
             )
               .map((course) => (
                 <li key={course.id} className="flex justify-between items-center py-1">
@@ -93,7 +79,7 @@ export default function PrerequisitesFields({ className, values, touched, errors
             <p className="text-gray-500 text-sm italic">No hay cursos disponibles</p>
           )
         }
-      </div>
+      </div> */}
     </div >
   )
 }

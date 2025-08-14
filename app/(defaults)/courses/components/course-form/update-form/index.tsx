@@ -11,29 +11,34 @@ import { CourseWithPrerequisites } from '../../../lib/use-fetch-courses';
 import StickyFooter from '@/components/common/sticky-footer';
 import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch } from '@/app/(defaults)/course-branch/lib/request';
 import { Course } from '@prisma/client';
+import { useState } from 'react';
 
 
 export default function UpdateCourseForm({ initialValues }: { initialValues: CourseWithPrerequisites }) {
     const route = useRouter();
-    const handleAddPrerequisite = async (courseId: string, prerequisite: Course, setValues: any) => {
-        const prevPrerequisites = initialValues.prerequisites;
-        setValues('prerequisites', [...prevPrerequisites, prerequisite]);
+    const [prerequisites, setPrerequisites] = useState<Course[]>(initialValues.prerequisites || []);
+
+    const handleAddPrerequisite = async (courseId: string, prerequisite: Course) => {
+        const prevPrerequisites = new Array(...prerequisites);
+        setPrerequisites((prev) => [...prev, prerequisite]);
         const response = await assignPrerequisiteToCourseBranch(courseId, prerequisite.id);
+        console.log(response);
         if (!response.success) {
             openNotification('error', response.message);
-            setValues('prerequisites', prevPrerequisites);
+            setPrerequisites(prevPrerequisites);
         }
     };
 
     // Función para eliminar un prerrequisito
-    const handleRemovePrerequisite = async (courseId: string, prerequisiteId: string, setValues: any) => {
-        const prevPrerequisites = initialValues.prerequisites;
+    const handleRemovePrerequisite = async (courseId: string, prerequisiteId: string) => {
+        const prevPrerequisites = new Array(...prerequisites);
         const newPrerequisites = prevPrerequisites.filter((item) => item.id !== prerequisiteId);
-        setValues('prerequisites', newPrerequisites);
+        setPrerequisites(newPrerequisites);
         const response = await unassignPrerequisiteToCourseBranch(courseId, prerequisiteId);
+        console.log(response);
         if (!response.success) {
             openNotification('error', response.message);
-            setValues('prerequisites', prevPrerequisites);
+            setPrerequisites(prevPrerequisites);
         }
     };
 
@@ -86,9 +91,9 @@ export default function UpdateCourseForm({ initialValues }: { initialValues: Cou
                                 <PrerequisitesFields
                                     className='w-full'
                                     courseId={initialValues.id}
-                                    prerequisites={values.prerequisites}
-                                    onRemove={(id) => handleRemovePrerequisite(initialValues.id, id, setFieldValue)}
-                                    onAdd={(course) => handleAddPrerequisite(initialValues.id, course, setFieldValue)}
+                                    prerequisites={prerequisites}
+                                    onRemove={(id) => handleRemovePrerequisite(initialValues.id, id)}
+                                    onAdd={(course) => handleAddPrerequisite(initialValues.id, course)}
                                 />
                             </div>
                         </div>
