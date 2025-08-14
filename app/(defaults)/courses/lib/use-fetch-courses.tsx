@@ -7,6 +7,10 @@ export interface CourseResponse {
   totalCourses: number;
 }
 
+export interface CourseWithPrerequisites extends Course {
+  prerequisites: Course[];
+}
+
 interface PrerequisiteResponse {
   courseId: string;
   prerequisiteId: string;
@@ -46,14 +50,14 @@ const useFetchcourses = (query: string) => {
 };
 
 export const useFetchCourseById = (id: string) => {
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseWithPrerequisites | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourseData = async (id: string) => {
       try {
-        const response = await apiRequest.get<Course>(`/courses/${id}`);
+        const response = await apiRequest.get<CourseWithPrerequisites>(`/courses/${id}`);
         if (!response.success) {
           throw new Error(response.message);
         }

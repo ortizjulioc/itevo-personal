@@ -60,11 +60,7 @@ export const findCourseById = async (id: string) => {
         include: {
             prerequisites: {
                 select: {
-                    prerequisite: {
-                        select: {
-                            id: true,
-                        },
-                    },
+                    prerequisite: true,
                 },
             },
         },
@@ -73,7 +69,7 @@ export const findCourseById = async (id: string) => {
     // Devolviendo prerequisites como un arreglo de IDs
 
     if (course) {
-        course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite.id);
+        course.prerequisites = course.prerequisites.map((prerequisite: any) => prerequisite.prerequisite);
     }
 
     return course;

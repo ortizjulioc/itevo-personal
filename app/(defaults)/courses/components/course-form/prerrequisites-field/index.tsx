@@ -5,20 +5,22 @@ import Tooltip from '@/components/ui/tooltip';
 import { TbX } from 'react-icons/tb';
 import { Course } from '@prisma/client';
 import useFetchcourses from '../../../lib/use-fetch-courses';
-import { values } from 'lodash';
 
 interface ScheduleAssignmentProps {
   className?: string;
   prerequisites: Course[];
   onRemove?: (id: string) => void;
   onAdd?: (course: Course) => void;
+  courseId?: string;
 }
 
 
-export default function PrerequisitesFields({ prerequisites, className, onRemove, onAdd }: ScheduleAssignmentProps) {
+export default function PrerequisitesFields({ prerequisites, className, onRemove, onAdd, courseId }: ScheduleAssignmentProps) {
   const params = useURLSearchParams();
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
-  const courseWithoutPrerequisites = courses.filter(course => !prerequisites.some((prerequisite: Course) => prerequisite.id === course.id));
+  const courseWithoutPrerequisites = courses
+    .filter(course => !prerequisites.some((prerequisite: Course) => prerequisite.id === course.id))
+    .filter(course => course.id !== courseId);
 
   return (
     <div className={`${className}`}>
