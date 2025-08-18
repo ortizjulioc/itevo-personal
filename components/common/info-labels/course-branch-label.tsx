@@ -7,7 +7,7 @@ import { CourseBranch } from '@/app/(defaults)/course-branch/lib/use-fetch-cours
 import OptionalInfo from '../optional-info';
 
 type Props = {
-  CourseBranchId: string;
+  CourseBranchId?: string;
   isSelected?: boolean;
   showTeacher?: boolean;
   clickable?: boolean;
@@ -18,7 +18,7 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
   const [courseBranch, setCourseBranch] = useState<CourseBranch | null>(courseBranchFromProps || null);
   const [noData, setNoData] = useState(false);
   useEffect(() => {
-    if (!courseBranchFromProps ) {
+    if (!courseBranchFromProps && CourseBranchId) {
       const fetchCourseBranchById = async () => {
         try {
           const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
@@ -42,6 +42,8 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
         }
       };
       fetchCourseBranchById();
+    } else if (courseBranchFromProps) {
+      setCourseBranch(courseBranchFromProps);
     }
 
   }, [CourseBranchId, courseBranchFromProps]);

@@ -28,6 +28,10 @@ export async function getAttendanceRecords(filter: {
             skip,
             take: top,
             orderBy: { date: 'desc' },
+            include: {
+                student: true,
+                courseBranch: true,
+            },
         }),
         Prisma.attendance.count({ where }),
     ]);

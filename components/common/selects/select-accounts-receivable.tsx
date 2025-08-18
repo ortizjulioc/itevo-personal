@@ -44,7 +44,7 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
 
       return response.data?.accountsReceivable.map((account) => ({
         value: account.id,
-        label: <StudentLabel StudentId={account.studentId} />,
+        label: <StudentLabel studentId={account.studentId} />,
         amount: account.amount,
         account,
         concept: `Cuota curso: ${(account as any)?.courseBranch?.course?.name}`,
@@ -118,7 +118,7 @@ export default function SelectAccountsReceivable({ value, ...rest }: SelectAccou
               (res.data as any)?.courseBranch?.course?.name || 'N/A';
             const option = {
               value: res.data.id,
-              label: <StudentLabel StudentId={res.data.studentId} />,
+              label: <StudentLabel studentId={res.data.studentId} />,
               amount: res.data.amount,
               concept: `Cuota curso: ${courseName}`,
               account: res.data,

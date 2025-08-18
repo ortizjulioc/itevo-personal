@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import apiRequest from '@/utils/lib/api-request/request';
-import { Attendance } from '@prisma/client';
+import { Attendance, CourseBranch, Student } from '@prisma/client';
+
+export interface AttendanceWithStudent extends Attendance {
+    student: Student;
+    CourseBranch: CourseBranch;
+}
 
 export interface AttendanceResponse {
-    attendanceRecords: Attendance[];
+    attendanceRecords: AttendanceWithStudent[];
     totalAttendanceRecords: number;
 }
 
 const useFetchAttendances = (query: string) => {
-    const [attendances, setAttendances] = useState<Attendance[]>([]);
+    const [attendances, setAttendances] = useState<AttendanceWithStudent[]>([]);
     const [totalAttendances, setTotalAttendances] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);

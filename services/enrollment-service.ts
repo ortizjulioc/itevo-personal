@@ -14,12 +14,14 @@ export const getEnrollments = async (filters: any) => {
         enrollmentDate,
         page,
         top,
+        courseBranchId
     } = filters;
     const skip = (page - 1) * top;
 
 
     const where: PrismaTypes.EnrollmentWhereInput = {
         deleted: false,
+        ...(courseBranchId && { courseBranchId }),
         ...(studentId && { studentId }),
         ...(status && {
             status: (Object.values(EnrollmentStatus) as string[]).includes(status.toUpperCase())

@@ -1,3 +1,5 @@
+import { Schedule } from "@prisma/client";
+
 export function convertTimeFrom24To12Format(time: string): string {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!timeRegex.test(time)) {
@@ -242,4 +244,14 @@ export function getFormattedDateTime(fecha: Date, options?: Intl.DateTimeFormatO
 
     // Convertimos la fecha a una cadena de texto con formato de fecha y hora.
     return `${getFormattedDate(fecha, options)} ${getFormattedTime(fecha, options)}`;
+}
+
+export function isCourseOnDate(schedules: Schedule[], date: Date | string): boolean {
+  const givenDate = typeof date === "string" ? new Date(date) : date;
+
+  // En JavaScript: getDay() devuelve 0 = domingo, 1 = lunes, etc.
+  const dayOfWeek = givenDate.getDay();
+
+  // Verificamos si algún schedule coincide con ese día
+  return schedules.some(schedule => schedule.weekday === dayOfWeek);
 }

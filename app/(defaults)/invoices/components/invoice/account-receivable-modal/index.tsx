@@ -203,7 +203,7 @@ export default function AccountReceivableModal({
                 />
 
                 <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Cuentas por cobrar del estudiante: <StudentLabel StudentId={studentId} showNumber={false} />
+                  Cuentas por cobrar del estudiante: <StudentLabel studentId={studentId} />
                 </Dialog.Title>
 
                 <div className="space-y-6">
