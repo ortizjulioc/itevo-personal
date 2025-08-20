@@ -5,7 +5,7 @@ import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import React from 'react';
 import useFetchEnrollments from '../../enrollments/lib/use-fetch-enrollments';
 import { AttendanceStatus, Student } from '@prisma/client';
-import { Select } from '@/components/ui';
+import { Button, Select } from '@/components/ui';
 import StatusAttendance from '../components/status-attendance';
 import StudentLabel from '@/components/common/info-labels/student-label';
 import CourseBranchDetails from '../../course-branch/components/course-branch-details/course-branch-details';
@@ -36,6 +36,7 @@ export default function NewAttendance() {
   );
   // Add state to track loading for each student
   const [loadingStudents, setLoadingStudents] = React.useState<{ [key: string]: boolean }>({});
+  const [bulkLoading, setBulkLoading] = React.useState(false);
 
   // Normaliza cualquier Date o string ISO a "YYYY-MM-DD"
   const toIsoDate = (isoOrDate: string | Date): string => {
@@ -50,25 +51,20 @@ export default function NewAttendance() {
   const onChangeDate = (date: string) => {
     date && setSelectedDate(new Date(date));
   };
-
-  const onChangeStatus = async (status: string, student: Student) => {
+  const upsertAttendance = async (status: AttendanceStatus, student: Student, opts?: { silent?: boolean }) => {
     if (!selectedBranch) {
-      openNotification('error', 'Seleccione una oferta académica');
-      return;
+      if (!opts?.silent) openNotification('error', 'Seleccione una oferta académica');
+      return { ok: false };
     }
 
-    const data = {
-      status: status as AttendanceStatus,
+    const payload = {
+      status,
       studentId: student.id,
       date: extractDate(selectedDate),
       courseBranchId: selectedBranch.id,
     };
 
-    // Set loading state for this student
-    setLoadingStudents((prev) => ({ ...prev, [student.id]: true }));
-
     try {
-      // Buscar si ya existe un attendance para este estudiante, fecha y courseBranch
       const existingAttendance = attendances?.find(
         (att: AttendanceWithStudent) =>
           att.studentId === student.id &&
@@ -76,36 +72,98 @@ export default function NewAttendance() {
           att.courseBranchId === selectedBranch.id
       );
 
+      let response;
       if (existingAttendance) {
-        const response = await updateAttendance(existingAttendance.id, {
-          status: status as AttendanceStatus,
-          courseBranchId: selectedBranch.id,
-          studentId: student.id,
-          date: extractDate(selectedDate),
-        });
-
-        if (response.success) {
-          openNotification('success', 'Asistencia actualizada correctamente');
-          fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
-        } else {
-          openNotification('error', response.message || 'Error al actualizar la asistencia');
+        // Si ya está con el mismo estado, evita llamada
+        if (existingAttendance.status === status) {
+          return { ok: true, skipped: true };
         }
+        response = await updateAttendance(existingAttendance.id, payload);
       } else {
-        const response = await createAttendance(data);
-        if (response.success) {
-          openNotification('success', 'Asistencia registrada correctamente');
-          fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
-        } else {
-          openNotification('error', response.message || 'Error al registrar la asistencia');
-        }
+        response = await createAttendance(payload);
       }
-    } catch (error) {
-      openNotification('error', 'Error al procesar la asistencia');
+
+      if (response?.success) {
+        if (!opts?.silent) openNotification('success', existingAttendance ? 'Asistencia actualizada correctamente' : 'Asistencia registrada correctamente');
+        return { ok: true };
+      } else {
+        if (!opts?.silent) openNotification('error', response?.message || 'Error al registrar/actualizar la asistencia');
+        return { ok: false };
+      }
+    } catch {
+      if (!opts?.silent) openNotification('error', 'Error al procesar la asistencia');
+      return { ok: false };
+    }
+  };
+
+  const onChangeStatus = async (status: string, student: Student) => {
+    if (!selectedBranch) {
+      openNotification('error', 'Seleccione una oferta académica');
+      return;
+    }
+    setLoadingStudents((prev) => ({ ...prev, [student.id]: true }));
+    try {
+      await upsertAttendance(status as AttendanceStatus, student, { silent: false });
+      // Un refetch después de cada cambio individual (como ya tenías)
+      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
     } finally {
-      // Remove loading state for this student
       setLoadingStudents((prev) => ({ ...prev, [student.id]: false }));
     }
   };
+
+  const markAllPresent = async () => {
+    if (!selectedBranch) {
+      openNotification('error', 'Seleccione una oferta académica');
+      return;
+    }
+    if (students.length === 0) {
+      openNotification('warning', 'No hay estudiantes inscritos.');
+      return;
+    }
+
+    setBulkLoading(true);
+
+    try {
+      let updated = 0;
+      let skipped = 0;
+      let failed = 0;
+
+      // Procesa en paralelo controlado (Promise.allSettled)
+      const results = await Promise.allSettled(
+        students.map(async (student) => {
+          // muestra loading en cada fila para feedback
+          setLoadingStudents((prev) => ({ ...prev, [student.id]: true }));
+          const res = await upsertAttendance(AttendanceStatus.PRESENT, student, { silent: true });
+          setLoadingStudents((prev) => ({ ...prev, [student.id]: false }));
+
+          if (res.ok && res.skipped) return 'skipped';
+          if (res.ok) return 'updated';
+          return 'failed';
+        })
+      );
+
+      results.forEach((r) => {
+        if (r.status === 'fulfilled') {
+          if (r.value === 'updated') updated += 1;
+          else if (r.value === 'skipped') skipped += 1;
+          else failed += 1;
+        } else {
+          failed += 1;
+        }
+      });
+
+      // Un solo refetch al final
+      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
+
+      openNotification(
+        failed ? 'warning' : 'success',
+        `Marcados PRESENTES: ${updated}. Ya estaban PRESENT: ${skipped}. Fallidos: ${failed}.`
+      );
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
 
   React.useEffect(() => {
     if (selectedBranch) {
@@ -147,10 +205,18 @@ export default function NewAttendance() {
                 onChange={(date) => onChangeDate(extractDate(date))}
               />
             </div>
+
           </div>
         }
         showBackPage
       />
+      {selectedBranch && !isCourseOnDate(selectedBranch.schedules || [], selectedDate) && (
+        <div className="flex items-center p-3.5 rounded text-warning bg-warning-light dark:bg-warning-dark-light mb-2">
+          <span className="ltr:pr-2 rtl:pl-2">
+            <strong className="ltr:mr-1 rtl:ml-1">¡Atención!</strong>El curso no se imparte en la fecha seleccionada.
+          </span>
+        </div>
+      )}
 
 
       <div>
@@ -174,14 +240,16 @@ export default function NewAttendance() {
                 </div>
               ) : (
                 <div className="panel">
-
-                  {selectedBranch && !isCourseOnDate(selectedBranch.schedules || [], selectedDate) && (
-                    <div className="flex items-center p-3.5 rounded text-warning bg-warning-light dark:bg-warning-dark-light mb-2">
-                      <span className="ltr:pr-2 rtl:pl-2">
-                        <strong className="ltr:mr-1 rtl:ml-1">¡Atención!</strong>El curso no se imparte en la fecha seleccionada.
-                      </span>
-                    </div>
-                  )}
+                  {/* ⬇️ NUEVO botón masivo */}
+                  <div className="flex justify-end mb-5">
+                    <Button
+                      onClick={markAllPresent}
+                      disabled={!selectedBranch || students.length === 0 || bulkLoading}
+                      variant="outline"
+                    >
+                      {bulkLoading ? 'Marcando…' : 'Marcar todos presentes'}
+                    </Button>
+                  </div>
 
                   {students.map((student) => {
                     const existingAttendance = attendances?.find(
