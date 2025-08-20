@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import { Enrollment } from "@prisma/client";
 import { EnrollmentWithRelations } from '@/@types/enrollment';
@@ -8,38 +8,45 @@ export interface EnrollmentResponse {
   totalEnrollments: number;
 }
 
-const useFetchEnrollments = (query: string) => {
+const useFetchEnrollments = (query: string, options: { [key: string]: any } = {}) => {
+  const { preventFirstFetch = false } = options;
   const [enrollments, setEnrollments] = useState<EnrollmentWithRelations[]>([]);
   const [totalEnrollments, setTotalEnrollments] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchrolesData = async (query: string) => {
-      try {
-
-        const response = await apiRequest.get<EnrollmentResponse>(`/enrollments?${query}`);
-       ;
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-        setEnrollments(response.data?.enrollments || []);
-        setTotalEnrollments(response.data?.totalEnrollments || 0);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('Ha ocurrido un error al obtener las incripciones');
-        }
-      } finally {
-        setLoading(false);
+  const fetchEnrollmentData = useCallback(async (query: string) => {
+    try {
+      setLoading(true);
+      const response = await apiRequest.get<EnrollmentResponse>(`/enrollments?${query}`);
+      if (!response.success) {
+        throw new Error(response.message);
       }
-    };
+      setEnrollments(response.data?.enrollments || []);
+      setTotalEnrollments(response.data?.totalEnrollments || 0);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ha ocurrido un error al obtener las incripciones');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    fetchrolesData(query);
-  }, [query]);
+  useEffect(() => {
+    Boolean(!preventFirstFetch) && fetchEnrollmentData(query);
+  }, [query, preventFirstFetch, fetchEnrollmentData]);
 
-  return { enrollments, totalEnrollments, loading, error, setEnrollments };
+  return {
+    enrollments,
+    totalEnrollments,
+    loading,
+    error,
+    setEnrollments,
+    refetchEnrollments: fetchEnrollmentData
+  };
 };
 
 export const useFetchEnrollmentById = (id: string) => {

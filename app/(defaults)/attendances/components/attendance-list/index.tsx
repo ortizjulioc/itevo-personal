@@ -20,6 +20,7 @@ interface Props {
 export default function AttendanceList({ className, query = '', openModal, setOpenModal }: Props) {
     const params = queryStringToObject(query);
     const { loading, error, attendances, totalAttendances, fetchAttendanceData } = useFetchAttendances(query);
+    console.log('attendances', attendances);
     if (error) {
         openNotification('error', error);
     }
@@ -47,7 +48,7 @@ export default function AttendanceList({ className, query = '', openModal, setOp
                             return (
                                 <tr key={attendance.id}>
                                     <td>
-                                        <StudentLabel StudentId={attendance.studentId} />
+                                        <StudentLabel student={attendance.student} clickable />
                                     </td>
                                     <td>
                                         <CourseBranchLabel CourseBranchId={attendance.courseBranchId} />

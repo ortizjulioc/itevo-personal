@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
             modality: searchParams.get('modality') || undefined,
             status: searchParams.get('status') || undefined,
             enrollmentDate: searchParams.get('enrollmentDate') || undefined,
+            courseBranchId: searchParams.get('courseBranchId') || undefined,
         }
 
         const { enrollments, totalEnrollments } = await getEnrollments(filters);

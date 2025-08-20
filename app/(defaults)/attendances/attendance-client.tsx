@@ -44,9 +44,13 @@ export default function AttendanceClient({ searchParams }: { searchParams?: { se
             >
               {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
             </Button>
-            <Button icon={<IconPlusCircle />} onClick={() => setOpenModal(true)}>
-              Registrar Asistencia
-            </Button>
+            <Link href={'/attendances/new'}>
+              <Button
+                icon={<IconPlusCircle />}
+              >
+                Registrar Asistencia
+              </Button>
+            </Link>
           </div>
         }
       />
