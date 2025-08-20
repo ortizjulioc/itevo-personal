@@ -17,7 +17,7 @@ import { GenericSkeleton } from '@/components/common/Skeleton';
 
 export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
 
-  const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
+    const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
     const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id);
     const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id);
 
@@ -32,48 +32,48 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             .filter((m) => m.type === 'INCOME')
             .reduce((total, m) => total + m.amount, 0);
     }
-function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
-    const summary = {
-        efectivo: 0,
-        tarjeta: 0,
-        transferencia: 0,
-        cheque: 0,
-        credito: 0,
-        total: 0,
-    };
+    function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
+        const summary = {
+            efectivo: 0,
+            tarjeta: 0,
+            transferencia: 0,
+            cheque: 0,
+            credito: 0,
+            total: 0,
+        };
 
-    const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
+        const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
 
-    cashMovements.forEach(movement => {
-        if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
-            const invoice = invoiceMap.get(movement.referenceId);
-            if (!invoice) return;
+        cashMovements.forEach(movement => {
+            if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
+                const invoice = invoiceMap.get(movement.referenceId);
+                if (!invoice) return;
 
-            const amount = invoice.subtotal + invoice.itbis;
-            summary.total += amount;
+                const amount = invoice.subtotal + invoice.itbis;
+                summary.total += amount;
 
-            switch (invoice.paymentMethod) {
-                case 'cash':
-                    summary.efectivo += amount;
-                    break;
-                case 'credit_card':
-                    summary.tarjeta += amount;
-                    break;
-                case 'bank_transfer':
-                    summary.transferencia += amount;
-                    break;
-                case 'check':
-                    summary.cheque += amount;
-                    break;
-                default:
-                    summary.credito += amount;
-                    break;
+                switch (invoice.paymentMethod) {
+                    case 'cash':
+                        summary.efectivo += amount;
+                        break;
+                    case 'credit_card':
+                        summary.tarjeta += amount;
+                        break;
+                    case 'bank_transfer':
+                        summary.transferencia += amount;
+                        break;
+                    case 'check':
+                        summary.cheque += amount;
+                        break;
+                    default:
+                        summary.credito += amount;
+                        break;
+                }
             }
-        }
-    });
+        });
 
-    return summary;
-}
+        return summary;
+    }
 
 
     function getCashLabel(key: string): string {
@@ -96,17 +96,16 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
     const totalEgresos = getTotalExpenses(cashMovements);
     const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
 
-    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements,invoices);
+    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements, invoices);
     return (
         <>
-
-            <div className=' grid grid-cols-12 gap-5' >
+            <div className=" grid grid-cols-12 gap-5">
                 <div className="col-span-12">
-                    <span className="ml-3 font-bold text-lg">Detalles de Caja</span>
-                    <div className="panel p-4 flex items-center justify-between gap-4">
+                    <span className="ml-3 text-lg font-bold">Detalles de Caja</span>
+                    <div className="panel flex items-center justify-between gap-4 p-4">
                         <div>
                             <p className="text-sm text-gray-600">Fecha de Apertura</p>
-                            <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.openingDate), { hour12: true})}</p>
+                            <p className="text-base font-medium">{getFormattedDateTime(new Date(cashRegister.openingDate), { hour12: true })}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Nombre</p>
@@ -126,12 +125,12 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                         <div>
                             <p className="text-sm text-gray-600">Estado</p>
                             {cashRegister.status === 'OPEN' ? (
-                                <p className={`flex items-center gap-1 font-bold min-w-max text-green-600`}>
+                                <p className={`flex min-w-max items-center gap-1 font-bold text-green-600`}>
                                     <TbPointFilled />
                                     Abierto
                                 </p>
                             ) : (
-                                <p className={`flex items-center gap-1 font-bold min-w-max text-red-600`}>
+                                <p className={`flex min-w-max items-center gap-1 font-bold text-red-600`}>
                                     <TbPointFilled />
                                     Cerrado
                                 </p>
@@ -139,16 +138,20 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                         </div>
                     </div>
                 </div>
-                {closureLoading && <div className="col-span-12"> <GenericSkeleton className="mb-6" lines={2} withHeader={false} /> </div>}
+                {closureLoading && (
+                    <div className="col-span-12">
+                        {' '}
+                        <GenericSkeleton className="mb-6" lines={2} withHeader={false} />{' '}
+                    </div>
+                )}
                 {!closureLoading && closure && (
                     <div className="col-span-12">
-                        <span className="ml-3 font-bold text-lg">Detalles de Cierre</span>
-                        <div className="panel p-4 flex items-center justify-between gap-4">
+                        <span className="ml-3 text-lg font-bold">Detalles de Cierre</span>
+                        <div className="panel flex items-center justify-between gap-4 p-4">
                             <div>
                                 <p className="text-sm text-gray-600">Fecha de Cierre</p>
                                 <p className="text-base font-medium">{getFormattedDateTime(new Date(closure.closureDate), { hour12: true })}</p>
                             </div>
-
 
                             <div>
                                 <p className="text-sm text-gray-600">Esperado</p>
@@ -158,10 +161,13 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                                 <p className="text-sm text-gray-600">Total Reportado</p>
                                 <p className="text-base font-medium">{formatCurrency(closure.totalCash + closure.totalCheck + closure.totalCard + closure.totalTransfer)}</p>
                             </div>
+
                             <div>
                                 <p className="text-sm text-gray-600">Diferencia</p>
-                                <p className={`text-base font-medium ${closure.difference === 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {formatCurrency(closure.difference)}
+                                <p className={`text-base font-medium ${closure.difference > 0 ? 'text-green-600' : closure.difference < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                                    {closure.difference > 0 && <>Sobrante: +{formatCurrency(closure.difference)}</>}
+                                    {closure.difference < 0 && <>Faltante: -{formatCurrency(Math.abs(closure.difference))}</>}
+                                    {closure.difference === 0 && <>Sin diferencia</>}
                                 </p>
                             </div>
                             <div>
@@ -172,14 +178,13 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                             </div>
                         </div>
                     </div>
-
                 )}
                 {closure && closure.cashBreakdown && (
                     <div className="col-span-12">
-                        <span className="ml-3 font-bold text-lg">Desglose de Efectivo</span>
-                        <div className="panel p-4 grid grid-cols-4 gap-4 text-sm">
+                        <span className="ml-3 text-lg font-bold">Desglose de Efectivo</span>
+                        <div className="panel grid grid-cols-4 gap-4 p-4 text-sm">
                             {Object.entries(closure.cashBreakdown).map(([key, value]) => (
-                                <div key={key} className="border rounded p-2 flex justify-between">
+                                <div key={key} className="flex justify-between rounded border p-2">
                                     <span className="capitalize">{getCashLabel(key)}</span>
                                     <span className="font-semibold">{value}</span>
                                 </div>
@@ -188,15 +193,16 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                     </div>
                 )}
 
-                {cashMovementsLoading &&
-                    <div className='col-span-3'>
-                        <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
+                {cashMovementsLoading && (
+                    <div className="col-span-3">
+                        <span className="ml-3 text-lg font-bold">Resumen de movimentos</span>
                         <GenericSkeleton className="w-full" lines={8} withHeader={false} />
-                    </div>}
-                {!cashMovementsLoading &&
-                    <div className='col-span-3'>
-                        <span className='ml-3 font-bold text-lg'>Resumen de movimentos</span>
-                        <div className="panel p-4 space-y-4">
+                    </div>
+                )}
+                {!cashMovementsLoading && (
+                    <div className="col-span-3">
+                        <span className="ml-3 text-lg font-bold">Resumen de movimentos</span>
+                        <div className="panel space-y-4 p-4">
                             <div>
                                 <p className="text-sm text-gray-600">Balance Inicial</p>
                                 <p className="text-base font-medium">{formatCurrency(cashRegister?.initialBalance || 0)}</p>
@@ -204,7 +210,7 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
 
                             <div>
                                 <p className="text-sm text-gray-600">Efectivo</p>
-                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo +cashRegister.initialBalance)}</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo + cashRegister.initialBalance)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Tarjeta</p>
@@ -226,14 +232,12 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                                 <p className="text-sm text-gray-600">Total</p>
                                 <p className="text-base font-medium">{formatCurrency(total)}</p>
                             </div>
-
-
                         </div>
                     </div>
-                }
-                <div className='col-span-9'>
-                    <span className='ml-3 font-bold text-lg'>Historial de movimentos</span>
-                    <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden">
+                )}
+                <div className="col-span-9">
+                    <span className="ml-3 text-lg font-bold">Historial de movimentos</span>
+                    <div className="table-responsive panel mb-5 overflow-hidden border-0 p-0">
                         <table className="table-hover">
                             <thead>
                                 <tr>
@@ -246,49 +250,44 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                             </thead>
 
                             <tbody>
-                                {cashMovementsLoading && <tr>
-                                    <td colSpan={5}>
-                                        <GenericSkeleton className="w-full" lines={8} withHeader={false} />
-                                    </td>
-                                </tr>}
-                                {!cashMovementsLoading && cashMovements?.map((cashMovement) => {
-                                    return (
-                                        <tr key={cashMovement.id}>
-                                            <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt), { hour12: true })}</td>
-                                            <td className="text-left ">{cashMovement.description}</td>
-                                            <td className="text-left font-bold  whitespace-nowrap">
-                                                {cashMovement.type === "EXPENSE"
-                                                    ? `- ${formatCurrency(cashMovement.amount)}`
-                                                    : formatCurrency(cashMovement.amount)}
-                                            </td>
-                                            <td className="text-left">
-                                                <span className={cashMovement.type === "INCOME" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
-                                                    {cashMovement.type === "INCOME" ? "Ingreso" : "Egreso"}
-                                                </span>
-                                            </td>
+                                {cashMovementsLoading && (
+                                    <tr>
+                                        <td colSpan={5}>
+                                            <GenericSkeleton className="w-full" lines={8} withHeader={false} />
+                                        </td>
+                                    </tr>
+                                )}
+                                {!cashMovementsLoading &&
+                                    cashMovements?.map((cashMovement) => {
+                                        return (
+                                            <tr key={cashMovement.id}>
+                                                <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt), { hour12: true })}</td>
+                                                <td className="text-left ">{cashMovement.description}</td>
+                                                <td className="whitespace-nowrap text-left  font-bold">
+                                                    {cashMovement.type === 'EXPENSE' ? `- ${formatCurrency(cashMovement.amount)}` : formatCurrency(cashMovement.amount)}
+                                                </td>
+                                                <td className="text-left">
+                                                    <span className={cashMovement.type === 'INCOME' ? 'font-semibold text-green-600' : 'font-semibold text-red-600'}>
+                                                        {cashMovement.type === 'INCOME' ? 'Ingreso' : 'Egreso'}
+                                                    </span>
+                                                </td>
 
-
-
-
-
-                                            <td>
-                                                <div className="flex justify-end gap-2">
-                                                    {cashMovement.referenceType === "INVOICE" && (
-                                                        <Tooltip title="detalles">
-                                                            <Link href={`/bills/${cashMovement.referenceId}`}>
-                                                                <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
-                                                            </Link>
-                                                        </Tooltip>
-                                                    )}
-
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                                <td>
+                                                    <div className="flex justify-end gap-2">
+                                                        {cashMovement.referenceType === 'INVOICE' && (
+                                                            <Tooltip title="detalles">
+                                                                <Link href={`/bills/${cashMovement.referenceId}`}>
+                                                                    <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                                </Link>
+                                                            </Tooltip>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                             </tbody>
                         </table>
-
                     </div>
                 </div>
                 {/* <div className="">
@@ -298,7 +297,6 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
                     top={Number.parseInt(params?.top || '10')}
                 />
             </div> */}
-
             </div>
             {/* <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
                 <div className="flex justify-end">
@@ -306,7 +304,6 @@ function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
 
                 </div>
             </div> */}
-
         </>
-    )
+    );
 }
