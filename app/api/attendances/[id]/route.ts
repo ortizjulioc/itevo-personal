@@ -5,6 +5,7 @@ import { createLog } from '@/utils/log';
 import { Attendance } from '@prisma/client';
 import { getAttendanceRecords, createAttendanceRecord, findAttendanceRecordById, updateAttendanceRecordById, deleteAttendanceRecordById } from '@/services/attendance-service';
 import { findEnrollmentById } from '@/services/enrollment-service';
+import { findCourseBranchById } from '@/services/course-branch-service';
 
 
 // obtener una asistencia por id
@@ -36,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     try {
         const body = await request.json();
-
+        console.log('PUT /attendances/[id] body:', body);
         // Validación de campos requeridos
         const { isValid, message } = validateObject(body, [
             'courseBranchId',
@@ -49,10 +50,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
-        // Verificar si el curso existe
-        const enrollment = await findEnrollmentById(body.enrollmentId);
-        if (!enrollment) {
-            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND', error: 'Enrollment not found' }, { status: 404 });
+        // Verificar si la oferta academica existe
+        const courseBranch = await findCourseBranchById(body.courseBranchId);
+        if (!courseBranch) {
+            return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
         }
 
         const attendanceRecord = await updateAttendanceRecordById(id, {
