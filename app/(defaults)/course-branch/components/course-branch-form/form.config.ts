@@ -17,6 +17,7 @@ export const updateValidationSchema = Yup.object().shape({
     teacherId: Yup.string().required('El profesor es obligatorio'),
     courseId: Yup.string().required('El curso es obligatorio'),
     amount: Yup.number().required('El monto es obligatorio'),
+    enrollmentAmount: Yup.number(),
     modality: Yup.string()
         .oneOf(Object.values(MODALITIES), 'La modalidad no es válida')
         .required('La modalidad es obligatoria'),
@@ -44,6 +45,7 @@ export const updateInitialValues = {
     teacherId: '',
     courseId: '',
     amount: '',
+    enrollmentAmount: '',
     modality: MODALITIES.PRESENTIAL,
     startDate: null,
     endDate: null,
@@ -78,6 +80,7 @@ export type CourseBranchFormType = {
     teacherId: string;
     courseId: string;
     amount: number;
+    enrollmentAmount: number;
     modality: Modality;
     startDate: Date | null;
     endDate: Date | null;

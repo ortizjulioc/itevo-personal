@@ -186,6 +186,7 @@ model CourseBranch {
   teacherId        String             @map("teacher_id")
   courseId         String             @map("course_id")
   amount           Float              @default(0)
+  enrollmentAmount Float              @default(0) @map("enrollment_amount")
   modality         Modality
   startDate        DateTime?          @map("start_date")
   endDate          DateTime?          @map("end_date")
