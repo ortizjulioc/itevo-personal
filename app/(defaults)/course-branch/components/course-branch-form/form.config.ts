@@ -1,5 +1,5 @@
 import { MODALITIES } from '@/constants/modality.constant';
-import { CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus, Modality, PaymentFrequency } from '@prisma/client';
 import * as Yup from 'yup';
 
 export const createValidationSchema = Yup.object().shape({
@@ -37,6 +37,9 @@ export const updateValidationSchema = Yup.object().shape({
         .oneOf(Object.values(CourseBranchStatus), 'El estado no es válido')
         .required('El estado es obligatorio'),
     sessionCount: Yup.number().required('El número de sesiones es obligatorio'),
+    paymentFrequency: Yup.string()
+        .oneOf([PaymentFrequency.WEEKLY, PaymentFrequency.MONTHLY], 'La frecuencia de pago no es válida')
+        .required('La frecuencia de pago es obligatoria'),
 });
 
 export const updateInitialValues = {

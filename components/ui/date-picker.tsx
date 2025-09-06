@@ -1,11 +1,10 @@
 'use client';
 
-import React, { forwardRef } from 'react';
+import React from 'react';
 import ReactDatePicker from 'react-datepicker';
 import { FieldProps } from 'formik';
 import 'react-datepicker/dist/react-datepicker.css';
 import '@/styles/datepicker-custom.css'; // Custom styles for react-datepicker
-import { HiX } from 'react-icons/hi';
 
 type Mode = 'single' | 'range' | 'time' | 'datetime';
 

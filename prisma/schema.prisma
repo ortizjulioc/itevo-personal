@@ -200,6 +200,7 @@ model CourseBranch {
   isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
   taxRate          Float              @default(0) @map("tax_rate")
   deleted          Boolean            @default(false)
+  paymentFrequency PaymentFrequency   @default(WEEKLY) @map("payment_frequency")
 
   accountPayable    AccountPayable[]
   accountReceivable AccountReceivable[]
@@ -633,6 +634,11 @@ model QuotationItem {
   @@index([productId], map: "quotation_items_product_id_fkey")
   @@index([quotationId], map: "quotation_items_quotation_id_fkey")
   @@map("quotation_items")
+}
+
+enum PaymentFrequency {
+  WEEKLY  @map("weekly")
+  MONTHLY @map("monthly")
 }
 
 enum Modality {

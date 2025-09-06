@@ -132,6 +132,16 @@ export default function GeneralInformationFields({ values, errors, touched, clas
                     placeholder="Ingrese la capacidad de estudiantes para este curso"
                 />
             </FormItem>
+
+            <FormItem name="sessionCount" label="Cantidad de sesiones" invalid={Boolean(errors.sessionCount && touched.sessionCount)} errorMessage={errors.sessionCount}>
+                <Field
+                    type="number"
+                    onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()}
+                    name="sessionCount"
+                    component={Input}
+                    placeholder="Ingrese la cantidad de sesiones para este curso"
+                />
+            </FormItem>
         </div>
     )
 }

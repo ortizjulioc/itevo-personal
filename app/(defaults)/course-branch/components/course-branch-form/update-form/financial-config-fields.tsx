@@ -1,6 +1,6 @@
 import { Field, FieldProps, FormikErrors, FormikTouched } from "formik";
 import { CourseBranchFormType } from "../form.config";
-import { FormItem, Input } from "@/components/ui";
+import { Button, FormItem, Input } from "@/components/ui";
 import Tooltip from "@/components/ui/tooltip";
 
 interface FinancialConfigFieldsProps {
@@ -27,7 +27,14 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                             <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                 RD$
                             </div>
-                            <Input {...field} onWheel={(e) => (e.target as HTMLInputElement).blur()} type="number" placeholder="Ingrese el monto de cada cuota" className="form-input rounded-none" />
+                            <Input
+                                {...field}
+                                value={values.amount || ''}
+                                type="number"
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                placeholder="Ingrese el monto de cada cuota"
+                                className="form-input rounded-none"
+                            />
                             <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                 .00
                             </div>
@@ -49,7 +56,14 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                             <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                 RD$
                             </div>
-                            <Input {...field} onWheel={(e) => (e.target as HTMLInputElement).blur()} type="number" placeholder="Ingrese el monto de cada cuota" className="form-input rounded-none" />
+                            <Input
+                                {...field}
+                                value={values.enrollmentAmount || ''}
+                                type="number"
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                placeholder="Ingrese el monto de cada cuota"
+                                className="form-input rounded-none"
+                            />
                             <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                 .00
                             </div>
@@ -97,17 +111,19 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
 
             <FormItem label='Frecuencia de pago'>
                 <Field as='div' className="flex gap-2">
-                    <div>
-                        <span className="badge bg-primary rounded-r-none cursor-pointer">Semanal</span>
-                        <span className="badge badge-outline-primary rounded-l-none cursor-pointer">Mensual</span>
+                    <div className="relative inline-flex align-middle">
+                        <Button type="button" className="ltr:rounded-r-none rtl:rounded-l-none">
+                            Semanal
+                        </Button>
+                        {/* <Button type="button" variant="outline" className="rounded-none">
+                            Middle
+                        </Button> */}
+                        <Button type="button" variant="outline" className="ltr:rounded-l-none rtl:rounded-r-none">
+                            Mensual
+                        </Button>
                     </div>
                 </Field>
             </FormItem>
-
-
-            {/* <FormItem name="capacity" label="Capacidad" invalid={Boolean(errors.capacity && touched.capacity)} errorMessage={errors.capacity}>
-                <Field type="number" name="capacity" component={Input} />
-            </FormItem> */}
         </div>
     )
 }
