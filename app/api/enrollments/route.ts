@@ -119,6 +119,12 @@ export async function POST(request: Request) {
             let accountReceivableCreatedCount: number = 0;
             if (body.status === EnrollmentStatus.ENROLLED) {
                 const accountReceivableToCreate = Array.from({ length: courseBranch.sessionCount }).map(() => (accountReceivable));
+                if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
+                    accountReceivableToCreate.push({
+                        ...accountReceivable,
+                        amount: courseBranch.enrollmentAmount,
+                    });
+                }
                 const [enrollmentCreated, totalAccountsReceivableCreated] = await Prisma.$transaction(async (tx) => [
                     await createEnrollment(body, tx),
                     await createManyAccountsReceivable(accountReceivableToCreate, tx),
