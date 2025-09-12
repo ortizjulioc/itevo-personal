@@ -639,6 +639,8 @@ model QuotationItem {
 enum PaymentFrequency {
   WEEKLY  @map("weekly")
   MONTHLY @map("monthly")
+  ONE_TIME @map("one_time")
+  PER_CLASS @map("per_class")
 }
 
 enum Modality {
