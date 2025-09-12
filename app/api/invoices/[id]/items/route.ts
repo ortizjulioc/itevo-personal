@@ -88,7 +88,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 // Agregar ganancia a la cuenta por pagar
                 await addNewEarningToAccountsPayable(
                     accountPayable.id,
-                    courseBranch.commissionAmount || (body.unitPrice * (courseBranch.commissionRate || 0)) || 0,
+                    courseBranch.commissionAmount ?? 0.00,
                     receivablePayment.id,
                     prisma
                 );
