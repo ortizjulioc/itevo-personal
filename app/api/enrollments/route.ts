@@ -6,7 +6,7 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { CourseBranchStatus, EnrollmentStatus } from "@prisma/client";
+import { CourseBranchStatus, Enrollment, EnrollmentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
 import { getCourseEndDate } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
@@ -114,11 +114,22 @@ export async function POST(request: Request) {
                 amount: courseBranch.amount,
                 dueDate: courseBranch.endDate,
             };
-            const accountReceivableToCreate = Array.from({ length: courseBranch.sessionCount }).map(() => (accountReceivable));
-            const [enrollment, accountReceivableCreatedCount] = await Prisma.$transaction(async (tx) => [
-                await createEnrollment(body, tx),
-                await createManyAccountsReceivable(accountReceivableToCreate, tx),
-            ]);
+
+            let enrollment: Enrollment = {} as Enrollment;
+            let accountReceivableCreatedCount: number = 0;
+            if (body.status === EnrollmentStatus.ENROLLED) {
+                const accountReceivableToCreate = Array.from({ length: courseBranch.sessionCount }).map(() => (accountReceivable));
+                const [enrollmentCreated, totalAccountsReceivableCreated] = await Prisma.$transaction(async (tx) => [
+                    await createEnrollment(body, tx),
+                    await createManyAccountsReceivable(accountReceivableToCreate, tx),
+                ]);
+                enrollment = enrollmentCreated;
+                accountReceivableCreatedCount = totalAccountsReceivableCreated.count;
+            } else {
+                enrollment = await createEnrollment(body);
+                accountReceivableCreatedCount = 0;
+            }
+
             await createLog({
                 action: "POST",
                 description: `Se creó una inscripcion con los siguientes datos: ${JSON.stringify(enrollment, null, 2)}`,
