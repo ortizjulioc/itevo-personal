@@ -1,7 +1,7 @@
-import fs from "fs";
-import path from "path";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+const fs = require("fs");
+const path = require("path");
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
 
 const prisma = new PrismaClient();
 
