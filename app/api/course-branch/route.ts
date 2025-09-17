@@ -68,7 +68,6 @@ export async function POST(request: Request) {
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,
             enrollmentAmount: body.enrollmentAmount || 0,
-            paymentFrequency: body.paymentFrequency || null,
         });
         await createLog({
             action: 'POST',
