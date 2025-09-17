@@ -72,6 +72,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,
             enrollmentAmount: body.enrollmentAmount || 0,
+            paymentFrequency: body.paymentFrequency || null,
         });
 
         // Enviar log de auditoría
