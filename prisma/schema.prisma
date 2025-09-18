@@ -76,21 +76,22 @@ model UserRoleBranch {
 }
 
 model Teacher {
-  id             String           @id @default(uuid())
-  code           Int              @unique @default(autoincrement())
-  firstName      String           @map("first_name")
-  lastName       String           @map("last_name")
-  identification String           @unique
-  prefix         String?          @default("P") @map("prefix")
-  address        String?
-  phone          String?
-  email          String?
-  commissionRate Float?           @map("commission_rate")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  deleted        Boolean          @default(false)
-  accountPayable AccountPayable[]
-  courseBranch   CourseBranch[]
+  id               String           @id @default(uuid())
+  code             Int              @unique @default(autoincrement())
+  firstName        String           @map("first_name")
+  lastName         String           @map("last_name")
+  identification   String           @unique
+  prefix           String?          @default("P") @map("prefix")
+  address          String?
+  phone            String?
+  email            String?
+  commissionRate   Float?           @map("commission_rate")
+  commissionAmount Float            @map("commission_amount") @default(0)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  deleted          Boolean          @default(false)
+  accountPayable   AccountPayable[]
+  courseBranch     CourseBranch[]
 
   @@map("teachers")
 }
@@ -111,14 +112,13 @@ model Student {
   deleted            Boolean             @default(false)
   branchId           String              @map("branch_id")
 
-  branch            Branch?             @relation(fields: [branchId], references: [id])
-  accountReceivable AccountReceivable[]
-  enrollment        Enrollment[]
-  graduation        Graduation[]
-  Invoice           Invoice[]
-  Quotation         Quotation[]
-  attendance        Attendance[]
-  fingerprint       Fingerprint?
+  branch      Branch?      @relation(fields: [branchId], references: [id])
+  enrollment  Enrollment[]
+  graduation  Graduation[]
+  Invoice     Invoice[]
+  Quotation   Quotation[]
+  attendance  Attendance[]
+  fingerprint Fingerprint?
 
   @@map("students")
 }
@@ -200,24 +200,37 @@ model CourseBranch {
   isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
   taxRate          Float              @default(0) @map("tax_rate")
   deleted          Boolean            @default(false)
-  paymentFrequency PaymentFrequency   @default(WEEKLY) @map("payment_frequency")
 
-  accountPayable    AccountPayable[]
-  accountReceivable AccountReceivable[]
-  branch            Branch              @relation(fields: [branchId], references: [id])
-  course            Course              @relation(fields: [courseId], references: [id])
-  promotion         Promotion           @relation(fields: [promotionId], references: [id])
-  teacher           Teacher             @relation(fields: [teacherId], references: [id])
-  schedules         CourseSchedule[]
-  enrollment        Enrollment[]
-  QuotationItem     QuotationItem[]
-  attendance        Attendance[]
+  accountPayable AccountPayable[]
+  branch         Branch                   @relation(fields: [branchId], references: [id])
+  course         Course                   @relation(fields: [courseId], references: [id])
+  promotion      Promotion                @relation(fields: [promotionId], references: [id])
+  teacher        Teacher                  @relation(fields: [teacherId], references: [id])
+  schedules      CourseSchedule[]
+  enrollment     Enrollment[]
+  QuotationItem  QuotationItem[]
+  attendance     Attendance[]
+  paymentPlan    CourseBranchPaymentPlan?
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
   @@index([promotionId], map: "courses_branches_promotion_id_fkey")
   @@index([teacherId], map: "courses_branches_teacher_id_fkey")
   @@map("courses_branches")
+}
+
+model CourseBranchPaymentPlan {
+  id               String           @id @default(uuid())
+  courseBranchId   String           @unique @map("course_branch_id")
+  frequency        PaymentFrequency
+  installments     Int              @default(1) // número de cuotas
+  dayOfMonth       Int?             @map("day_of_month") // día del mes para pagos mensuales
+  dayOfWeek        Int?             @map("day_of_week") // día de la semana para pagos semanales
+  graceDays        Int              @default(0) @map("grace_days")  // días extra después de la fecha límite
+  lateFeeAmount    Float            @default(0) @map("late_fee_amount")  // monto fijo de mora
+
+  courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+  @@map("courses_branches_payment_plans")
 }
 
 model Schedule {
@@ -248,16 +261,17 @@ model CourseSchedule {
 }
 
 model Enrollment {
-  id             String           @id @default(uuid())
-  studentId      String           @map("student_id")
-  courseBranchId String           @map("course_branch_id")
-  enrollmentDate DateTime         @map("enrollment_date")
-  status         EnrollmentStatus
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
-  student        Student          @relation(fields: [studentId], references: [id])
-  deleted        Boolean          @default(false)
+  id                String              @id @default(uuid())
+  studentId         String              @map("student_id")
+  courseBranchId    String              @map("course_branch_id")
+  enrollmentDate    DateTime            @map("enrollment_date")
+  status            EnrollmentStatus
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  courseBranch      CourseBranch        @relation(fields: [courseBranchId], references: [id])
+  student           Student             @relation(fields: [studentId], references: [id])
+  deleted           Boolean             @default(false)
+  accountReceivable AccountReceivable[]
 
   @@index([courseBranchId], map: "enrollments_course_branch_id_fkey")
   @@index([studentId], map: "enrollments_student_id_fkey")
@@ -313,22 +327,24 @@ model GraduationPrice {
 }
 
 model AccountReceivable {
-  id                String              @id @default(uuid())
-  studentId         String              @map("student_id")
-  courseBranchId    String              @map("course_branch_id")
-  amount            Float
-  dueDate           DateTime            @map("due_date")
-  status            PaymentStatus       @default(PENDING)
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  amountPaid        Float               @default(0) @map("amount_paid")
-  courseBranch      CourseBranch        @relation(fields: [courseBranchId], references: [id])
-  student           Student             @relation(fields: [studentId], references: [id])
+  id             String        @id @default(uuid())
+  enrollmentId   String        @map("enrollment_id")
+  studentId      String        @map("student_id")
+  courseBranchId String        @map("course_branch_id")
+  amount         Float
+  dueDate        DateTime      @map("due_date")
+  status         PaymentStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  amountPaid     Float         @default(0) @map("amount_paid")
+
+  enrollment        Enrollment          @relation(fields: [enrollmentId], references: [id])
   InvoiceItem       InvoiceItem[]
   ReceivablePayment ReceivablePayment[]
 
-  @@index([courseBranchId], map: "accounts_receivable_course_branch_id_fkey")
-  @@index([studentId], map: "accounts_receivable_student_id_fkey")
+  @@index([enrollmentId], map: "accounts_receivable_enrollment_id_fkey")
+  @@index([studentId], map: "accounts_receivable_student_id_idx")
+  @@index([courseBranchId], map: "accounts_receivable_course_branch_id_idx")
   @@map("accounts_receivable")
 }
 
@@ -637,10 +653,12 @@ model QuotationItem {
 }
 
 enum PaymentFrequency {
-  WEEKLY  @map("weekly")
-  MONTHLY @map("monthly")
-  ONE_TIME @map("one_time")
+  ONCE      @map("once")
+  WEEKLY    @map("weekly")
+  BIWEEKLY  @map("biweekly")
+  MONTHLY   @map("monthly")
   PER_CLASS @map("per_class")
+  CUSTOM    @map("custom")
 }
 
 enum Modality {

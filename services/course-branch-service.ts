@@ -118,3 +118,12 @@ export const deleteCourseBranchById = async (id: string) => {
         data: { deleted: true },
     });
 };
+
+export const addPaymentPlanToCourseBranch = async (
+    paymentPlanData: PrismaTypes.CourseBranchPaymentPlanCreateInput,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchPaymentPlan.create({
+        data: paymentPlanData,
+    });
+};
