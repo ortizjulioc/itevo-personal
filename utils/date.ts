@@ -255,3 +255,21 @@ export function isCourseOnDate(schedules: Schedule[], date: Date | string): bool
   // Verificamos si algún schedule coincide con ese día
   return schedules.some(schedule => schedule.weekday === dayOfWeek);
 }
+
+export function addDaysToDate(date: Date, day: number): Date {
+  const newDate = new Date(date);
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth();
+
+  return new Date(year, month, day);
+}
+
+export function addMonths(date: Date, months: number): Date {
+  const newDate = new Date(date);
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth();
+  const day = newDate.getDate();
+
+  // Crear nueva fecha sumando los meses
+  return new Date(year, month + months, day);
+}
