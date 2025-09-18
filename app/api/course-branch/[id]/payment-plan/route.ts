@@ -1,11 +1,34 @@
 import { addPaymentPlanToCourseBranch, findCourseBranchById } from "@/services/course-branch-service";
 import { validateObject } from "@/utils";
 import { formatErrorMessage } from "@/utils/error-to-string";
+import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
 import { Prisma as PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
+
+export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    console.log("Fetching payment plan for course branch ID:", params.id);
+    const { id } = params;
+    const courseBranch = await findCourseBranchById(id);
+    if (!courseBranch) {
+      return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
+    }
+
+    const paymentPlan = await Prisma.courseBranchPaymentPlan.findUnique({
+      where: { courseBranchId: courseBranch.id },
+    });
+
+    if (!paymentPlan) {
+      return NextResponse.json({ code: 'E_PAYMENT_PLAN_NOT_FOUND', error: 'Payment plan not found' }, { status: 404 });
+    }
+    return NextResponse.json(paymentPlan, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {

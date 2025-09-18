@@ -228,6 +228,8 @@ model CourseBranchPaymentPlan {
   dayOfWeek        Int?             @map("day_of_week") // día de la semana para pagos semanales
   graceDays        Int              @default(0) @map("grace_days")  // días extra después de la fecha límite
   lateFeeAmount    Float            @default(0) @map("late_fee_amount")  // monto fijo de mora
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
 
   courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
   @@map("courses_branches_payment_plans")
