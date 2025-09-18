@@ -76,7 +76,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
         }
 
-        if (courseBranch.id && courseBranch.amount && courseBranch.endDate && courseBranch.sessionCount && courseBranch.sessionCount > 0) {
+        if (courseBranch.id && courseBranch.amount) {
             // Check if the student is already enrolled in the course branch
             const existingEnrollment = await Prisma.enrollment.findFirst({
                 where: {
@@ -96,66 +96,9 @@ export async function POST(request: Request) {
                 }, { status: 400 });
             }
 
-            if (!courseBranch.endDate && courseBranch.sessionCount > 0) {
-                // Calculate the end date based on the session count and schedules
-                const schedules = courseBranch.schedules || [];
-                const { holidays } = await getHolidays(1, 365, '');
-                courseBranch.endDate = getCourseEndDate(
-                    new Date(body.enrollmentDate),
-                    courseBranch.sessionCount,
-                    schedules,
-                    holidays
-                );
-            }
-
-            const accountReceivable = {
-                studentId: student.id,
-                courseBranchId: courseBranch.id,
-                amount: courseBranch.amount,
-                dueDate: courseBranch.endDate,
-            };
-
-            let enrollment: Enrollment = {} as Enrollment;
-            let accountReceivableCreatedCount: number = 0;
-            if (body.status === EnrollmentStatus.ENROLLED) {
-                const accountReceivableToCreate = Array.from({ length: courseBranch.sessionCount }).map(() => (accountReceivable));
-                if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
-                    accountReceivableToCreate.push({
-                        ...accountReceivable,
-                        amount: courseBranch.enrollmentAmount,
-                    });
-                }
-                const [enrollmentCreated, totalAccountsReceivableCreated] = await Prisma.$transaction(async (tx) => [
-                    await createEnrollment(body, tx),
-                    await createManyAccountsReceivable(accountReceivableToCreate, tx),
-                ]);
-                enrollment = enrollmentCreated;
-                accountReceivableCreatedCount = totalAccountsReceivableCreated.count;
-            } else {
-                enrollment = await createEnrollment(body);
-                accountReceivableCreatedCount = 0;
-            }
-
-            await createLog({
-                action: "POST",
-                description: `Se creó una inscripcion con los siguientes datos: ${JSON.stringify(enrollment, null, 2)}`,
-                origin: "enrollments",
-                elementId: enrollment.id,
-                success: true,
+            const paymentPlan = await Prisma.courseBranchPaymentPlan.findUnique({
+                where: { courseBranchId: courseBranch.id },
             });
-
-            await createLog({
-                action: "POST",
-                description: `Se crearon ${accountReceivableCreatedCount} cuentas por cobrar para la inscripcion: ${JSON.stringify(enrollment, null, 2)}`,
-                origin: "enrollments",
-                elementId: enrollment.id,
-                success: true,
-            });
-
-            return NextResponse.json({
-                enrollment,
-                accountReceivableCreatedCount,
-            }, { status: 201 });
         } else {
             return NextResponse.json({
                 code: 'E_COURSE_BRANCH_INVALID',
