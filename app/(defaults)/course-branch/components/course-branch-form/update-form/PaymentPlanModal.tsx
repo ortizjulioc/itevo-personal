@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, FormItem, Input } from "@/components/ui";
+import { Button, FormItem, Input, Select } from "@/components/ui";
 
 export type PaymentPlanForm = {
     dayOfWeek: number;
@@ -54,24 +54,32 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                 <FormItem label="Frecuencia de cobro">
                     <div className="grid grid-cols-2 gap-2 mb-4">
                         {[
-                            //   { value: "ONCE", label: "Una vez" },
+                            // { value: "ONCE", label: "Una vez" },
                             { value: "WEEKLY", label: "Semanal" },
-                            //   { value: "BIWEEKLY", label: "Quincenal" },
+                            // { value: "BIWEEKLY", label: "Quincenal" },
                             { value: "MONTHLY", label: "Mensual" },
-                            //   { value: "PER_CLASS", label: "Por clase" },
-                            //   { value: "CUSTOM", label: "Personalizado" },
+                            // { value: "PER_CLASS", label: "Por clase" },
+                            // { value: "CUSTOM", label: "Personalizado" },
                         ].map((freq) => (
                             <Button
                                 key={freq.value}
                                 type="button"
                                 variant={formData.frequency === freq.value ? "default" : "outline"}
-                                onClick={() => handleChange("frequency", freq.value as PaymentPlanForm["frequency"])}
+                                onClick={() => {
+                                    handleChange("frequency", freq.value as PaymentPlanForm["frequency"]);
+
+                                    // 🔹 Resetear campos según la selección
+                                    if (freq.value === "WEEKLY") {
+                                        handleChange("dayOfMonth", 0);
+                                    } else if (freq.value === "MONTHLY") {
+                                        handleChange("dayOfWeek", null);
+                                    }
+                                }}
                             >
                                 {freq.label}
                             </Button>
                         ))}
                     </div>
-
                 </FormItem>
                 {formData.frequency === "WEEKLY" && (
                     <FormItem label="Día de pago">
@@ -90,19 +98,18 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                     </FormItem>
                 )}
 
-
-                {formData.frequency === "MONTHLY" && (
-                    <FormItem label="Día del mes">
-                        <Input
-                            type="number"
-                            value={formData.dayOfMonth}
-                            onChange={(e) => handleChange("dayOfMonth", Number(e.target.value))}
-                            placeholder="Día del mes"
-                        />
-                    </FormItem>
-                )}
-
-
+                <Select
+                    options={Array.from({ length: 31 }, (_, i) => ({
+                        value: i + 1,
+                        label: `${i + 1}`,
+                    }))}
+                    value={{ value: formData.dayOfMonth, label: `${formData.dayOfMonth}` }}
+                    onChange={(option) => {
+                        const opt = option as { value: number; label: string } | null
+                        if (opt) handleChange("dayOfMonth", opt.value)
+                    }}
+                    placeholder="Selecciona el día del mes"
+                />
                 {/* Otros inputs */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <FormItem label="Cantidad de cuotas">
