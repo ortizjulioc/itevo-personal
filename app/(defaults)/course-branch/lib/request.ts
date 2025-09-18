@@ -32,3 +32,11 @@ export const unassignPrerequisiteToCourseBranch = async (courseId: CourseBranch[
 export const loadDefaultPromotion = async () => {
     return await apiRequest.get<Promotion>(`/promotions/current`);
 };
+
+export const getPaymentPlan = async (courseId: CourseBranch['id']) => {
+    return await apiRequest.get(`/course-branch/${courseId}/payment-plan`);
+};
+
+export const createPaymentPlan = async (courseId: CourseBranch['id'], paymentPlan: any) => {
+    return await apiRequest.post(`/course-branch/${courseId}/payment-plan`, paymentPlan);
+};
