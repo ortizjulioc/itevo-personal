@@ -43,6 +43,50 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 </Field>
             </FormItem>
 
+
+
+            <FormItem
+                extra={(
+                    <Tooltip title="Este es el monto que recibirá el profesor por cada clase">
+                        <span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span>
+                    </Tooltip>
+                )}
+                name='commissionAmount'
+                label='Monto de comisión al profesor'
+            >
+                <Field name='commissionAmount'>
+                    {({ field, form }: FieldProps<CourseBranchFormType>) => {
+                        const rawAmount = Number(form.values.amount) || 0;
+
+                        return (
+                            <div className="flex">
+                                <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                    RD$
+                                </div>
+                                <Input
+                                    {...field} // <-- importante, mantiene el valor y el name = "commissionAmount"
+                                    value={form.values.commissionAmount ?? ''}
+                                    onChange={(e) => {
+                                        const input = Number(e.target.value);
+                                        form.setFieldValue('commissionAmount', input);
+
+                                        // calcular commissionRate en base a amount
+                                        const newRate = rawAmount !== 0 ? input / rawAmount : 0;
+                                        form.setFieldValue('commissionRate', newRate);
+                                    }}
+                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                    type="number"
+                                    placeholder="Monto que ganará el profesor"
+                                    className="form-input rounded-none"
+                                />
+                                <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                    .00
+                                </div>
+                            </div>
+                        );
+                    }}
+                </Field>
+            </FormItem>
             <FormItem
                 extra={(<Tooltip title={"Este es el costo que tendrá la inscripción del curso.\nEste monto será cobrado una sola vez al momento de inscribir al estudiante."}><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
                 name='enrollmentAmount'
@@ -69,43 +113,6 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                             </div>
                         </div>
                     )}
-                </Field>
-            </FormItem>
-
-            <FormItem
-                extra={(<Tooltip title="Este es el monto que recibirá el profesor por cada clase"><span className='text-gray-600 bg-gray-200 rounded-full px-1 text-xs'>?</span></Tooltip>)}
-                name='commissionAmount'
-                label='Monto de comisión al profesor'
-            >
-                <Field name='commissionAmount'>
-                    {({ form }: FieldProps<CourseBranchFormType>) => {
-                        const rawAmount = Number(values.amount) || 0;
-                        const calculatedAmount = rawAmount * values.commissionRate;
-
-                        return (
-                            <div className="flex">
-                                <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                    RD$
-                                </div>
-                                <Input
-                                    value={values.amount && values.commissionRate ? calculatedAmount : ''}
-                                    onChange={(e) => {
-                                        const input = Number(e.target.value);
-                                        const newRate = rawAmount !== 0 ? input / rawAmount : 0;
-                                        form.setFieldValue('commissionRate', newRate);
-                                        form.setFieldValue('commissionAmount', input);
-                                    }}
-                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                    type="number"
-                                    placeholder="Monto que ganará el profesor"
-                                    className="form-input rounded-none"
-                                />
-                                <div className="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                    .00
-                                </div>
-                            </div>
-                        );
-                    }}
                 </Field>
             </FormItem>
 
