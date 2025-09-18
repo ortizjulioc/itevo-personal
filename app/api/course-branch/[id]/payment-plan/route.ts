@@ -1,4 +1,4 @@
-import { addPaymentPlanToCourseBranch } from "@/services/course-branch-service";
+import { addPaymentPlanToCourseBranch, findCourseBranchById } from "@/services/course-branch-service";
 import { validateObject } from "@/utils";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
@@ -12,14 +12,20 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const { id } = params;
     const body: PaymentPlanBody = await request.json();
 
-    const { isValid, message } = validateObject(body, ['courseBranchId', 'frequency']);
+    const { isValid, message } = validateObject(body, ['frequency']);
     if (!isValid) {
       return new Response(JSON.stringify({ code: 'E_MISSING_FIELDS', error: message }), { status: 400 });
+    }
+    console.log("Creating payment plan for course branch ID:", id);
+    const courseBranch = await findCourseBranchById(id);
+    console.log("Found course branch:", courseBranch);
+    if (!courseBranch) {
+      return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
     }
 
     const paymentPlan = await addPaymentPlanToCourseBranch({
       ...body,
-      courseBranch: { connect: { id } },
+      courseBranch: { connect: { id: courseBranch.id } },
     });
 
     await createLog({

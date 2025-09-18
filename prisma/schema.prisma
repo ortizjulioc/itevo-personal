@@ -224,13 +224,13 @@ model CourseBranchPaymentPlan {
   courseBranchId   String           @unique @map("course_branch_id")
   frequency        PaymentFrequency
   installments     Int              @default(1) // número de cuotas
-  dayOfMonth       Int? // para mensual
-  dayOfWeek        Int? // para semanal
-  alignToSession   Boolean          @default(false)
-  startOffsetDays  Int?             @default(0)
-  chargeEnrollment Boolean          @default(true)
+  dayOfMonth       Int?             @map("day_of_month") // día del mes para pagos mensuales
+  dayOfWeek        Int?             @map("day_of_week") // día de la semana para pagos semanales
+  graceDays        Int              @default(0) @map("grace_days")  // días extra después de la fecha límite
+  lateFeeAmount    Float            @default(0) @map("late_fee_amount")  // monto fijo de mora
 
   courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+  @@map("courses_branches_payment_plans")
 }
 
 model Schedule {
