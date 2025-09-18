@@ -14,6 +14,7 @@ interface FinancialConfigFieldsProps {
     errors: FormikErrors<CourseBranchFormType>;
     touched: FormikTouched<CourseBranchFormType>;
     className?: string;
+    setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
 type PaymentPlan = {
@@ -25,23 +26,26 @@ type PaymentPlan = {
     lateFeeAmount: number;
 };
 
-export default function FinancialConfigFields({ values, errors, touched, className }: FinancialConfigFieldsProps) {
+export default function FinancialConfigFields({ values, errors, touched, className ,setFieldValue }: FinancialConfigFieldsProps) {
     const { id } = useParams();
     const courseBranchId = id as string;
 
     const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchPlan = async () => {
             try {
                 const res = await getPaymentPlan(courseBranchId);
                 if (res.success) {
-                    setPaymentPlan(res.data as PaymentPlan);
+                    const paymentPlan = res.data as PaymentPlan;
+                    setPaymentPlan(paymentPlan);
                 }
             } catch (err) {
                 console.error("Error cargando paymentPlan", err);
+            } finally {
+                setLoading(false);
             }
         };
         if (courseBranchId) {
@@ -58,7 +62,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
             if (resp.success) {
                 setPaymentPlan(resp.data as PaymentPlan);
             } else {
-                openNotification('error', 'Se Produjo un erro al guardar el metodo de pagp');
+                openNotification('error', 'Se Produjo un erro al guardar el metodo de pago');
             }
             setIsModalOpen(false);
         } catch (error) {
@@ -183,32 +187,37 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
             </FormItem>
 
             {/* ================== Frecuencia de pago ================== */}
-            <FormItem label="Frecuencia de pago">
-                <Field as="div" className="flex gap-2 items-center">
-                    {!paymentPlan ? (
-                        <Button onClick={() => setIsModalOpen(true)}>
-                            Agregar configuración
-                        </Button>
-                    ) : (
-                        <>
-                            <Button
-                                type="button"
-                                variant={paymentPlan.frequency === "WEEKLY" ? "default" : "outline"}
-                                className="ltr:rounded-r-none rtl:rounded-l-none"
-                            >
-                                Semanal
+            {loading && (
+                <span>cargando frecuencia pago...</span>
+            )}
+            {!loading && (
+                <FormItem label="Frecuencia de pago">
+                    <Field as="div" className="flex gap-2 items-center">
+                        {!paymentPlan ? (
+                            <Button onClick={() => setIsModalOpen(true)}>
+                                Agregar configuración
                             </Button>
-                            <Button
-                                type="button"
-                                variant={paymentPlan.frequency === "MONTHLY" ? "default" : "outline"}
-                                className="ltr:rounded-l-none rtl:rounded-r-none"
-                            >
-                                Mensual
-                            </Button>
-                        </>
-                    )}
-                </Field>
-            </FormItem>
+                        ) : (
+                            <>
+                                <Button
+                                    type="button"
+                                    variant={paymentPlan.frequency === "WEEKLY" ? "default" : "outline"}
+                                    className="ltr:rounded-r-none rtl:rounded-l-none"
+                                >
+                                    Semanal
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={paymentPlan.frequency === "MONTHLY" ? "default" : "outline"}
+                                    className="ltr:rounded-l-none rtl:rounded-r-none"
+                                >
+                                    Mensual
+                                </Button>
+                            </>
+                        )}
+                    </Field>
+                </FormItem>
+            )}
 
             {/* ================== PaymentPlanModal ================== */}
             <PaymentPlanModal

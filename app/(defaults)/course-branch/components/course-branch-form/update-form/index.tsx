@@ -73,6 +73,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
 
     const handleErrors = (errors: any) => {
         const errorKeys = Object.keys(errors);
+        console.log('errors', errors)
         if (errorKeys.length) {
             changeTab(TABS_FIELDS.findIndex((tabFields) => tabFields.some((field) => errorKeys.includes(field))));
             Swal.fire({
@@ -210,7 +211,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                     </Tab.Panel>
 
                                     <Tab.Panel>
-                                        <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} />
+                                        <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                     </Tab.Panel>
 
                                     <Tab.Panel>
