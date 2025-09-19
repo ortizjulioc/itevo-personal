@@ -98,18 +98,21 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                     </FormItem>
                 )}
 
-                <Select
-                    options={Array.from({ length: 31 }, (_, i) => ({
-                        value: i + 1,
-                        label: `${i + 1}`,
-                    }))}
-                    value={{ value: formData.dayOfMonth, label: `${formData.dayOfMonth}` }}
-                    onChange={(option) => {
-                        const opt = option as { value: number; label: string } | null
-                        if (opt) handleChange("dayOfMonth", opt.value)
-                    }}
-                    placeholder="Selecciona el día del mes"
-                />
+                {formData.frequency === "MONTHLY" && (
+
+                    <Select
+                        options={Array.from({ length: 31 }, (_, i) => ({
+                            value: i + 1,
+                            label: `${i + 1}`,
+                        }))}
+                        value={{ value: formData.dayOfMonth, label: `${formData.dayOfMonth}` }}
+                        onChange={(option) => {
+                            const opt = option as { value: number; label: string } | null
+                            if (opt) handleChange("dayOfMonth", opt.value)
+                        }}
+                        placeholder="Selecciona el día del mes"
+                    />
+                )}
                 {/* Otros inputs */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <FormItem label="Cantidad de cuotas">
