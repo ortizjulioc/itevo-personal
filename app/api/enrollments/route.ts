@@ -6,10 +6,11 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { CourseBranchStatus, Enrollment, EnrollmentStatus } from "@prisma/client";
+import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
-import { getCourseEndDate } from "@/utils/date";
+import { addDaysToDate, getCourseEndDate } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
+import { addMonths } from "date-fns";
 
 export async function GET(request: NextRequest) {
     try {
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         // Validate the request body
-        const { isValid, message } = validateObject(body, ['studentId', 'courseBranchId', 'enrollmentDate', 'status']);
+        const { isValid, message } = validateObject(body, ['studentId', 'courseBranchId', 'status']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
@@ -76,36 +77,154 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
         }
 
-        if (courseBranch.id && courseBranch.amount) {
-            // Check if the student is already enrolled in the course branch
-            const existingEnrollment = await Prisma.enrollment.findFirst({
-                where: {
-                    studentId: student.id,
-                    courseBranchId: courseBranch.id,
-                    status: {
-                        in: [EnrollmentStatus.ENROLLED, EnrollmentStatus.WAITING],
+        return await Prisma.$transaction(async (prisma) => {
+            if (courseBranch.id && courseBranch.amount && courseBranch.startDate) {
+                // Start Prisma transaction
+                // Check if the student is already enrolled in the course branch
+                const existingEnrollment = await prisma.enrollment.findFirst({
+                    where: {
+                        studentId: student.id,
+                        courseBranchId: courseBranch.id,
+                        status: {
+                            in: [EnrollmentStatus.ENROLLED, EnrollmentStatus.WAITING],
+                        },
                     },
-                },
-            });
+                });
 
-            if (existingEnrollment) {
+                if (existingEnrollment) {
+                    return NextResponse.json({
+                        code: 'E_STUDENT_ALREADY_ENROLLED',
+                        error: 'Student is already enrolled in this course branch',
+                        message: 'El estudiante ya está inscrito en este curso',
+                    }, { status: 400 });
+                }
+
+                const paymentPlan = await prisma.courseBranchPaymentPlan.findUnique({
+                    where: { courseBranchId: courseBranch.id },
+                });
+
+                // 1. Crear el Enrollment
+                const enrollment = await createEnrollment({
+                    student: { connect: { id: student.id } },
+                    courseBranch: { connect: { id: courseBranch.id } },
+                    enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
+                    status: body.status,
+                }, prisma);
+
+                // 2. Verificar que existe un plan de pago
+                if (!paymentPlan) {
+                    return NextResponse.json({
+                        code: 'E_PAYMENT_PLAN_NOT_FOUND',
+                        error: 'Payment plan not found for this course branch',
+                        message: 'El curso no tiene plan de pago configurado',
+                    }, { status: 400 });
+                }
+
+                // 3. Generar las cuentas por cobrar
+                const receivables: any[] = [];
+                const startDate = new Date(courseBranch.startDate);
+                const amountPerInstallment = courseBranch.amount;
+
+                // cuota de inscripción si aplica
+                if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
+                    receivables.push({
+                        enrollmentId: enrollment.id,
+                        amount: courseBranch.enrollmentAmount,
+                        studentId: student.id,
+                        courseBranchId: courseBranch.id,
+                        dueDate: startDate, // mismo día de inicio
+                        status: PaymentStatus.PENDING,
+                    });
+                }
+
+                // Generar cuotas según frecuencia
+                for (let i = 0; i < paymentPlan.installments; i++) {
+                    let dueDate = new Date(startDate);
+
+                    switch (paymentPlan.frequency) {
+                        case 'MONTHLY':
+                            const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
+                            dueDate = addMonths(dateWithDay, i);
+                            break;
+
+                        case 'WEEKLY':
+                            dueDate.setDate(dueDate.getDate() + i * 7);
+                            break;
+
+                        case 'BIWEEKLY':
+                            dueDate.setDate(dueDate.getDate() + i * 14);
+                            break;
+
+                        case 'PER_CLASS':
+                            // usar las sesiones del curso si tienes las fechas
+                            // por simplicidad aquí lo tratamos como semanal
+                            dueDate.setDate(dueDate.getDate() + i * 7);
+                            break;
+
+                        case 'ONCE':
+                            if (i === 0) {
+                                dueDate.setDate(dueDate.getDate());
+                            } else {
+                                continue; // no generar más de una cuota
+                            }
+                            break;
+
+                        default:
+                            throw new Error(`Unsupported frequency: ${paymentPlan.frequency}`);
+                    }
+
+                    // aplicar días de gracia si existen
+                    if (paymentPlan.graceDays && paymentPlan.graceDays > 0) {
+                        dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
+                    }
+
+                    receivables.push({
+                        enrollmentId: enrollment.id,
+                        studentId: student.id,
+                        courseBranchId: courseBranch.id,
+                        amount: amountPerInstallment,
+                        dueDate,
+                        status: PaymentStatus.PENDING,
+                    });
+
+                }
+
+                // 4. Insertar las cuentas por cobrar
+                await prisma.accountReceivable.createMany({
+                    data: receivables,
+                });
+
+                //Crear logs de auditoría
+                await createLog({
+                    action: "POST",
+                    description: `Se creó un nuevo enrollment con la siguiente informacion: \n${JSON.stringify(enrollment, null, 2)}`,
+                    origin: "enrollments",
+                    elementId: enrollment.id,
+                    success: true,
+                });
+
+                if (receivables.length > 0) {
+                    await createLog({
+                        action: "POST",
+                        description: `Se crearon las siguientes cuentas por cobrar para el enrollment ${enrollment.id}: \n${JSON.stringify(receivables, null, 2)}`,
+                        origin: "enrollments",
+                        elementId: enrollment.id,
+                        success: true,
+                    });
+                }
+
                 return NextResponse.json({
-                    code: 'E_STUDENT_ALREADY_ENROLLED',
-                    error: 'Student is already enrolled in this course branch',
-                    message: 'El estudiante ya está inscrito en este curso',
+                    enrollment,
+                    receivables,
+                }, { status: 200 });
+            } else {
+                return NextResponse.json({
+                    code: 'E_COURSE_BRANCH_INVALID',
+                    error: 'Course branch is invalid or missing required fields',
+                    message: 'El curso no es válido o falta información requerida',
                 }, { status: 400 });
             }
-
-            const paymentPlan = await Prisma.courseBranchPaymentPlan.findUnique({
-                where: { courseBranchId: courseBranch.id },
-            });
-        } else {
-            return NextResponse.json({
-                code: 'E_COURSE_BRANCH_INVALID',
-                error: 'Course branch is invalid or missing required fields',
-                message: 'El curso no es válido o falta información requerida',
-            }, { status: 400 });
-        }
+        });
     } catch (error) {
         await createLog({
             action: "POST",

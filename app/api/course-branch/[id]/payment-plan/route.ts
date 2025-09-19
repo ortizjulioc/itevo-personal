@@ -10,7 +10,6 @@ type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   try {
-    console.log("Fetching payment plan for course branch ID:", params.id);
     const { id } = params;
     const courseBranch = await findCourseBranchById(id);
     if (!courseBranch) {
