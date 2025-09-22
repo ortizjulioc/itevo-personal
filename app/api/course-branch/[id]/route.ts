@@ -57,6 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ code: 'E_COURSE_NOT_FOUND' }, { status: 404 });
         }
 
+        console.log('CourseBranch body:', body);
         // Actualizar el course
         const updatedCourseBranch = await updateCourseBranchById(id, {
             promotion: { connect: { id: body.promotionId } },
@@ -68,6 +69,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             startDate: body.startDate ? new Date(body.startDate) : null,
             endDate: body.endDate ? new Date(body.endDate) : null,
             commissionRate: body.commissionRate || 0,
+            commissionAmount: body.commissionAmount || 0,
             sessionCount: body.sessionCount || 0,
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,
