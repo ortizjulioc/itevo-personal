@@ -51,6 +51,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
         }
 
+        const student = await findStudentById(body.studentId);
+        if (!student) {
+            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
+        }
+
         let courseBranch = await findCourseBranchById(body.courseBranchId);
         if (!courseBranch) {
             return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
@@ -71,10 +76,22 @@ export async function POST(request: Request) {
                 message: 'El curso ha expirado',
             }, { status: 400 });
         }
+        
+        if (courseBranch.capacity && courseBranch.capacity > 0) {
+            const enrolledCount = await Prisma.enrollment.count({
+                where: {
+                    courseBranchId: courseBranch.id,
+                    status: EnrollmentStatus.ENROLLED,
+                },
+            });
 
-        const student = await findStudentById(body.studentId);
-        if (!student) {
-            return NextResponse.json({ code: 'E_STUDENT_NOT_FOUND', error: 'Student not found' }, { status: 404 });
+            if (enrolledCount >= courseBranch.capacity) {
+                return NextResponse.json({
+                    code: 'E_COURSE_BRANCH_FULL',
+                    error: 'Course branch is full',
+                    message: 'El curso ha alcanzado su capacidad máxima',
+                }, { status: 400 });
+            }
         }
 
         return await Prisma.$transaction(async (prisma) => {
@@ -103,15 +120,6 @@ export async function POST(request: Request) {
                     where: { courseBranchId: courseBranch.id },
                 });
 
-                // 1. Crear el Enrollment
-                const enrollment = await createEnrollment({
-                    student: { connect: { id: student.id } },
-                    courseBranch: { connect: { id: courseBranch.id } },
-                    enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
-                    status: body.status,
-                }, prisma);
-
-                // 2. Verificar que existe un plan de pago
                 if (!paymentPlan) {
                     return NextResponse.json({
                         code: 'E_PAYMENT_PLAN_NOT_FOUND',
@@ -120,12 +128,17 @@ export async function POST(request: Request) {
                     }, { status: 400 });
                 }
 
-                // 3. Generar las cuentas por cobrar
+                const enrollment = await createEnrollment({
+                    student: { connect: { id: student.id } },
+                    courseBranch: { connect: { id: courseBranch.id } },
+                    enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
+                    status: body.status,
+                }, prisma);
+
                 const receivables: any[] = [];
                 const startDate = new Date(courseBranch.startDate);
                 const amountPerInstallment = courseBranch.amount;
 
-                // cuota de inscripción si aplica
                 if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
                     receivables.push({
                         enrollmentId: enrollment.id,
@@ -137,33 +150,39 @@ export async function POST(request: Request) {
                     });
                 }
 
-                // Generar cuotas según frecuencia
                 for (let i = 0; i < paymentPlan.installments; i++) {
                     let dueDate = new Date(startDate);
+                    console.log('Calculating due date for installment', i + 1);
+                    console.log('Initial due date:', dueDate);
 
                     switch (paymentPlan.frequency) {
                         case 'MONTHLY':
                             const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
-                            dueDate = addMonths(dateWithDay, i);
+                            dueDate = addMonths(dateWithDay, i+1);
+                            console.log('Monthly due date:', dueDate);
                             break;
 
                         case 'WEEKLY':
                             dueDate.setDate(dueDate.getDate() + i * 7);
+                            console.log('Weekly due date:', dueDate);
                             break;
 
                         case 'BIWEEKLY':
                             dueDate.setDate(dueDate.getDate() + i * 14);
+                            console.log('Biweekly due date:', dueDate);
                             break;
 
                         case 'PER_CLASS':
                             // usar las sesiones del curso si tienes las fechas
                             // por simplicidad aquí lo tratamos como semanal
                             dueDate.setDate(dueDate.getDate() + i * 7);
+                            console.log('Per class due date (treated as weekly):', dueDate);
                             break;
 
                         case 'ONCE':
                             if (i === 0) {
                                 dueDate.setDate(dueDate.getDate());
+                                console.log('Once due date:', dueDate);
                             } else {
                                 continue; // no generar más de una cuota
                             }
