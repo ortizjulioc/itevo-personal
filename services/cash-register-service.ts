@@ -53,9 +53,6 @@ export const getCashRegisters = async ({
         status: true,
         openingDate: true,
         initialBalance: true,
-        branch: {
-          select: { id: true, name: true },
-        },
         user: {
           select: { id: true, name: true, lastName: true },
         },
@@ -86,9 +83,6 @@ export const findCashRegisterById = async (id: string) => {
       openingDate: true,
       initialBalance: true,
       deleted: true,
-      branch: {
-        select: { id: true, name: true }
-      },
       user: {
         select: { id: true, name: true }
       },
