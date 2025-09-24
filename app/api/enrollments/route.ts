@@ -8,7 +8,7 @@ import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
 import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
-import { addDaysToDate, getCourseEndDate } from "@/utils/date";
+import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
 import { addMonths } from "date-fns";
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
                 message: 'El curso ha expirado',
             }, { status: 400 });
         }
-        
+
         if (courseBranch.capacity && courseBranch.capacity > 0) {
             const enrolledCount = await Prisma.enrollment.count({
                 where: {
@@ -158,13 +158,19 @@ export async function POST(request: Request) {
                     switch (paymentPlan.frequency) {
                         case 'MONTHLY':
                             const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
-                            dueDate = addMonths(dateWithDay, i+1);
+                            dueDate = addMonths(dateWithDay, i + 1);
                             console.log('Monthly due date:', dueDate);
                             break;
 
                         case 'WEEKLY':
-                            dueDate.setDate(dueDate.getDate() + i * 7);
-                            console.log('Weekly due date:', dueDate);
+                            if (i === 0) {
+                                // primera cuota: buscar el próximo día de clase
+                                dueDate = getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true);
+                            } else {
+                                // las siguientes cuotas se calculan sumando semanas desde la primera
+                                dueDate = new Date(getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true));
+                                dueDate.setDate(dueDate.getDate() + (i * 7));
+                            }
                             break;
 
                         case 'BIWEEKLY':

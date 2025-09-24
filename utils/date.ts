@@ -273,3 +273,23 @@ export function addMonths(date: Date, months: number): Date {
   // Crear nueva fecha sumando los meses
   return new Date(year, month + months, day);
 }
+
+/**
+ * Devuelve la fecha del próximo día de la semana a partir de una fecha dada.
+ * @param date - fecha inicial
+ * @param targetDay - día de la semana (0 = domingo, 1 = lunes, ... 6 = sábado)
+ * @param includeToday - si es true y el día coincide, devuelve la misma fecha
+ */
+export function getNextDayOfWeek(date: Date, targetDay: number, includeToday = true): Date {
+    const result = new Date(date);
+    const currentDay = result.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
+    let diff = (targetDay - currentDay + 7) % 7;
+
+    if (diff === 0 && !includeToday) {
+        diff = 7;
+    }
+
+    result.setDate(result.getDate() + diff);
+    return result;
+}
+
