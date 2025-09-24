@@ -101,3 +101,14 @@ export const addPaymentPlanToCourseBranch = async (
         data: paymentPlanData,
     });
 };
+
+export const updatePaymentPlanById = async (
+    id: string,
+    paymentPlanData: PrismaTypes.CourseBranchPaymentPlanUpdateInput,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchPaymentPlan.update({
+        where: { id },
+        data: paymentPlanData,
+    });
+};
