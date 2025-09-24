@@ -32,11 +32,6 @@ export const getCashRegisters = async ({
     deleted: false,
   };
 
-  if (search) {
-    whereClause.name = {
-      contains: search,
-    };
-  }
   if (branchId) whereClause.branchId = branchId;
   if (userId) whereClause.userId = userId;
   if (status) whereClause.status = status;

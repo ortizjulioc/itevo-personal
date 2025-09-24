@@ -34,7 +34,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const body = await request.json();
 
     const { isValid, message } = validateObject(body, [
-      'branchId',
       'userId',
       'initialBalance',
       'openingDate',

@@ -471,7 +471,6 @@ model CashBox {
 
 model CashRegister {
   id             String             @id @default(uuid())
-  name           String
   cashBoxId      String            @map("cash_box_id") // referencia a la caja física (opcional)
   status         CashRegisterStatus @default(OPEN)
   userId         String             @map("user_id")
