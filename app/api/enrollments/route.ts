@@ -147,6 +147,7 @@ export async function POST(request: Request) {
                         courseBranchId: courseBranch.id,
                         dueDate: startDate, // mismo día de inicio
                         status: PaymentStatus.PENDING,
+                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}`,
                     });
                 }
 
@@ -210,6 +211,7 @@ export async function POST(request: Request) {
                         amount: amountPerInstallment,
                         dueDate,
                         status: PaymentStatus.PENDING,
+                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}`,
                     });
 
                 }

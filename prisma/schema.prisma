@@ -333,6 +333,7 @@ model AccountReceivable {
   enrollmentId   String        @map("enrollment_id")
   studentId      String        @map("student_id")
   courseBranchId String        @map("course_branch_id")
+  concept        String        @default("")
   amount         Float
   dueDate        DateTime      @map("due_date")
   status         PaymentStatus @default(PENDING)
