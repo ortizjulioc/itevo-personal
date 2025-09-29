@@ -64,6 +64,7 @@ export async function POST(request: Request) {
             startDate: body.startDate ? new Date(body.startDate) : null,
             endDate: body.endDate ? new Date(body.endDate) : null,
             commissionRate: body.commissionRate || 0,
+            commissionAmount: body.commissionAmount || 0,
             sessionCount: body.sessionCount || 0,
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,

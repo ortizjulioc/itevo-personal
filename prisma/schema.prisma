@@ -53,9 +53,9 @@ model Branch {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   students     Student[]
-  CashRegister CashRegister[]
   courseBranch CourseBranch[]
   userRole     UserRoleBranch[]
+  cashBox      CashBox[]
 
   @@map("branches")
 }
@@ -333,6 +333,7 @@ model AccountReceivable {
   enrollmentId   String        @map("enrollment_id")
   studentId      String        @map("student_id")
   courseBranchId String        @map("course_branch_id")
+  concept        String        @default("")
   amount         Float
   dueDate        DateTime      @map("due_date")
   status         PaymentStatus @default(PENDING)
@@ -452,10 +453,25 @@ model Holiday {
   @@map("holidays")
 }
 
+model CashBox {
+  id        String   @id @default(uuid())
+  name      String
+  location  String?   // ubicación física (ej. "Mostrador 1", "2do piso")
+  branchId  String    @map("branch_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deleted   Boolean   @default(false)
+
+  branch     Branch         @relation(fields: [branchId], references: [id])
+  registers  CashRegister[] // sesiones de apertura/cierre de esta caja física
+
+  @@index([branchId], map: "cash_boxes_branch_id_fkey")
+  @@map("cash_boxes")
+}
+
 model CashRegister {
   id             String             @id @default(uuid())
-  name           String
-  branchId       String             @map("branch_id")
+  cashBoxId      String            @map("cash_box_id") // referencia a la caja física (opcional)
   status         CashRegisterStatus @default(OPEN)
   userId         String             @map("user_id")
   initialBalance Float              @default(0) @map("initial_balance")
@@ -465,13 +481,12 @@ model CashRegister {
   updatedAt      DateTime           @updatedAt @map("updated_at")
   deleted        Boolean            @default(false)
 
+  cashBox       CashBox             @relation(fields: [cashBoxId], references: [id])
   movements CashMovement[]
   closures  CashRegisterClosure[]
-  branch    Branch                @relation(fields: [branchId], references: [id])
   user      User                  @relation(fields: [userId], references: [id])
   invoices  Invoice[]             @relation("CashRegisterInvoices")
 
-  @@index([branchId], map: "cash_registers_branch_id_fkey")
   @@index([userId], map: "cash_registers_user_id_fkey")
   @@map("cash_registers")
 }

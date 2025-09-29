@@ -1,0 +1,47 @@
+import { findCourseBranchById, updatePaymentPlanById } from "@/services/course-branch-service";
+import { validateObject } from "@/utils";
+import { formatErrorMessage } from "@/utils/error-to-string";
+import { createLog } from "@/utils/log";
+import { Prisma as PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
+type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
+
+export async function POST(request: NextRequest, { params }: { params: { id: string, paymentId: string } }) {
+    try {
+        const { id, paymentId } = params;
+        const body: PaymentPlanBody = await request.json();
+
+        const { isValid, message } = validateObject(body, ['frequency']);
+        if (!isValid) {
+            return new Response(JSON.stringify({ code: 'E_MISSING_FIELDS', error: message }), { status: 400 });
+        }
+        const courseBranch = await findCourseBranchById(id);
+        if (!courseBranch) {
+            return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
+        }
+
+        const paymentPlan = await updatePaymentPlanById(paymentId, body);
+
+        await createLog({
+            action: "POST",
+            description: `Se creó un nuevo payment plan con la siguiente informacion: \n${JSON.stringify(paymentPlan, null, 2)}`,
+            origin: "course-branch/[id]/payment-plan",
+            elementId: request.headers.get("origin") || "",
+            success: true,
+        });
+
+        return NextResponse.json(paymentPlan, { status: 201 });
+    } catch (error) {
+        console.error("Error creating payment plan:", error);
+        await createLog({
+            action: "POST",
+            description: `Error al crear un payment plan: ${formatErrorMessage(error)}`,
+            origin: "course-branch/[id]/payment-plan",
+            elementId: request.headers.get("origin") || "",
+            success: false,
+        });
+
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+    }
+}

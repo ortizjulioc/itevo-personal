@@ -54,20 +54,7 @@ export const getCourseBranch = async (filters: any) => {
 
 export const createCourseBranch = async (data: PrismaTypes.CourseBranchCreateInput) => {
     const courseBranch = await Prisma.courseBranch.create({
-        data: {
-            promotion: data.promotion,
-            branch: data.branch,
-            teacher: data.teacher,
-            course: data.course,
-            amount: data.amount,
-            modality: data.modality,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            commissionRate: data.commissionRate,
-            sessionCount: data.sessionCount,
-            capacity: data.capacity,
-            status: data.status,
-        },
+        data: data,
     });
     return courseBranch;
 };
@@ -94,20 +81,7 @@ export const updateCourseBranchById = async (id: string, data: PrismaTypes.Cours
 
     return Prisma.courseBranch.update({
         where: { id },
-        data: {
-            promotion: data.promotion,
-            branch: data.branch,
-            teacher: data.teacher,
-            course: data.course,
-            amount: data.amount,
-            modality: data.modality,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            commissionRate: data.commissionRate,
-            sessionCount: data.sessionCount,
-            capacity: data.capacity,
-            status: data.status,
-        },
+        data: data,
     });
 };
 
@@ -124,6 +98,17 @@ export const addPaymentPlanToCourseBranch = async (
     prisma: PrismaTypes.TransactionClient = Prisma
 ) => {
     return prisma.courseBranchPaymentPlan.create({
+        data: paymentPlanData,
+    });
+};
+
+export const updatePaymentPlanById = async (
+    id: string,
+    paymentPlanData: PrismaTypes.CourseBranchPaymentPlanUpdateInput,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchPaymentPlan.update({
+        where: { id },
         data: paymentPlanData,
     });
 };
