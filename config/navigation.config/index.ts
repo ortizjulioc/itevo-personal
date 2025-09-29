@@ -21,6 +21,7 @@ import {
 
 import { ADMIN, USER, CASHIER } from '@/constants/role.constant';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi';
+import { LiaCashRegisterSolid } from "react-icons/lia";
 
 const navigationConfig = [
     {
@@ -160,6 +161,15 @@ const navigationConfig = [
         title: 'Cajas',
         icon: TbCashRegister,
         url: '/cash-registers',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [ADMIN]
+    },
+     {
+        key: 'cashRegisters',
+        title: 'Cajas Fisicas',
+        icon: LiaCashRegisterSolid,
+        url: '/cash-boxes',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: [ADMIN]

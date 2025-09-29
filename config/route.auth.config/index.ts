@@ -183,6 +183,15 @@ export const routeConfig = [
         authorization: [ADMIN],
     },
     {
+        key: 'cash-boxes',
+        url: '/cash-boxes',
+        authorization: [ADMIN],
+    },{
+        key: 'cash-boxes-subroutes',
+        url: '/cash-boxes/:path*',
+        authorization: [ADMIN],
+    },
+    {
         key: 'api',
         url: '/api/:path*',
         authorization: [],
