@@ -109,6 +109,9 @@ export const config = {
     "/accounts-receivable",
     "/accounts-receivable/:path*",
 
+    "/cash-boxes",
+    "/cash-boxes/:path*",
+
     "/api/:path*"
   ]
 };
