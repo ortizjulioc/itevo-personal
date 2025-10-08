@@ -48,12 +48,18 @@ export async function POST(request: NextRequest) {
       'userId',
       'initialBalance',
       'openingDate',
+      'cashBoxId',
     ]);
     if (!isValid) {
       return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
     }
 
-    const cashRegister = await createCashRegister(body);
+    const cashRegister = await createCashRegister({
+      user: { connect: { id: body.userId } },
+      initialBalance: body.initialBalance,
+      openingDate: new Date(body.openingDate),
+      cashBox: { connect: { id: body.cashBoxId } },
+    });
 
     await createLog({
       action: 'POST',

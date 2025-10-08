@@ -1,6 +1,7 @@
 import 'server-only';
 import { CashRegister as PrismaCashRegister, CashRegisterStatus } from "@prisma/client";
 import { Prisma } from '@/utils/lib/prisma';
+import { Prisma as PrismaTypes } from '@prisma/client';
 
 export type CashRegisterCreateInput = Omit<
   PrismaCashRegister,
@@ -44,13 +45,15 @@ export const getCashRegisters = async ({
       where: whereClause,
       select: {
         id: true,
-        name: true,
         status: true,
         openingDate: true,
         initialBalance: true,
         user: {
           select: { id: true, name: true, lastName: true },
         },
+        cashBox: { select: { id: true, name: true } },
+        createdAt: true,
+        updatedAt: true,
       },
     }),
     Prisma.cashRegister.count({ where: whereClause }),
@@ -60,9 +63,9 @@ export const getCashRegisters = async ({
 };
 
 // Crear una nueva caja registradora
-export const createCashRegister = async (data: CashRegisterCreateInput) => {
+export const createCashRegister = async (data: PrismaTypes.CashRegisterCreateInput) => {
   const cashRegister = await Prisma.cashRegister.create({
-    data: data as any,
+    data: data,
   });
   return cashRegister;
 };
@@ -73,7 +76,6 @@ export const findCashRegisterById = async (id: string) => {
     where: { id, deleted: false },
     select: {
       id: true,
-      name: true,
       status: true,
       openingDate: true,
       initialBalance: true,
@@ -81,6 +83,7 @@ export const findCashRegisterById = async (id: string) => {
       user: {
         select: { id: true, name: true }
       },
+      cashBox: { select: { id: true, name: true } },
       createdAt: true,
       updatedAt: true
     }
