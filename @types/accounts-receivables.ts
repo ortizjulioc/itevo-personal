@@ -9,26 +9,8 @@ export const accountReceivableWithRelations = PrismaTypes.validator<PrismaTypes.
     dueDate: true,
     status: true,
     amountPaid: true,
-    student: {
-      select: {
-        id: true,
-        code: true,
-        firstName: true,
-        lastName: true,
-      },
-    },
-    courseBranch: {
-      select: {
-        id: true,
-        course: {
-          select: {
-            id: true,
-            code: true,
-            name: true,
-          },
-        },
-      },
-    },
+    enrollmentId: true,
+    enrollment: true,
   },
 });
 

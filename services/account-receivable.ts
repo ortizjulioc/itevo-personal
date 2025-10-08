@@ -84,26 +84,8 @@ export const getAccountsReceivable = async (
         dueDate: true,
         status: true,
         amountPaid: true,
-        student: {
-          select: {
-            id: true,
-            code: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-        courseBranch: {
-          select: {
-            id: true,
-            course: {
-              select: {
-                id: true,
-                code: true,
-                name: true,
-              },
-            },
-          },
-        },
+        enrollmentId: true,
+        enrollment: true,
       },
       where: whereClause,
       skip: skip,
@@ -133,33 +115,8 @@ export const findAccountReceivableById = async (
       dueDate: true,
       status: true,
       amountPaid: true,
-      student: {
-        select: {
-          id: true,
-          code: true,
-          firstName: true,
-          lastName: true,
-        },
-      },
-      courseBranch: {
-        select: {
-          id: true,
-          course: {
-            select: {
-              id: true,
-              code: true,
-              name: true,
-            },
-          },
-          teacher: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      },
+      enrollmentId: true,
+      enrollment: true,
     },
   });
 
@@ -189,19 +146,17 @@ export const createAccountReceivable = async (data: {
   dueDate: Date;
   status?: PaymentStatus;
   amountPaid?: number;
+  enrollmentId: string;
 }) => {
   const accountReceivable = await Prisma.accountReceivable.create({
     data: {
-      student: {
-        connect: { id: data.studentId },
-      },
-      courseBranch: {
-        connect: { id: data.courseBranchId },
-      },
+      studentId: data.studentId,
+      courseBranchId: data.courseBranchId,
       amount: data.amount,
       dueDate: data.dueDate,
       status: data.status || PaymentStatus.PENDING,
       amountPaid: data.amountPaid || 0,
+      enrollment: { connect: { id: data.enrollmentId } },
     },
   });
   return accountReceivable;
@@ -215,6 +170,7 @@ export const createManyAccountsReceivable = async (
     dueDate: Date;
     status?: PaymentStatus;
     amountPaid?: number;
+    enrollmentId: string;
   }[],
   prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
@@ -225,6 +181,7 @@ export const createManyAccountsReceivable = async (
     dueDate: item.dueDate,
     status: item.status || PaymentStatus.PENDING,
     amountPaid: item.amountPaid || 0,
+    enrollmentId: item.enrollmentId,
   }));
 
   const result = await prisma.accountReceivable.createMany({
