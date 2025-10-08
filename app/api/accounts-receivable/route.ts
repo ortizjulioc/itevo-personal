@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
       dueDate: new Date(body.dueDate),
       status: body.status || PaymentStatus.PENDING,
       amountPaid: body.amountPaid ? parseFloat(body.amountPaid) : 0,
-      enrollmentId: body.enrollmentId,
     });
 
     await createLog({

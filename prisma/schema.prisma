@@ -119,6 +119,7 @@ model Student {
   Quotation   Quotation[]
   attendance  Attendance[]
   fingerprint Fingerprint?
+  accountReceivable AccountReceivable[]
 
   @@map("students")
 }
@@ -211,6 +212,7 @@ model CourseBranch {
   QuotationItem  QuotationItem[]
   attendance     Attendance[]
   paymentPlan    CourseBranchPaymentPlan?
+  accountReceivable AccountReceivable[]
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
@@ -273,7 +275,6 @@ model Enrollment {
   courseBranch      CourseBranch        @relation(fields: [courseBranchId], references: [id])
   student           Student             @relation(fields: [studentId], references: [id])
   deleted           Boolean             @default(false)
-  accountReceivable AccountReceivable[]
 
   @@index([courseBranchId], map: "enrollments_course_branch_id_fkey")
   @@index([studentId], map: "enrollments_student_id_fkey")
@@ -330,7 +331,6 @@ model GraduationPrice {
 
 model AccountReceivable {
   id             String        @id @default(uuid())
-  enrollmentId   String        @map("enrollment_id")
   studentId      String        @map("student_id")
   courseBranchId String        @map("course_branch_id")
   concept        String        @default("")
@@ -341,11 +341,11 @@ model AccountReceivable {
   updatedAt      DateTime      @updatedAt @map("updated_at")
   amountPaid     Float         @default(0) @map("amount_paid")
 
-  enrollment        Enrollment          @relation(fields: [enrollmentId], references: [id])
+  student           Student             @relation(fields: [studentId], references: [id])
+  courseBranch     CourseBranch        @relation(fields: [courseBranchId], references: [id])
   InvoiceItem       InvoiceItem[]
   ReceivablePayment ReceivablePayment[]
 
-  @@index([enrollmentId], map: "accounts_receivable_enrollment_id_fkey")
   @@index([studentId], map: "accounts_receivable_student_id_idx")
   @@index([courseBranchId], map: "accounts_receivable_course_branch_id_idx")
   @@map("accounts_receivable")
