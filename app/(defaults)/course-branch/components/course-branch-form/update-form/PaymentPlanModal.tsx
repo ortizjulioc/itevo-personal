@@ -15,13 +15,14 @@ type PaymentPlanModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: PaymentPlanForm) => void;
+    onEdit?: (data: PaymentPlanForm) => void; // Added optional onEdit prop
     scheduleDays: number[];
     sessionCount?: number;
     loading?: boolean;
-    initialData?: PaymentPlanForm | null; // Add initialData prop for editing
+    initialData?: PaymentPlanForm | null;
 };
 
-export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessionCount, loading, initialData }: PaymentPlanModalProps) {
+export function PaymentPlanModal({ isOpen, onClose, onSave, onEdit, scheduleDays, sessionCount, loading, initialData }: PaymentPlanModalProps) {
     const [formData, setFormData] = useState<PaymentPlanForm>(
         initialData || {
             frequency: "WEEKLY",
@@ -38,7 +39,11 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
     };
 
     const handleSubmit = () => {
-        onSave(formData);
+        if (initialData && onEdit) {
+            onEdit(formData); // Call onEdit if initialData exists and onEdit is provided
+        } else {
+            onSave(formData); // Call onSave for new payment plans
+        }
     };
 
     if (!isOpen) return null;

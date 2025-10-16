@@ -3,7 +3,7 @@ import { Field, FieldProps, FormikErrors, FormikTouched } from "formik";
 import { CourseBranchFormType } from "../form.config";
 import { Button, FormItem, Input } from "@/components/ui";
 import Tooltip from "@/components/ui/tooltip";
-import { createPaymentPlan, getPaymentPlan } from "../../../lib/request";
+import { createPaymentPlan, getPaymentPlan, updatePaymentPlan, } from "../../../lib/request";
 import { useParams } from "next/navigation";
 import { PaymentPlanForm, PaymentPlanModal } from "./PaymentPlanModal";
 import { openNotification } from "@/utils";
@@ -17,6 +17,7 @@ interface FinancialConfigFieldsProps {
 }
 
 type PaymentPlan = {
+    id: string; // Added id field
     frequency: "WEEKLY" | "MONTHLY";
     installments: number;
     dayOfMonth: number;
@@ -66,6 +67,30 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
         } catch (error) {
             console.error("Error guardando paymentPlan", error);
             openNotification('error', 'Se produjo un error al guardar el plan de pago');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleEditPaymentPlan = async (plan: PaymentPlanForm) => {
+        setLoading(true);
+        try {
+            const paymentPlanid = paymentPlan?.id;
+            if (!paymentPlanid) {
+                openNotification('error', 'No se encontró el ID del plan de pago');
+                return;
+            }
+            const resp = await updatePaymentPlan(courseBranchId, plan, paymentPlanid);
+            if (resp.success) {
+                setPaymentPlan(resp.data as PaymentPlan);
+                openNotification('success', 'Plan de pago actualizado con éxito');
+            } else {
+                openNotification('error', 'Se produjo un error al actualizar el plan de pago');
+            }
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("Error actualizando paymentPlan", error);
+            openNotification('error', 'Se produjo un error al actualizar el plan de pago');
         } finally {
             setLoading(false);
         }
@@ -136,7 +161,6 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                     onChange={(e) => {
                                         const input = Number(e.target.value);
                                         form.setFieldValue("commissionAmount", input);
-
                                         const newRate = rawAmount !== 0 ? input / rawAmount : 0;
                                         form.setFieldValue("commissionRate", newRate);
                                     }}
@@ -228,10 +252,11 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSavePaymentPlan}
+                onEdit={handleEditPaymentPlan}
                 scheduleDays={[0, 1, 2, 3, 4, 5, 6]}
                 sessionCount={values.sessionCount}
                 loading={loading}
-                initialData={paymentPlan} // Pass existing payment plan for editing
+                initialData={paymentPlan}
             />
         </div>
     );
