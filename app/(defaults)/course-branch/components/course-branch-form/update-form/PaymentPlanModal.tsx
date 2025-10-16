@@ -18,19 +18,20 @@ type PaymentPlanModalProps = {
     scheduleDays: number[];
     sessionCount?: number;
     loading?: boolean;
+    initialData?: PaymentPlanForm | null; // Add initialData prop for editing
 };
 
-export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessionCount, loading }: PaymentPlanModalProps) {
-    const [formData, setFormData] = useState<PaymentPlanForm>({
-        frequency: "WEEKLY",
-        dayOfWeek: 0,
-        installments: sessionCount || 0,
-        dayOfMonth: 1,
-        graceDays: 0,
-        lateFeeAmount: 0,
-    });
-
-
+export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessionCount, loading, initialData }: PaymentPlanModalProps) {
+    const [formData, setFormData] = useState<PaymentPlanForm>(
+        initialData || {
+            frequency: "WEEKLY",
+            dayOfWeek: 0,
+            installments: sessionCount || 0,
+            dayOfMonth: 1,
+            graceDays: 0,
+            lateFeeAmount: 0,
+        }
+    );
 
     const handleChange = (field: keyof PaymentPlanForm, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -38,28 +39,21 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
 
     const handleSubmit = () => {
         onSave(formData);
-        // onClose();
     };
 
     if (!isOpen) return null;
 
-
-
     return (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
             <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl p-6">
-                <h2 className="text-xl font-bold mb-4">Configurar Plan de Pago</h2>
+                <h2 className="text-xl font-bold mb-4">{initialData ? "Editar Plan de Pago" : "Configurar Plan de Pago"}</h2>
 
                 {/* Frecuencia de cobro */}
                 <FormItem label="Frecuencia de cobro">
                     <div className="grid grid-cols-2 gap-2 mb-4">
                         {[
-                            // { value: "ONCE", label: "Una vez" },
                             { value: "WEEKLY", label: "Semanal" },
-                            // { value: "BIWEEKLY", label: "Quincenal" },
                             { value: "MONTHLY", label: "Mensual" },
-                            // { value: "PER_CLASS", label: "Por clase" },
-                            // { value: "CUSTOM", label: "Personalizado" },
                         ].map((freq) => (
                             <Button
                                 key={freq.value}
@@ -67,12 +61,10 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                                 variant={formData.frequency === freq.value ? "default" : "outline"}
                                 onClick={() => {
                                     handleChange("frequency", freq.value as PaymentPlanForm["frequency"]);
-
-                                    // 🔹 Resetear campos según la selección
                                     if (freq.value === "WEEKLY") {
                                         handleChange("dayOfMonth", 0);
                                     } else if (freq.value === "MONTHLY") {
-                                        handleChange("dayOfWeek", null);
+                                        handleChange("dayOfWeek", 0);
                                     }
                                 }}
                             >
@@ -99,19 +91,20 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                 )}
 
                 {formData.frequency === "MONTHLY" && (
-
-                    <Select
-                        options={Array.from({ length: 31 }, (_, i) => ({
-                            value: i + 1,
-                            label: `${i + 1}`,
-                        }))}
-                        value={{ value: formData.dayOfMonth, label: `${formData.dayOfMonth}` }}
-                        onChange={(option) => {
-                            const opt = option as { value: number; label: string } | null
-                            if (opt) handleChange("dayOfMonth", opt.value)
-                        }}
-                        placeholder="Selecciona el día del mes"
-                    />
+                    <FormItem label="Día del mes">
+                        <Select
+                            options={Array.from({ length: 31 }, (_, i) => ({
+                                value: i + 1,
+                                label: `${i + 1}`,
+                            }))}
+                            value={{ value: formData.dayOfMonth, label: `${formData.dayOfMonth}` }}
+                            onChange={(option) => {
+                                const opt = option as { value: number; label: string } | null;
+                                if (opt) handleChange("dayOfMonth", opt.value);
+                            }}
+                            placeholder="Selecciona el día del mes"
+                        />
+                    </FormItem>
                 )}
                 {/* Otros inputs */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -123,7 +116,6 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                             placeholder="Cantidad de cuotas"
                         />
                     </FormItem>
-
 
                     <FormItem label="Días de gracia">
                         <Input
@@ -149,7 +141,9 @@ export function PaymentPlanModal({ isOpen, onClose, onSave, scheduleDays, sessio
                     <Button variant="outline" onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button onClick={handleSubmit} loading={loading}>Guardar</Button>
+                    <Button onClick={handleSubmit} loading={loading}>
+                        Guardar
+                    </Button>
                 </div>
             </div>
         </div>

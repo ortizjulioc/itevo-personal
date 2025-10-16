@@ -8,7 +8,6 @@ import { useParams } from "next/navigation";
 import { PaymentPlanForm, PaymentPlanModal } from "./PaymentPlanModal";
 import { openNotification } from "@/utils";
 
-
 interface FinancialConfigFieldsProps {
     values: CourseBranchFormType;
     errors: FormikErrors<CourseBranchFormType>;
@@ -26,7 +25,7 @@ type PaymentPlan = {
     lateFeeAmount: number;
 };
 
-export default function FinancialConfigFields({ values, errors, touched, className ,setFieldValue }: FinancialConfigFieldsProps) {
+export default function FinancialConfigFields({ values, errors, touched, className, setFieldValue }: FinancialConfigFieldsProps) {
     const { id } = useParams();
     const courseBranchId = id as string;
 
@@ -54,23 +53,26 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
     }, [courseBranchId]);
 
     const handleSavePaymentPlan = async (plan: PaymentPlanForm) => {
-        setLoading(true)
-
+        setLoading(true);
         try {
             const resp = await createPaymentPlan(courseBranchId, plan);
-
             if (resp.success) {
                 setPaymentPlan(resp.data as PaymentPlan);
+                openNotification('success', 'Plan de pago guardado con éxito');
             } else {
-                openNotification('error', 'Se Produjo un erro al guardar el metodo de pago');
+                openNotification('error', 'Se produjo un error al guardar el plan de pago');
             }
             setIsModalOpen(false);
         } catch (error) {
-            console.log(error);
-
+            console.error("Error guardando paymentPlan", error);
+            openNotification('error', 'Se produjo un error al guardar el plan de pago');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
     };
 
     return (
@@ -188,7 +190,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
 
             {/* ================== Frecuencia de pago ================== */}
             {loading && (
-                <span>cargando frecuencia pago...</span>
+                <span>Cargando frecuencia de pago...</span>
             )}
             {!loading && (
                 <FormItem label="Frecuencia de pago">
@@ -203,6 +205,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                     type="button"
                                     variant={paymentPlan.frequency === "WEEKLY" ? "default" : "outline"}
                                     className="ltr:rounded-r-none rtl:rounded-l-none"
+                                    onClick={handleOpenModal}
                                 >
                                     Semanal
                                 </Button>
@@ -210,6 +213,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                     type="button"
                                     variant={paymentPlan.frequency === "MONTHLY" ? "default" : "outline"}
                                     className="ltr:rounded-l-none rtl:rounded-r-none"
+                                    onClick={handleOpenModal}
                                 >
                                     Mensual
                                 </Button>
@@ -227,6 +231,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 scheduleDays={[0, 1, 2, 3, 4, 5, 6]}
                 sessionCount={values.sessionCount}
                 loading={loading}
+                initialData={paymentPlan} // Pass existing payment plan for editing
             />
         </div>
     );
