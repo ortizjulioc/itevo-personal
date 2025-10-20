@@ -75,6 +75,6 @@
         "typescript": "^5.9.2"
     },
     "prisma": {
-        "seed": "ts-node scripts/seed.ts"
+        "seed": "node scripts/seed.js"
     }
 }

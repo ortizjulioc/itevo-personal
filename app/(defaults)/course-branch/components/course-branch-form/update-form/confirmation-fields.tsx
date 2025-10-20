@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { CourseBranchFormType } from '../form.config';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useParams } from 'next/navigation';
@@ -14,6 +14,7 @@ import { useCourseBranch } from './course-branch-provider';
 import { Course, CourseBranchStatus } from '@prisma/client';
 import { MODALITIES } from '@/constants/modality.constant';
 import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
+import { getPaymentPlan } from '../../../lib/request';
 
 interface ConfirmationFieldsProps {
   values: CourseBranchFormType;
@@ -33,21 +34,47 @@ const MODALITIES_OPTIONS = [
   { value: MODALITIES.HYBRID, label: 'Híbrida' },
 ];
 
-export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
+type PaymentPlan = {
+  frequency: "WEEKLY" | "MONTHLY";
+  installments: number;
+  dayOfMonth: number;
+  dayOfWeek: number;
+  graceDays: number;
+  lateFeeAmount: number;
+};
 
+export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
   const params = useURLSearchParams();
   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
   const { preRequisites } = useCourseBranch();
+  const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const res = await getPaymentPlan(courseBranchId);
+        if (res.success) {
+          const paymentPlan = res.data as PaymentPlan;
+          setPaymentPlan(paymentPlan);
+        }
+      } catch (err) {
+        console.error("Error cargando paymentPlan", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (courseBranchId) {
+      fetchPlan();
+    }
+  }, [courseBranchId]);
 
   return (
     <div className={className}>
       <div className="max-w-3xl p-6">
-        {/* <h2 className="text-2xl font-bold mb-4">Revisión y Confirmación</h2> */}
-
         {/* Sección: Datos Generales */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Datos Generales</h3>
@@ -99,9 +126,6 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
               <p className="text-gray-800">
                 {values.sessionCount}
               </p>
-              {/* <p className="text-xs text-gray-500 italic mt-1">
-                Las sesiones se calculan automáticamente según las fechas del curso, los horarios y los días feriados.
-              </p> */}
             </div>
             <div>
               <p className="font-medium text-gray-600">Fecha de Inicio:</p>
@@ -132,7 +156,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
           </button>
         </div>
 
-        {/* Sección: Configuración de Prerequisitos */}
+        {/* Sección: Configuración de Prerrequisitos */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Prerrequisitos</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -147,12 +171,12 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             ) : (
               <p className="text-gray-500 text-sm italic">Este curso no tiene prerrequisitos</p>
             )}
-
           </div>
           <button type='button' onClick={() => onChangeTab(2)} className="mt-2 text-blue-600 hover:underline">
-            Editar Prerrequistos
+            Editar Prerrequisitos
           </button>
         </div>
+
         {/* Sección: Configuración Financiera */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Configuración Financiera</h3>
@@ -165,6 +189,32 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
               <p className="font-medium text-gray-600">Comisión:</p>
               <p className="text-gray-800">RD${values.commissionAmount} ({values.commissionRate * 100}%)</p>
             </div>
+            <div>
+              <p className="font-medium text-gray-600">Monto de Inscripción:</p>
+              <p className="text-gray-800">RD${values.enrollmentAmount}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-600">Frecuencia de Pago:</p>
+              {loading ? (
+                <p className="text-gray-800">Cargando...</p>
+              ) : paymentPlan ? (
+                <div>
+                  <p className="text-gray-800">
+                    {paymentPlan.frequency === 'WEEKLY' ? 'Semanal' : 'Mensual'}
+                    {paymentPlan.frequency === 'WEEKLY' && paymentPlan.dayOfWeek !== null
+                      ? ` (${weekdayNames[paymentPlan.dayOfWeek]})`
+                      : paymentPlan.frequency === 'MONTHLY' && paymentPlan.dayOfMonth
+                      ? ` (Día ${paymentPlan.dayOfMonth})`
+                      : ''}
+                  </p>
+                  <p className="text-gray-800">Cuotas: {paymentPlan.installments}</p>
+                  <p className="text-gray-800">Días de gracia: {paymentPlan.graceDays}</p>
+                  <p className="text-gray-800">Monto de recargo: RD${paymentPlan.lateFeeAmount}</p>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm italic">No configurada</p>
+              )}
+            </div>
           </div>
           <button type='button' onClick={() => onChangeTab(3)} className="mt-2 text-blue-600 hover:underline">
             Editar Configuración Financiera
@@ -172,5 +222,5 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
         </div>
       </div>
     </div>
-  )
+  );
 }

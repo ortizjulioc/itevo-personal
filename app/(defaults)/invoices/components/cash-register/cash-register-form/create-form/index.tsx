@@ -1,13 +1,13 @@
 'use client';
-import { Button, Checkbox, FormItem, Input } from '@/components/ui';
+import { Button, FormItem, Input } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { createValidationSchema, initialValues } from '../form.config';
-
 import { useSession } from 'next-auth/react';
 import { createCashRegister } from '@/app/(defaults)/invoices/lib/cash-register/cash-register-request';
 import { useState } from 'react';
+import SelectCashBox, { SelectCashBoxType } from '@/components/common/selects/select-cash-box';
 
 
 export default function CreateCashRegisterForm() {
@@ -25,13 +25,8 @@ export default function CreateCashRegisterForm() {
         branches?: any[];
     };
 
-
-
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any) => {
-
         setLoading(true);
-
 
         if (!user?.branches || user.branches.length === 0) {
             openNotification('error', 'No se encontró una sucursal asociada al usuario');
@@ -46,7 +41,7 @@ export default function CreateCashRegisterForm() {
         }
 
         const valuesToSend = {
-            name: values.name,
+            cashBoxId: values.cashBoxId,
             branchId: user.branches[0].id,
             userId: user.id,
             initialBalance: Number(values.initialBalance),
@@ -63,7 +58,6 @@ export default function CreateCashRegisterForm() {
 
                 if (cashRegister?.id) {
                     await route.push(`/invoices/${cashRegister.id}`);
-                   
                     return;
                 } else {
                     openNotification('error', 'No se pudo obtener el ID de la caja creada');
@@ -76,10 +70,8 @@ export default function CreateCashRegisterForm() {
             openNotification('error', 'Ocurrió un error inesperado');
         }
 
-        // Si hubo algún fallo en todo el proceso, se permite volver a intentar
         setLoading(false);
     };
-
 
     return (
         <div className="panel">
@@ -87,12 +79,37 @@ export default function CreateCashRegisterForm() {
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
-
-                        <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
-                            <Field type="text" name="name" component={Input} />
+                        <FormItem
+                            name="cashBoxId"
+                            label="Caja"
+                            invalid={Boolean(errors.cashBoxId && touched.cashBoxId)}
+                            errorMessage={errors.cashBoxId}
+                        >
+                            <Field>
+                                {({ form, field }: any) => (
+                                    <SelectCashBox
+                                        {...field}
+                                        value={values.cashBoxId}
+                                        onChange={(option: SelectCashBoxType | null) => {
+                                            form.setFieldValue('cashBoxId', option?.value || '');
+                                        }}
+                                    />
+                                )}
+                            </Field>
                         </FormItem>
-                        <FormItem name="initialBalance" label="Saldo Inicial" invalid={Boolean(errors.initialBalance && touched.initialBalance)} errorMessage={errors.initialBalance}>
-                            <Field type="number" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} name="initialBalance" component={Input} placeholder="Ingrese el saldo inicial" />
+                        <FormItem
+                            name="initialBalance"
+                            label="Saldo Inicial"
+                            invalid={Boolean(errors.initialBalance && touched.initialBalance)}
+                            errorMessage={errors.initialBalance}
+                        >
+                            <Field
+                                type="number"
+                                onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()}
+                                name="initialBalance"
+                                component={Input}
+                                placeholder="Ingrese el saldo inicial"
+                            />
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
