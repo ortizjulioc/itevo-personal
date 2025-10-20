@@ -35,6 +35,7 @@ export interface InvoiceCreateDataType {
     status?: InvoiceStatus; // DRAFT, PAID, VOID
     type?: NcfType; // Si no se especifica, se mantendrá el tipo por defecto
     comment?: string; // Comentario opcional para la factura
+    isCredit?: boolean; // Indica si la factura es a crédito
 }
 
 export interface InvoiceItemCreateData {
@@ -53,6 +54,7 @@ export interface InvoicePaymentData {
     studentId?: string;
     paymentDetails?: any; // JSON con detalles adicionales
     type?: NcfType;
+    isCredit?: boolean;
 }
 
 interface InvoiceFilter {
@@ -172,7 +174,8 @@ export const updateInvoice = async (
         paymentDate,
         paymentMethod,
         paymentDetails,
-        comment
+        comment,
+        isCredit,
     } = data;
 
     return await prisma.invoice.update({
@@ -191,6 +194,7 @@ export const updateInvoice = async (
             paymentDetails,
             comment,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
+            isCredit
         },
     });
 }

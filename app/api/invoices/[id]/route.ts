@@ -17,16 +17,19 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
       id,
       Prisma,
       {
-        cashRegister: {select: {
-          id: true,
-          name: true,
-          branch: true,
-        }},
-        student: {select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        }}
+        cashRegister: {
+          select: {
+            id: true,
+            cashBox: true,
+          }
+        },
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          }
+        }
       }
     );
 
@@ -93,17 +96,20 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
             prisma,
           });
 
-          const accountPayable = await prisma.accountPayable.findFirst({
-            where: { courseBranchId: accountReceivable.courseBranchId },
-          });
-
+          if (accountReceivable.courseBranchId) {
+            const accountPayable = await prisma.accountPayable.findFirst({
+              where: { courseBranchId: accountReceivable.courseBranchId },
+            });
             if (accountPayable) {
-                await deleteEarningFromAccountsPayable(
-                  accountPayable.id,
-                  receivablePayment.id,
-                  prisma
-                );
+              await deleteEarningFromAccountsPayable(
+                accountPayable.id,
+                receivablePayment.id,
+                prisma
+              );
             }
+          }
+
+
           // Eliminar cuenta por pagar asociada si existe
         }
       }

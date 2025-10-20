@@ -3,7 +3,7 @@ import { findInvoiceById, InvoicePaymentData, updateInvoice } from '@/services/i
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus, NcfType } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus, NcfType, PaymentStatus } from '@prisma/client';
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 import { createCashMovement } from '@/services/cash-movement';
@@ -28,6 +28,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             const USE_NCF = settings?.billingWithoutNcf !== true;
             const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;
 
+            const isCredit = body.isCredit ?? invoice.isCredit;
+            if (isCredit && !body.studentId && !invoice.studentId) {
+                throw new Error('Para facturas a crédito se debe especificar el ID del estudiante');
+            }
+
             const updatedInvoice = await updateInvoice(id, {
                 ncf,
                 type: finalType,
@@ -36,26 +41,48 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 paymentDate: new Date(),
                 paymentMethod: body.paymentMethod,
                 paymentDetails: body.paymentDetails || {},
+                isCredit,
             }, tx);
             newInvoiceData = updatedInvoice;
 
-            await createCashMovement({
-                cashRegister: { connect: { id: invoice.cashRegisterId }},
-                type: CashMovementType.INCOME,
-                amount: invoice.subtotal + invoice.itbis,
-                description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
-                referenceType: CashMovementReferenceType.INVOICE,
-                referenceId: updatedInvoice.id,
-                user: { connect: { id: invoice.createdBy } },
-            }, tx);
+            if (isCredit) {
+                // Si es crédito, crear cuenta por cobrar
+                const receivable = await tx.accountReceivable.create({
+                    data: {
+                        studentId: invoice.studentId || body.studentId!,
+                        concept: `Factura ${invoice.invoiceNumber}`,
+                        amount: invoice.subtotal + invoice.itbis,
+                        status: PaymentStatus.PENDING,
+                        dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+                    },
+                });
+                await createLog({
+                    action: 'POST',
+                    description: `Cuenta por cobrar ${receivable.id} creada para la factura ${updatedInvoice.invoiceNumber} por un monto de ${receivable.amount}`,
+                    origin: `invoices/[id]/pay`,
+                    elementId: receivable.id,
+                    success: true,
+                });
+            } else {
+                await createCashMovement({
+                    cashRegister: { connect: { id: invoice.cashRegisterId } },
+                    type: CashMovementType.INCOME,
+                    amount: invoice.subtotal + invoice.itbis,
+                    description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
+                    referenceType: CashMovementReferenceType.INVOICE,
+                    referenceId: updatedInvoice.id,
+                    user: { connect: { id: invoice.createdBy } },
+                }, tx);
 
+            }
             await createLog({
                 action: 'POST',
-                description: `Factura ${updatedInvoice.invoiceNumber} pagada. \nInformación de la factura: ${JSON.stringify(updatedInvoice, null, 2)}`,
-                origin: `invoices/${id}/pay`,
+                description: `Factura ${updatedInvoice.invoiceNumber} ${isCredit ? 'registrada a crédito' : 'pagada'
+                    }.\nInformación: ${JSON.stringify(updatedInvoice, null, 2)}`, origin: `invoices/[id]/pay`,
                 elementId: updatedInvoice.id,
                 success: true,
             });
+
         });
 
         return NextResponse.json(newInvoiceData, { status: 200 });
@@ -64,7 +91,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         await createLog({
             action: 'POST',
             description: `Error al pagar factura ${id}: ${formatErrorMessage(error)}`,
-            origin: `invoices/${id}/pay`,
+            origin: `invoices/[id]pay`,
             success: false,
         });
 

@@ -86,7 +86,7 @@ model Teacher {
   phone            String?
   email            String?
   commissionRate   Float?           @map("commission_rate")
-  commissionAmount Float            @map("commission_amount") @default(0)
+  commissionAmount Float            @default(0) @map("commission_amount")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
   deleted          Boolean          @default(false)
@@ -112,13 +112,13 @@ model Student {
   deleted            Boolean             @default(false)
   branchId           String              @map("branch_id")
 
-  branch      Branch?      @relation(fields: [branchId], references: [id])
-  enrollment  Enrollment[]
-  graduation  Graduation[]
-  Invoice     Invoice[]
-  Quotation   Quotation[]
-  attendance  Attendance[]
-  fingerprint Fingerprint?
+  branch            Branch?             @relation(fields: [branchId], references: [id])
+  enrollment        Enrollment[]
+  graduation        Graduation[]
+  Invoice           Invoice[]
+  Quotation         Quotation[]
+  attendance        Attendance[]
+  fingerprint       Fingerprint?
   accountReceivable AccountReceivable[]
 
   @@map("students")
@@ -202,16 +202,16 @@ model CourseBranch {
   taxRate          Float              @default(0) @map("tax_rate")
   deleted          Boolean            @default(false)
 
-  accountPayable AccountPayable[]
-  branch         Branch                   @relation(fields: [branchId], references: [id])
-  course         Course                   @relation(fields: [courseId], references: [id])
-  promotion      Promotion                @relation(fields: [promotionId], references: [id])
-  teacher        Teacher                  @relation(fields: [teacherId], references: [id])
-  schedules      CourseSchedule[]
-  enrollment     Enrollment[]
-  QuotationItem  QuotationItem[]
-  attendance     Attendance[]
-  paymentPlan    CourseBranchPaymentPlan?
+  accountPayable    AccountPayable[]
+  branch            Branch                   @relation(fields: [branchId], references: [id])
+  course            Course                   @relation(fields: [courseId], references: [id])
+  promotion         Promotion                @relation(fields: [promotionId], references: [id])
+  teacher           Teacher                  @relation(fields: [teacherId], references: [id])
+  schedules         CourseSchedule[]
+  enrollment        Enrollment[]
+  QuotationItem     QuotationItem[]
+  attendance        Attendance[]
+  paymentPlan       CourseBranchPaymentPlan?
   accountReceivable AccountReceivable[]
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
@@ -222,18 +222,19 @@ model CourseBranch {
 }
 
 model CourseBranchPaymentPlan {
-  id               String           @id @default(uuid())
-  courseBranchId   String           @unique @map("course_branch_id")
-  frequency        PaymentFrequency
-  installments     Int              @default(1) // número de cuotas
-  dayOfMonth       Int?             @map("day_of_month") // día del mes para pagos mensuales
-  dayOfWeek        Int?             @map("day_of_week") // día de la semana para pagos semanales
-  graceDays        Int              @default(0) @map("grace_days")  // días extra después de la fecha límite
-  lateFeeAmount    Float            @default(0) @map("late_fee_amount")  // monto fijo de mora
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
+  id             String           @id @default(uuid())
+  courseBranchId String           @unique @map("course_branch_id")
+  frequency      PaymentFrequency
+  installments   Int              @default(1) // número de cuotas
+  dayOfMonth     Int?             @map("day_of_month") // día del mes para pagos mensuales
+  dayOfWeek      Int?             @map("day_of_week") // día de la semana para pagos semanales
+  graceDays      Int              @default(0) @map("grace_days") // días extra después de la fecha límite
+  lateFeeAmount  Float            @default(0) @map("late_fee_amount") // monto fijo de mora
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+
   @@map("courses_branches_payment_plans")
 }
 
@@ -265,16 +266,16 @@ model CourseSchedule {
 }
 
 model Enrollment {
-  id                String              @id @default(uuid())
-  studentId         String              @map("student_id")
-  courseBranchId    String              @map("course_branch_id")
-  enrollmentDate    DateTime            @map("enrollment_date")
-  status            EnrollmentStatus
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  courseBranch      CourseBranch        @relation(fields: [courseBranchId], references: [id])
-  student           Student             @relation(fields: [studentId], references: [id])
-  deleted           Boolean             @default(false)
+  id             String           @id @default(uuid())
+  studentId      String           @map("student_id")
+  courseBranchId String           @map("course_branch_id")
+  enrollmentDate DateTime         @map("enrollment_date")
+  status         EnrollmentStatus
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])
+  student        Student          @relation(fields: [studentId], references: [id])
+  deleted        Boolean          @default(false)
 
   @@index([courseBranchId], map: "enrollments_course_branch_id_fkey")
   @@index([studentId], map: "enrollments_student_id_fkey")
@@ -332,7 +333,7 @@ model GraduationPrice {
 model AccountReceivable {
   id             String        @id @default(uuid())
   studentId      String        @map("student_id")
-  courseBranchId String        @map("course_branch_id")
+  courseBranchId String?       @map("course_branch_id")
   concept        String        @default("")
   amount         Float
   dueDate        DateTime      @map("due_date")
@@ -342,7 +343,7 @@ model AccountReceivable {
   amountPaid     Float         @default(0) @map("amount_paid")
 
   student           Student             @relation(fields: [studentId], references: [id])
-  courseBranch     CourseBranch        @relation(fields: [courseBranchId], references: [id])
+  courseBranch      CourseBranch?       @relation(fields: [courseBranchId], references: [id])
   InvoiceItem       InvoiceItem[]
   ReceivablePayment ReceivablePayment[]
 
@@ -456,14 +457,14 @@ model Holiday {
 model CashBox {
   id        String   @id @default(uuid())
   name      String
-  location  String?   // ubicación física (ej. "Mostrador 1", "2do piso")
-  branchId  String    @map("branch_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deleted   Boolean   @default(false)
+  location  String? // ubicación física (ej. "Mostrador 1", "2do piso")
+  branchId  String   @map("branch_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deleted   Boolean  @default(false)
 
-  branch     Branch         @relation(fields: [branchId], references: [id])
-  registers  CashRegister[] // sesiones de apertura/cierre de esta caja física
+  branch    Branch         @relation(fields: [branchId], references: [id])
+  registers CashRegister[] // sesiones de apertura/cierre de esta caja física
 
   @@index([branchId], map: "cash_boxes_branch_id_fkey")
   @@map("cash_boxes")
@@ -471,7 +472,7 @@ model CashBox {
 
 model CashRegister {
   id             String             @id @default(uuid())
-  cashBoxId      String            @map("cash_box_id") // referencia a la caja física (opcional)
+  cashBoxId      String             @map("cash_box_id") // referencia a la caja física (opcional)
   status         CashRegisterStatus @default(OPEN)
   userId         String             @map("user_id")
   initialBalance Float              @default(0) @map("initial_balance")
@@ -481,7 +482,7 @@ model CashRegister {
   updatedAt      DateTime           @updatedAt @map("updated_at")
   deleted        Boolean            @default(false)
 
-  cashBox       CashBox             @relation(fields: [cashBoxId], references: [id])
+  cashBox   CashBox               @relation(fields: [cashBoxId], references: [id])
   movements CashMovement[]
   closures  CashRegisterClosure[]
   user      User                  @relation(fields: [userId], references: [id])
@@ -570,6 +571,7 @@ model Invoice {
   paymentDetails    Json?               @default("{}") @map("payment_details")
   status            InvoiceStatus       @default(DRAFT)
   comment           String?             @default("")
+  isCredit          Boolean             @default(false) @map("is_credit")
   createdBy         String              @map("created_by")
   createdAt         DateTime            @default(now()) @map("created_at")
   updatedAt         DateTime            @updatedAt @map("updated_at")
@@ -756,6 +758,7 @@ enum NcfType {
 
 enum InvoiceStatus {
   DRAFT    @map("draft")
+  COMPLETED @map("completed")
   PAID     @map("paid")
   CANCELED @map("canceled")
 }
