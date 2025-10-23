@@ -27,7 +27,7 @@ export default function CreateBranchForm() {
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Sucursal</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de sucursales</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
