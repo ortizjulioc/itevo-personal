@@ -130,7 +130,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
             openNotification('error', 'Se produjo un error al actualizar el plan de pago');
         } finally {
             setLoading(false);
-            
+
         }
     };
 
@@ -252,43 +252,86 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
 
             {/* ================== Configuración financiera ================== */}
             {loading && (
-                <span>Cargando configuración financiera...</span>
+                <span>Cargando plan de pago...</span>
             )}
             {!loading && paymentPlan && (
-                <FormItem label="Configuración financiera">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <p className="font-medium text-gray-600">Frecuencia de pago:</p>
-                            <p className="text-gray-800">
-                                {paymentPlan.frequency === "WEEKLY" ? "Semanal" : "Mensual"}
-                                {paymentPlan.frequency === "WEEKLY" && paymentPlan.dayOfWeek !== null
-                                    ? ` (${weekdayNames[paymentPlan.dayOfWeek]})`
-                                    : paymentPlan.frequency === "MONTHLY" && paymentPlan.dayOfMonth
-                                        ? ` (Día ${paymentPlan.dayOfMonth})`
-                                        : ""}
-                            </p>
+                <FormItem label="Plan de pago" name="paymentPlan">
+                    {/* Contenedor principal con estilo de "tarjeta" (Card) */}
+                    <div className="border border-gray-200 rounded-lg p-5 shadow-sm bg-white lg:w-1/2">
+
+                        {/* Encabezado y Botón de Edición en la misma línea */}
+                        <div className="flex justify-between items-start mb-3">
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center">
+                                {/* Ícono más pequeño, color gris oscuro */}
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Detalles del Plan
+                            </h3>
+                            {/* Botón de Edición */}
+                            <Button
+                                type="button"
+                                variant="outline" // Mantenemos outline o ghost
+                                size="sm" // Reducido el tamaño
+                                onClick={handleOpenModal}
+                                className="text-xs" // Tipografía más pequeña
+                            >
+                                Editar
+                            </Button>
                         </div>
-                        <div>
-                            <p className="font-medium text-gray-600">Cuotas:</p>
-                            <p className="text-gray-800">{paymentPlan.installments}</p>
+
+                        {/* Sección principal (Frecuencia y Cuotas) - Ahora con 'text-xl' (antes 'text-2xl') y color gris oscuro */}
+                        <div className="grid grid-cols-2 gap-5 border-b pb-3 mb-3">
+
+                            {/* Frecuencia de Pago */}
+                            <div>
+                                <p className="font-semibold text-xs text-gray-500 uppercase tracking-wider mb-0.5">Frecuencia de pago</p>
+                                <p className="text-xl font-bold text-gray-800">
+                                    {paymentPlan.frequency === "WEEKLY" ? "Semanal" : "Mensual"}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    {paymentPlan.frequency === "WEEKLY" && paymentPlan.dayOfWeek !== null
+                                        ? `(Día: ${weekdayNames[paymentPlan.dayOfWeek]})`
+                                        : paymentPlan.frequency === "MONTHLY" && paymentPlan.dayOfMonth
+                                            ? `(Día ${paymentPlan.dayOfMonth} de cada mes)`
+                                            : ""}
+                                </p>
+                            </div>
+
+                            {/* Cuotas */}
+                            <div>
+                                <p className="font-semibold text-xs text-gray-500 uppercase tracking-wider mb-0.5">Cuotas totales</p>
+                                <p className="text-xl font-extrabold text-gray-800">
+                                    {paymentPlan.installments}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    {paymentPlan.installments === 1 ? 'Cuota' : 'Cuotas'}
+                                </p>
+                            </div>
+
                         </div>
-                        <div>
-                            <p className="font-medium text-gray-600">Días de gracia:</p>
-                            <p className="text-gray-800">{paymentPlan.graceDays}</p>
+
+                        {/* Sección de Recargos/Gracia - Información secundaria */}
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-sm text-gray-600 mt-3 ">Política de Morosidad</h4>
+                            <div className="grid grid-cols-2 gap-4">
+
+                                {/* Días de Gracia */}
+                                <div>
+                                    <p className="font-medium text-xs text-gray-500">Días de gracia:</p>
+                                    <p className="text-sm font-bold text-gray-800">{paymentPlan.graceDays} días</p>
+                                </div>
+
+                                {/* Monto de Recargo */}
+                                <div>
+                                    <p className="font-medium text-xs text-gray-500">Monto de recargo (mora):</p>
+                                    <p className="text-sm font-bold text-gray-800">RD${paymentPlan.lateFeeAmount}</p>
+                                </div>
+
+                            </div>
                         </div>
-                        <div>
-                            <p className="font-medium text-gray-600">Monto de recargo:</p>
-                            <p className="text-gray-800">RD${paymentPlan.lateFeeAmount}</p>
-                        </div>
+
                     </div>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="mt-4"
-                        onClick={handleOpenModal}
-                    >
-                        Editar
-                    </Button>
                 </FormItem>
             )}
 
