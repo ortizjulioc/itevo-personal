@@ -3,10 +3,11 @@ import { Field, FieldProps, FormikErrors, FormikTouched } from "formik";
 import { CourseBranchFormType } from "../form.config";
 import { Button, FormItem, Input } from "@/components/ui";
 import Tooltip from "@/components/ui/tooltip";
-import { createPaymentPlan, getPaymentPlan, updatePaymentPlan, } from "../../../lib/request";
+import { createPaymentPlan, getPaymentPlan, updatePaymentPlan } from "../../../lib/request";
 import { useParams } from "next/navigation";
 import { PaymentPlanForm, PaymentPlanModal } from "./PaymentPlanModal";
 import { openNotification } from "@/utils";
+import { useFetchScheduleByCourseId } from "@/app/(defaults)/schedules/lib/use-fetch-schedules";
 
 interface FinancialConfigFieldsProps {
     values: CourseBranchFormType;
@@ -17,7 +18,7 @@ interface FinancialConfigFieldsProps {
 }
 
 type PaymentPlan = {
-    id: string; // Added id field
+    id: string;
     frequency: "WEEKLY" | "MONTHLY";
     installments: number;
     dayOfMonth: number;
@@ -26,32 +27,63 @@ type PaymentPlan = {
     lateFeeAmount: number;
 };
 
+const weekdayNames = [
+    "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+];
+
 export default function FinancialConfigFields({ values, errors, touched, className, setFieldValue }: FinancialConfigFieldsProps) {
     const { id } = useParams();
     const courseBranchId = id as string;
+    const { schedules } = useFetchScheduleByCourseId(courseBranchId);
+    const scheduleDays = schedules?.map(schedule => schedule.weekday) || [];
 
     const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPlan = async () => {
-            try {
-                const res = await getPaymentPlan(courseBranchId);
-                if (res.success) {
-                    const paymentPlan = res.data as PaymentPlan;
-                    setPaymentPlan(paymentPlan);
+   useEffect(() => {
+    let fetched = false;
+
+    const fetchPlan = async () => {
+        if (fetched) return;
+        fetched = true;
+
+        try {
+            const res = await getPaymentPlan(courseBranchId);
+            if (res.success) {
+                setPaymentPlan(res.data as PaymentPlan);
+            } else {
+                // Solo crear plan por defecto una vez
+                const defaultPlan: PaymentPlanForm = {
+                    frequency: "WEEKLY",
+                    dayOfWeek: scheduleDays[0] || 0,
+                    installments: values.sessionCount || 0,
+                    dayOfMonth: 1,
+                    graceDays: 0,
+                    lateFeeAmount: 0,
+                };
+                const resp = await createPaymentPlan(courseBranchId, defaultPlan);
+                if (resp.success) {
+                    setPaymentPlan(resp.data as PaymentPlan);
+                    openNotification("success", "Plan de pago por defecto creado con éxito");
+                } else {
+                    openNotification("error", "Error al crear el plan de pago por defecto");
                 }
-            } catch (err) {
-                console.error("Error cargando paymentPlan", err);
-            } finally {
-                setLoading(false);
             }
-        };
-        if (courseBranchId) {
-            fetchPlan();
+        } catch (err) {
+            console.error("Error cargando paymentPlan", err);
+            openNotification("error", "Error al cargar el plan de pago");
+        } finally {
+            setLoading(false);
         }
-    }, [courseBranchId]);
+    };
+
+    // Solo ejecutamos una vez cuando tengamos courseBranchId y scheduleDays cargado
+    if (courseBranchId && scheduleDays.length > 0 && !paymentPlan) {
+        fetchPlan();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [courseBranchId, scheduleDays.length]);
 
     const handleSavePaymentPlan = async (plan: PaymentPlanForm) => {
         setLoading(true);
@@ -80,6 +112,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 openNotification('error', 'No se encontró el ID del plan de pago');
                 return;
             }
+            
             const resp = await updatePaymentPlan(courseBranchId, plan, paymentPlanid);
             if (resp.success) {
                 setPaymentPlan(resp.data as PaymentPlan);
@@ -87,12 +120,13 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
             } else {
                 openNotification('error', 'Se produjo un error al actualizar el plan de pago');
             }
-            setIsModalOpen(false);
+            
         } catch (error) {
             console.error("Error actualizando paymentPlan", error);
             openNotification('error', 'Se produjo un error al actualizar el plan de pago');
         } finally {
             setLoading(false);
+            setIsModalOpen(false);
         }
     };
 
@@ -212,38 +246,45 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 </Field>
             </FormItem>
 
-            {/* ================== Frecuencia de pago ================== */}
+            {/* ================== Configuración financiera ================== */}
             {loading && (
-                <span>Cargando frecuencia de pago...</span>
+                <span>Cargando configuración financiera...</span>
             )}
-            {!loading && (
-                <FormItem label="Frecuencia de pago">
-                    <Field as="div" className="flex gap-2 items-center">
-                        {!paymentPlan ? (
-                            <Button onClick={() => setIsModalOpen(true)}>
-                                Agregar configuración
-                            </Button>
-                        ) : (
-                            <>
-                                <Button
-                                    type="button"
-                                    variant={paymentPlan.frequency === "WEEKLY" ? "default" : "outline"}
-                                    className="ltr:rounded-r-none rtl:rounded-l-none"
-                                    onClick={handleOpenModal}
-                                >
-                                    Semanal
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant={paymentPlan.frequency === "MONTHLY" ? "default" : "outline"}
-                                    className="ltr:rounded-l-none rtl:rounded-r-none"
-                                    onClick={handleOpenModal}
-                                >
-                                    Mensual
-                                </Button>
-                            </>
-                        )}
-                    </Field>
+            {!loading && paymentPlan && (
+                <FormItem label="Configuración financiera">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <p className="font-medium text-gray-600">Frecuencia de pago:</p>
+                            <p className="text-gray-800">
+                                {paymentPlan.frequency === "WEEKLY" ? "Semanal" : "Mensual"}
+                                {paymentPlan.frequency === "WEEKLY" && paymentPlan.dayOfWeek !== null
+                                    ? ` (${weekdayNames[paymentPlan.dayOfWeek]})`
+                                    : paymentPlan.frequency === "MONTHLY" && paymentPlan.dayOfMonth
+                                    ? ` (Día ${paymentPlan.dayOfMonth})`
+                                    : ""}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="font-medium text-gray-600">Cuotas:</p>
+                            <p className="text-gray-800">{paymentPlan.installments}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium text-gray-600">Días de gracia:</p>
+                            <p className="text-gray-800">{paymentPlan.graceDays}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium text-gray-600">Monto de recargo:</p>
+                            <p className="text-gray-800">RD${paymentPlan.lateFeeAmount}</p>
+                        </div>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="mt-4"
+                        onClick={handleOpenModal}
+                    >
+                        Editar
+                    </Button>
                 </FormItem>
             )}
 
@@ -251,12 +292,11 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
             <PaymentPlanModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSave={handleSavePaymentPlan}
                 onEdit={handleEditPaymentPlan}
-                scheduleDays={[0, 1, 2, 3, 4, 5, 6]}
+                scheduleDays={scheduleDays}
                 sessionCount={values.sessionCount}
                 loading={loading}
-                initialData={paymentPlan}
+                initialData={paymentPlan ? { ...paymentPlan, sessionCount: values.sessionCount } as PaymentPlanForm : undefined}
             />
         </div>
     );
