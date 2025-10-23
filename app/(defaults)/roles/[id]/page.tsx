@@ -10,7 +10,7 @@ export default function EditRol({ params }: { params: { id: string } }) {
     const { loading, role } = useFetchRoleById(id);
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
+            <ViewTitle className='mb-6' title="Editar Rol" showBackPage />
 
             {loading && <FormSkeleton />}
             {role && <UpdateRoleForm initialValues={role} />}
