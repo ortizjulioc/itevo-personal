@@ -10,7 +10,7 @@ export default function EditRol({ params }: { params: { id: string } }) {
     const { loading, promotion } = useFetchPromotionsById(id);
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
+            <ViewTitle className='mb-6' title="Editar promoción" showBackPage />
 
             {loading && <FormSkeleton />}
             {promotion && <UpdatePromotionForm initialValues={promotion} />}

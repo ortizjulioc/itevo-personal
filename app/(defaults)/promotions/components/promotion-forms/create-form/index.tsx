@@ -30,7 +30,7 @@ export default function CreatePromotionForm() {
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de promoción</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de promociones</h4>
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
