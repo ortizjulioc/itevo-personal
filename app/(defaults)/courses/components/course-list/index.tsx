@@ -75,7 +75,9 @@ export default function CoursetList({ className, query = '' }: Props) {
                                         {course.name}
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{course.description}</div>
+                                        <div className="whitespace-nowrap">
+                                            <OptionalInfo content={course.description || ''} />
+                                        </div>
                                     </td>
                                     <td>
                                         {course.duration}
