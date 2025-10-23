@@ -8,6 +8,7 @@ import Skeleton from "@/components/common/Skeleton";
 import useFetchProducts from "../../lib/use-fetch-products";
 import { deleteProduct } from "../../lib/request";
 import { TbPointFilled } from "react-icons/tb";
+import OptionalInfo from "@/components/common/optional-info";
 
 interface Props {
     className?: string;
@@ -72,7 +73,9 @@ export default function ProductList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{product.name}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{product.description}</div>
+                                        <div className="whitespace-nowrap">
+                                            <OptionalInfo content={product.description || ''} />
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">{formatCurrency(product.cost)}</div>
@@ -82,7 +85,7 @@ export default function ProductList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">
-                                            {product.stock === 0 || product.stock <0 ? (
+                                            {product.stock === 0 || product.stock < 0 ? (
                                                 <span className={`flex items-center gap-1 font-bold min-w-max text-red-600 italic`}>
                                                     <TbPointFilled />
                                                     Sin existencia
