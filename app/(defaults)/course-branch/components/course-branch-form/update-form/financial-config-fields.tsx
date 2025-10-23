@@ -25,6 +25,7 @@ type PaymentPlan = {
     dayOfWeek: number;
     graceDays: number;
     lateFeeAmount: number;
+    courseBranchId?: string;
 };
 
 const weekdayNames = [
@@ -41,49 +42,49 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
-    let fetched = false;
+    useEffect(() => {
+        let fetched = false;
 
-    const fetchPlan = async () => {
-        if (fetched) return;
-        fetched = true;
+        const fetchPlan = async () => {
+            if (fetched) return;
+            fetched = true;
 
-        try {
-            const res = await getPaymentPlan(courseBranchId);
-            if (res.success) {
-                setPaymentPlan(res.data as PaymentPlan);
-            } else {
-                // Solo crear plan por defecto una vez
-                const defaultPlan: PaymentPlanForm = {
-                    frequency: "WEEKLY",
-                    dayOfWeek: scheduleDays[0] || 0,
-                    installments: values.sessionCount || 0,
-                    dayOfMonth: 1,
-                    graceDays: 0,
-                    lateFeeAmount: 0,
-                };
-                const resp = await createPaymentPlan(courseBranchId, defaultPlan);
-                if (resp.success) {
-                    setPaymentPlan(resp.data as PaymentPlan);
-                    openNotification("success", "Plan de pago por defecto creado con éxito");
+            try {
+                const res = await getPaymentPlan(courseBranchId);
+                if (res.success) {
+                    setPaymentPlan(res.data as PaymentPlan);
                 } else {
-                    openNotification("error", "Error al crear el plan de pago por defecto");
+                    // Solo crear plan por defecto una vez
+                    const defaultPlan: PaymentPlanForm = {
+                        frequency: "WEEKLY",
+                        dayOfWeek: scheduleDays[0] || 0,
+                        installments: values.sessionCount || 0,
+                        dayOfMonth: 1,
+                        graceDays: 0,
+                        lateFeeAmount: 0,
+                    };
+                    const resp = await createPaymentPlan(courseBranchId, defaultPlan);
+                    if (resp.success) {
+                        setPaymentPlan(resp.data as PaymentPlan);
+                        openNotification("success", "Plan de pago por defecto creado con éxito");
+                    } else {
+                        openNotification("error", "Error al crear el plan de pago por defecto");
+                    }
                 }
+            } catch (err) {
+                console.error("Error cargando paymentPlan", err);
+                openNotification("error", "Error al cargar el plan de pago");
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            console.error("Error cargando paymentPlan", err);
-            openNotification("error", "Error al cargar el plan de pago");
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
 
-    // Solo ejecutamos una vez cuando tengamos courseBranchId y scheduleDays cargado
-    if (courseBranchId && scheduleDays.length > 0 && !paymentPlan) {
-        fetchPlan();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [courseBranchId, scheduleDays.length]);
+        // Solo ejecutamos una vez cuando tengamos courseBranchId y scheduleDays cargado
+        if (courseBranchId && scheduleDays.length > 0 && !paymentPlan) {
+            fetchPlan();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [courseBranchId, scheduleDays.length]);
 
     const handleSavePaymentPlan = async (plan: PaymentPlanForm) => {
         setLoading(true);
@@ -112,21 +113,24 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                 openNotification('error', 'No se encontró el ID del plan de pago');
                 return;
             }
-            
-            const resp = await updatePaymentPlan(courseBranchId, plan, paymentPlanid);
+
+            const { courseBranchId: _, sessionCount: __, ...cleanPlan } = plan;
+
+            const resp = await updatePaymentPlan(courseBranchId, cleanPlan, paymentPlanid);
             if (resp.success) {
                 setPaymentPlan(resp.data as PaymentPlan);
                 openNotification('success', 'Plan de pago actualizado con éxito');
+                setIsModalOpen(false);
             } else {
                 openNotification('error', 'Se produjo un error al actualizar el plan de pago');
             }
-            
+
         } catch (error) {
             console.error("Error actualizando paymentPlan", error);
             openNotification('error', 'Se produjo un error al actualizar el plan de pago');
         } finally {
             setLoading(false);
-            setIsModalOpen(false);
+            
         }
     };
 
@@ -260,8 +264,8 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                 {paymentPlan.frequency === "WEEKLY" && paymentPlan.dayOfWeek !== null
                                     ? ` (${weekdayNames[paymentPlan.dayOfWeek]})`
                                     : paymentPlan.frequency === "MONTHLY" && paymentPlan.dayOfMonth
-                                    ? ` (Día ${paymentPlan.dayOfMonth})`
-                                    : ""}
+                                        ? ` (Día ${paymentPlan.dayOfMonth})`
+                                        : ""}
                             </p>
                         </div>
                         <div>

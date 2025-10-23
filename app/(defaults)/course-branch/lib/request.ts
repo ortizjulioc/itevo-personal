@@ -41,5 +41,5 @@ export const createPaymentPlan = async (courseId: CourseBranch['id'], paymentPla
     return await apiRequest.post(`/course-branch/${courseId}/payment-plan`, paymentPlan);
 };
 export const updatePaymentPlan = async (courseId: CourseBranch['id'], paymentPlan: any,paymentPlanId :string) => {
-    return await apiRequest.post(`/course-branch/${courseId}/payment-plan/${paymentPlanId}`, paymentPlan);
+    return await apiRequest.put(`/course-branch/${courseId}/payment-plan/${paymentPlanId}`, paymentPlan);
 };

@@ -9,6 +9,7 @@ export type PaymentPlanForm = {
     graceDays: number;
     lateFeeAmount: number;
     sessionCount?: number;
+    courseBranchId?: string;
 };
 
 type PaymentPlanModalProps = {
@@ -73,7 +74,7 @@ export function PaymentPlanModal({
 
     const handleSubmit = () => {
         onEdit(formData);
-        onClose();
+       
     };
 
     if (!isOpen) return null;
