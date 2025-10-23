@@ -21,7 +21,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
             return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
         }
 
-        const paymentPlan = await updatePaymentPlanById(paymentId, body);
+        const paymentPlan = await updatePaymentPlanById(paymentId, {
+            ...body,
+            courseBranch: { connect: { id: courseBranch.id } },
+        });
 
         await createLog({
             action: "POST",
