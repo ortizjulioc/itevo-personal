@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashRegister as CashRegisterPrima, User } from "@prisma/client";
+import type { CashBox, CashRegister as CashRegisterPrima, User } from "@prisma/client";
 
 
 export interface CashRegister extends CashRegisterPrima {
     user: Omit<User, 'password' | 'email'>;
+    cashBox: Pick<CashBox, 'id' | 'name'>;
 }
+
 export interface CashRegistersResponse {
     cashRegisters: CashRegister[];
     totalCashRegisters: number;

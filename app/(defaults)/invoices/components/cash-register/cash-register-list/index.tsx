@@ -11,12 +11,14 @@ import { ViewTitle } from "@/components/common";
 import CashRegisterModal from "../cash-register-modal";
 import { useSession } from 'next-auth/react';
 import { getFormattedDate } from "@/utils/date";
+import { CashRegister } from "@prisma/client";
 
 interface Props {
     className?: string;
     query?: string;
     cashRegisterId?: string;
 }
+
 
 export default function CashRegisterList({ className, query = '', cashRegisterId }: Props) {
 
@@ -82,7 +84,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                             {cashRegisters?.map((CashRegister) => {
                                 return (
                                     <tr key={CashRegister.id}>
-                                        <td className="text-left">{CashRegister.name}</td>
+                                        <td className="text-left">{CashRegister.cashBox.name}</td>
                                         <td className="text-left">{CashRegister.user.name} {CashRegister.user.lastName}</td>
                                         <td className="text-left">{getFormattedDate(new Date(CashRegister.openingDate))}</td>
                                         <td className="text-left">
