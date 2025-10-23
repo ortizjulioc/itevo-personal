@@ -148,7 +148,7 @@ export function PaymentPlanModal({
                     <FormItem label="Cantidad de cuotas">
                         <Input
                             type="number"
-                            value={formData.installments}
+                            value={formData.installments === 0 ? "" : formData.installments}
                             onChange={(e) =>
                                 handleChange("installments", Number(e.target.value) || 0)
                             }
@@ -158,21 +158,21 @@ export function PaymentPlanModal({
                     <FormItem label="Días de gracia">
                         <Input
                             type="number"
-                            value={formData.graceDays}
+                            value={formData.graceDays === 0 ? "" : formData.graceDays}
                             onChange={(e) =>
                                 handleChange("graceDays", Number(e.target.value) || 0)
                             }
                             placeholder="Días de gracia"
                         />
                     </FormItem>
-                    <FormItem label="Monto de recargo">
+                    <FormItem label="Monto de recargo (mora)">
                         <Input
                             type="number"
-                            value={formData.lateFeeAmount}
+                            value={formData.lateFeeAmount === 0 ? "" : formData.lateFeeAmount}
                             onChange={(e) =>
                                 handleChange("lateFeeAmount", Number(e.target.value) || 0)
                             }
-                            placeholder="Monto de recargo"
+                            placeholder="Monto de recargo (RD$)"
                         />
                     </FormItem>
                 </div>

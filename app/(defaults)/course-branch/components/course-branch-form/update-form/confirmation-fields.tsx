@@ -209,7 +209,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
                   </p>
                   <p className="text-gray-800">Cuotas: {paymentPlan.installments}</p>
                   <p className="text-gray-800">Días de gracia: {paymentPlan.graceDays}</p>
-                  <p className="text-gray-800">Monto de recargo: RD${paymentPlan.lateFeeAmount}</p>
+                  <p className="text-gray-800">Monto de recargo (mora): RD${paymentPlan.lateFeeAmount}</p>
                 </div>
               ) : (
                 <p className="text-gray-500 text-sm italic">No configurada</p>
