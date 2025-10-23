@@ -12,7 +12,7 @@ export default function EditTeacher({ params }: { params: { id: string } }) {
 
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar Profesor" showBackPage />
+            <ViewTitle className='mb-6' title="Crear Profesor" showBackPage />
 
             {loading && <FormSkeleton />}
             {teacher && <UpdateTeacherForm initialValues={teacher} />}

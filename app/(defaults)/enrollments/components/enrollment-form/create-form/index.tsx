@@ -34,6 +34,8 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
         setSubmitting(true);
         const data = { ...values };
 
+        console.log('Submitting values:', data);
+
 
         const resp = await createEnrollment(data);
 
