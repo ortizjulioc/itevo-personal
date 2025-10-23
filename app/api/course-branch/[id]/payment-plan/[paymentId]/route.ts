@@ -7,8 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
 
-export async function POST(request: NextRequest, { params }: { params: { id: string, paymentId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string, paymentId: string } }) {
     try {
+        console.log("Request received to update payment plan");
         const { id, paymentId } = params;
         const body: PaymentPlanBody = await request.json();
 
