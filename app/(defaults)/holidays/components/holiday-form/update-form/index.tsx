@@ -35,7 +35,7 @@ export default function UpdateHolidayForm({ initialValues }: { initialValues: Ho
 
     return (
         <div className="panel">
-            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de Curso</h4>
+            <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario de dias feriados</h4>
             <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
