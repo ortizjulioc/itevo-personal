@@ -74,7 +74,7 @@ export function PaymentPlanModal({
 
     const handleSubmit = () => {
         onEdit(formData);
-       
+
     };
 
     if (!isOpen) return null;
