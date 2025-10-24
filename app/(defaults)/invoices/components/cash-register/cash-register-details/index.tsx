@@ -41,21 +41,25 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
   const router = useRouter();
 
   useEffect(() => {
-    if (CashRegister.status === 'CLOSED') {
-      Swal.fire({
-        title: 'Caja cerrada',
-        text: 'Esta caja ya fue cerrada y no puede ser modificada.',
-        icon: 'warning',
-        confirmButtonText: 'Ir a facturación',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      }).then(() => {
-        router.push('/invoices');
-      });
-    } else {
-      fetchInvoicesData(CashRegister.id);
-    }
-  }, [pathname, CashRegister.id, CashRegister.status, fetchInvoicesData, router]);
+  if (!CashRegister?.id) return;
+
+  if (CashRegister.status === 'CLOSED') {
+    Swal.fire({
+      title: 'Caja cerrada',
+      text: 'Esta caja ya fue cerrada y no puede ser modificada.',
+      icon: 'warning',
+      confirmButtonText: 'Ir a facturación',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(() => {
+      router.push('/invoices');
+    });
+    return; // 👈 evita ejecutar fetchInvoicesData después
+  }
+
+  fetchInvoicesData(CashRegister.id);
+  // Solo ejecuta si cambia el id de la caja
+}, [CashRegister.id]);
 
   const draftInvoices = invoices?.filter(inv => inv.status === 'DRAFT') || [];
   const hasPendingInvoices = draftInvoices.length > 0;
