@@ -141,7 +141,7 @@ export async function POST(request: Request) {
 
                 if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
                     receivables.push({
-                        enrollmentId: enrollment.id,
+                        // enrollmentId: enrollment.id,
                         amount: courseBranch.enrollmentAmount,
                         studentId: student.id,
                         courseBranchId: courseBranch.id,
@@ -205,7 +205,7 @@ export async function POST(request: Request) {
                     }
 
                     receivables.push({
-                        enrollmentId: enrollment.id,
+                        // enrollmentId: enrollment.id,
                         studentId: student.id,
                         courseBranchId: courseBranch.id,
                         amount: amountPerInstallment,
