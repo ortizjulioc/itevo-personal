@@ -1,10 +1,11 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { validateObject } from '@/utils';
-import { getCourseBranch, createCourseBranch } from '@/services/course-branch-service';
+import { getCourseBranch, createCourseBranch, addPaymentPlanToCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus, Modality, PaymentFrequency } from '@prisma/client';
 import { findCourseById } from '@/services/course-service';
+import { createPaymentPlan } from '@/app/(defaults)/course-branch/lib/request';
 
 export async function GET(request: NextRequest) {
     try {
@@ -70,6 +71,13 @@ export async function POST(request: Request) {
             status: body.status || CourseBranchStatus.DRAFT,
             enrollmentAmount: body.enrollmentAmount || 0,
         });
+
+        // Crear plan de pagos general
+        await addPaymentPlanToCourseBranch({
+            courseBranch: { connect: { id: courseBranch.id } },
+            installments: courseBranch.sessionCount,
+        });
+
         await createLog({
             action: 'POST',
             description: `Se creó un curso con los siguientes datos: ${JSON.stringify(body, null, 2)}`,

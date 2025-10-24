@@ -224,7 +224,7 @@ model CourseBranch {
 model CourseBranchPaymentPlan {
   id             String           @id @default(uuid())
   courseBranchId String           @unique @map("course_branch_id")
-  frequency      PaymentFrequency
+  frequency      PaymentFrequency @default(MONTHLY) // frecuencia de pago
   installments   Int              @default(1) // número de cuotas
   dayOfMonth     Int?             @map("day_of_month") // día del mes para pagos mensuales
   dayOfWeek      Int?             @map("day_of_week") // día de la semana para pagos semanales
