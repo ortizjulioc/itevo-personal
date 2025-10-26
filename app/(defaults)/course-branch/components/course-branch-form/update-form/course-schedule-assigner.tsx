@@ -28,13 +28,7 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
   const [assigning, setAssigning] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si no hay horarios todavía, mantenemos el loading
-    if (!availableSchedules || availableSchedules.length === 0) {
-      setGroupedSchedules({});
-      setLoading(true);
-      return;
-    }
-
+   
     // Cargamos los horarios de inmediato (sin esperar render inicial)
     const grouped = groupSchedulesByWeekday(availableSchedules);
     setGroupedSchedules(grouped);
