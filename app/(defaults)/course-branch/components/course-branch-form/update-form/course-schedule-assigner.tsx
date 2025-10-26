@@ -59,6 +59,18 @@ const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
   if (availableSchedules.length === 0) {
     return (
       <div className="max-w-2xl text-gray-500 italic">
+        <div className='flex items-center gap-2 mb-4'>
+        <h3 className="text-lg font-medium text-gray-700 leading-none">Horarios disponibles</h3>
+        <Tooltip title='Agregar nuevo Horario'>
+          <button
+            type="button"
+            className="p-0.5 text-primary transition-colors duration-200 hover:text-primary/80"
+            onClick={() => setModal(true)}
+          >
+            <IoMdAddCircleOutline className="h-6 w-6 align-middle" />
+          </button>
+        </Tooltip>
+      </div>
         No hay horarios disponibles.
       </div>
     );
