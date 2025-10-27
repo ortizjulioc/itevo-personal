@@ -28,29 +28,30 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             const USE_NCF = settings?.billingWithoutNcf !== true;
             const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;
 
-            const isCredit = body.isCredit ?? invoice.isCredit;
+            const isCredit = body.isCredit !== undefined ? body.isCredit : invoice.isCredit;
+            console.log('isCredit:', isCredit);
             if (isCredit && !body.studentId && !invoice.studentId) {
                 throw new Error('Para facturas a crédito se debe especificar el ID del estudiante');
             }
 
-            const updatedInvoice = await updateInvoice(id, {
-                ncf,
-                type: finalType,
-                status: InvoiceStatus.PAID,
-                studentId: body.studentId || invoice.studentId,
-                paymentDate: new Date(),
-                paymentMethod: body.paymentMethod,
-                paymentDetails: body.paymentDetails || {},
-                isCredit,
-            }, tx);
-            newInvoiceData = updatedInvoice;
 
             if (isCredit) {
+                const updatedInvoice = await updateInvoice(id, {
+                    ncf,
+                    type: finalType,
+                    status: InvoiceStatus.COMPLETED,
+                    studentId: body.studentId || invoice.studentId,
+                    paymentDate: new Date(),
+                    paymentMethod: body.paymentMethod,
+                    paymentDetails: body.paymentDetails || {},
+                    isCredit,
+                }, tx);
+                newInvoiceData = updatedInvoice;
                 // Si es crédito, crear cuenta por cobrar
                 const receivable = await tx.accountReceivable.create({
                     data: {
-                        studentId: invoice.studentId || body.studentId!,
-                        concept: `Factura ${invoice.invoiceNumber}`,
+                        student: { connect: { id: body.studentId || invoice.studentId! } },
+                        concept: `Factura a crédito: ${invoice.invoiceNumber}`,
                         amount: invoice.subtotal + invoice.itbis,
                         status: PaymentStatus.PENDING,
                         dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
@@ -64,6 +65,18 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     success: true,
                 });
             } else {
+                const updatedInvoice = await updateInvoice(id, {
+                    ncf,
+                    type: finalType,
+                    status: InvoiceStatus.PAID,
+                    studentId: body.studentId || invoice.studentId,
+                    paymentDate: new Date(),
+                    paymentMethod: body.paymentMethod,
+                    paymentDetails: body.paymentDetails || {},
+                    isCredit,
+                }, tx);
+                newInvoiceData = updatedInvoice;
+
                 await createCashMovement({
                     cashRegister: { connect: { id: invoice.cashRegisterId } },
                     type: CashMovementType.INCOME,
@@ -77,9 +90,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             }
             await createLog({
                 action: 'POST',
-                description: `Factura ${updatedInvoice.invoiceNumber} ${isCredit ? 'registrada a crédito' : 'pagada'
-                    }.\nInformación: ${JSON.stringify(updatedInvoice, null, 2)}`, origin: `invoices/[id]/pay`,
-                elementId: updatedInvoice.id,
+                description: `Factura ${newInvoiceData.invoiceNumber} ${isCredit ? 'registrada a crédito' : 'pagada'
+                    }.\nInformación: ${JSON.stringify(newInvoiceData, null, 2)}`, origin: `invoices/[id]/pay`,
+                elementId: newInvoiceData.id,
                 success: true,
             });
 
