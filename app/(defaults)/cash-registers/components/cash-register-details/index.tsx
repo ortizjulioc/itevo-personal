@@ -109,7 +109,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Nombre</p>
-                            <p className="text-base font-medium">{cashRegister.name}</p>
+                            <p className="text-base font-medium">{cashRegister.cashBox.name}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Usuario</p>

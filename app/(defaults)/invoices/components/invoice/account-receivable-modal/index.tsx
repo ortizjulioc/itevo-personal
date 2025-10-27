@@ -17,7 +17,7 @@ export default function AccountReceivableModal({
 }: {
     studentId: string;
     accountReceivables: any[];
-    handleAddItemsInvoice: (item: any) => Promise<void>;
+    handleAddItemsInvoice: (item: any) => Promise<boolean>;
     setItem: React.Dispatch<React.SetStateAction<InvoiceItem | null>>;
     setAccountsReceivables: React.Dispatch<React.SetStateAction<AccountReceivable[] | null>>;
     openModal: boolean;
@@ -56,8 +56,9 @@ export default function AccountReceivableModal({
             };
 
             setItem(newItem);
-            await handleAddItemsInvoice(newItem);
+            const resp = await handleAddItemsInvoice(newItem);
 
+            if (resp){
             setAccountsReceivables(prev => {
                 if (!prev) return [];
                 return prev.map(ar =>
@@ -70,6 +71,8 @@ export default function AccountReceivableModal({
                         : ar
                 );
             });
+            }
+
         } catch (error) {
             console.error('Error setting item:', error);
             openNotification('error', 'Error al agregar el ítem');

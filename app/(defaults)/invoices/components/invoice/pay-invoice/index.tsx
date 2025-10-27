@@ -1,6 +1,6 @@
 'use client';
 import PrintInvoice from '@/components/common/print/invoice';
-import { Button, Input, Select } from '@/components/ui';
+import { Button, Checkbox, Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
@@ -10,6 +10,7 @@ import { TbCancel, TbCheck } from 'react-icons/tb';
 import { StylesConfig } from 'react-select';
 import PrintInvoiceMpdal from '../print-invoice';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
+import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
 
 type OptionType = {
     value: string;
@@ -37,9 +38,8 @@ type CreditCardDetails = {
 };
 
 type BankTransferDetails = {
-    TransferNumber?: string; // Solo si es transferencia bancaria
+    TransferNumber?: string;
     bankName: string;
-
 };
 
 type CheckDetails = {
@@ -51,15 +51,13 @@ export default function PayInvoice({
     openModal,
     setOpenModal,
     handleSubmit,
-    paymentLoading
+    paymentLoading,
 }: CustomModalProps) {
-    const { invoice, setInvoice } = useInvoice()
-
+    const { invoice, setInvoice } = useInvoice();
     const [openPrintModal, setOpenPrintModal] = useState(false);
 
     const handleDetailsChange = (key: string, value: string) => {
         const currentDetails = (invoice.paymentDetails || {}) as Record<string, any>;
-
         setInvoice({
             ...invoice,
             paymentDetails: {
@@ -71,19 +69,17 @@ export default function PayInvoice({
 
     const handlePaymentMethodChange = (option: any) => {
         if (!invoice) return;
-
         const isCash = option?.value === 'cash';
         const total = (invoice.subtotal ?? 0) + (invoice.itbis ?? 0);
-
         setInvoice({
             ...invoice,
             paymentMethod: option?.value || '',
             paymentDetails: {
-                ...(isCash ? {} : { receivedAmount: total.toFixed(2) }),
+                ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                receivedAmount: invoice.isCredit ? '0' : isCash ? total.toFixed(2) : '0',
             },
         });
     };
-
 
     const renderAmountInput = () => {
         return (
@@ -94,11 +90,10 @@ export default function PayInvoice({
                     type="number"
                     onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     min="0"
-                    value={(invoice.paymentDetails as any)?.receivedAmount || ''}
+                    value={(invoice.paymentDetails as any)?.receivedAmount || '0'}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}
-                    disabled={invoice.paymentMethod !== 'cash'} // 👈 opcional para bloquear edición
+                    disabled={invoice.paymentMethod !== 'cash' || invoice.isCredit}
                 />
-
             </div>
         );
     };
@@ -172,7 +167,6 @@ export default function PayInvoice({
                                 value={checkDetails.TransferNumber || ''}
                                 onChange={(e) => handleDetailsChange('TransferNumber', e.target.value)}
                             />
-
                         </div>
                         {renderAmountInput()}
                     </>
@@ -191,7 +185,7 @@ export default function PayInvoice({
         { value: NCF_TYPES.FACTURA_CREDITO_FISCAL.code, label: NCF_TYPES.FACTURA_CREDITO_FISCAL.label },
         { value: NCF_TYPES.GUBERNAMENTAL.code, label: NCF_TYPES.GUBERNAMENTAL.label },
         { value: NCF_TYPES.REGIMENES_ESPECIALES.code, label: NCF_TYPES.REGIMENES_ESPECIALES.label },
-    ]
+    ];
     const PAYMENT_METHODS_OPTIONS = [
         { value: 'cash', label: 'Efectivo' },
         { value: 'credit_card', label: 'Tarjeta de crédito' },
@@ -199,18 +193,20 @@ export default function PayInvoice({
         { value: 'check', label: 'Cheque' },
     ];
 
-
-
     useEffect(() => {
-        if (!invoice?.paymentMethod) {
-
+        if (!invoice?.paymentMethod && invoice) {
+            const total = (invoice.subtotal ?? 0) + (invoice.itbis ?? 0);
             setInvoice({
                 ...invoice,
                 paymentMethod: 'cash',
-
+                paymentDetails: {
+                    ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                    receivedAmount: invoice.isCredit ? '0' : total.toFixed(2),
+                },
             });
         }
     }, [invoice, setInvoice]);
+
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Dialog as="div" open={openModal} onClose={() => setOpenModal(false)}>
@@ -239,89 +235,108 @@ export default function PayInvoice({
                             <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-visible w-full max-w-5xl my-8 text-black dark:text-white-dark">
                                 <div className="p-5">
                                     {/* Fila: Tipo de comprobante + Datos de pago */}
-                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
                                         {/* Tipo de comprobante */}
-                                        <div className='col-span-4'>
-                                            <label className="text-lg font-bold block mb-1">Tipo de comprobante</label>
-                                            <Select
-                                                options={NCF_TYPES_OPTIONS}
-                                                value={NCF_TYPES_OPTIONS.find((option) => option.value === invoice?.type)}
-                                                onChange={(selected: any) =>
-                                                    setInvoice({
-                                                        ...invoice,
-                                                        type: selected.value,
-                                                    })
-                                                }
-                                                placeholder="-Modalidades-"
-
-                                            />
-
-                                            {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
-                                                <Input
-                                                    className="Input mt-4"
-                                                    placeholder="RNC del cliente"
-                                                    value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
-                                                    onChange={(e) =>
+                                        <div className="col-span-4 space-y-4">
+                                            <div>
+                                                <label className="text-lg font-bold block mb-2">Tipo de comprobante</label>
+                                                <Select
+                                                    options={NCF_TYPES_OPTIONS}
+                                                    value={NCF_TYPES_OPTIONS.find((option) => option.value === invoice?.type)}
+                                                    onChange={(selected: any) =>
                                                         setInvoice({
                                                             ...invoice,
-                                                            paymentDetails: {
-                                                                ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
-                                                                customerRnc: e.target.value,
-                                                            },
+                                                            type: selected.value,
                                                         })
                                                     }
+                                                    placeholder="-Modalidades-"
+                                                    menuPortalTarget={document.body}
+                                                   
                                                 />
+                                            </div>
+
+                                            {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
+                                                <div>
+                                                    <Input
+                                                        className="Input"
+                                                        placeholder="RNC del cliente"
+                                                        value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
+                                                        onChange={(e) =>
+                                                            setInvoice({
+                                                                ...invoice,
+                                                                paymentDetails: {
+                                                                    ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                                                                    customerRnc: e.target.value,
+                                                                },
+                                                            })
+                                                        }
+                                                    />
+                                                </div>
                                             )}
+
+                                            <div>
+                                                <Checkbox
+                                                    checked={invoice?.isCredit === true}
+                                                    onChange={() => {
+                                                        console.log(`[AddItemsInvoices] Cambiando isCredit a: ${!invoice?.isCredit}`);
+                                                        const total = (invoice.subtotal ?? 0) + (invoice.itbis ?? 0);
+                                                        setInvoice((prev: InvoicebyId | null) => ({
+                                                            ...prev!,
+                                                            isCredit: !prev?.isCredit,
+                                                            paymentDetails: {
+                                                                ...((prev?.paymentDetails && typeof prev.paymentDetails === 'object') ? prev.paymentDetails : {}),
+                                                                receivedAmount: !prev?.isCredit ? '0' : prev?.paymentMethod === 'cash' ? total.toFixed(2) : '0',
+                                                            },
+                                                        }));
+                                                    }}
+                                                >
+                                                    Factura a Crédito
+                                                </Checkbox>
+                                            </div>
                                         </div>
 
                                         {/* Datos de pago */}
-                                        <div className='col-span-8'>
-                                            <label className="text-lg font-bold block mb-1">Datos de pago</label>
-                                            <Select
-                                                options={PAYMENT_METHODS_OPTIONS}
-                                                value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice?.paymentMethod)}
-                                                onChange={handlePaymentMethodChange}
-                                                isSearchable={false}
-                                                placeholder="Selecciona un método de pago"
-                                            />
+                                        <div className="col-span-8 space-y-4">
+                                            <div>
+                                                <label className="text-lg font-bold block mb-2">Datos de pago</label>
+                                                <Select
+                                                    options={PAYMENT_METHODS_OPTIONS}
+                                                    value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice?.paymentMethod)}
+                                                    onChange={handlePaymentMethodChange}
+                                                    isSearchable={false}
+                                                    placeholder="Selecciona un método de pago"
+                                                    menuPortalTarget={document.body}
+                                                   
+                                                />
+                                            </div>
                                             {renderPaymentDetails()}
                                         </div>
                                     </div>
-                                   
 
-                                    {/* Totales y resumen (se mantiene como estaba) */}
+                                    {/* Totales y resumen */}
                                     <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 text-lg">
-                                        {/* Subtotal */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Subtotal</span>
-                                            <span className="font-semibold">{formatCurrency(invoice.subtotal ?? 0)}</span>
+                                            <span className="font-semibold">{formatCurrency(invoice?.subtotal ?? 0)}</span>
                                         </div>
-
-                                        {/* ITBIS */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">ITBIS</span>
-                                            <span className="font-semibold">{formatCurrency(invoice.itbis ?? 0)}</span>
+                                            <span className="font-semibold">{formatCurrency(invoice?.itbis ?? 0)}</span>
                                         </div>
-
-                                        {/* Total */}
                                         <div className="flex flex-col items-center text-center bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg">
                                             <span className="block font-bold">Total</span>
-                                            <span className="font-bold">{formatCurrency((invoice.subtotal ?? 0) + (invoice.itbis ?? 0))}</span>
+                                            <span className="font-bold">{formatCurrency((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0))}</span>
                                         </div>
-
-                                        {/* Recibido */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Recibido</span>
-                                            <span className="font-semibold">{formatCurrency((invoice.paymentDetails as any)?.receivedAmount || 0)}</span>
+                                            <span className="font-semibold">{formatCurrency((invoice?.paymentDetails as any)?.receivedAmount || 0)}</span>
                                         </div>
-
-                                        {/* Devuelta */}
                                         <div className="flex flex-col items-center text-center">
                                             <span className="block text-gray-500 dark:text-gray-400">Devuelta</span>
                                             <span className="font-semibold">
                                                 {formatCurrency(
                                                     Math.max(
-                                                        parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) -
+                                                        parseFloat((invoice?.paymentDetails as any)?.receivedAmount || 0) -
                                                         ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)),
                                                         0
                                                     )
@@ -355,7 +370,6 @@ export default function PayInvoice({
                                         </Button>
                                     </div>
                                 </div>
-
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>

@@ -158,7 +158,7 @@ const navigationConfig = [
     },
     {
         key: 'cashRegisters',
-        title: 'Cajas',
+        title: 'Cuadre de Cajas',
         icon: TbCashRegister,
         url: '/cash-registers',
         type: NAV_ITEM_TYPE_ITEM,
@@ -167,7 +167,7 @@ const navigationConfig = [
     },
      {
         key: 'cashRegisters',
-        title: 'Cajas Fisicas',
+        title: 'Cajas',
         icon: LiaCashRegisterSolid,
         url: '/cash-boxes',
         type: NAV_ITEM_TYPE_ITEM,

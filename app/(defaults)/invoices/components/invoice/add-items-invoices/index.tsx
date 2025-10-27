@@ -1,5 +1,5 @@
 'use client';
-import { Button, Checkbox, Input } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
@@ -119,12 +119,12 @@ export default function AddItemsInvoices({
         }
     };
 
-    const handleAddItem = async (item: any) => {
+    const handleAddItem = async (item: any): Promise<boolean> => {
         setItemloading(true);
         if (!item?.quantity) {
             openNotification('error', 'datos faltantes');
             setItemloading(false);
-            return;
+            return false;
         }
         const type = item?.productId ? InvoiceItemType.PRODUCT : InvoiceItemType.RECEIVABLE;
         const itemWithType = {
@@ -136,17 +136,19 @@ export default function AddItemsInvoices({
         if (resp.success) {
             openNotification('success', 'Item agregado correctamente');
             setItem(null);
-            await fetchInvoiceData(InvoiceId); // ✅ recargar la data actualizada
+            await fetchInvoiceData(InvoiceId);
             if (productRef.current) {
                 productRef.current.focus();
             }
+            setItemloading(false);
+            return true;
         } else {
             openNotification('error', resp.message);
             console.log(resp.message);
+            setItemloading(false);
+            return false;
         }
-        setItemloading(false);
     };
-
     const handleDeteleItem = async (item: InvoiceItem) => {
         setItemloading(true);
         confirmDialog({
@@ -438,18 +440,7 @@ export default function AddItemsInvoices({
                             placeholder="Escribe un comentario..."
                             className="form-input "
                         />
-                        <Checkbox
-                            checked={invoice?.isCredit === true}
-                            onChange={() => {
-                                console.log(`[AddItemsInvoices] Cambiando isCredit a: ${!invoice?.isCredit}`);
-                                setInvoice((prev: InvoicebyId | null) => ({
-                                    ...prev!,
-                                    isCredit: !prev?.isCredit,
-                                }));
-                            }}
-                        >
-                            Factura a Crédito
-                        </Checkbox>
+                        
                     </div>
                     <div>
                         <div className="flex justify-between text-sm">

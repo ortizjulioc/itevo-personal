@@ -11,6 +11,7 @@ import SelectReceivableStatus from './select-status';
 import useFetchAccountsReceivables from '../../lib/use-fetch-accounts-receivables';
 import { changeAccountReceivableStatus } from '../../lib/request';
 import { PaymentStatus } from '@prisma/client';
+import OptionalInfo from '@/components/common/optional-info';
 
 type AccountsReceivableListProps = {
   className?: string;
@@ -89,7 +90,12 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
                       </div>
                     </Link>
                   </td>
-                  <td>{receivable.courseBranch.course.name}</td>
+                  <td>
+                    <OptionalInfo
+                     content={receivable?.courseBranch?.course?.name || ''}
+                        message="Sin curso asignado"
+                    />
+                  </td>
                   <td>{getFormattedDate(new Date(receivable.dueDate))}</td>
                   <td><span className='font-bold'>{formatCurrency(receivable.amount)}</span></td>
                   <td>

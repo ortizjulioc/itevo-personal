@@ -32,7 +32,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
 
     return (
         <>
-            <ViewTitle className='mb-6' title="Cajas" rightComponent={
+            <ViewTitle className='mb-6' title=" Cuadre de Cajas" rightComponent={
                 <>
                     {/* {cashRegisters?.length === 0 && (
                         <CashRegisterModal />
@@ -65,7 +65,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                             {cashRegisters?.map((CashRegister: any) => {
                                 return (
                                     <tr key={CashRegister.id}>
-                                        <td className="text-left">{CashRegister.name}</td>
+                                        <td className="text-left">{CashRegister.cashBox.name}</td>
                                         <td className="text-left">{CashRegister.user.name}</td>
                                         <td className="text-left">{getFormattedDateTime(new Date(CashRegister.openingDate), { hour12: true })}</td>
                                         <td className="text-left">
