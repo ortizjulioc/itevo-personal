@@ -1,5 +1,5 @@
 'use client';
-import { Button, Input } from '@/components/ui';
+import { Button, Checkbox, Input } from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
@@ -432,6 +432,12 @@ export default function AddItemsInvoices({
                             placeholder="Escribe un comentario..."
                             className="form-input "
                         />
+                        <Checkbox
+                            checked={invoice.isCredit}
+                            onChange={setInvoice(!invoice.isCredit)}
+                        >
+                            Factura a Creditp
+                        </Checkbox>
                     </div>
                     <div>
                         <div className="flex justify-between text-sm">
