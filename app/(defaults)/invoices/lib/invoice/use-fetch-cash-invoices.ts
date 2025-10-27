@@ -13,7 +13,7 @@ export interface ItemsResponse {
     items: InvoiceItem[];
     totalItems: number;
 }
-export interface IvoicebyId extends Invoice{
+export interface InvoicebyId extends Invoice{
     items:InvoiceItem[]
 }
 
@@ -51,12 +51,12 @@ const useFetchInvoices = (query: string) => {
 };
 
 export const useFetchInvoicesById = (id: string) => {
-    const [invoice, setInvoice] = useState<IvoicebyId | null>(null);
+    const [invoice, setInvoice] = useState<InvoicebyId | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const fetchInvoiceData = async (id: string) => {
         try {
-            const response = await apiRequest.get<IvoicebyId>(`/invoices/${id}`);
+            const response = await apiRequest.get<InvoicebyId>(`/invoices/${id}`);
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -76,7 +76,7 @@ export const useFetchInvoicesById = (id: string) => {
         fetchInvoiceData(id);
     }, [id]);
 
-    return { invoice, loading, error, setInvoice,fetchInvoiceData };
+    return { invoice, loading, error, setInvoice, fetchInvoiceData };
 }
 
 export const useFetchItemInvoices= (id: string) => {

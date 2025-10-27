@@ -6,7 +6,7 @@ import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem
 import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
-import { IvoicebyId, } from '../../../lib/invoice/use-fetch-cash-invoices';
+
 import { TbCancel, TbCheck, TbX } from 'react-icons/tb';
 import ProductLabel from '@/components/common/info-labels/product-label';
 import PayInvoice from '../pay-invoice';
@@ -20,6 +20,7 @@ import AccountReceivableModal from '../account-receivable-modal';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 import { set } from 'lodash';
 import { HiOutlinePlusCircle } from 'react-icons/hi';
+import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
 
 export interface AccountsReceivablesResponse {
     accountsReceivable: AccountReceivable[];
@@ -90,7 +91,12 @@ export default function AddItemsInvoices({
         const totalFactura = invoice.subtotal + invoice.itbis;
         const montoRecibido = invoice?.paymentDetails?.receivedAmount;
 
-        if (montoRecibido === undefined || montoRecibido < totalFactura) {
+        console.log('Total factura:', totalFactura);
+        console.log('Monto recibido:', montoRecibido);
+        console.log('isCredit:', invoice.isCredit);
+
+
+        if (!invoice.isCredit && (montoRecibido === undefined || montoRecibido < totalFactura)) {
             openNotification('error', 'El monto recibido es menor al total de la factura');
             return false;
         }
@@ -206,7 +212,7 @@ export default function AddItemsInvoices({
         const studentId = selected?.value ?? null;
         setStudent(studentId);
 
-        setInvoice((prev: IvoicebyId) => ({
+        setInvoice((prev: InvoicebyId) => ({
             ...prev!,
             studentId: studentId,
         }));
@@ -285,7 +291,7 @@ export default function AddItemsInvoices({
                                 onChange={(selected: StudentSelect | null) => {
                                     if (!selected) {
                                         setStudent(null);
-                                        setInvoice((prev: IvoicebyId) => ({
+                                        setInvoice((prev: InvoicebyId) => ({
                                             ...prev!,
                                             studentId: null,
                                         }));
@@ -433,10 +439,16 @@ export default function AddItemsInvoices({
                             className="form-input "
                         />
                         <Checkbox
-                            checked={invoice.isCredit}
-                            onChange={setInvoice(!invoice.isCredit)}
+                            checked={invoice?.isCredit === true}
+                            onChange={() => {
+                                console.log(`[AddItemsInvoices] Cambiando isCredit a: ${!invoice?.isCredit}`);
+                                setInvoice((prev: InvoicebyId | null) => ({
+                                    ...prev!,
+                                    isCredit: !prev?.isCredit,
+                                }));
+                            }}
                         >
-                            Factura a Creditp
+                            Factura a Crédito
                         </Checkbox>
                     </div>
                     <div>
