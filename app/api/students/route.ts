@@ -73,7 +73,7 @@ export async function POST(request: Request) {
                 address: body.address,
                 phone: body.phone,
                 hasTakenCourses: body.hasTakenCourses,
-                identificationType: body.identificationType ? mapIdentificationType[body.identificationType] : IdentificationType.CEDULA,
+                identificationType: body.identificationType ?? IdentificationType.CEDULA,
                 branch: { connect: { id: body.branchId } },
             }, prisma);
 
