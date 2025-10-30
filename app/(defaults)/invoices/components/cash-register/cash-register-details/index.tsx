@@ -6,11 +6,11 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { getFormattedDateTime } from '@/utils/date';
 import TeacherPayment from '../../teacher-payment';
 import { useRouter, usePathname } from 'next/navigation';
-import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { openNotification } from '@/utils';
 import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-modal';
 import Swal from 'sweetalert2';
 import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/modal-cash-register-close';
+import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 
  export interface CashRegister {
   id: string;
@@ -33,7 +33,7 @@ import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/m
 export default function CashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
   const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
   const [openModalAttendance, setOpenModalAttendance] = React.useState(false);
-  const { invoices, fetchInvoicesData } = useFetchInvoices(CashRegister.id);
+  const { invoices, fetchInvoicesData } = useFetchInvoices('');
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [loadingAction, setLoadingAction] = React.useState<string | null>(null);
@@ -57,12 +57,12 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     return; // 👈 evita ejecutar fetchInvoicesData después
   }
 
-  fetchInvoicesData(CashRegister.id);
+  fetchInvoicesData(`cashRegisterId=${CashRegister.id}`);
   // Solo ejecuta si cambia el id de la caja
 }, [CashRegister.id]);
 
   const draftInvoices = invoices?.filter(inv => inv.status === 'DRAFT') || [];
-  const hasPendingInvoices = draftInvoices.length > 0;
+
 
   return (
     <div className="mb-5 flex items-center justify-center">
@@ -139,14 +139,23 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                         disabled={loadingAction !== null}
                         onClick={async () => {
                           setLoadingAction('close');
-                          if (hasPendingInvoices) {
-                            openNotification('error', 'No puede hacer cierre de caja, aún tiene facturas pendientes');
+                          try {
+                            await fetchInvoicesData(`cashRegisterId=${CashRegister.id}`);
+                            const freshDraftInvoices = invoices?.filter(inv => inv.status === 'DRAFT') || [];
+                            const hasPendingInvoices = freshDraftInvoices.length > 0;
+                            if (hasPendingInvoices) {
+                              openNotification('error', 'No puede hacer cierre de caja, aún tiene facturas pendientes');
+                              setLoadingAction(null);
+                              return;
+                            }
+                            await new Promise((res) => setTimeout(res, 200));
+                            setOpenModalClose(true);
+                          } catch (error) {
+                            console.error('Error fetching invoices:', error);
+                            openNotification('error', 'Error al verificar facturas pendientes');
+                          } finally {
                             setLoadingAction(null);
-                            return;
                           }
-                          await new Promise((res) => setTimeout(res, 200));
-                          setOpenModalClose(true);
-                          setLoadingAction(null);
                         }}
                         className="dropdown-item w-full flex items-center gap-2"
                       >
