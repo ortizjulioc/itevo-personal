@@ -74,27 +74,29 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     prisma,
                 })
 
-                const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
-                if (!courseBranch) {
-                    throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
-                }
+                if (accountReceivable.courseBranchId) {
+                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                    if (!courseBranch) {
+                        throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
+                    }
 
-                // Crear/actualizar cuenta por pagar
-                const accountPayable = await getAccountPayableByCourseBranchId({
-                    courseBranchId: accountReceivable.courseBranchId,
-                    prisma,
-                });
+                    // Crear/actualizar cuenta por pagar
+                    const accountPayable = await getAccountPayableByCourseBranchId({
+                        courseBranchId: accountReceivable.courseBranchId,
+                        prisma,
+                    });
 
-                // Agregar ganancia a la cuenta por pagar
-                await addNewEarningToAccountsPayable(
-                    accountPayable.id,
-                    courseBranch.commissionAmount ?? 0.00,
-                    receivablePayment.id,
-                    prisma
-                );
+                    // Agregar ganancia a la cuenta por pagar
+                    await addNewEarningToAccountsPayable(
+                        accountPayable.id,
+                        courseBranch.commissionAmount ?? 0.00,
+                        receivablePayment.id,
+                        prisma
+                    );
 
-                if (!accountPayable) {
-                    throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                    if (!accountPayable) {
+                        throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                    }
                 }
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
