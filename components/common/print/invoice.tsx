@@ -1,6 +1,7 @@
 'use client'
 import { useFetchInvoiceById } from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
+import { CreditInvoicePDF } from '@/components/pdf/credit-invoice';
 import { InvoicePDF } from '@/components/pdf/invoice';
 import { Button } from '@/components/ui';
 import { fetchImageAsBase64 } from '@/utils/image';
@@ -14,7 +15,7 @@ type PrintInvoiceProps = {
 export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
   const { invoice, loading: loadingInvoice } = useFetchInvoiceById(invoiceId);
   const { setting, loading: loadingSettings } = useFetchSetting();
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const onPrint = () => {
     if (!invoice) {
@@ -44,7 +45,11 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
       if (companyInfo.logoUrl) {
         blobLogo = await fetchImageAsBase64(companyInfo.logoUrl);
       }
-      const blob = await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob();
+      console.log('Generating PDF for invoice:', invoice);
+      const blob = invoice.isCredit
+        ? await pdf(<CreditInvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob()
+        : await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob();
+
       const blobUrl = URL.createObjectURL(blob);
 
       const isKioskMode = navigator.userAgent.includes('Chrome') && window.location.search.includes('kiosk-printing');
@@ -75,7 +80,7 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
                 document.body.removeChild(iframe);
                 URL.revokeObjectURL(blobUrl);
               }
-            }, 30000);
+            }, 3 * 60 * 1000); // 3 minutes timeout
           }
         } catch (error) {
           console.error('Error al imprimir:', error);
@@ -106,7 +111,7 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
         onClick={onPrint}
         loading={loading}
         icon={<IoMdPrint className='text-lg ' />}
-        >
+      >
 
         {loading ? 'Generando factura ...' : 'Imprimir'}
       </Button>
