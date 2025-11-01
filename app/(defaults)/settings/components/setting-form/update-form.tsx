@@ -9,6 +9,7 @@ import { FormatPatterInput } from '@/components/common';
 import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
+import RichTextEditor from '@/components/common/rich-text-editor';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
@@ -83,6 +84,16 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 >
                                     Logo
                                 </Tab>
+                                <Tab
+                                    as="button"
+                                    className={({ selected }) =>
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
+                                    }
+                                >
+                                    Reglamento
+                                </Tab>
                             </Tab.List>
 
                             <Tab.Panels>
@@ -156,6 +167,16 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             <ImageUploader value={values.logo} onUpload={(file: File) => handleUploadLogo(file, setFieldValue)} onDelete={() => handleDeleteLogo(values.logo)} />
                                         </FormItem>
                                     </div>
+                                </Tab.Panel>
+
+                                {/* Panel 3 - Reglamento */}
+                                <Tab.Panel>
+                                    <span>Reglamento</span>
+                                    <RichTextEditor
+                                        value={'<p>default value</p>'}
+                                        onChange={(value) => console.log(value)}
+                                        placeholder="Escribe el reglamento aquí..."
+                                    />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
