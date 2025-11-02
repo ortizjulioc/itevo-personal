@@ -233,6 +233,7 @@ model CourseBranchRules {
 
     @@map("courses_branches_rules")
 }
+
 model CourseBranchPaymentPlan {
   id             String           @id @default(uuid())
   courseBranchId String           @unique @map("course_branch_id")

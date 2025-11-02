@@ -92,7 +92,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                         } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
                                     }
                                 >
-                                    Reglamento
+                                    Normas
                                 </Tab>
                             </Tab.List>
 
@@ -169,14 +169,14 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                     </div>
                                 </Tab.Panel>
 
-                                {/* Panel 3 - Reglamento */}
+                                {/* Panel 3 - Normas */}
                                 <Tab.Panel>
                                     <RichTextEditor
                                         value={values.rules || ''}
                                         onChange={(value) => {
                                             setFieldValue('rules', value);
                                         }}
-                                        placeholder="Escribe el reglamento aquí..."
+                                        placeholder="Escribe el las normas aquí..."
                                     />
                                 </Tab.Panel>
                             </Tab.Panels>
