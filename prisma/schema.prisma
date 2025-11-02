@@ -198,7 +198,6 @@ model CourseBranch {
   status           CourseBranchStatus
   taxRate          Float              @default(0) @map("tax_rate")
   isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
-  rules            String?            @db.LongText
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
   deleted          Boolean            @default(false)
@@ -214,6 +213,7 @@ model CourseBranch {
   attendance        Attendance[]
   paymentPlan       CourseBranchPaymentPlan?
   accountReceivable AccountReceivable[]
+  rules            CourseBranchRules?
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
@@ -222,6 +222,17 @@ model CourseBranch {
   @@map("courses_branches")
 }
 
+model CourseBranchRules {
+    id             String   @id @default(uuid())
+    courseBranchId String   @unique @map("course_branch_id")
+    rules          String   @db.LongText
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+
+    @@map("courses_branches_rules")
+}
 model CourseBranchPaymentPlan {
   id             String           @id @default(uuid())
   courseBranchId String           @unique @map("course_branch_id")

@@ -72,7 +72,6 @@ export async function POST(request: Request) {
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,
             enrollmentAmount: body.enrollmentAmount || 0,
-            rules: body.rules || settings?.rules || null,
         });
 
         // Crear plan de pagos general

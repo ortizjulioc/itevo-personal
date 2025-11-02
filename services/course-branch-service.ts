@@ -73,6 +73,10 @@ export const findCourseBranchById = async (
         }
     });
 
+    if (!courseBranch) {
+        return null;
+    }
+
     return { ...courseBranch, schedules: courseBranch?.schedules.map((schedule) => schedule.schedule) };
 };
 
@@ -110,5 +114,34 @@ export const updatePaymentPlanById = async (
     return prisma.courseBranchPaymentPlan.update({
         where: { id },
         data: paymentPlanData,
+    });
+};
+
+export const getRulesByCourseBranchId = async (
+    courseBranchId: string,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchRules.findUnique({
+        where: { courseBranchId },
+    });
+};
+
+export const addRulesToCourseBranch = async (
+    rulesData: PrismaTypes.CourseBranchRulesCreateInput,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchRules.create({
+        data: rulesData,
+    });
+};
+
+export const updateRulesByCourseBranchId = async (
+    courseBranchId: string,
+    rulesData: PrismaTypes.CourseBranchRulesUpdateInput,
+    prisma: PrismaTypes.TransactionClient = Prisma
+) => {
+    return prisma.courseBranchRules.update({
+        where: { courseBranchId },
+        data: rulesData,
     });
 };
