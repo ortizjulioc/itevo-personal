@@ -196,10 +196,11 @@ model CourseBranch {
   capacity         Int                @default(0)
   sessionCount     Int                @default(0) @map("session_count")
   status           CourseBranchStatus
+  taxRate          Float              @default(0) @map("tax_rate")
+  isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
+  rules            String?            @db.LongText
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
-  isTaxIncluded    Boolean            @default(true) @map("is_tax_included")
-  taxRate          Float              @default(0) @map("tax_rate")
   deleted          Boolean            @default(false)
 
   accountPayable    AccountPayable[]

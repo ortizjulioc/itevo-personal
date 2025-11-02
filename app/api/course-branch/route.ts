@@ -3,9 +3,9 @@ import { validateObject } from '@/utils';
 import { getCourseBranch, createCourseBranch, addPaymentPlanToCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranchStatus, Modality, PaymentFrequency } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@prisma/client';
 import { findCourseById } from '@/services/course-service';
-import { createPaymentPlan } from '@/app/(defaults)/course-branch/lib/request';
+import { getSettings } from '@/services/settings-service';
 
 export async function GET(request: NextRequest) {
     try {
@@ -55,6 +55,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ code: 'E_COURSE_NOT_FOUND', error: 'El curso especificado no existe.' }, { status: 404 });
         }
 
+        const settings = await getSettings();
+
         const courseBranch = await createCourseBranch({
             promotion: { connect: { id: body.promotionId } },
             branch: { connect: { id: body.branchId } },
@@ -70,6 +72,7 @@ export async function POST(request: Request) {
             capacity: body.capacity || 0,
             status: body.status || CourseBranchStatus.DRAFT,
             enrollmentAmount: body.enrollmentAmount || 0,
+            rules: body.rules || settings?.rules || null,
         });
 
         // Crear plan de pagos general
