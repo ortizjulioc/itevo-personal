@@ -171,10 +171,11 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
 
                                 {/* Panel 3 - Reglamento */}
                                 <Tab.Panel>
-                                    <span>Reglamento</span>
                                     <RichTextEditor
-                                        value={'<p>default value</p>'}
-                                        onChange={(value) => console.log(value)}
+                                        value={values.rules || ''}
+                                        onChange={(value) => {
+                                            setFieldValue('rules', value);
+                                        }}
                                         placeholder="Escribe el reglamento aquí..."
                                     />
                                 </Tab.Panel>

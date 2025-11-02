@@ -48,7 +48,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   return (
     <Editor
       licenseKey="gpl"
-    //   value={value}
+      value={value}
       onEditorChange={onChange}
       init={{
         height,

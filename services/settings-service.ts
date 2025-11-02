@@ -6,11 +6,7 @@ const bcrypt = require('bcrypt');
 export const getSettings = async (
     prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
 ) => {
-    return await prisma.setting.findFirst({
-        orderBy: [
-            { companyName: 'asc' },
-        ]
-    });
+    return await prisma.setting.findFirst();
 };
 
 export const createSetting = async (data: any) => {
