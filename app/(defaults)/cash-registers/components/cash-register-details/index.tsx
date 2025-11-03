@@ -196,12 +196,14 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                     <div className="col-span-12">
                         <span className="ml-3 text-lg font-bold">Desglose de Efectivo</span>
                         <div className="panel grid grid-cols-4 gap-4 p-4 text-sm">
-                            {Object.entries(closure.cashBreakdown).map(([key, value]) => (
-                                <div key={key} className="flex justify-between rounded border p-2">
-                                    <span className="capitalize">{getCashLabel(key)}</span>
-                                    <span className="font-semibold">{value}</span>
-                                </div>
-                            ))}
+                            {Object.entries(closure.cashBreakdown)
+                                .reverse()
+                                .map(([key, value]) => (
+                                    <div key={key} className="flex justify-between rounded border p-2">
+                                        <span className="capitalize">{getCashLabel(key)}</span>
+                                        <span className="font-semibold">{value}</span>
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 )}

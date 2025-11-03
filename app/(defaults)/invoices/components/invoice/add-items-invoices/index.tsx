@@ -88,6 +88,17 @@ export default function AddItemsInvoices({
             return false;
         }
 
+        //Evitar que se generen facturas a creditos si tiene una cuenta por cobrar asociada
+        const hasAccountReceivableItems = invoice.items?.some(
+            (item: InvoiceItem) => item.type === InvoiceItemType.RECEIVABLE
+        );
+
+        if (invoice.isCredit && hasAccountReceivableItems) {
+            openNotification('error', 'No se puede generar una factura a crédito con cuentas por cobrar asociadas');
+            return false;
+        }
+
+
         const totalFactura = invoice.subtotal + invoice.itbis;
         const montoRecibido = invoice?.paymentDetails?.receivedAmount;
 
