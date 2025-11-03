@@ -43,3 +43,7 @@ export const createPaymentPlan = async (courseId: CourseBranch['id'], paymentPla
 export const updatePaymentPlan = async (courseId: CourseBranch['id'], paymentPlan: any,paymentPlanId :string) => {
     return await apiRequest.put(`/course-branch/${courseId}/payment-plan/${paymentPlanId}`, paymentPlan);
 };
+
+export const createCourseBranchRules = async (courseId: CourseBranch['id'], rulesData: any) => {
+    return await apiRequest.post(`/course-branch/${courseId}/rules`, rulesData);
+};
