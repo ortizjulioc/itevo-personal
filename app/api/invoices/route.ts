@@ -76,10 +76,15 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = req.nextUrl;
 
+        const statusParam = searchParams.get('status');
+        const statusArray = statusParam
+            ? (statusParam.split(',').map(s => s.trim()) as InvoiceStatus[])
+            : undefined;
+
         const filters = {
             search: searchParams.get('search') || undefined,
             type: searchParams.get('type') as NcfType | undefined,
-            status: searchParams.get('status') as InvoiceStatus | undefined,
+            status: statusArray,
             fromDate: searchParams.get('fromDate') ? new Date(searchParams.get('fromDate')!) : undefined,
             toDate: searchParams.get('toDate') ? new Date(searchParams.get('toDate')!) : undefined,
             studentId: searchParams.get('studentId') || undefined,
