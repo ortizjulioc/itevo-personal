@@ -12,10 +12,11 @@ interface ScheduleFieldProps {
   values: CourseBranchFormType;
   errors: FormikErrors<CourseBranchFormType>;
   touched: FormikTouched<CourseBranchFormType>;
+  loading?: boolean;
   className?: string;
 }
 
-export default function ScheduleField({ className }: ScheduleFieldProps) {
+export default function ScheduleField({ className,loading }: ScheduleFieldProps) {
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules,fetchSchedulesData } = useFetchSchedule();
@@ -65,7 +66,8 @@ export default function ScheduleField({ className }: ScheduleFieldProps) {
           onChange={onChange}
           modal={modal}
           setModal={setModal}
-      
+          loading={loading}
+
         />
         <ModalCreateSchedule
           modal={modal}

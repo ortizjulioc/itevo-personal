@@ -8,6 +8,7 @@ import { IoMdAddCircleOutline } from 'react-icons/io';
 interface CourseScheduleAssignerProps {
   availableSchedules: Schedule[];
   assignedSchedules: string[];
+    loading?: boolean;
   onChange: (scheduleId: string) => Promise<void> | void;
   modal?: boolean;
   setModal: (modal: boolean) => void;
@@ -20,25 +21,20 @@ const weekdayNames = [
 const CourseScheduleAssigner: React.FC<CourseScheduleAssignerProps> = ({
   availableSchedules,
   assignedSchedules,
+  loading,
   onChange,
   setModal
 }) => {
   const [groupedSchedules, setGroupedSchedules] = useState<{ [key: number]: Schedule[] }>({});
-  const [loading, setLoading] = useState(true);
+
   const [assigning, setAssigning] = useState<string | null>(null);
 
   useEffect(() => {
-   
+
     // Cargamos los horarios de inmediato (sin esperar render inicial)
     const grouped = groupSchedulesByWeekday(availableSchedules);
     setGroupedSchedules(grouped);
 
-    // Simulamos un pequeño delay visual para transición más suave
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 300);
-
-    return () => clearTimeout(timer);
   }, [availableSchedules]);
 
   const handleToggleSchedule = async (scheduleId: string) => {

@@ -27,7 +27,7 @@ const MODALITIES_OPTIONS = [
 export default function ScheduleAssignmentFields({ values, errors, touched, className, setFieldValue }: ScheduleAssignmentProps) {
     const { id } = useParams();
   const { holidays } = useFetchHolidays('top=365');
-  const { schedules } = useFetchScheduleByCourseId(id as string);
+  const { schedules,loading } = useFetchScheduleByCourseId(id as string);
   useEffect(() => {
     console.log(values.startDate, values.sessionCount, schedules, holidays);
     if (values.startDate && values.sessionCount && schedules && holidays) {
@@ -99,7 +99,7 @@ export default function ScheduleAssignmentFields({ values, errors, touched, clas
         </Field>
       </FormItem> */}
 
-      <ScheduleField values={values} errors={errors} touched={touched} />
+      <ScheduleField values={values} errors={errors} touched={touched} loading={loading} />
     </div>
   )
 }
