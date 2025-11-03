@@ -9,11 +9,13 @@ import { TbCheck } from 'react-icons/tb';
 export default function PrintInvoiceModal(
     {
         invoiceId,
+        isCredit,
         returnedInvoice,
         openModal,
         setOpenModal
     }: {
         invoiceId: string;
+        isCredit: boolean;
         returnedInvoice?: number;
         openModal: boolean;
         setOpenModal: (open: boolean) => void;
@@ -53,9 +55,9 @@ export default function PrintInvoiceModal(
                         >
                             <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg mx-auto mt-20 p-6 text-center space-y-6">
                                 <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                    Factura pagada con éxito
+                                    {isCredit ? 'Factura completada con Éxito' : 'Factura pagada con Éxito'}
                                 </Dialog.Title>
-                                {returnedInvoice !== undefined && (
+                                { !isCredit && returnedInvoice !== undefined && (
                                     <p className="text-xl text-gray-600 dark:text-gray-300">
                                         La devuelta es de: <strong>{formatCurrency(returnedInvoice)}</strong>
                                     </p>

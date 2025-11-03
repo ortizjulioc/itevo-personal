@@ -25,8 +25,8 @@ export default function InvoiceList({ className, query = '' }: Props) {
 
 
 
-    if (loading) return <Skeleton rows={7} columns={['N. DE FACTURA', 'NCF', 'TIPO', 'TOTAL', 'FECHA', 'FECHA DE PAGO', 'ESTADO']} />;
- 
+    if (loading) return <Skeleton rows={7} columns={['N. DE FACTURA', 'NCF', 'TIPO', 'TOTAL', 'FECHA', 'FECHA DE PAGO', 'TIPO', 'ESTADO']} />;
+
     return (
         <div className={className}>
             <div className="table-responsive mb-5 panel p-0 border-0">
@@ -39,6 +39,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             <th className="text-left">TOTAL</th>
                             <th className="text-left">FECHA</th>
                             <th className="text-left">FECHA DE PAGO</th>
+                            <th className="text-left">TIPO</th>
                             <th className="text-left">ESTADO</th>
 
                             <th />
@@ -63,9 +64,16 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                     <td className="text-left">
                                         <OptionalInfo content={invoice.paymentDate ? getFormattedDateTime(new Date(invoice.paymentDate)) : ''} message="No pagado" />
                                     </td>
+                                    <td
+                                        className={`text-left font-medium ${invoice.isCredit ? 'text-blue-500' : 'text-green-500'
+                                            }`}
+                                    >
+                                        {invoice.isCredit ? 'Crédito' : 'Contado'}
+                                    </td>
                                     <td className="text-left">
                                         <InvoiceStatusField status={invoice.status} />
                                     </td>
+
                                     <td>
                                         <div className="flex justify-end gap-2">
                                             <Tooltip title="detalles">

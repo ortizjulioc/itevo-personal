@@ -6,12 +6,14 @@ const InvoiceColor = {
     DRAFT: 'yellow-600',
     PAID: 'green-600',
     CANCELED: 'red-600',
+    COMPLETED: 'blue-600',
 }
 
 const InvoiceLabel = {
     DRAFT: 'En proceso',
     PAID: 'Pagado',
     CANCELED: 'Cancelado',
+    COMPLETED: 'Completada',
 }
 
 export default function InvoiceStatusField({ status }: { status: InvoiceStatus }) {

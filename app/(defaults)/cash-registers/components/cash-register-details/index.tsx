@@ -44,6 +44,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
 
         const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
 
+        // Movimientos existentes
         cashMovements.forEach(movement => {
             if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
                 const invoice = invoiceMap.get(movement.referenceId);
@@ -72,6 +73,15 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
             }
         });
 
+        // Facturas COMPLETED a crédito sin cash movement
+        invoices
+            .filter(inv => inv.status === 'COMPLETED' && inv.isCredit && !cashMovements.some(m => m.referenceId === inv.id))
+            .forEach(inv => {
+                const amount = inv.subtotal + inv.itbis;
+                summary.credito += amount;
+                summary.total += amount;
+            });
+
         return summary;
     }
 
@@ -97,6 +107,9 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
     const total = totalIngresos - totalEgresos + (cashRegister?.initialBalance || 0);
 
     const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements, invoices);
+
+
+    console.log({ invoices });
     return (
         <>
             <div className=" grid grid-cols-12 gap-5">
@@ -229,6 +242,10 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                                 <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
                             </div>
                             <div>
+                                <p className="text-sm text-gray-600">Total a Crédito</p>
+                                <p className="text-base font-medium text-yellow-600">{formatCurrency(resumenFacturas.credito)}</p>
+                            </div>
+                            <div>
                                 <p className="text-sm text-gray-600">Total</p>
                                 <p className="text-base font-medium">{formatCurrency(total)}</p>
                             </div>
@@ -257,35 +274,67 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                                         </td>
                                     </tr>
                                 )}
-                                {!cashMovementsLoading &&
-                                    cashMovements?.map((cashMovement) => {
-                                        return (
-                                            <tr key={cashMovement.id}>
-                                                <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt), { hour12: true })}</td>
-                                                <td className="text-left ">{cashMovement.description}</td>
-                                                <td className="whitespace-nowrap text-left  font-bold">
-                                                    {cashMovement.type === 'EXPENSE' ? `- ${formatCurrency(cashMovement.amount)}` : formatCurrency(cashMovement.amount)}
-                                                </td>
-                                                <td className="text-left">
-                                                    <span className={cashMovement.type === 'INCOME' ? 'font-semibold text-green-600' : 'font-semibold text-red-600'}>
-                                                        {cashMovement.type === 'INCOME' ? 'Ingreso' : 'Egreso'}
-                                                    </span>
-                                                </td>
 
+                                {!cashMovementsLoading &&
+                                    cashMovements?.map((cashMovement) => (
+                                        <tr key={cashMovement.id}>
+                                            <td className="text-left">{getFormattedDateTime(new Date(cashMovement.createdAt), { hour12: true })}</td>
+                                            <td className="text-left">{cashMovement.description}</td>
+                                            <td className="whitespace-nowrap text-left font-bold">
+                                                {cashMovement.type === 'EXPENSE'
+                                                    ? `- ${formatCurrency(cashMovement.amount)}`
+                                                    : formatCurrency(cashMovement.amount)}
+                                            </td>
+                                            <td className="text-left">
+                                                <span className={cashMovement.type === 'INCOME' ? 'font-semibold text-green-600' : 'font-semibold text-red-600'}>
+                                                    {cashMovement.type === 'INCOME' ? 'Ingreso' : 'Egreso'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="flex justify-end gap-2">
+                                                    {cashMovement.referenceType === 'INVOICE' && (
+                                                        <Tooltip title="detalles">
+                                                            <Link href={`/bills/${cashMovement.referenceId}`}>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />}
+                                                                />
+                                                            </Link>
+                                                        </Tooltip>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                {/* Facturas COMPLETED sin movimiento (Crédito) */}
+                                {!cashMovementsLoading &&
+                                    invoices
+                                        .filter(inv => inv.status === 'COMPLETED' && !cashMovements.some(m => m.referenceId === inv.id))
+                                        .map(inv => (
+                                            <tr key={inv.id} className="bg-yellow-50 dark:bg-yellow-900/20">
+                                                <td className="text-left">{getFormattedDateTime(new Date(inv.date), { hour12: true })}</td>
+                                                <td className="text-left">Factura {inv.invoiceNumber} (Crédito)</td>
+                                                <td className="whitespace-nowrap text-left font-bold">{formatCurrency(inv.subtotal + inv.itbis)}</td>
+                                                <td className="text-left">
+                                                    <span className="font-semibold text-amber-600">Credito</span>
+                                                </td>
                                                 <td>
                                                     <div className="flex justify-end gap-2">
-                                                        {cashMovement.referenceType === 'INVOICE' && (
-                                                            <Tooltip title="detalles">
-                                                                <Link href={`/bills/${cashMovement.referenceId}`}>
-                                                                    <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
-                                                                </Link>
-                                                            </Tooltip>
-                                                        )}
+                                                        <Tooltip title="detalles">
+                                                            <Link href={`/bills/${inv.id}`}>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />}
+                                                                />
+                                                            </Link>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        );
-                                    })}
+                                        ))}
                             </tbody>
                         </table>
                     </div>

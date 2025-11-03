@@ -27,6 +27,7 @@ export default function SearchInvoice() {
         { value: InvoiceStatus.DRAFT, label: 'En proceso' },
         { value: InvoiceStatus.PAID, label: 'Pagada' },
         { value: InvoiceStatus.CANCELED, label: 'Cancelada' },
+        { value: InvoiceStatus.COMPLETED, label: 'Completada' },
     ];
 
 

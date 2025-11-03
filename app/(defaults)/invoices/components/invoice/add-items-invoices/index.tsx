@@ -440,7 +440,7 @@ export default function AddItemsInvoices({
                             placeholder="Escribe un comentario..."
                             className="form-input "
                         />
-                        
+
                     </div>
                     <div>
                         <div className="flex justify-between text-sm">
@@ -496,6 +496,7 @@ export default function AddItemsInvoices({
             />
             <PrintInvoiceModal
                 invoiceId={invoice.id}
+                isCredit={invoice.isCredit}
                 returnedInvoice={Math.max(
                     parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) -
                     ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)),
