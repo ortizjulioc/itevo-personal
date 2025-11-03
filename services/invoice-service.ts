@@ -60,7 +60,7 @@ export interface InvoicePaymentData {
 interface InvoiceFilter {
     search?: string; // puede ser número de factura o nombre de estudiante
     type?: NcfType;
-    status?: InvoiceStatus;
+    status?: InvoiceStatus | InvoiceStatus[];
     fromDate?: Date;
     toDate?: Date;
     studentId?: string;
@@ -96,6 +96,13 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
     if (cashRegisterId) where.cashRegisterId = cashRegisterId;
+
+    // ✅ permitir múltiples estados
+    if (status && Array.isArray(status) && status.length > 0) {
+        where.status = { in: status };
+    } else if (status) {
+        where.status = status;
+    }
 
     if (fromDate || toDate) {
         where.date = {};
