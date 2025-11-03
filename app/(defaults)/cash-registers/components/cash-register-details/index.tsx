@@ -18,7 +18,7 @@ import { GenericSkeleton } from '@/components/common/Skeleton';
 export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
 
     const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
-    const { invoices, loading: invoiceLoading } = useFetchInvoices(cashRegister?.id);
+    const { invoices, loading: invoiceLoading } = useFetchInvoices(`cashRegisterId=${cashRegister?.id}`);
     const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id);
 
     function getTotalExpenses(cashMovements: any[]) {
