@@ -14,22 +14,23 @@ import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { Invoice } from '@prisma/client';
 
 export interface CashRegister {
+  id: string;
+  status: string;
+  openingDate: string | Date;
+  initialBalance: number;
+  deleted: boolean;
+  user: {
     id: string;
-    status: string;
-    openingDate: string;
-    initialBalance: number;
-    deleted: boolean;
-    user: {
-        id: string;
-        name: string;
-    };
-    cashBox: {
-        id: string;
-        name: string;
-    };
-    createdAt: string;
-    updatedAt: string;
+    name: string;
+  };
+  cashBox: {
+    id: string;
+    name: string;
+  };
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
+
 
 export default function CashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);

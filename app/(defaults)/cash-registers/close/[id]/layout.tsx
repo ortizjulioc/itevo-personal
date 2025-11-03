@@ -6,7 +6,7 @@ import TableSkeleton, { GenericSkeleton } from '@/components/common/Skeleton';
 import { useFetchCashRegistersById } from '../../../invoices/lib/cash-register/use-fetch-cash-register';
 import CashRegisterDetails from '../../../invoices/components/cash-register/cash-register-details';
 
-export default function layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
+export default function Layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
     const { id, } = params;
     const { loading, CashRegister } = useFetchCashRegistersById(id);
 
@@ -19,7 +19,16 @@ export default function layout({ children, params }: { children: React.ReactNode
 
                 {loading && <GenericSkeleton className="mb-6" lines={2} withHeader={false} />}
 
-                {CashRegister && <CashRegisterDetails CashRegister={CashRegister} />}
+                {CashRegister && (
+                    <CashRegisterDetails
+                        CashRegister={{
+                            ...CashRegister,
+                            openingDate: CashRegister.openingDate.toISOString(),
+                            createdAt: CashRegister.createdAt.toISOString(),
+                            updatedAt: CashRegister.updatedAt.toISOString(),
+                        }}
+                    />
+                )}
 
                 <div className="mt-6">
                     <div className="overflow-x-auto ">{children}</div>
