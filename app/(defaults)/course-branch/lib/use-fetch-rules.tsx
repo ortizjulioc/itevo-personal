@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import apiRequest from "@/utils/lib/api-request/request";
 
 export const useFetchCourseBranchRulesById = (id: string) => {
-  const [courseBranchRules, seCourseBranchRules] = useState<CourseBranchRules | null>(null);
+  const [courseBranchRule, seCourseBranchRule] = useState<CourseBranchRules | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +15,7 @@ export const useFetchCourseBranchRulesById = (id: string) => {
         if (!response.success) {
           throw new Error(response.message);
         }
-        seCourseBranchRules(response.data);
+        seCourseBranchRule(response.data);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -30,7 +30,7 @@ export const useFetchCourseBranchRulesById = (id: string) => {
     fetchCourseData(id);
   }, [id]);
 
-  return { courseBranchRules, loading, error, seCourseBranchRules };
+  return { courseBranchRule, loading, error, seCourseBranchRule };
 }
 
 export default useFetchCourseBranchRulesById;
