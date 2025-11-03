@@ -43,22 +43,24 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         }, prisma);
       } else if (item.type === InvoiceItemType.RECEIVABLE && item.accountReceivableId) {
         const { accountReceivable, receivablePayment } = await annularReceivablePayment({
-            unitPrice: item.unitPrice || 0,
-            accountReceivableId: item.accountReceivableId,
-            invoiceId: id,
-            prisma,
+          unitPrice: item.unitPrice || 0,
+          accountReceivableId: item.accountReceivableId,
+          invoiceId: id,
+          prisma,
         });
 
-          // Eliminar cuenta por pagar asociada si existe
-        const accountPayable = await prisma.accountPayable.findFirst({
-          where: { courseBranchId: accountReceivable.courseBranchId },
-        });
+        // Eliminar cuenta por pagar asociada si existe
+        if (accountReceivable.courseBranchId) {
+          const accountPayable = await prisma.accountPayable.findFirst({
+            where: { courseBranchId: accountReceivable.courseBranchId },
+          });
 
           if (accountPayable) {
             // Eliminar la ganancia asociada a la cuenta por pagar
             await deleteEarningFromAccountsPayable(accountPayable.id, receivablePayment.id, prisma);
           }
         }
+      }
 
       // Eliminar el ítem de la factura
       await deleteInvoiceItem(itemId, prisma);
