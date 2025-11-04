@@ -64,8 +64,14 @@ export default function StudentDetails({ student }: { student: Student }) {
             </div>
 
             <div className="flex flex-col">
-                <span className="font-bold">Teléfono</span>
-                <OptionalInfo content={formatPhoneNumber(student.phone)} />
+                <span className="font-bold">Teléfono(s)</span>
+                {student.phone ? student.phone.split(',').map((phone, index) => (
+                  <span key={index} className="block min-w-max">
+                    {formatPhoneNumber(phone.trim())}
+                  </span>
+                )) : (
+                  <OptionalInfo />
+                )}
             </div>
 
             <div className="flex flex-col">
