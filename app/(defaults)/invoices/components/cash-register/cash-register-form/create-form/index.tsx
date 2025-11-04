@@ -105,6 +105,7 @@ export default function CreateCashRegisterForm() {
                         >
                             <Field
                                 type="number"
+                                value={values.initialBalance || ''}
                                 onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()}
                                 name="initialBalance"
                                 component={Input}
