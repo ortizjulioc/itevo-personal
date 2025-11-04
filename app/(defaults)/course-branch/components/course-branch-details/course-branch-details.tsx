@@ -26,10 +26,11 @@ export default function CourseBranchDetails({ courseBranch }: { courseBranch: Co
                 { label: "Profesor", value: `${courseBranch.teacher.firstName} ${courseBranch.teacher.lastName}` },
                 { label: "Modalidad", value: modalities[courseBranch.modality as keyof typeof modalities] || "No especificado" },
                 { label: "Estado", value: <StatusCourseBranch status={courseBranch.status as CourseBranchStatus} /> },
-                { label: "Monto", value: formatCurrency(courseBranch.amount) },
+                { label: "Monto Inscripcion", value: formatCurrency(courseBranch.enrollmentAmount) },
+                { label: "Monto Cuota", value: formatCurrency(courseBranch.amount) },
                 {
                     label: "Comision", value: courseBranch.commissionRate != null
-                        ? `${formatCurrency(courseBranch.commissionAmount)} (${courseBranch.commissionRate * 100} %)`
+                        ? `${formatCurrency(courseBranch.commissionAmount)}`
                         : "N/A"
                 },
                 { label: "Capacidad", value: `${courseBranch.capacity} Personas` },
