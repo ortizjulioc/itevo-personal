@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getAccountsPayable } from "@/services/account-payable";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
