@@ -754,6 +754,7 @@ enum CashMovementReferenceType {
   INVOICE            @map("invoice")
   RECEIVABLE_PAYMENT @map("receivable_payment")
   PAYABLE_PAYMENT    @map("payable_payment")
+  DISBURSEMENT       @map("disbursement")
 }
 
 enum NcfType {

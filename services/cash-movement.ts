@@ -6,8 +6,21 @@ export const createCashMovement = async (
   data: PrismaTypes.CashMovementCreateInput,
   prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
+    console.log('Creating cash movement with data:', data);
   return await prisma.cashMovement.create({
     data,
+  });
+}
+
+export const getCashMovementById = async (
+  id: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) => {
+  return await prisma.cashMovement.findFirst({
+    where: {
+      id,
+      deleted: false,
+    },
   });
 }
 
