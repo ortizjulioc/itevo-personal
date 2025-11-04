@@ -1,14 +1,37 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import React from "react";
+import { Editor } from "@tinymce/tinymce-react";
 
-// ✅ Carga dinámica del Editor (evita SSR y errores de window)
-const Editor = dynamic(
-  () => import("@tinymce/tinymce-react").then((mod: any) => mod.Editor),
-  { ssr: false }
-) as any;
 
+
+// 🔹 TinyMCE local (sin CDN)
+import "tinymce/tinymce";
+import "tinymce/icons/default";
+import "tinymce/themes/silver";
+import "tinymce/models/dom";
+import "tinymce/skins/ui/oxide/skin.min.css";
+
+// 🔹 Plugins
+import "tinymce/plugins/advlist";
+import "tinymce/plugins/autolink";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/link";
+import "tinymce/plugins/image";
+import "tinymce/plugins/charmap";
+import "tinymce/plugins/preview";
+import "tinymce/plugins/anchor";
+import "tinymce/plugins/searchreplace";
+import "tinymce/plugins/visualblocks";
+import "tinymce/plugins/code";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/insertdatetime";
+import "tinymce/plugins/media";
+import "tinymce/plugins/table";
+import "tinymce/plugins/help";
+import "tinymce/plugins/wordcount";
+
+// 🧩 Tipado de props
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -22,14 +45,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   height = 400,
   placeholder = "Escribe aquí...",
 }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
     <Editor
       licenseKey="gpl"
@@ -68,18 +83,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         placeholder,
         automatic_uploads: true,
         file_picker_types: "image",
-
-        // ✅ Tipado correcto de los parámetros
+        // 🖼️ Cargar imágenes locales en base64
         file_picker_callback: (
-          cb: (url: string, meta?: Record<string, any>) => void,
-          _value: string,
-          meta: { filetype: string }
+            cb: (url: string, meta?: Record<string, any>) => void,
+            _value: string,
+            meta: Record<string, any>
         ) => {
           if (meta.filetype === "image") {
             const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "image/*";
-
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
             input.onchange = function () {
               const file = (this as HTMLInputElement).files?.[0];
               if (!file) return;
@@ -96,11 +109,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               };
               reader.readAsDataURL(file);
             };
-
             input.click();
           }
         },
-
         content_style: `
           body { font-family:Helvetica,Arial,sans-serif; font-size:14px }
           h1,h2,h3 { font-weight:bold; }

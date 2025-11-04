@@ -9,7 +9,11 @@ import { FormatPatterInput } from '@/components/common';
 import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
-import RichTextEditor from '@/components/common/rich-text-editor';
+import dynamic from "next/dynamic";
+// 🚀 Importa solo en cliente
+const RichTextEditor = dynamic(() => import("@/components/common/rich-text-editor"), {
+  ssr: false,
+});
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
