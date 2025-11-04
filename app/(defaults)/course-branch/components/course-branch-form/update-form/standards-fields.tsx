@@ -1,10 +1,16 @@
-import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
-import RichTextEditor from '@/components/common/rich-text-editor';
+import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';;
 import { FormItem } from '@/components/ui';
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import useFetchCourseBranchRulesById from '../../../lib/use-fetch-rules';
 import { createCourseBranchRules } from '../../../lib/request';
 import { FormSkeleton } from '@/components/common';
+
+import dynamic from "next/dynamic";
+// 🚀 Importa solo en cliente
+const RichTextEditor = dynamic(() => import("@/components/common/rich-text-editor"), {
+  ssr: false,
+});
+
 
 // Hook debounce
 function useDebounceValue(value: string, delay: number) {
