@@ -131,7 +131,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                                         className="fixed right-4 mt-2 w-auto  z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        <div className="py-1">
+                                                        <div className="p-2">
 
                                                             <PrintEnrollment enrollmentId={enrollment.id} />
                                                         </div>

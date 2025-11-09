@@ -1,4 +1,5 @@
 'use client'
+import useFetchCourseBranchRulesById from '@/app/(defaults)/course-branch/lib/use-fetch-rules';
 import { useFetchEnrollmentById } from '@/app/(defaults)/enrollments/lib/use-fetch-enrollments';
 import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 import { EnrollmentPDF } from '@/components/pdf/enrollment';
@@ -16,6 +17,7 @@ type PrintEnrollmentProps = {
 export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollmentProps) {
   const { enrollment, loading: loadingEnrollment } = useFetchEnrollmentById(enrollmentId);
   const { setting, loading: loadingSettings } = useFetchSetting();
+  const { courseBranchRule } = useFetchCourseBranchRulesById(enrollment?.courseBranchId || '');
   const [loading, setLoading] = useState<boolean>(true);
   const { printPDF } = usePrintPDF();
 
@@ -41,7 +43,12 @@ export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollm
     }
 
     await printPDF(
-      <EnrollmentPDF enrollment={enrollment} companyInfo={{ ...setting, logo: blobLogo }} />, { cleanUpMilliseconds: 600000 }
+      <EnrollmentPDF
+        enrollment={enrollment}
+        companyInfo={{ ...setting, logo: blobLogo }}
+        rules={courseBranchRule?.rules || setting.rules || []}
+      />,
+      { cleanUpMilliseconds: 600000 }
     );
   };
 

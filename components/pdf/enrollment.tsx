@@ -14,12 +14,13 @@ const styles = StyleSheet.create({
   page: {
     padding: 20,
     fontFamily: 'Helvetica',
+    fontSize: 11,
   },
   container: {
     marginHorizontal: 20,
     marginVertical: 10,
-    fontSize: 12,
-    lineHeight: 1.5,
+    // fontSize: 12,
+    lineHeight: 1,
   },
   logo: {
     textAlign: 'center',
@@ -55,13 +56,13 @@ const styles = StyleSheet.create({
   },
   rulesTitle: {
     fontWeight: 'bold',
-    fontSize: 14,
+    // fontSize: 14,
     marginBottom: 6,
   },
   ruleItem: {
     marginBottom: 4,
     textAlign: 'justify',
-    fontSize: 11,
+    // fontSize: 10,
     lineHeight: 1.4,
   },
   signatureContainer: {
@@ -102,6 +103,7 @@ function formatPhoneList(phoneList: string): string {
 type EnrollmentPDFProps = {
   enrollment: any;
   companyInfo: any;
+  rules: string[];
 };
 
 const normas: string[] = [
@@ -130,7 +132,7 @@ const normas: string[] = [
 ];
 
 
-export const EnrollmentPDF = ({ enrollment, companyInfo }: EnrollmentPDFProps) => {
+export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFProps) => {
   const schedules = formatScheduleList(enrollment.courseBranch.schedules || []);
   return (
     <Document>
@@ -166,7 +168,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo }: EnrollmentPDFProps) =
 
           <View style={styles.rulesSection}>
             <Text style={styles.rulesTitle}>USTED SE INSCRIBIÓ ACEPTANDO LAS SIGUIENTES NORMAS:</Text>
-            {normas.map((norma, index) => (
+            {rules.length > 0 && rules.map((norma, index) => (
               <Text key={index} style={styles.ruleItem}>
                 {index + 1}. {norma}
               </Text>
