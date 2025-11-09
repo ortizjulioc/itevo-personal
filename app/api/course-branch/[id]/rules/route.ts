@@ -32,9 +32,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     try {
         const { id } = params;
         const body = await request.json();
-        console.log(id, body);
         const courseBranch = await findCourseBranchById(id);
-        console.log("COURSEBRANCH RESPONSE", courseBranch);
         if (!courseBranch) {
             return NextResponse.json({ code: "E_COURSE_BRANCH_NOT_FOUND", message: "No se encontró la oferta académica." }, { status: 404 });
         }

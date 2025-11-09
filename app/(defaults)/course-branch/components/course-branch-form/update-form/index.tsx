@@ -19,14 +19,14 @@ import { useURLSearchParams } from '@/utils/hooks';
 import PrerequisitesFields from './prerequisites-fields';
 import { CourseBranchProvider } from './course-branch-provider';
 import { useFetchPreRequisites } from '@/app/(defaults)/courses/lib/use-fetch-courses';
-import StandardsFields from './standards-fields';
+import RulesFields from './rules-fields';
 
 const COURSE_BRANCH_TABS = [
     'general-information',
     'schedule-assignment',
     'prerequisites',
     'financial-config',
-    'standards',
+    'rules',
     'confirmation',
 ];
 
@@ -225,7 +225,7 @@ export default function UpdateCourseBranchForm({ initialValues }: { initialValue
                                         <FinancialConfigFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                     </Tab.Panel>
                                     <Tab.Panel>
-                                        <StandardsFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
+                                        <RulesFields className='p-4' values={values} errors={errors} touched={touched} setFieldValue={setFieldValue} />
                                     </Tab.Panel>
 
                                     <Tab.Panel>
