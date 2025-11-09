@@ -8,8 +8,8 @@ import PromotionLabel from '@/components/common/info-labels/promotion-label';
 import CourseLabel from '@/components/common/info-labels/course-label';
 import BranchLabel from '@/components/common/info-labels/branch-label';
 import TeacherLabel from '@/components/common/info-labels/teacher-label';
-import { useURLSearchParams } from '@/utils/hooks';
-import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
+// import { useURLSearchParams } from '@/utils/hooks';
+// import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { useCourseBranch } from './course-branch-provider';
 import { Course, CourseBranchStatus } from '@prisma/client';
 import { MODALITIES } from '@/constants/modality.constant';
@@ -47,8 +47,8 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
   const { id } = useParams();
   const courseBranchId = Array.isArray(id) ? id[0] : id;
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
-  const params = useURLSearchParams();
-  const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
+//   const params = useURLSearchParams();
+//   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
   const { preRequisites } = useCourseBranch();
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -187,7 +187,7 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
             </div>
             <div>
               <p className="font-medium text-gray-600">Comisión:</p>
-              <p className="text-gray-800">RD${values.commissionAmount} ({values.commissionRate * 100}%)</p>
+              <p className="text-gray-800">RD${values.commissionAmount}</p>
             </div>
             <div>
               <p className="font-medium text-gray-600">Monto de Inscripción:</p>
