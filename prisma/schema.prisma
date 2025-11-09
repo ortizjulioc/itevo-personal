@@ -225,7 +225,7 @@ model CourseBranch {
 model CourseBranchRules {
     id             String   @id @default(uuid())
     courseBranchId String   @unique @map("course_branch_id")
-    rules          String   @db.LongText
+    rules          Json
     createdAt      DateTime @default(now()) @map("created_at")
     updatedAt      DateTime @updatedAt @map("updated_at")
 

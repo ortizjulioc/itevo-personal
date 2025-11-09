@@ -6,6 +6,7 @@ import { createCourseBranchRules } from '../../../lib/request';
 import { FormSkeleton } from '@/components/common';
 
 import dynamic from "next/dynamic";
+import RulesEditor from '@/app/(defaults)/settings/components/rules-editor';
 // 🚀 Importa solo en cliente
 const RichTextEditor = dynamic(() => import("@/components/common/rich-text-editor"), {
   ssr: false,
@@ -31,19 +32,19 @@ export default function StandardsFields({ values }: any) {
     const isUpdatingRef = useRef(false);
 
     // Inicializar localRules según si existen normas o no
-    useEffect(() => {
-        if (loading) return;
+    // useEffect(() => {
+    //     if (loading) return;
 
-        if (courseBranchRule?.rules) {
-            // Si ya existen normas
-            setLocalRules(courseBranchRule.rules);
-            setLastSavedRules(courseBranchRule.rules);
-        } else if (!courseBranchRule && setting?.rules) {
-            // Si no hay normas creadas, mostrar las reglas por defecto localmente
-            setLocalRules(setting.rules);
-            setLastSavedRules(''); // aún no guardado en servidor
-        }
-    }, [courseBranchRule, loading, setting?.rules]);
+    //     if (courseBranchRule?.rules) {
+    //         // Si ya existen normas
+    //         setLocalRules(courseBranchRule.rules);
+    //         setLastSavedRules(courseBranchRule.rules);
+    //     } else if (!courseBranchRule && setting?.rules) {
+    //         // Si no hay normas creadas, mostrar las reglas por defecto localmente
+    //         setLocalRules(setting.rules);
+    //         setLastSavedRules(''); // aún no guardado en servidor
+    //     }
+    // }, [courseBranchRule, loading, setting?.rules]);
 
     // Valor debounced para evitar guardar en cada tecla
     const debouncedRules = useDebounceValue(localRules, 1000);
@@ -91,11 +92,15 @@ export default function StandardsFields({ values }: any) {
     return (
         <div>
             <FormItem label="Normas del curso">
-                <RichTextEditor
+                <RulesEditor
+                    value={localRules ? JSON.parse(localRules) : []}
+                    onChange={(rulesArray: string[]) => setLocalRules(JSON.stringify(rulesArray))}
+                />
+                {/* <RichTextEditor
                     value={localRules}
                     onChange={(value) => setLocalRules(value)}
                     placeholder="Escribe las normas aquí..."
-                />
+                /> */}
             </FormItem>
         </div>
     );
