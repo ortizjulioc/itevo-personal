@@ -10,7 +10,7 @@ export const updateValidationSchema = Yup.object().shape({
     email: Yup.string().email('Correo electrónico no válido'),
     logo: Yup.string(),
     defaultPassword: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
-    rules: Yup.string(),
+    rules: Yup.array().of(Yup.string()),
     billingWithoutNcf: Yup.boolean(),
     billingWithoutStock: Yup.boolean(),
 });
@@ -23,7 +23,7 @@ export const initialValues = {
     email: '',
     logo: '',
     defaultPassword: '',
-    rules: '',
+    rules: [],
     billingWithoutNcf: true,
     billingWithoutStock: true,
 };

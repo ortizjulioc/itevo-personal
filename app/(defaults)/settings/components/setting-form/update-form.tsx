@@ -10,6 +10,7 @@ import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
 import dynamic from "next/dynamic";
+import RulesEditor from '../rules-editor';
 // 🚀 Importa solo en cliente
 const RichTextEditor = dynamic(() => import("@/components/common/rich-text-editor"), {
   ssr: false,
@@ -175,13 +176,12 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
 
                                 {/* Panel 3 - Normas */}
                                 <Tab.Panel>
-                                    <RichTextEditor
-                                        value={values.rules || ''}
-                                        onChange={(value) => {
-                                            setFieldValue('rules', value);
-                                        }}
-                                        placeholder="Escribe el las normas aquí..."
-                                    />
+                                    <div className="mt-6">
+                                        <RulesEditor
+                                            value={(values?.rules as string[]) || ['']}
+                                            onChange={(newRules) => setFieldValue('rules', newRules)}
+                                        />
+                                    </div>
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

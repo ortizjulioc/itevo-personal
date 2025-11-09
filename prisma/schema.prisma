@@ -445,7 +445,7 @@ model Setting {
   phone               String
   email               String
   logo                String
-  rules               String?  @db.LongText
+  rules               Json?
   defaultPassword     String? @map("default_password")
   billingWithoutNcf   Boolean @default(true) @map("billing_without_ncf")
   billingWithoutStock Boolean @default(true) @map("billing_without_stock")
