@@ -132,7 +132,7 @@ export default function EnrollmentList({ className, query = '' }: Props) {
                                                     >
                                                         <div className="p-2">
 
-                                                            <PrintEnrollment enrollmentId={enrollment.id} />
+                                                            <PrintEnrollment enrollmentId={enrollment.id} courseBranchId={enrollment.courseBranchId} />
                                                         </div>
                                                     </div>
                                                 )}

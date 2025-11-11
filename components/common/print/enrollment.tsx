@@ -12,12 +12,13 @@ import { IoMdPrint } from 'react-icons/io';
 
 type PrintEnrollmentProps = {
   enrollmentId: string;
+  courseBranchId: string;
   children?: React.ReactNode
 }
-export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollmentProps) {
+export default function PrintEnrollment({ enrollmentId, courseBranchId, children }: PrintEnrollmentProps) {
   const { enrollment, loading: loadingEnrollment } = useFetchEnrollmentById(enrollmentId);
   const { setting, loading: loadingSettings } = useFetchSetting();
-  const { courseBranchRule, loading: loadingRules } = useFetchCourseBranchRulesById(enrollment?.courseBranchId || '');
+  const { courseBranchRule, loading: loadingRules } = useFetchCourseBranchRulesById(courseBranchId);
   const [loading, setLoading] = useState<boolean>(true);
   const { printPDF } = usePrintPDF();
 
@@ -41,7 +42,6 @@ export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollm
     if (setting.logo) {
       blobLogo = await fetchImageAsBase64(setting.logo);
     }
-    console.log('Generating PDF for enrollment:', enrollment);
     await printPDF(
       <EnrollmentPDF
         enrollment={enrollment}

@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   infoFieldTitle: {
-    width: 96,
+    width: 68,
   },
   infoFieldValue: {
     flex: 1,
@@ -161,10 +161,10 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
               <InfoField title='Nombre: ' value={`${enrollment.student.firstName} ${enrollment.student.lastName}`} />
               <InfoField title='Curso: ' value={enrollment.courseBranch.course.name} />
               <InfoField title='Código:' value={enrollment.courseBranch.course.code} />
-              <InfoField title='Monto Cuota:' value={formatCurrency(enrollment.courseBranch.amount)} />
+              <InfoField title='Cuota:' value={formatCurrency(enrollment.courseBranch.amount)} />
             </View>
             <View style={{ width: '50%' }}>
-              {/* <InfoField title='Monto Inscripción:' value={formatCurrency(enrollment.courseBranch.enrollmentAmount || 0)} /> */}
+              <InfoField title='Inscripción:' value={formatCurrency(enrollment.courseBranch.enrollmentAmount || 0)} />
               <InfoField title='Horario: ' value={schedules} />
               <InfoField title='Teléfono:' value={formatPhoneList(enrollment.student.phone)} />
             </View>

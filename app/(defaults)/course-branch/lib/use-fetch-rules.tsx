@@ -27,7 +27,7 @@ export const useFetchCourseBranchRulesById = (id: string) => {
       }
     };
 
-    fetchCourseData(id);
+    if (id) fetchCourseData(id);
   }, [id]);
 
   return { courseBranchRule, loading, error, seCourseBranchRule };

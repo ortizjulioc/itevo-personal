@@ -136,6 +136,7 @@ export const findEnrollmentById = async (id: string) => {
                     courseId: true,
                     branchId: true,
                     amount: true,
+                    enrollmentAmount: true,
                     course: {
                         select: {
                             name: true,
@@ -147,6 +148,7 @@ export const findEnrollmentById = async (id: string) => {
                             name: true,
                         },
                     },
+                    paymentPlan: true,
                     schedules: {
                         select: {
                             schedule: {
