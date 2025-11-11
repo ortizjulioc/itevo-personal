@@ -50,8 +50,6 @@
         "react-text-mask": "^5.5.0",
         "slug": "^9.1.0",
         "sweetalert2": "^11.14.0",
-        "tinymce": "^8.2.0",
-        "tinymce-react": "^1.3.2",
         "universal-cookie": "^6.1.1",
         "use-debounce": "^10.0.3",
         "yup": "^0.32.11",
