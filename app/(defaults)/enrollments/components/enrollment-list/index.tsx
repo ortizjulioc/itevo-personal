@@ -71,7 +71,6 @@ export default function EnrollmentList({ className, query = '' }: Props) {
         }
     };
 
-    console.log(enrollments);
     if (loading) return <Skeleton rows={6} columns={['FECHA', 'ESTUDIANTE', 'CURSO', 'PROFESOR', 'HORARIO', 'ESTADO']} />;
     return (
         <div className={className}>

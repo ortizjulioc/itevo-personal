@@ -17,7 +17,7 @@ type PrintEnrollmentProps = {
 export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollmentProps) {
   const { enrollment, loading: loadingEnrollment } = useFetchEnrollmentById(enrollmentId);
   const { setting, loading: loadingSettings } = useFetchSetting();
-  const { courseBranchRule } = useFetchCourseBranchRulesById(enrollment?.courseBranchId || '');
+  const { courseBranchRule, loading: loadingRules } = useFetchCourseBranchRulesById(enrollment?.courseBranchId || '');
   const [loading, setLoading] = useState<boolean>(true);
   const { printPDF } = usePrintPDF();
 
@@ -41,7 +41,7 @@ export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollm
     if (setting.logo) {
       blobLogo = await fetchImageAsBase64(setting.logo);
     }
-
+    console.log('Generating PDF for enrollment:', enrollment);
     await printPDF(
       <EnrollmentPDF
         enrollment={enrollment}
@@ -53,8 +53,8 @@ export default function PrintEnrollment({ enrollmentId, children }: PrintEnrollm
   };
 
   useEffect(() => {
-    setLoading(loadingEnrollment || loadingSettings);
-  }, [loadingEnrollment, loadingSettings]);
+    setLoading(loadingEnrollment || loadingSettings || loadingRules);
+  }, [loadingEnrollment, loadingSettings, loadingRules]);
 
 
   return (

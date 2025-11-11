@@ -2,6 +2,7 @@ import { formatCurrency, formatPhoneNumber } from '@/utils';
 import { formatScheduleList } from '@/utils/schedule';
 import {
   Document,
+  Font,
   Image,
   Page,
   StyleSheet,
@@ -10,10 +11,36 @@ import {
 } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
 
+Font.register({
+  family: 'Lato',
+  fonts: [
+    {
+      src: '/fonts/lato/Lato-Regular.ttf', // Regular 400
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/lato/Lato-Bold.ttf', // Bold 700
+      fontWeight: 'bold',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/lato/Lato-Italic.ttf', // Italic 400
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    {
+      src: '/fonts/lato/Lato-BoldItalic.ttf', // Bold Italic 700
+      fontWeight: 'bold',
+      fontStyle: 'italic',
+    },
+  ],
+});
+
 const styles = StyleSheet.create({
   page: {
     padding: 20,
-    fontFamily: 'Helvetica',
+    fontFamily: 'Lato',
     fontSize: 11,
   },
   container: {
@@ -62,7 +89,7 @@ const styles = StyleSheet.create({
   ruleItem: {
     marginBottom: 4,
     textAlign: 'justify',
-    // fontSize: 10,
+    fontSize: 10,
     lineHeight: 1.4,
   },
   signatureContainer: {
@@ -106,31 +133,6 @@ type EnrollmentPDFProps = {
   rules: string[];
 };
 
-const normas: string[] = [
-  "No faltar a las clases.",
-  "Traer dos fotos 2x2 y doscientos pesos (200) para el carnet estudiantil.",
-  "Es carácter obligatorio el Taller de Servicio al cliente de los siguientes cursos: Auxiliar en Farmacia, Secretariado Ejecutivo y Cajera Comercial, Mercadeo y Ventas, Visitador a Médico, Especialista en Belleza.",
-  "Debe de comprar un suéter que tiene un costo de quinientos pesos (500), este le servirá como uniforme de la institución.",
-  "Es de carácter obligatorio el taller de canalización para los estudiantes del curso de Técnico en Rayos X.",
-  "Los pagos deben realizarse semanalmente.",
-  "Se debe pagar desde la primera semana de clases.",
-  "Las semanas de ausencia se pagan, y se toman en consideración para el récord de asistencia.",
-  "Si su curso es de 6 meses o menos, no debe acumular 3 ausencias, si es de 9 meses o más no debe acumular 5 ausencias, en tal caso, deberá reiniciar el curso.",
-  "Es de carácter obligatorio asistir a la graduación (juramentación), este acto es parte integral del curso. El costo de la graduación es de tres mil quinientos pesos (RD$3,500); Incluye: diploma, investidura, 5 fotografías. NOTA: el acto se celebra en la tarde de 2:00 a 6:00 p.m. Regularmente sábado o domingo. (solo debe realizar una graduación, en los demás cursos que realice solo paga el derecho a diploma en excepción de auxiliar de enfermería).",
-  "Si desea, puede obtener su anillo de graduación, ya sea en oro o plata.",
-  "Es de carácter obligatorio asistir al seminario de relaciones humanas (incluido en el programa de clases como formación integral). Costo: ochocientos pesos (RD$800.00); dicha actividad se realiza sábado en la tarde o domingo. (el seminario sólo es obligatorio al hacer el primer curso en esta institución. En los demás cursos que realice es opcional en excepción de auxiliar de enfermería).",
-  "No se entregará el diploma si no ha cumplido con el programa de clases o tiene asuntos pendientes tales como: (exámenes, pasantía, pagos, seminario, graduación, entre otros).",
-  "Los niños deben esperar a que sus padres o tutores pasen a buscarlos en el plantel después de clases.",
-  "No traer acompañantes a las clases.",
-  "Asistir debidamente vestida/o a clases.",
-  "Asistir a clases portando su carnet estudiantil.",
-  "Si usted realiza dos cursos en una misma promoción el costo adicional del segundo diploma son RD$1,000 pesos (No aplica si es auxiliar de enfermería).",
-  "Es su responsabilidad guardar los recibos de los pagos que realiza en la institución, ya que este le servirá para cualquier reclamación.",
-  "Está prohibido hacerles pagos a los profesores de nuestros productos o servicios solamente está permitido entregarle dinero al equipo de Gestión que está compuesto por la Directora del centro y las secretarias que se encuentran siempre prestando servicios en el área de la recepción.",
-  "Luego de haber terminado el curso, el estudiante, no debe dejar pasar un año para retirar su diploma, de lo contrario perderá el derecho a ser certificado como técnico en esta institución.",
-  "No se entregan diplomas a terceros."
-];
-
 
 export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFProps) => {
   const schedules = formatScheduleList(enrollment.courseBranch.schedules || []);
@@ -149,6 +151,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
           </View>
 
           <View style={styles.header}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{companyInfo.companyName}</Text>
             <Text style={{ marginVertical: 8, fontWeight: 'bold' }}>{companyInfo.address}</Text>
           </View>
 
@@ -158,9 +161,10 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
               <InfoField title='Nombre: ' value={`${enrollment.student.firstName} ${enrollment.student.lastName}`} />
               <InfoField title='Curso: ' value={enrollment.courseBranch.course.name} />
               <InfoField title='Código:' value={enrollment.courseBranch.course.code} />
-              <InfoField title='Pago semanal:' value={formatCurrency(enrollment.courseBranch.amount)} />
+              <InfoField title='Monto Cuota:' value={formatCurrency(enrollment.courseBranch.amount)} />
             </View>
             <View style={{ width: '50%' }}>
+              {/* <InfoField title='Monto Inscripción:' value={formatCurrency(enrollment.courseBranch.enrollmentAmount || 0)} /> */}
               <InfoField title='Horario: ' value={schedules} />
               <InfoField title='Teléfono:' value={formatPhoneList(enrollment.student.phone)} />
             </View>
