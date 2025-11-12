@@ -446,6 +446,9 @@ model Setting {
   email               String
   logo                String
   rules               Json?
+  logoReport          String? @map("logo_report")
+  titleReport         String? @map("title_report")
+  descriptionReport   String? @map("description_report")
   defaultPassword     String? @map("default_password")
   billingWithoutNcf   Boolean @default(true) @map("billing_without_ncf")
   billingWithoutStock Boolean @default(true) @map("billing_without_stock")

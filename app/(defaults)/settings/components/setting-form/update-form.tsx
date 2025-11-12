@@ -94,6 +94,16 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 >
                                     Normas
                                 </Tab>
+                                <Tab
+                                    as="button"
+                                    className={({ selected }) =>
+                                        `${
+                                            selected ? 'text-secondary !outline-none before:!w-full' : ''
+                                        } relative -mb-[1px] flex items-center p-5 py-3 before:absolute before:bottom-0 before:left-0 before:right-0 before:m-auto before:inline-block before:h-[1px] before:w-0 before:bg-secondary before:transition-all before:duration-700 hover:text-secondary hover:before:w-full`
+                                    }
+                                >
+                                    Reportes
+                                </Tab>
                             </Tab.List>
 
                             <Tab.Panels>
@@ -176,6 +186,12 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             value={(values?.rules as string[]) || ['']}
                                             onChange={(newRules) => setFieldValue('rules', newRules)}
                                         />
+                                    </div>
+                                </Tab.Panel>
+
+                                <Tab.Panel>
+                                    <div className="mt-6">
+                                        <span className="text-gray-700">Estos valores se utilizarán en los reportes generados por el sistema.</span>
                                     </div>
                                 </Tab.Panel>
                             </Tab.Panels>
