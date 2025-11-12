@@ -6,13 +6,21 @@ import { ViewTitle } from '@/components/common';
 import { objectToQueryString } from '@/utils';
 import AccountsReceivableList from './components/list';
 import AccountReceivableFilter from './components/filter';
+import { useActiveBranch } from '@/utils/hooks/use-active-branch';
 
 export default function AccountsReceivableClient({ searchParams }: { searchParams?: { search?: string; page?: string } }) {
   const params = useSearchParams();
   const router = useRouter();
   const showFilters = params.get('showFilters') === 'true';
+  const { activeBranchId } = useActiveBranch();
 
-  const query = objectToQueryString(searchParams || {});
+  // Incluir branchId automáticamente en los parámetros de búsqueda
+  const paramsWithBranch = {
+    ...searchParams,
+    ...(activeBranchId && { branchId: activeBranchId }),
+  };
+
+  const query = objectToQueryString(paramsWithBranch || {});
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());
     if (showFilters) {

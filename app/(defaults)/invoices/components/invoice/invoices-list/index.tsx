@@ -4,18 +4,25 @@ import InvoiceCard from './invoice-card'
 import useFetchInvoices from '../../../lib/invoice/use-fetch-cash-invoices'
 import { usePathname } from 'next/navigation'
 import { GenericSkeleton } from '@/components/common/Skeleton'
+import { useActiveBranch } from '@/utils/hooks/use-active-branch'
 
 export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
+    const { activeBranchId } = useActiveBranch();
     const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
     const pathname = usePathname();
     const [newCardloading, setnewCardloading] = React.useState(false);
+    
     useEffect(() => {
-
-        fetchInvoicesData('status=DRAFT');
+        // Construir query con branchId si está disponible
+        const queryParams = new URLSearchParams('status=DRAFT');
+        if (activeBranchId) {
+            queryParams.set('branchId', activeBranchId);
+        }
+        fetchInvoicesData(queryParams.toString());
         return () => {
             setnewCardloading(false);
         }
-    }, [pathname]);
+    }, [pathname, activeBranchId, fetchInvoicesData]);
 
 
 

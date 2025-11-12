@@ -30,6 +30,10 @@ export const authOptions = {
           success: true,
         });
 
+        // Determinar la sucursal activa (primera sucursal por defecto)
+        const activeBranch = user.branches[0];
+        const activeBranchRoles = activeBranch?.roles || [];
+
         return {
           id: user.id,
           username: user.username,
@@ -37,15 +41,18 @@ export const authOptions = {
           lastName: user.lastName,
           email: user.email,
           phone: user.phone,
-          mainBranch: user.branches[0],
+          mainBranch: activeBranch,
+          activeBranchId: activeBranch?.id,
           branches: user.branches,
+          roles: activeBranchRoles,
         };
       },
     }),
   ],
   pages: { signIn: "/login" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // Inicialización del token cuando el usuario inicia sesión
       if (user) {
         token.id = user.id;
         token.username = user.username;
@@ -53,10 +60,22 @@ export const authOptions = {
         token.lastName = user.lastName;
         token.email = user.email;
         token.phone = user.phone;
-        token.mainBranch = user.mainBranch
+        token.mainBranch = user.mainBranch;
+        token.activeBranchId = user.activeBranchId;
         token.branches = user.branches;
-        token.roles = user.branches[0]?.roles;
+        token.roles = user.roles;
       }
+
+      // Actualizar sucursal activa cuando se cambia desde el frontend
+      if (trigger === 'update' && session?.activeBranchId) {
+        const activeBranch = token.branches?.find(b => b.id === session.activeBranchId);
+        if (activeBranch) {
+          token.activeBranchId = session.activeBranchId;
+          token.mainBranch = activeBranch;
+          token.roles = activeBranch.roles || [];
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -66,7 +85,8 @@ export const authOptions = {
       session.user.lastName = token.lastName;
       session.user.email = token.email;
       session.user.phone = token.phone;
-      session.user.mainBranch= token.mainBranch;
+      session.user.mainBranch = token.mainBranch;
+      session.user.activeBranchId = token.activeBranchId;
       session.user.branches = token.branches;
       session.user.roles = token.roles;
       return session;

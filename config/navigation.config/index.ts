@@ -19,7 +19,25 @@ import {
     TbCashRegister,
 } from 'react-icons/tb';
 
-import { ADMIN, USER, CASHIER } from '@/constants/role.constant';
+import { 
+    SUPER_ADMIN, 
+    GENERAL_ADMIN, 
+    ACADEMIC_ADMIN, 
+    BILLING_ADMIN, 
+    CASHIER, 
+    ASSISTANT,
+    // Mantener compatibilidad
+    ADMIN,
+    USER
+} from '@/constants/role.constant';
+
+// Helper para definir roles permitidos
+// SuperAdmin tiene acceso a todo
+const adminRoles = [SUPER_ADMIN, GENERAL_ADMIN];
+const academicRoles = [SUPER_ADMIN, GENERAL_ADMIN, ACADEMIC_ADMIN];
+const billingRoles = [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN];
+const cashierRoles = [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, CASHIER];
+const assistantRoles = [SUPER_ADMIN, GENERAL_ADMIN, ACADEMIC_ADMIN, ASSISTANT];
 import { HiOutlineCurrencyDollar } from 'react-icons/hi';
 import { LiaCashRegisterSolid } from "react-icons/lia";
 
@@ -40,7 +58,7 @@ const navigationConfig = [
         url: '/course-branch',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: academicRoles
     },
     {
         key: 'enrollments',
@@ -49,7 +67,7 @@ const navigationConfig = [
         url: '/enrollments',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: [...academicRoles, ASSISTANT]
     },
     {
         key: 'attendances',
@@ -58,7 +76,7 @@ const navigationConfig = [
         url: '/attendances',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: [...academicRoles, ASSISTANT]
     },
     {
         key: 'teachers',
@@ -67,7 +85,7 @@ const navigationConfig = [
         url: '/teachers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: academicRoles
     },
     {
         key: 'students',
@@ -76,7 +94,7 @@ const navigationConfig = [
         url: '/students',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: [...academicRoles, ASSISTANT]
     },
     {
         key: 'courses',
@@ -85,7 +103,7 @@ const navigationConfig = [
         url: '/courses',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: academicRoles
     },
     {
         key: 'branches',
@@ -94,7 +112,7 @@ const navigationConfig = [
         url: '/branches',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: adminRoles
     },
     {
         key: 'promotions',
@@ -103,7 +121,7 @@ const navigationConfig = [
         url: '/promotions',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, USER]
+        auth: academicRoles
     },
 
     {
@@ -111,7 +129,7 @@ const navigationConfig = [
         title: 'Mantenimientos',
         icon: TbSettings,
         type: NAV_ITEM_TYPE_COLLAPSE,
-        auth: [ADMIN, USER],
+        auth: academicRoles,
         subItems: [
             {
                 key: 'schedules',
@@ -119,7 +137,7 @@ const navigationConfig = [
                 url: '/schedules',
                 type: NAV_ITEM_TYPE_ITEM,
                 subItems: [],
-                auth: [ADMIN, USER],
+                auth: academicRoles,
             },
             {
                 key: 'holidays',
@@ -127,7 +145,7 @@ const navigationConfig = [
                 url: '/holidays',
                 type: NAV_ITEM_TYPE_ITEM,
                 subItems: [],
-                auth: [ADMIN],
+                auth: academicRoles,
             },
         ],
     },
@@ -136,7 +154,7 @@ const navigationConfig = [
         title: 'Facturación',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: cashierRoles
     },
     {
         key: 'invoices',
@@ -145,7 +163,7 @@ const navigationConfig = [
         url: '/invoices',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN, CASHIER]
+        auth: cashierRoles
     },
     {
         key: 'bills',
@@ -154,7 +172,7 @@ const navigationConfig = [
         url: '/bills',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
     {
         key: 'cashRegisters',
@@ -163,16 +181,16 @@ const navigationConfig = [
         url: '/cash-registers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
      {
-        key: 'cashRegisters',
+        key: 'cashBoxes',
         title: 'Cajas',
         icon: LiaCashRegisterSolid,
         url: '/cash-boxes',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
     {
         key: 'accounts-receivable',
@@ -181,7 +199,7 @@ const navigationConfig = [
         url: '/accounts-receivable',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
     {
         key: 'products',
@@ -190,7 +208,7 @@ const navigationConfig = [
         url: '/products',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
     {
         key: 'ncf',
@@ -199,14 +217,14 @@ const navigationConfig = [
         url: '/ncfranges',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: billingRoles
     },
     {
         key: 'auth',
         title: 'Autorización',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
-        auth: [ADMIN]
+        auth: adminRoles
     },
     {
         key: 'users',
@@ -215,7 +233,7 @@ const navigationConfig = [
         url: '/users',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: adminRoles
     },
     {
         key: 'roles',
@@ -224,7 +242,7 @@ const navigationConfig = [
         url: '/roles',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [ADMIN]
+        auth: [SUPER_ADMIN]
     }
 ];
 

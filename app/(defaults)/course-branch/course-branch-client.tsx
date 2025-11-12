@@ -9,6 +9,7 @@ import { ViewTitle } from "@/components/common";
 import { Button } from "@/components/ui";
 import { IconPlusCircle } from "@/components/icon";
 import { objectToQueryString } from "@/utils";
+import { useActiveBranch } from '@/utils/hooks/use-active-branch';
 
 import CourseBranchList from "./components/course-branch-list";
 import SearchCourseBranch from "./components/search-course-branch";
@@ -24,7 +25,15 @@ export default function CourseBranchClient({ searchParams }: CoursetListProps) {
   const params = useSearchParams();
   const router = useRouter();
   const showFilters = params.get('showFilters') === 'true';
-  const query = objectToQueryString(searchParams || {});
+  const { activeBranchId } = useActiveBranch();
+
+  // Incluir branchId automáticamente en los parámetros de búsqueda
+  const paramsWithBranch = {
+    ...searchParams,
+    ...(activeBranchId && { branchId: activeBranchId }),
+  };
+
+  const query = objectToQueryString(paramsWithBranch || {});
 
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());

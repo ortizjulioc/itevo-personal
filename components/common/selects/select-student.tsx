@@ -7,6 +7,7 @@ import { CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 import { getCustomStyles } from '@/components/ui/select';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
+import { useActiveBranch } from '@/utils/hooks/use-active-branch';
 
 export interface StudentSelect {
   value: string;
@@ -39,11 +40,19 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
   const [options, setOptions] = useState<StudentSelect[]>([]);
   const [loading, setLoading] = useState(false);
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+  const { activeBranchId } = useActiveBranch();
 
-  const fetchStudentData = async (inputValue: string): Promise<StudentSelect[]> => {
+  const fetchStudentData = async (inputValue: string, branchId?: string): Promise<StudentSelect[]> => {
     try {
       setLoading(true);
-      const response = await apiRequest.get<StudentsResponse>(`/students?search=${inputValue}`);
+      const queryParams = new URLSearchParams({
+        search: inputValue,
+      });
+      if (branchId) {
+        queryParams.set('branchId', branchId);
+      }
+      
+      const response = await apiRequest.get<StudentsResponse>(`/students?${queryParams.toString()}`);
       if (!response.success) {
         throw new Error(response.message);
       }
@@ -58,13 +67,13 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
   };
 
   const loadOptions = async (inputValue: string): Promise<StudentSelect[]> => {
-    return fetchStudentData(inputValue);
+    return fetchStudentData(inputValue, activeBranchId || undefined);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const fetchedOptions = await fetchStudentData('');
+      const fetchedOptions = await fetchStudentData('', activeBranchId || undefined);
       setOptions(fetchedOptions);
 
       if (value && !fetchedOptions.some(option => option.value === value)) {
@@ -83,7 +92,7 @@ export default function SelectStudent({ value, ...rest }: SelectStudentProps) {
 
     fetchData();
 
-  }, [value]);
+  }, [value, activeBranchId]);
 
 
 

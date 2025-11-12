@@ -11,14 +11,22 @@ import AttendanceList from './components/attendance-list';
 import { useState } from 'react';
 import SearchAttendances from './components/attendance-search';
 import AttendanceModal from './components/attendance-modal';
+import { useActiveBranch } from '@/utils/hooks/use-active-branch';
 
 export default function AttendanceClient({ searchParams }: { searchParams?: { search?: string; page?: string } }) {
   const params = useSearchParams();
   const router = useRouter();
   const showFilters = params.get('showFilters') === 'true';
   const [openModal, setOpenModal] = useState(false);
+  const { activeBranchId } = useActiveBranch();
 
-  const query = objectToQueryString(searchParams || {});
+  // Incluir branchId automáticamente en los parámetros de búsqueda
+  const paramsWithBranch = {
+    ...searchParams,
+    ...(activeBranchId && { branchId: activeBranchId }),
+  };
+
+  const query = objectToQueryString(paramsWithBranch || {});
 
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());

@@ -86,16 +86,39 @@ async function main() {
 
             console.log(`✅ Usuario ${userData.username} creado.`);
 
-            // 🔹 Asignar rol y sucursal al usuario
-            await prisma.userRoleBranch.create({
-                data: {
-                    userId: user.id,
-                    roleId: role.id,
-                    branchId: branch.id,
-                },
-            });
+            // 🔹 Asignar roles y sucursal al usuario
+            // Si el usuario tiene el rol super_admin o si tiene allRoles: true, asignar todos los roles
+            const shouldAssignAllRoles = userData.role === "super_admin" || userData.allRoles === true;
+            
+            if (shouldAssignAllRoles) {
+                // Obtener todos los roles disponibles
+                const allRoles = await prisma.role.findMany({
+                    where: { deleted: false },
+                });
 
-            console.log(`✅ Relación ${userData.username} - ${userData.role} - ${userData.branch} creada.`);
+                // Asignar todos los roles al usuario en la sucursal
+                for (const roleToAssign of allRoles) {
+                    await prisma.userRoleBranch.create({
+                        data: {
+                            userId: user.id,
+                            roleId: roleToAssign.id,
+                            branchId: branch.id,
+                        },
+                    });
+                    console.log(`✅ Rol ${roleToAssign.name} asignado a ${userData.username} en ${userData.branch}.`);
+                }
+                console.log(`✅ Todos los roles asignados a ${userData.username} en ${userData.branch}.`);
+            } else {
+                // Asignar solo el rol especificado
+                await prisma.userRoleBranch.create({
+                    data: {
+                        userId: user.id,
+                        roleId: role.id,
+                        branchId: branch.id,
+                    },
+                });
+                console.log(`✅ Relación ${userData.username} - ${userData.role} - ${userData.branch} creada.`);
+            }
         } else {
             console.log(`🔸 Usuario ${userData.username} ya existe.`);
         }

@@ -10,6 +10,7 @@ import { StudentSelect } from './select-student';
 import { getCustomStyles } from '@/components/ui/select';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
+import { useActiveBranch } from '@/utils/hooks/use-active-branch';
 const { Control } = components
 
 
@@ -39,10 +40,19 @@ interface SelectCourseBranchProps {
 export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranchProps) {
     const [options, setOptions] = useState<CourseBranchSelect[]>([]);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    const { activeBranchId } = useActiveBranch();
 
-    const fetchCourseBranchData = async (inputValue: string): Promise<CourseBranchSelect[]> => {
+    const fetchCourseBranchData = async (inputValue: string, branchId?: string): Promise<CourseBranchSelect[]> => {
         try {
-            const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?search=${inputValue}&top=1000`);
+            const queryParams = new URLSearchParams({
+                search: inputValue,
+                top: '1000',
+            });
+            if (branchId) {
+                queryParams.set('branchId', branchId);
+            }
+            
+            const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?${queryParams.toString()}`);
             console.log('response', response);
             if (!response.success) {
                 throw new Error(response.message);
@@ -60,9 +70,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     };
 
     const loadOptions = async (inputValue: string): Promise<CourseBranchSelect[]> => {
-        // const options = await fetchCourseBranchData(inputValue);
-        // callback(options);
-        return fetchCourseBranchData(inputValue);
+        return fetchCourseBranchData(inputValue, activeBranchId || undefined);
     };
 
     const CustomSelectedOption = (props: any) => {
@@ -117,7 +125,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
 
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedOptions = await fetchCourseBranchData('');
+            const fetchedOptions = await fetchCourseBranchData('', activeBranchId || undefined);
             console.log('fetchedOptions', fetchedOptions);
             setOptions(fetchedOptions);
 
@@ -139,7 +147,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
         };
 
         fetchData();
-    }, [value]);
+    }, [value, activeBranchId]);
 
     return (
         <div>

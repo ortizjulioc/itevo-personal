@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { objectToQueryString } from "@/utils";
 import StudentList from "./components/student-list";
+import StudentsClient from "./students-client";
 
 export const metadata: Metadata = {
   title: 'Estudiantes',
@@ -17,20 +18,5 @@ interface StudentListProps {
   };
 }
 export default function Students({ searchParams }: StudentListProps) {
-  const query = objectToQueryString(searchParams || {});
-  return (
-    <div>
-      <ViewTitle className='mb-6' title="Estudiantes" rightComponent={
-        <>
-          <SearchInput placeholder="Buscar Estudiantes" />
-          <Link href="/students/new">
-            <Button icon={<IconPlusCircle />}>Crear estudiante</Button>
-          </Link>
-
-         
-        </>
-      } />
-       <StudentList query={query} />
-    </div>
-  )
+  return <StudentsClient searchParams={searchParams} />;
 }

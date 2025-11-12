@@ -60,12 +60,25 @@ const Sidebar = () => {
 
     const userRoles: string[] = user?.roles?.map((role: any) => role.normalizedName) || [];
 
+    // Debug: mostrar roles del usuario en consola
+    if (typeof window !== 'undefined' && userRoles.length > 0) {
+        console.log('Roles del usuario:', userRoles);
+    }
+
     const hasAccess = (auth?: string[]) => {
         if (!auth || auth.length === 0) return true;
         return auth.some((role) => userRoles.includes(role));
     };
 
     const filteredNavigation = NavigationConfig.filter((item) => hasAccess(item.auth));
+    
+    // Debug: mostrar navegación filtrada
+    if (typeof window !== 'undefined') {
+        console.log('Navegación filtrada:', filteredNavigation.length, 'elementos');
+        if (filteredNavigation.length === 0) {
+            console.warn('No hay elementos de navegación. Roles del usuario:', userRoles);
+        }
+    }
 
     const toggleMenu = (value: string) => {
         setCurrentMenu((oldValue) => (oldValue === value ? '' : value));
