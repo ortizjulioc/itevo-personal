@@ -61,7 +61,7 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
       });
 
       openNotification('success', `Sucursal cambiada a: ${data.branch.name}`);
-      
+
       // Recargar la página para actualizar los permisos y datos
       window.location.reload();
     } catch (error: any) {
@@ -87,7 +87,11 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
         </button>
       }
     >
-      <ul className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
+      <ul
+        className="w-[300px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90
+        bg-white dark:bg-gray-900 shadow-lg border border-white-light dark:border-white-light/10"
+        // className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90"
+    >
         <li className="px-4 py-2 border-b border-white-light dark:border-white-light/10">
           <span className="text-xs text-gray-500 dark:text-gray-400">Sucursales disponibles</span>
         </li>
