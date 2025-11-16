@@ -10,12 +10,22 @@ export const uploadLogo = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  
+
   return await apiRequest.post<FormData>('/settings/logo',formData);
 };
 
+export const uploadLogoReport = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
 
- export const deleteLogo = async (fileName:string) => {
+
+  return await apiRequest.post<FormData>('/settings/logo-report',formData);
+};
+
+export const deleteLogo = async (fileName:string) => {
     return await apiRequest.remove(`/settings/logo`, { data: { fileName } });
 }
 
+export const deleteLogoReport = async (fileName:string) => {
+    return await apiRequest.remove(`/settings/logo-report`, { data: { fileName } });
+}

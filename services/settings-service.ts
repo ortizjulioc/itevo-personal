@@ -52,6 +52,23 @@ export const changeLogo = async (logo: string) => {
     }
 }
 
+export const changeLogoReport = async (logoReport: string) => {
+    // Verificar si ya existe un setting
+    const existingSetting = await Prisma.setting.findFirst({
+        where: { deleted: false },
+    });
+
+    if (existingSetting) {
+        // Actualizar el logo del setting existente
+        return Prisma.setting.update({
+            where: { id: existingSetting.id },
+            data: { logoReport: logoReport },
+        });
+    } else {
+        throw new Error('No se encontró una configuracion existente para actualizar el logo del reporte.');
+    }
+}
+
 
 // Actualizar setting por ID
 export const updateSettingById = async (id: string, data: any) => {

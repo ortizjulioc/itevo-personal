@@ -1,7 +1,7 @@
 import { writeFile, unlink, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-import { changeLogo } from '@/services/settings-service';
+import { changeLogoReport } from '@/services/settings-service';
 import { existsSync } from 'fs';
 import { posix as pathPosix } from 'path';
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Definir la ruta donde se guardará la imagen
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'logo');
+    const uploadDir = join(process.cwd(), 'public', 'uploads', 'logo-report');
     const fileName = `${Date.now()}-${file.name}`;
     const filePath = join(uploadDir, fileName);
 
@@ -37,10 +37,10 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer);
 
     // Devolver la URL pública del archivo
-    const fileUrl = pathPosix.join('/uploads/logo', fileName);
+    const fileUrl = pathPosix.join('/uploads/logo-report', fileName);
 
     // Aquí podrías guardar la URL en la base de datos si es necesario
-    await changeLogo(fileUrl);
+    await changeLogoReport(fileUrl);
     return NextResponse.json({ message: 'Archivo subido con éxito.', url: fileUrl });
   } catch (error) {
     console.error('Error al subir el archivo:', error);
@@ -58,7 +58,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Construir la ruta del archivo
-    const filePath = join(process.cwd(), 'public/uploads/logo', fileName);
+    const filePath = join(process.cwd(), 'public/uploads/logo-report', fileName);
 
     // Verificar si el archivo existe y eliminarlo
     try {
@@ -70,7 +70,7 @@ export async function DELETE(request: NextRequest) {
       throw error; // Lanzar otros errores
     }
     // Por ejemplo, podrías eliminar el archivo del servidor y actualizar la base de datos
-    await changeLogo(''); // Asumiendo que pasar una cadena vacía elimina el logo
+    await changeLogoReport(''); // Asumiendo que pasar una cadena vacía elimina el logo
 
     return NextResponse.json({ message: 'Logo eliminado con éxito.' }, { status: 200 });
   } catch (error) {

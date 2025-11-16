@@ -6,7 +6,6 @@ import UpdateSettingForm from "./components/setting-form/update-form";
 
 export default function EditSetting() {
     const { setting,loading  } = useFetchSetting();
-    console.log('editar', setting);
 
     return (
         <>

@@ -151,8 +151,8 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
           </View>
 
           <View style={styles.header}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{companyInfo.companyName}</Text>
-            <Text style={{ marginVertical: 8, fontWeight: 'bold' }}>{companyInfo.address}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{companyInfo.titleReport}</Text>
+            <Text style={{ marginVertical: 8, fontWeight: 'bold' }}>{companyInfo.descriptionReport}</Text>
           </View>
 
           {/* <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>Inscripción</Text> */}

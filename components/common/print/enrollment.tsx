@@ -39,8 +39,8 @@ export default function PrintEnrollment({ enrollmentId, courseBranchId, children
     if (!setting) return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
 
     let blobLogo = null;
-    if (setting.logo) {
-      blobLogo = await fetchImageAsBase64(setting.logo);
+    if (setting.logoReport) {
+      blobLogo = await fetchImageAsBase64(setting.logoReport);
     }
     await printPDF(
       <EnrollmentPDF
