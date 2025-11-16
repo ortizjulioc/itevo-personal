@@ -17,13 +17,66 @@ export const getCashRegisterClosureByCashRegisterId = async (
 }
 
 export const getCashRegisterClosureById = async (
-    id: string,
-    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+  cashRegisterId: string,
+  closureId: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
-  return await prisma.cashRegisterClosure.findUnique({
-    where: { id },
+  return await prisma.cashRegisterClosure.findFirst({
+    where: {
+      id: closureId,
+      cashRegisterId: cashRegisterId, // <-- restricción adicional
+    },
+    select: {
+      id: true,
+      closureDate: true,
+      initialBalance: true,
+      totalIncome: true,
+      totalExpense: true,
+      cashBreakdown: true,
+      totalCash: true,
+      totalCheck: true,
+      totalCard: true,
+      totalTransfer: true,
+      totalExpected: true,
+      difference: true,
+      createdAt: true,
+      updatedAt: true,
+
+      user: {
+        select: {
+          id: true,
+          name: true,
+          lastName: true,
+        },
+      },
+
+      cashRegister: {
+        select: {
+          id: true,
+          openingDate: true,
+          initialBalance: true,
+
+          cashBox: {
+            select: {
+              id: true,
+              name: true,
+
+              branch: {
+                select: {
+                  id: true,
+                  name: true,
+                  address: true,
+                  phone: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
-}
+};
+
 
 export const createCashRegisterClosure = async (
     data: PrismaTypes.CashRegisterClosureCreateInput,

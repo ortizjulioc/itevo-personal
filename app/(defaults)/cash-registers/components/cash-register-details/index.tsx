@@ -6,17 +6,18 @@ import Tooltip from '@/components/ui/tooltip';
 import Link from 'next/link';
 import { Button } from '@/components/ui';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
-import { formatCurrency } from '@/utils';
+import { formatCurrency, openNotification } from '@/utils';
 import { getFormattedDateTime } from '@/utils/date';
 import useFetchClosure from '../../lib/use-fetch-cash-closure';
 import UserLabel from '@/components/common/info-labels/user-label';
 import { TbPointFilled } from 'react-icons/tb';
 import { GenericSkeleton } from '@/components/common/Skeleton';
+import StickyFooter from '@/components/common/sticky-footer';
+import PrintClosure from '@/components/common/print/closure';
 
 
 
 export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
-
     const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
     const { invoices, loading: invoiceLoading } = useFetchInvoices(`cashRegisterId=${cashRegister?.id}`);
     const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id);
@@ -108,8 +109,16 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
 
     const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements, invoices);
 
+    // const handlePrintClosure = () => {
+    //     if (cashRegister.id && closure?.id) {
+    //         printClosure({ closureId: closure.id, cashRegisterId: cashRegister.id });
+    //     } else {
+    //         openNotification('error', 'No se puede imprimir el cierre. Faltan datos del cierre o caja');
+    //     }
+    // }
 
-    console.log({ invoices });
+
+    console.log(closure);
     return (
         <>
             <div className=" grid grid-cols-12 gap-5">
@@ -341,20 +350,15 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                         </table>
                     </div>
                 </div>
-                {/* <div className="">
-                <Pagination
-                    currentPage={Number.parseInt(params?.page || '1')}
-                    total={totalcashMovements}
-                    top={Number.parseInt(params?.top || '10')}
-                />
-            </div> */}
             </div>
-            {/* <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
-                <div className="flex justify-end">
-                    <ButtonCloseCashRegister />
 
-                </div>
-            </div> */}
+            {!closureLoading && closure && (
+                <StickyFooter className='-mx-6 px-8 py-4 mt-6' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
+                    <div className="flex justify-end gap-2">
+                        <PrintClosure closureId={closure.id} cashRegisterId={cashRegister.id} />
+                    </div>
+                </StickyFooter>
+            )}
         </>
     );
 }
