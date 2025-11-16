@@ -1,30 +1,38 @@
-import React, { useEffect } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import NewinvoiceCard from './new-invoice-card'
 import InvoiceCard from './invoice-card'
 import useFetchInvoices from '../../../lib/invoice/use-fetch-cash-invoices'
-import { usePathname } from 'next/navigation'
 import { GenericSkeleton } from '@/components/common/Skeleton'
 import { useActiveBranch } from '@/utils/hooks/use-active-branch'
+import { usePathname } from 'next/navigation'
 
 export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId?: string, userId?: string }) {
     const { activeBranchId } = useActiveBranch();
-    const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
-    const pathname = usePathname();
     const [newCardloading, setnewCardloading] = React.useState(false);
+    const pathname = usePathname();
 
-    useEffect(() => {
-        // Construir query con branchId si está disponible
+    // Construir query completo con branchId desde el inicio
+    const query = useMemo(() => {
         const queryParams = new URLSearchParams('status=DRAFT');
         if (activeBranchId) {
             queryParams.set('branchId', activeBranchId);
         }
-        fetchInvoicesData(queryParams.toString());
-        console.log('Fetching invoices for branch:', activeBranchId);
-        return () => {
-            setnewCardloading(false);
+        return queryParams.toString();
+    }, [activeBranchId]);
+
+    const { invoices, loading, fetchInvoicesData } = useFetchInvoices(query);
+
+    // Recargar la lista cada vez que cambie la URL
+    useEffect(() => {
+        if (query) {
+            fetchInvoicesData(query);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeBranchId, pathname]);
+    }, [pathname, query, fetchInvoicesData]);
+
+    // Resetear el estado de loading del botón cuando cambie la URL
+    useEffect(() => {
+        setnewCardloading(false);
+    }, [pathname]);
 
 
 
