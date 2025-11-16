@@ -20,10 +20,12 @@ const styles = StyleSheet.create({
   container: {
     width: 192, // Menos de 72mm (72mm = ~204.094pt)
     maxWidth: 192,
+    marginHorizontal: 4,
   },
   header: {
     textAlign: 'center',
     marginBottom: 6,
+    lineHeight: .6,
   },
   line: {
     height: .4,

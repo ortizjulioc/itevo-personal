@@ -85,7 +85,7 @@ export default function TeacherPayments() {
         const data = {
             amount,
             cashRegisterId,
-            description: `Pago de cuenta por pagar al profesor ${teacherId}`,
+            description: 'Desembolso a profesor',
         }
         try {
             setLoadingPayment(true)
