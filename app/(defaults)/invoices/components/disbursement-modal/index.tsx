@@ -13,12 +13,14 @@ import useFetchCashMovements from '@/app/(defaults)/cash-registers/lib/use-fetch
 import { CashMovementReferenceType } from '@prisma/client';
 import { TbTrash } from 'react-icons/tb';
 import apiRequest from '@/utils/lib/api-request/request';
+import PrintDisbursement from '@/components/common/print/disbursement';
+import { IoMdPrint } from 'react-icons/io';
 
-export default function DisbursementModal({ 
-    setOpenModal, 
-    openModal 
-}: { 
-    setOpenModal: (open: boolean) => void; 
+export default function DisbursementModal({
+    setOpenModal,
+    openModal
+}: {
+    setOpenModal: (open: boolean) => void;
     openModal: boolean;
 }) {
     const { id: cashRegisterId } = useParams();
@@ -30,9 +32,11 @@ export default function DisbursementModal({
     const [loading, setLoading] = useState(false);
     const [formErrors, setFormErrors] = useState<{ amount?: string }>({});
     const [refreshKey, setRefreshKey] = useState(0);
+    const [lastDisbursementId, setLastDisbursementId] = useState<string>('')
+
 
     const queryParam = `referenceType=${CashMovementReferenceType.DISBURSEMENT}`;
-    
+
     // Obtener solo desembolsos (movimientos con referenceType: DISBURSEMENT)
     // const { cashMovements, loading: movementsLoading, setCashMovements } = useFetchCashMovements(
     //     cashRegisterId as string,
@@ -47,11 +51,12 @@ export default function DisbursementModal({
         setDescription('');
         setFormErrors({});
         setOpenModal(false);
+        setLastDisbursementId('');
     };
 
     const validateForm = (): boolean => {
         const errors: { amount?: string } = {};
-        
+
         if (!amount || parseFloat(amount) <= 0) {
             errors.amount = 'El monto debe ser mayor a 0';
         }
@@ -86,14 +91,24 @@ export default function DisbursementModal({
                 type: 'EXPENSE',
             });
 
-            if (response.success) {
+            if (response.success && response.data?.id) {
                 openNotification('success', 'Desembolso creado correctamente');
+
+
+
+                const disbursementId = response.data?.id || ''
+
+                // ⬅️ IMPORTANTE: Guardar el ID del desembolso recién creado
+                setLastDisbursementId(disbursementId);
+
+
+
+
                 setAmount('');
                 setDescription('');
                 setFormErrors({});
-                // Forzar recarga de la lista
-                setRefreshKey(prev => prev + 1);
-                // await refreshDisbursements();
+
+
             } else {
                 openNotification('error', response.message || 'Error al crear el desembolso');
             }
@@ -164,9 +179,9 @@ export default function DisbursementModal({
 
                                 <div className="p-5">
                                     {/* Formulario para crear desembolso */}
-                                    <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-[#1E1E2D]">
-                                        <h6 className="mb-4 text-base font-semibold">Nuevo Desembolso</h6>
-                                        
+                                    <div className="mb-6  ">
+
+
                                         <div className="space-y-4">
                                             <div>
                                                 <label className="mb-2 block text-sm font-medium">
@@ -202,16 +217,7 @@ export default function DisbursementModal({
                                                 />
                                             </div>
 
-                                            <div className="flex justify-end">
-                                                <Button
-                                                    onClick={handleSubmit}
-                                                    disabled={loading || !amount}
-                                                    color="primary"
-                                                    loading={loading}
-                                                >
-                                                    Crear Desembolso
-                                                </Button>
-                                            </div>
+
                                         </div>
                                     </div>
 
@@ -266,15 +272,41 @@ export default function DisbursementModal({
                                             </div>
                                         )}
                                     </div>*/}
-                                </div> 
+                                </div>
 
                                 <div className="border-t border-gray-200 bg-[#fbfbfb] px-5 py-3 dark:border-gray-700 dark:bg-[#121c2c]">
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-2">
+
+
                                         <Button onClick={onCloseModal} variant="outline">
                                             Cerrar
                                         </Button>
+
+                                        <Button
+                                            onClick={handleSubmit}
+                                            disabled={loading || !amount}
+                                            color="primary"
+                                            loading={loading}
+                                        >
+                                            Crear Desembolso
+                                        </Button>
+                                        {lastDisbursementId && (
+                                            <PrintDisbursement paymentId={lastDisbursementId}>
+                                                {({ loading }) => (
+                                                    <Button
+                                                        loading={loading}
+                                                        type="button"
+                                                        size='sm'
+                                                        icon={<IoMdPrint className='text-sm ' />}
+                                                        className="text-sm"
+                                                    />
+                                                )}
+                                            </PrintDisbursement>
+                                        )}
+
                                     </div>
                                 </div>
+
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
