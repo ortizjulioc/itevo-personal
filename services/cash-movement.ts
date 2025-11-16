@@ -57,6 +57,17 @@ export const getCashMovementsByCashRegisterId = async (
       cashRegisterId,
       deleted: false,
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          lastName: true,
+          username: true,
+          phone: true,
+        },
+      },
+    },
     orderBy: {
       createdAt: 'desc',
     },
