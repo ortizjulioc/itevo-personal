@@ -216,7 +216,7 @@ export default function TeacherPayments() {
                                     id={inputId}
                                     type="number"
                                     onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                    defaultValue={pendingAmount}
+                                    defaultValue={pendingAmount === 0 ? '' : pendingAmount}
                                     max={pendingAmount}
                                     min={0}
                                     step="0.01"
@@ -228,7 +228,7 @@ export default function TeacherPayments() {
                                             e.target.value = pendingAmount.toString();
                                             openNotification('warning', `El monto máximo a pagar es ${pendingAmount.toFixed(2)}`);
                                         }
-                                        if (value < 0) e.target.value = '0';
+                                        if (value < 0) e.target.value = '';
                                     }}
                                 />
 

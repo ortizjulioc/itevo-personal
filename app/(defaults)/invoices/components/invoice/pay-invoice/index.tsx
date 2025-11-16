@@ -20,7 +20,11 @@ type OptionType = {
 const customStyles: StylesConfig<OptionType, false> = {
     menuPortal: (base) => ({
         ...base,
-        zIndex: 9999,
+        zIndex: 10000,
+    }),
+    menu: (base) => ({
+        ...base,
+        zIndex: 10000,
     }),
 };
 
@@ -301,12 +305,15 @@ export default function PayInvoice({
                                                 <label className="text-lg font-bold block mb-2">Datos de pago</label>
                                                 <Select
                                                     options={PAYMENT_METHODS_OPTIONS}
-                                                    value={PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice?.paymentMethod)}
-                                                    onChange={handlePaymentMethodChange}
+                                                    value={invoice?.paymentMethod 
+                                                        ? PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice.paymentMethod) 
+                                                        : null
+                                                    }
+                                                    onChange={(option) => handlePaymentMethodChange(option)}
                                                     isSearchable={false}
                                                     placeholder="Selecciona un método de pago"
-                                                    menuPortalTarget={document.body}
-
+                                                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                                                    styles={customStyles}
                                                 />
                                             </div>
                                             {renderPaymentDetails()}

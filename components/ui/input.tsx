@@ -16,14 +16,27 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       className
     );
 
+    // Para inputs de tipo number, convertir 0 a string vacío
+    const getValue = () => {
+      const value = field?.value !== undefined ? field.value : rest.value;
+      if (rest.type === 'number' && (value === 0 || value === '0')) {
+        return '';
+      }
+      return value;
+    };
+
+    const inputValue = getValue();
+    const { value: _, ...restWithoutValue } = rest;
+
     if (Icon) {
       return (
         <div className="relative">
           <input
             ref={ref}
             {...field}
+            value={inputValue}
             className={`${inputClasses} placeholder:tracking-widest pl-9 pr-9 sm:pr-4`}
-            {...rest}
+            {...restWithoutValue}
           />
           <button
             type="button"
@@ -51,7 +64,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         className={inputClasses}
         {...field}
-        {...rest}
+        value={inputValue}
+        {...restWithoutValue}
       />
     );
   }

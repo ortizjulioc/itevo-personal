@@ -121,7 +121,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                             </div>
                             <Input
                                 {...field}
-                                value={values.amount || ""}
+                                value={values.amount === 0 ? '' : (values.amount || "")}
                                 type="number"
                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                 placeholder="Ingrese el monto de cada cuota"
@@ -156,7 +156,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                 </div>
                                 <Input
                                     {...field}
-                                    value={form.values.commissionAmount ?? ""}
+                                    value={form.values.commissionAmount === 0 ? '' : (form.values.commissionAmount ?? "")}
                                     onChange={(e) => {
                                         const input = Number(e.target.value);
                                         form.setFieldValue("commissionAmount", input);
@@ -197,7 +197,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                             </div>
                             <Input
                                 {...field}
-                                value={values.enrollmentAmount || ""}
+                                value={values.enrollmentAmount === 0 ? '' : (values.enrollmentAmount || "")}
                                 type="number"
                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                 placeholder="Ingrese el monto de inscripción"
