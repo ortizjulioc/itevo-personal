@@ -11,7 +11,7 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
     const { invoices, loading, fetchInvoicesData } = useFetchInvoices('status=DRAFT')
     const pathname = usePathname();
     const [newCardloading, setnewCardloading] = React.useState(false);
-    
+
     useEffect(() => {
         // Construir query con branchId si está disponible
         const queryParams = new URLSearchParams('status=DRAFT');
@@ -19,10 +19,12 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
             queryParams.set('branchId', activeBranchId);
         }
         fetchInvoicesData(queryParams.toString());
+        console.log('Fetching invoices for branch:', activeBranchId);
         return () => {
             setnewCardloading(false);
         }
-    }, [pathname, activeBranchId, fetchInvoicesData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeBranchId, pathname]);
 
 
 

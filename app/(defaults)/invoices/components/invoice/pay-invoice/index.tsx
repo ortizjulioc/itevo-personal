@@ -90,7 +90,7 @@ export default function PayInvoice({
                     type="number"
                     onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     min="0"
-                    value={(invoice.paymentDetails as any)?.receivedAmount || '0'}
+                    value={(invoice.paymentDetails as any)?.receivedAmount === 0 ? '' : (invoice.paymentDetails as any)?.receivedAmount || ''}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}
                     disabled={invoice.paymentMethod !== 'cash' || invoice.isCredit}
                 />
@@ -251,7 +251,7 @@ export default function PayInvoice({
                                                     }
                                                     placeholder="-Modalidades-"
                                                     menuPortalTarget={document.body}
-                                                   
+
                                                 />
                                             </div>
 
@@ -306,7 +306,7 @@ export default function PayInvoice({
                                                     isSearchable={false}
                                                     placeholder="Selecciona un método de pago"
                                                     menuPortalTarget={document.body}
-                                                   
+
                                                 />
                                             </div>
                                             {renderPaymentDetails()}
