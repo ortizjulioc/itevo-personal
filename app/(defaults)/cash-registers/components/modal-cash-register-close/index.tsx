@@ -179,7 +179,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
                                                                 type="number"
                                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                 placeholder="RD$"
-                                                                value={otherPayments[type as keyof typeof otherPayments] || ''}
+                                                                value={otherPayments[type as keyof typeof otherPayments] === 0 ? '' : (otherPayments[type as keyof typeof otherPayments] || '')}
                                                                 onChange={(e) => {
                                                                     const value = parseFloat(e.target.value) || 0;
                                                                     setOtherPayments((prev) => ({ ...prev, [type]: value }));

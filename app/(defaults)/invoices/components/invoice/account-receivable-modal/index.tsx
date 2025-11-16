@@ -125,7 +125,7 @@ export default function AccountReceivableModal({
                                 <Input
                                     id={inputId}
                                     type="number"
-                                    defaultValue={maxAmount}
+                                    defaultValue={maxAmount === 0 ? '' : maxAmount}
                                     max={maxAmount}
                                     min={0}
                                     step="0.01"
@@ -138,7 +138,7 @@ export default function AccountReceivableModal({
                                             e.target.value = maxAmount.toString();
                                             openNotification('warning', `El monto máximo a pagar es ${maxAmount.toFixed(2)}`);
                                         }
-                                        if (value < 0) e.target.value = '0';
+                                        if (value < 0) e.target.value = '';
                                     }}
                                 />
                             </td>

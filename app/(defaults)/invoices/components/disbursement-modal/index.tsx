@@ -177,7 +177,7 @@ export default function DisbursementModal({
                                                     step="0.01"
                                                     min="0"
                                                     placeholder="0.00"
-                                                    value={amount}
+                                                    value={amount === '0' || parseFloat(amount) === 0 ? '' : amount}
                                                     onChange={(e) => {
                                                         setAmount(e.target.value);
                                                         if (formErrors.amount) {
