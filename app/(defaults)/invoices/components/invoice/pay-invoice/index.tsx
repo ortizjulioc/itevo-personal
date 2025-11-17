@@ -7,7 +7,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Invoice, NcfType } from '@prisma/client';
 import { Fragment, useEffect, useState } from 'react';
 import { TbCancel, TbCheck } from 'react-icons/tb';
-import { StylesConfig } from 'react-select';
+import { StylesConfig, GroupBase } from 'react-select';
 import PrintInvoiceMpdal from '../print-invoice';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
@@ -17,7 +17,7 @@ type OptionType = {
     label: string;
 };
 
-const customStyles: StylesConfig<OptionType, false> = {
+const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     menuPortal: (base) => ({
         ...base,
         zIndex: 10000,

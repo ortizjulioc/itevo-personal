@@ -10,10 +10,9 @@ export interface CreateDisbursementInput {
 }
 
 export const createDisbursement = async (cashRegisterId: string, data: CreateDisbursementInput) => {
-    return await apiRequest.post<CashMovement>(`/cash-register/${cashRegisterId}/cash-movements`, data);
+    return await apiRequest.post<CashMovement>(`/cash-register/${cashRegisterId}/cash-movements`, data as any);
 };
 
 export const deleteDisbursement = async (cashRegisterId: string, movementId: string) => {
     return await apiRequest.remove<{ message: string }>(`/cash-register/${cashRegisterId}/cash-movements/${movementId}`);
 };
-
