@@ -39,9 +39,11 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
   const [loading, setLoading] = useState<boolean>(true);
   const { setting, loading: loadingSettings } = useFetchSetting();
   const { printPDF } = usePrintPDF();
-  console.log('setting', setting);
+ 
 
   const onPrint = () => {
+    console.log('paymentId', paymentId);
+    console.log('payableId', payableId);
     handlePrintPDF(setting);
   };
 

@@ -4,10 +4,17 @@ import { getCashRegisters, createCashRegister } from '@/services/cash-register-s
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { CashRegisterStatus } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 // Obtener todas las cajas registradoras (GET)
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
@@ -23,7 +30,8 @@ export async function GET(request: NextRequest) {
       page,
       top,
       userId,
-      status
+      status,
+      branchId: session.user.activeBranchId,
     });
 
     return NextResponse.json({ cashRegisters, total }, { status: 200 });

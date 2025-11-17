@@ -243,7 +243,7 @@ export function getFormattedDateTime(fecha: Date, options?: Intl.DateTimeFormatO
     }
 
     // Convertimos la fecha a una cadena de texto con formato de fecha y hora.
-    return `${getFormattedDate(fecha, options)} ${getFormattedTime(fecha, options)}`;
+    return `${getFormattedDate(fecha, options)} ${getFormattedTime(fecha, { hour12: true, ...options })}`;
 }
 
 export function isCourseOnDate(schedules: Schedule[], date: Date | string): boolean {

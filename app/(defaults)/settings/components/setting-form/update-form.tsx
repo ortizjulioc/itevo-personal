@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { Setting } from '@prisma/client';
 import { FormatPatterInput } from '@/components/common';
-import { deleteLogo, updateSetting, uploadLogo } from '../../lib/request';
+import { deleteLogo, deleteLogoReport, updateSetting, uploadLogo, uploadLogoReport } from '../../lib/request';
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
 import RulesEditor from '../rules-editor';
@@ -42,6 +42,21 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
     }
 
+    const handleUploadLogoReport = async (file: File, setFieldValue: (path: string, value: any) => void) => {
+        const resp = await uploadLogoReport(file);
+        if (resp.success) {
+            openNotification('success', 'Logo actualizado correctamente');
+            const url = (resp as any).data.url as string;
+            if (!url) {
+                openNotification('error', 'No se pudo obtener la URL del logo');
+                return;
+            }
+            setFieldValue('logo', url);
+        } else {
+            openNotification('error', resp.message);
+        }
+    }
+
     const handleDeleteLogo = async (file: string) => {
         const fileName = file.split('/').pop();
         if (!fileName) {
@@ -52,6 +67,21 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         const resp = await deleteLogo(fileName);
         if (resp.success) {
             openNotification('success', 'Logo eliminado correctamente');
+        } else {
+            openNotification('error', resp.message);
+        }
+    }
+
+    const handleDeleteLogoReport = async (file: string) => {
+        const fileName = file.split('/').pop();
+        if (!fileName) {
+            openNotification('error', 'No se pudo obtener el nombre del archivo');
+            return;
+        }
+
+        const resp = await deleteLogoReport(fileName);
+        if (resp.success) {
+            openNotification('success', 'Logo del reporte eliminado correctamente');
         } else {
             openNotification('error', resp.message);
         }
@@ -110,6 +140,9 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 {/* Panel 1 - Información general */}
                                 <Tab.Panel>
                                     <div className="mt-6">
+                                        <div className="mb-4">
+                                            <span className="text-gray-700">***Estos valores se utilizarán en las facturas generadas por el sistema.</span>
+                                        </div>
                                         <FormItem name="rnc" label="RNC" invalid={Boolean(errors.rnc && touched.rnc)} errorMessage={errors.rnc}>
                                             <Field type="text" name="rnc" component={Input} placeholder="RNC" />
                                         </FormItem>
@@ -190,9 +223,25 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 </Tab.Panel>
 
                                 <Tab.Panel>
-                                    <div className="mt-6">
-                                        <span className="text-gray-700">Estos valores se utilizarán en los reportes generados por el sistema.</span>
+                                    <div className="mt-6 mb-4">
+                                        <span className="text-gray-700">***Estos valores se utilizarán en los reportes generados por el sistema.</span>
                                     </div>
+
+                                    <FormItem name="titleReport" label="Nombre de la empresa" invalid={Boolean(errors.titleReport && touched.titleReport)} errorMessage={errors.titleReport}>
+                                        <Field type="text" name="titleReport" component={Input} placeholder="Nombre de la empresa" />
+                                    </FormItem>
+
+                                    <FormItem name="descriptionReport" label="Descripción" invalid={Boolean(errors.descriptionReport && touched.descriptionReport)} errorMessage={errors.descriptionReport}>
+                                        <Field type="text" name="descriptionReport" component={Input} placeholder="Descripción" />
+                                    </FormItem>
+
+                                    <FormItem name="logoReport" label="Logo de Reportes" invalid={Boolean(errors.logoReport && touched.logoReport)} errorMessage={errors.logoReport}>
+                                            <ImageUploader
+                                                value={values.logoReport || ''}
+                                                onUpload={(file: File) => handleUploadLogoReport(file, setFieldValue)}
+                                                onDelete={() => handleDeleteLogoReport(values.logoReport || '')}
+                                            />
+                                        </FormItem>
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

@@ -9,6 +9,8 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
+import { getFormattedDateTime } from '@/utils/date';
+import { formatCurrency } from '@/utils';
 
 const styles = StyleSheet.create({
   page: {
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
   },
   infoFieldTitle: {
     fontWeight: 'bold',
-    width: 64, // Ajusta el ancho del título para que no ocupe toda la línea
+    width: 84, // Ajusta el ancho del título para que no ocupe toda la línea
   },
   infoFieldValue: {
     flex: 1,
@@ -55,6 +57,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  sobrante: { color: 'green' },
+  faltante: { color: 'red' },
+  neutro: { color: '#555' },
 });
 
 const InfoField = ({ title, value }: { title: string; value: string | null }) => {
@@ -67,15 +72,39 @@ const InfoField = ({ title, value }: { title: string; value: string | null }) =>
   )
 }
 
-export const DisbursementPDF = ({ disbursement, companyInfo, logo }: { disbursement: any, companyInfo: any, logo: Blob | null }) => {
+function DifferenceLabel({ difference }: { difference: number }) {
+  let label = '*Sin diferencia';
+  let style = styles.neutro;
+
+  if (difference > 0) {
+    label = '*Sobrante';
+    style = styles.sobrante;
+  } else if (difference < 0) {
+    label = '*Faltante';
+    style = styles.faltante;
+  }
+
+  return (
+  <View style={styles.infoField}>
+      <Text style={styles.infoFieldTitle}>Diferencia:</Text>
+      <View style={{ flex: 1, flexDirection: 'row', gap: 4 }}>
+      <Text>{formatCurrency(difference)}</Text>
+      <Text style={style}>{label}</Text>
+      </View>
+    </View>
+);
+}
+
+export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, companyInfo: any, logo: Blob | null }) => {
   const {
-    id,
-    amount,
-    date,
-    description,
-    user: { name, lastName },
-    accountPayable: { teacher: { name: teacherName, lastName: teacherLastName } },
-  } = disbursement;
+    openingDate,
+    closureDate,
+    initialCash,
+    expectedCash,
+    difference,
+    branch,
+    user,
+  } = closure;
 
 
   return (
@@ -102,17 +131,19 @@ export const DisbursementPDF = ({ disbursement, companyInfo, logo }: { disbursem
             <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
           </View>
 
-          <View style={{ marginBottom: 6 }}>
-            <InfoField title="Número:" value={id.split('-').pop()} />
-            <InfoField title="Fecha:" value={date} />
-            <InfoField title="Profesor:" value={`${teacherName} ${teacherLastName}`} />
-            <InfoField title="Monto:" value={`${amount}`} />
-            <InfoField title="Usuario:" value={`${name} ${lastName}`} />
-          </View>
+          <View style={styles.line} />
+            <Text style={{ textAlign: 'center' }}>CIERRE DE TURNO</Text>
+          <View style={styles.line} />
 
           <View style={{ marginBottom: 6 }}>
-            <Text>Concepto:</Text>
-            <Text>{description}</Text>
+            <InfoField title="Sucursal:" value={branch} />
+            <InfoField title="Usuario:" value={user} />
+            <InfoField title="Apertura:" value={getFormattedDateTime(new Date(openingDate))} />
+            <InfoField title="Cierre:" value={getFormattedDateTime(new Date(closureDate))} />
+            <InfoField title="Efectivo inicial:" value={formatCurrency(initialCash)} />
+            <InfoField title="Efectivo en caja:" value={formatCurrency(expectedCash)} />
+            <DifferenceLabel difference={difference} />
+
           </View>
 
           <View style={styles.footer}>

@@ -3,16 +3,23 @@ import { validateObject } from '@/utils';
 import { getCashBoxes, createCashBox } from '@/services/cash-box-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 // Obtener todas las cajas físicas (GET)
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const top = parseInt(searchParams.get('top') || '10', 10);
 
-    const { cashBoxes, totalCashBoxes } = await getCashBoxes(search, page, top);
+    const { cashBoxes, totalCashBoxes } = await getCashBoxes(session.user.activeBranchId, search, page, top);
 
     return NextResponse.json({ cashBoxes, total: totalCashBoxes }, { status: 200 });
   } catch (error) {

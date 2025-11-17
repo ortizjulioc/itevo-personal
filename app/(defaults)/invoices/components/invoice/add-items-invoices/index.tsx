@@ -353,7 +353,7 @@ export default function AddItemsInvoices({
                                     placeholder="Cantidad"
                                     type="number"
                                     onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                    value={item?.quantity ?? ''}
+                                    value={item?.quantity === 0 ? '' : item?.quantity ?? ''}
                                     disabled={itemLoading}
                                     onChange={(e) => {
                                         setItem((prev) => ({

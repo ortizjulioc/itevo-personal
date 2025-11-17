@@ -6,8 +6,16 @@ import { Prisma } from '@/utils/lib/prisma';
 interface CashBox extends Omit<PrismaCashBox, 'id' | 'updatedAt' | 'createdAt' | 'deleted'> { }
 
 // 🔹 Obtener lista de cajas
-export const getCashBoxes = async (search: string, page: number, top: number) => {
+export const getCashBoxes = async (branchId: string, search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
+    const whereClause: any = { deleted: false };
+    if (branchId) { whereClause.branchId = branchId; }
+    if (search) {
+        whereClause.OR = [
+            { name: { contains: search } },
+            { location: { contains: search } }
+        ];
+    }
     const cashBoxes = await Prisma.cashBox.findMany({
         orderBy: [
             { name: 'asc' },
@@ -21,13 +29,7 @@ export const getCashBoxes = async (search: string, page: number, top: number) =>
                 select: { id: true, name: true }
             }
         },
-        where: {
-            deleted: false,
-            OR: [
-                { name: { contains: search } },
-                { location: { contains: search } }
-            ]
-        },
+        where: whereClause,
         skip: skip,
         take: top,
     });

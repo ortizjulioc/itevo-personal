@@ -61,9 +61,9 @@ const Sidebar = () => {
     const userRoles: string[] = user?.roles?.map((role: any) => role.normalizedName) || [];
 
     // Debug: mostrar roles del usuario en consola
-    if (typeof window !== 'undefined' && userRoles.length > 0) {
-        console.log('Roles del usuario:', userRoles);
-    }
+    // if (typeof window !== 'undefined' && userRoles.length > 0) {
+    //     console.log('Roles del usuario:', userRoles);
+    // }
 
     const hasAccess = (auth?: string[]) => {
         if (!auth || auth.length === 0) return true;
@@ -71,10 +71,9 @@ const Sidebar = () => {
     };
 
     const filteredNavigation = NavigationConfig.filter((item) => hasAccess(item.auth));
-    
+
     // Debug: mostrar navegación filtrada
     if (typeof window !== 'undefined') {
-        console.log('Navegación filtrada:', filteredNavigation.length, 'elementos');
         if (filteredNavigation.length === 0) {
             console.warn('No hay elementos de navegación. Roles del usuario:', userRoles);
         }

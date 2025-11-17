@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/modal-cash-register-close';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { Invoice } from '@prisma/client';
+import DisbursementModal from '../../disbursement-modal';
 
 export interface CashRegister {
   id: string;
@@ -35,6 +36,7 @@ export interface CashRegister {
 export default function CashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
     const [openModalAttendance, setOpenModalAttendance] = React.useState(false);
+    const [openModalDisbursement, setOpenModalDisbursement] = React.useState(false);
     const { invoices, fetchInvoicesData } = useFetchInvoices('');
     const pathname = usePathname();
     const [dropdownOpen, setDropdownOpen] = React.useState(false);
@@ -136,6 +138,24 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 Desembolso a profesor
                                             </button>
                                         </li>
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={loadingAction !== null}
+                                                onClick={async () => {
+                                                    setLoadingAction('disbursement');
+                                                    await new Promise((res) => setTimeout(res, 200));
+                                                    setOpenModalDisbursement(true);
+                                                    setLoadingAction(null);
+                                                }}
+                                                className="dropdown-item w-full flex items-center gap-2"
+                                            >
+                                                {loadingAction === 'disbursement' && (
+                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                )}
+                                                Desembolsos
+                                            </button>
+                                        </li>
                                         <li className="border-t">
                                             <button
                                                 type="button"
@@ -177,6 +197,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                     {/* Modales */}
                     <TeacherPayment setOpenModal={setOpenModalTeacher} openModal={openModalTeacher} />
                     <AttendanceModal setOpenModal={setOpenModalAttendance} openModal={openModalAttendance} />
+                    <DisbursementModal setOpenModal={setOpenModalDisbursement} openModal={openModalDisbursement} />
                     <ModalCashRegisterClose setOpenModal={setOpenModalClose} openModal={openModalClose} />
                 </div>
             </div>

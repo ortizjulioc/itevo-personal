@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import type { Invoice , InvoiceItem, User } from "@prisma/client";
 
@@ -23,14 +23,17 @@ const useFetchInvoices = (query: string) => {
     const [totalInvoices, setTotalInvoices] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const fetchInvoicesData = async (query: string) => {
+    
+    const fetchInvoicesData = useCallback(async (queryParam: string) => {
+        setLoading(true);
         try {
-            const response = await apiRequest.get<InvoicesResponse>(`/invoices?${query}`);
+            const response = await apiRequest.get<InvoicesResponse>(`/invoices?${queryParam}`);
             if (!response.success) {
                 throw new Error(response.message);
             }
             setInvoices(response.data?.invoices || []);
             setTotalInvoices(response.data?.totalInvoices || 0);
+            setError(null);
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -40,12 +43,11 @@ const useFetchInvoices = (query: string) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+    
     useEffect(() => {
-        
-
         fetchInvoicesData(query);
-    }, [query]);
+    }, [query, fetchInvoicesData]);
 
     return { invoices, setTotalInvoices, loading, error, setInvoices, totalInvoices,fetchInvoicesData };
 };

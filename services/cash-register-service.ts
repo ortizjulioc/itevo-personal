@@ -29,13 +29,12 @@ export const getCashRegisters = async ({
 }: GetCashRegisterParams) => {
   const skip = (page - 1) * top;
 
-  const whereClause: any = {
+  const whereClause: PrismaTypes.CashRegisterWhereInput = {
     deleted: false,
+    cashBox: branchId ? { branchId } : undefined,
+    userId: userId || undefined,
+    status: status || undefined,
   };
-
-  if (branchId) whereClause.branchId = branchId;
-  if (userId) whereClause.userId = userId;
-  if (status) whereClause.status = status;
 
   const [cashRegisters, total] = await Promise.all([
     Prisma.cashRegister.findMany({
@@ -61,6 +60,7 @@ export const getCashRegisters = async ({
 
   return { cashRegisters, total };
 };
+
 
 // Crear una nueva caja registradora
 export const createCashRegister = async (data: PrismaTypes.CashRegisterCreateInput) => {
