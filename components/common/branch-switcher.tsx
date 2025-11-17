@@ -56,13 +56,9 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
       const data = await response.json();
 
       // Actualizar la sesión con la nueva sucursal activa
-      await update({
-        activeBranchId: branchId,
-      });
+      await update({ activeBranchId: branchId });
 
       openNotification('success', `Sucursal cambiada a: ${data.branch.name}`);
-      
-      // Recargar la página para actualizar los permisos y datos
       window.location.reload();
     } catch (error: any) {
       openNotification('error', error.message || 'Error al cambiar de sucursal');
@@ -76,6 +72,7 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
       offset={[0, 8]}
       placement="bottom-end"
       btnClassName="relative group block"
+      menuClassName="!z-[9999]" // asegúrate que el dropdown quede arriba
       button={
         <button
           type="button"
@@ -87,10 +84,12 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
         </button>
       }
     >
-      <ul className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
-        <li className="px-4 py-2 border-b border-white-light dark:border-white-light/10">
+      {/* 🟢 Aquí se corrigió el fondo y opacidad */}
+      <ul className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90 bg-white dark:bg-[#1e293b] shadow-xl rounded-lg border border-gray-100 dark:border-white/10 !z-[9999]">
+        <li className="px-4 py-2 border-b border-gray-100 dark:border-white/10">
           <span className="text-xs text-gray-500 dark:text-gray-400">Sucursales disponibles</span>
         </li>
+
         {branches.map((branch) => {
           const isActive = branch.id === activeBranchId;
           return (
@@ -100,17 +99,14 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
                 onClick={() => handleBranchChange(branch.id)}
                 disabled={loading || isActive}
                 className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors ${
-                  isActive
-                    ? 'bg-primary/20 dark:bg-primary/30 font-semibold'
-                    : ''
+                  isActive ? 'bg-primary/20 dark:bg-primary/30 font-semibold' : ''
                 } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <span>{branch.name}</span>
-                  {isActive && (
-                    <span className="text-xs text-primary">✓ Activa</span>
-                  )}
+                  {isActive && <span className="text-xs text-primary">✓ Activa</span>}
                 </div>
+
                 {branch.roles && branch.roles.length > 0 && (
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {branch.roles.map((r) => r.name).join(', ')}
