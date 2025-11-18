@@ -51,13 +51,13 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                 openNotification('error', 'No se pudo obtener la URL del logo');
                 return;
             }
-            setFieldValue('logo', url);
+            setFieldValue('logoReport', url);
         } else {
             openNotification('error', resp.message);
         }
     }
 
-    const handleDeleteLogo = async (file: string) => {
+    const handleDeleteLogo = async (file: string, setFieldValue: (path: string, value: any) => void) => {
         const fileName = file.split('/').pop();
         if (!fileName) {
             openNotification('error', 'No se pudo obtener el nombre del archivo');
@@ -65,6 +65,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
 
         const resp = await deleteLogo(fileName);
+        setFieldValue('logo', '');
         if (resp.success) {
             openNotification('success', 'Logo eliminado correctamente');
         } else {
@@ -72,7 +73,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         }
     }
 
-    const handleDeleteLogoReport = async (file: string) => {
+    const handleDeleteLogoReport = async (file: string, setFieldValue: (path: string, value: any) => void) => {
         const fileName = file.split('/').pop();
         if (!fileName) {
             openNotification('error', 'No se pudo obtener el nombre del archivo');
@@ -82,6 +83,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         const resp = await deleteLogoReport(fileName);
         if (resp.success) {
             openNotification('success', 'Logo del reporte eliminado correctamente');
+            setFieldValue('logoReport', '');
         } else {
             openNotification('error', resp.message);
         }
@@ -207,7 +209,11 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 <Tab.Panel>
                                     <div className="mt-6">
                                         <FormItem name="logo" label="Logo" invalid={Boolean(errors.logo && touched.logo)} errorMessage={errors.logo}>
-                                            <ImageUploader value={values.logo} onUpload={(file: File) => handleUploadLogo(file, setFieldValue)} onDelete={() => handleDeleteLogo(values.logo)} />
+                                            <ImageUploader
+                                                value={values.logo}
+                                                onUpload={(file: File) => handleUploadLogo(file, setFieldValue)}
+                                                onDelete={() => handleDeleteLogo(values.logo, setFieldValue)}
+                                            />
                                         </FormItem>
                                     </div>
                                 </Tab.Panel>
@@ -239,7 +245,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                             <ImageUploader
                                                 value={values.logoReport || ''}
                                                 onUpload={(file: File) => handleUploadLogoReport(file, setFieldValue)}
-                                                onDelete={() => handleDeleteLogoReport(values.logoReport || '')}
+                                                onDelete={() => handleDeleteLogoReport(values.logoReport || '', setFieldValue)}
                                             />
                                         </FormItem>
                                 </Tab.Panel>
