@@ -6,7 +6,7 @@
         "dev": "next dev",
         "seed": "node scripts/seed.js",
         "build": "next build",
-        "start": "next start",
+        "start": "next start -p 1441",
         "lint": "next lint"
     },
     "dependencies": {
