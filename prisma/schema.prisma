@@ -444,9 +444,9 @@ model Setting {
   address             String
   phone               String
   email               String
-  logo                String
+  logo                String  @db.LongText // ruta o URL del logo
   rules               Json?
-  logoReport          String? @map("logo_report")
+  logoReport          String? @db.LongText @map("logo_report")
   titleReport         String? @map("title_report")
   descriptionReport   String? @map("description_report")
   defaultPassword     String? @map("default_password")

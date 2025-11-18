@@ -10,6 +10,7 @@ import { deleteLogo, deleteLogoReport, updateSetting, uploadLogo, uploadLogoRepo
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
 import RulesEditor from '../rules-editor';
+import { imageToBase64 } from '@/utils/image';
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
@@ -211,8 +212,13 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                         <FormItem name="logo" label="Logo" invalid={Boolean(errors.logo && touched.logo)} errorMessage={errors.logo}>
                                             <ImageUploader
                                                 value={values.logo}
-                                                onUpload={(file: File) => handleUploadLogo(file, setFieldValue)}
-                                                onDelete={() => handleDeleteLogo(values.logo, setFieldValue)}
+                                                onUpload={(file: File) => imageToBase64(file, async (base64) => {
+                                                    console.log('base64', base64);
+                                                    if (base64) {
+                                                        setFieldValue('logo', base64);
+                                                    }
+                                                })}
+                                                onDelete={() => setFieldValue('logo', '')}
                                             />
                                         </FormItem>
                                     </div>
@@ -244,8 +250,13 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                     <FormItem name="logoReport" label="Logo de Reportes" invalid={Boolean(errors.logoReport && touched.logoReport)} errorMessage={errors.logoReport}>
                                             <ImageUploader
                                                 value={values.logoReport || ''}
-                                                onUpload={(file: File) => handleUploadLogoReport(file, setFieldValue)}
-                                                onDelete={() => handleDeleteLogoReport(values.logoReport || '', setFieldValue)}
+                                                onUpload={(file: File) => imageToBase64(file, async (base64) => {
+                                                    console.log('base64', base64);
+                                                    if (base64) {
+                                                        setFieldValue('logoReport', base64);
+                                                    }
+                                                })}
+                                                onDelete={() => setFieldValue('logoReport', '')}
                                             />
                                         </FormItem>
                                 </Tab.Panel>
