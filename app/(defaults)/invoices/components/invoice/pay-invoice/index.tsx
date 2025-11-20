@@ -96,7 +96,7 @@ export default function PayInvoice({
                     min="0"
                     value={(invoice.paymentDetails as any)?.receivedAmount === 0 ? '' : (invoice.paymentDetails as any)?.receivedAmount || ''}
                     onChange={(e) => handleDetailsChange('receivedAmount', e.target.value)}
-                    disabled={invoice.paymentMethod !== 'cash' || invoice.isCredit}
+                    disabled={invoice.isCredit}
                 />
             </div>
         );
@@ -305,8 +305,8 @@ export default function PayInvoice({
                                                 <label className="text-lg font-bold block mb-2">Datos de pago</label>
                                                 <Select
                                                     options={PAYMENT_METHODS_OPTIONS}
-                                                    value={invoice?.paymentMethod 
-                                                        ? PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice.paymentMethod) 
+                                                    value={invoice?.paymentMethod
+                                                        ? PAYMENT_METHODS_OPTIONS.find((paymentMethod) => paymentMethod.value === invoice.paymentMethod)
                                                         : null
                                                     }
                                                     onChange={(option) => handlePaymentMethodChange(option)}

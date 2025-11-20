@@ -98,7 +98,6 @@ export default function AddItemsInvoices({
             return false;
         }
 
-
         const totalFactura = invoice.subtotal + invoice.itbis;
         const montoRecibido = invoice?.paymentDetails?.receivedAmount;
 
