@@ -39,7 +39,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
   const [loading, setLoading] = useState<boolean>(true);
   const { setting, loading: loadingSettings } = useFetchSetting();
   const { printPDF } = usePrintPDF();
- 
+
 
   const onPrint = () => {
     console.log('paymentId', paymentId);
@@ -69,8 +69,6 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
     if (resp.success && resp.data) {
       // Handle successful response
       const data = resp.data;
-      console.log('Resp.data:', data);
-      setLoading(false);
       return {
         id: data.id,
         amount: formatCurrency((data.amount)),
@@ -90,6 +88,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
     } else {
       openNotification('error', resp.message || 'Error al obtener los datos del desembolso');
     }
+    setLoading(false);
     return null;
   }
 

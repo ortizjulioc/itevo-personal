@@ -98,6 +98,8 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
     } catch (error) {
       console.error('Error al generar el PDF:', error);
       alert('Error al generar el PDF. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
     }
   };
 
