@@ -8,11 +8,34 @@ import PrintInvoice from '@/components/common/print/invoice'
 import { IoMdPrint } from 'react-icons/io'
 import Tooltip from '@/components/ui/tooltip'
 import { getFormattedDate } from '@/utils/date'
-import { formatCurrency } from '@/utils'
+import { confirmDialog, formatCurrency, openNotification } from '@/utils'
 import OptionalInfo from '@/components/common/optional-info'
+import { deleteInvoice } from '../../lib/request'
+import { useRouter } from 'next/navigation';
 
 export default function InvoiceDetails({ invoice }: { invoice: any }) {
     console.log(invoice, 'invoice')
+    const route = useRouter();
+    const handleCancelInvoice = async() => {
+        confirmDialog({
+            title: 'Cancelar Factura',
+            text: '¿Seguro que quieres cancelar esta factura?',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No, mantener',
+            icon: 'error'
+        }, async() => {
+            console.log('Cancelar factura', invoice.id);
+            const resp = await deleteInvoice(invoice.id);
+            console.log(resp);
+            if (resp.success) {
+                openNotification('success', 'Factura cancelada exitosamente');
+                route.back()
+            } else {
+                openNotification('error', resp.message || 'Error al cancelar la factura');
+            }
+        });
+        // Lógica para cancelar la factura
+    }
 
     const PAYMENT_METHODS = {
         cash: 'Efectivo',
@@ -131,7 +154,13 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
             </div>
             <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
                 <div className="flex justify-between">
-                    <Button icon={<TbCancel />} type="button" color="danger" className="w-full md:w-auto">
+                    <Button
+                        icon={<TbCancel />}
+                        type="button"
+                        color="danger"
+                        className="w-full md:w-auto"
+                        onClick={handleCancelInvoice}
+                    >
                         Cancelar
                     </Button>
                     {invoice.status === 'PAID' ? (

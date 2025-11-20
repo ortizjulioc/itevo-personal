@@ -99,11 +99,16 @@ export default function AddItemsInvoices({
         }
 
         const totalFactura = invoice.subtotal + invoice.itbis;
-        const montoRecibido = invoice?.paymentDetails?.receivedAmount;
+        const montoRecibido = parseFloat(invoice?.paymentDetails?.receivedAmount || '0');
 
-        console.log('Total factura:', totalFactura);
-        console.log('Monto recibido:', montoRecibido);
-        console.log('isCredit:', invoice.isCredit);
+        // console.log('Total factura:', totalFactura);
+        // console.log('Monto recibido:', montoRecibido);
+        // console.log('isCredit:', invoice.isCredit);
+
+        if (invoice.paymentMethod !== 'cash' && montoRecibido !== totalFactura) {
+            openNotification('error', 'El monto recibido debe ser igual al total de la factura para los métodos de pago que no son en efectivo');
+            return false;
+        }
 
 
         if (!invoice.isCredit && (montoRecibido === undefined || montoRecibido < totalFactura)) {

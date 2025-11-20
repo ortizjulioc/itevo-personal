@@ -10,6 +10,7 @@ import { ViewTitle } from "@/components/common";
 import { getFormattedDateTime } from "@/utils/date";
 
 import useFetchCashRegisters from "@/app/(defaults)/invoices/lib/cash-register/use-fetch-cash-register";
+import { getSession } from "next-auth/react";
 
 
 interface Props {
@@ -19,7 +20,6 @@ interface Props {
 }
 
 export default function CashRegisterList({ className, query = '', cashRegisterId }: Props) {
-
     const params = queryStringToObject(query);
     const { loading, error, cashRegisters, totalCashRegisters, setCashRegisters } = useFetchCashRegisters(query);
     if (error) {
