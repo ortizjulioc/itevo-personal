@@ -6,9 +6,9 @@ export const createCashMovement = async (
   data: PrismaTypes.CashMovementCreateInput,
   prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
-    console.log('Creating cash movement with data:', data);
   return await prisma.cashMovement.create({
     data,
+    include: { user: true },
   });
 }
 
@@ -19,8 +19,9 @@ export const getCashMovementById = async (
   return await prisma.cashMovement.findFirst({
     where: {
       id,
-      deleted: false,
+      deleted: false
     },
+    include: { user: true }
   });
 }
 

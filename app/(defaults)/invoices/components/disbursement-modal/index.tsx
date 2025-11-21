@@ -5,16 +5,13 @@ import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import { HiX } from 'react-icons/hi';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { createDisbursement, deleteDisbursement } from '../../lib/cash-register/disbursement-request';
-import { openNotification, formatCurrency, confirmDialog } from '@/utils';
-import { getFormattedDateTime } from '@/utils/date';
-import { GenericSkeleton } from '@/components/common/Skeleton';
-import useFetchCashMovements from '@/app/(defaults)/cash-registers/lib/use-fetch-cash-movements';
-import { CashMovementReferenceType } from '@prisma/client';
-import { TbTrash } from 'react-icons/tb';
-import apiRequest from '@/utils/lib/api-request/request';
-import PrintDisbursement from '@/components/common/print/disbursement';
+import { createDisbursement } from '../../lib/cash-register/disbursement-request';
+import { openNotification } from '@/utils';
+import { CashMovementReferenceType, CashMovementType } from '@prisma/client';
 import { IoMdPrint } from 'react-icons/io';
+import PrintCustomDisbursement, { printCustomDisbursement } from '@/components/common/print/custom-disbursement';
+import { CashMovementResponse } from '@/@types/cash-register';
+import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 
 export default function DisbursementModal({
     setOpenModal,
@@ -26,13 +23,14 @@ export default function DisbursementModal({
     const { id: cashRegisterId } = useParams();
     const { data: session } = useSession();
     const userId = (session?.user as any)?.id;
+    const { setting, loading: loadingSettings } = useFetchSetting();
 
     const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [formErrors, setFormErrors] = useState<{ amount?: string }>({});
-    const [refreshKey, setRefreshKey] = useState(0);
     const [lastDisbursementId, setLastDisbursementId] = useState<string>('')
+    const [disbursementsData, setDisbursementsData] = useState<CashMovementResponse>();
 
 
     const queryParam = `referenceType=${CashMovementReferenceType.DISBURSEMENT}`;
@@ -87,28 +85,20 @@ export default function DisbursementModal({
                 amount: parseFloat(amount),
                 description: description || undefined,
                 createdBy: userId,
-                referenceType: 'DISBURSEMENT',
-                type: 'EXPENSE',
+                referenceType: CashMovementReferenceType.DISBURSEMENT,
+                type: CashMovementType.EXPENSE,
             });
 
             if (response.success && response.data?.id) {
                 openNotification('success', 'Desembolso creado correctamente');
-
-
-
-                const disbursementId = response.data?.id || ''
-
-                // ⬅️ IMPORTANTE: Guardar el ID del desembolso recién creado
-                setLastDisbursementId(disbursementId);
-
-
-
-
-                setAmount('');
-                setDescription('');
-                setFormErrors({});
-
-
+                const disbursementId = response.data?.id || '';
+                await printCustomDisbursement({
+                    disbursementId,
+                    cashRegisterId: cashRegisterId as string,
+                    disbursementData: response.data,
+                    setting
+                });
+                onCloseModal();
             } else {
                 openNotification('error', response.message || 'Error al crear el desembolso');
             }
@@ -119,30 +109,6 @@ export default function DisbursementModal({
             setLoading(false);
         }
     };
-
-    // const handleDelete = async (movementId: string) => {
-    //     confirmDialog({
-    //         title: 'Anular Desembolso',
-    //         text: '¿Está seguro que desea anular este desembolso?',
-    //         confirmButtonText: 'Sí, anular',
-    //         icon: 'warning',
-    //     }, async () => {
-    //         try {
-    //             const response = await deleteDisbursement(cashRegisterId as string, movementId);
-    //             if (response.success) {
-    //                 openNotification('success', 'Desembolso anulado correctamente');
-    //                 // Forzar recarga de la lista
-    //                 setRefreshKey(prev => prev + 1);
-    //                 await refreshDisbursements();
-    //             } else {
-    //                 openNotification('error', response.message || 'Error al anular el desembolso');
-    //             }
-    //         } catch (error) {
-    //             console.error('Error deleting disbursement:', error);
-    //             openNotification('error', 'Error al anular el desembolso');
-    //         }
-    //     });
-    // };
 
     return (
         <Transition appear show={openModal} as={Fragment}>
@@ -220,58 +186,6 @@ export default function DisbursementModal({
 
                                         </div>
                                     </div>
-
-                                    {/* Lista de desembolsos
-                                    <div>
-                                        <h6 className="mb-4 text-base font-semibold">Desembolsos Registrados</h6>
-                                        
-                                        {movementsLoading ? (
-                                            <GenericSkeleton lines={5} withHeader={false} />
-                                        ) : activeDisbursements.length === 0 ? (
-                                            <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-[#1E1E2D]">
-                                                <p className="text-gray-500 italic">No hay desembolsos registrados</p>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-3">
-                                                {activeDisbursements.map((disbursement) => (
-                                                    <div
-                                                        key={disbursement.id}
-                                                        className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-[#1E1E2D]"
-                                                    >
-                                                        <div className="flex-1">
-                                                            <div className="mb-1 flex items-center gap-2">
-                                                                <span className="text-sm font-semibold text-red-600">
-                                                                    {formatCurrency(disbursement.amount)}
-                                                                </span>
-                                                                <span className="text-xs text-gray-500">
-                                                                    {getFormattedDateTime(new Date(disbursement.createdAt), { hour12: true })}
-                                                                </span>
-                                                            </div>
-                                                            {disbursement.description && (
-                                                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                                    {disbursement.description}
-                                                                </p>
-                                                            )}
-                                                            {disbursement.user && (
-                                                                <p className="text-xs text-gray-500">
-                                                                    Por: {disbursement.user.name} {disbursement.user.lastName}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        <Button
-                                                            variant="outline"
-                                                            color="danger"
-                                                            size="sm"
-                                                            onClick={() => handleDelete(disbursement.id)}
-                                                            icon={<TbTrash className="h-4 w-4" />}
-                                                        >
-                                                            Anular
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>*/}
                                 </div>
 
                                 <div className="border-t border-gray-200 bg-[#fbfbfb] px-5 py-3 dark:border-gray-700 dark:bg-[#121c2c]">
@@ -290,8 +204,12 @@ export default function DisbursementModal({
                                         >
                                             Crear Desembolso
                                         </Button>
-                                        {lastDisbursementId && (
-                                            <PrintDisbursement paymentId={lastDisbursementId}>
+                                        {/* {(disbursementsData) && (
+                                            <PrintCustomDisbursement
+                                                disbursementData={disbursementsData}
+                                                disbursementId={disbursementsData.id}
+                                                cashRegisterId={cashRegisterId as string}
+                                            >
                                                 {({ loading }) => (
                                                     <Button
                                                         loading={loading}
@@ -299,10 +217,12 @@ export default function DisbursementModal({
                                                         size='sm'
                                                         icon={<IoMdPrint className='text-sm ' />}
                                                         className="text-sm"
-                                                    />
+                                                    >
+                                                        Imprimir Último Desembolso
+                                                    </Button>
                                                 )}
-                                            </PrintDisbursement>
-                                        )}
+                                            </PrintCustomDisbursement>
+                                        )} */}
 
                                     </div>
                                 </div>

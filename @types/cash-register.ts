@@ -38,3 +38,33 @@ export interface CashRegisterClosureResponse {
     };
   };
 }
+
+export type CashMovementResponse = {
+  id: string;
+  cashRegisterId: string;
+  type: "INCOME" | "EXPENSE"; // o los valores de tu enum CashMovementType
+  amount: number;
+  description: string | null;
+  referenceType: "INVOICE" | "PAYABLE" | null; // según tu enum CashMovementReferenceType
+  referenceId: string | null;
+  createdBy: string;
+  createdAt: string;     // Date convertido a string en JSON
+  updatedAt: string;     // Date → string
+  deleted: boolean;
+
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    name: string;
+    lastName: string;
+    phone: string;
+    password: string | null;
+    search: string | null;
+    inactive: boolean;
+    deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+

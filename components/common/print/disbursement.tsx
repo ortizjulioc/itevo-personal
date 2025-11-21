@@ -42,8 +42,6 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
 
 
   const onPrint = () => {
-    console.log('paymentId', paymentId);
-    console.log('payableId', payableId);
     handlePrintPDF(setting);
   };
 
@@ -65,7 +63,6 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
   const getDisbursementData = async (): Promise<DisbursementData | null> => {
     setLoading(true);
     const resp = await apiRequest.get<PayablePaymentWithRelations>(`/account-payable/${payableId}/payments/${paymentId}`);
-    console.log('resp', resp);
     if (resp.success && resp.data) {
       // Handle successful response
       const data = resp.data;
