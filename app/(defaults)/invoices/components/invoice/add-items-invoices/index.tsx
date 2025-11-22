@@ -1,6 +1,6 @@
 'use client';
 import { Button, Input } from '@/components/ui';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
@@ -21,42 +21,33 @@ import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 import { set } from 'lodash';
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
+import { useFetchCashRegistersById } from '../../../lib/cash-register/use-fetch-cash-register';
 
 export interface AccountsReceivablesResponse {
     accountsReceivable: AccountReceivable[];
     totalAccountsReceivables: number;
 }
 
-
-
-export default function AddItemsInvoices({
-    InvoiceId,
-    fetchInvoiceData,
-    cashRegisterId,
-}: {
-    InvoiceId: string;
-    fetchInvoiceData: (id: string) => Promise<void>;
-    cashRegisterId: string;
-}) {
-    const { invoice, setInvoice } = useInvoice()
+export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegisterId }: { InvoiceId: string; fetchInvoiceData: (id: string) => Promise<void>; cashRegisterId: string }) {
+    const { id } = useParams();
+    
+    const { loading, CashRegister } = useFetchCashRegistersById(cashRegisterId);
+    const { invoice, setInvoice } = useInvoice();
 
     const quantityRef = useRef<HTMLInputElement>(null);
     const productRef = useRef<HTMLSelectElement>(null);
     const route = useRouter();
     const [item, setItem] = useState<InvoiceItem | null>(null);
-    const [itemLoading, setItemloading] = useState(false)
-    const [paymentLoading, setPaymentLoading] = useState(false)
-    const [openModal, setOpenModal] = useState(false)
+    const [itemLoading, setItemloading] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [openPrintModal, setOpenPrintModal] = useState(false);
-    const [student, setStudent] = useState<string | null>(
-        invoice?.studentId || null
-    );
+    const [student, setStudent] = useState<string | null>(invoice?.studentId || null);
     const [searchLoading, setSearchLoading] = useState(false);
     const [accountReceivables, setAccountReceivables] = useState<AccountReceivable[] | null>(null);
     const [openAccountReceivableModal, setOpenAccountReceivableModal] = useState(false);
 
     const commentRef = useRef<NodeJS.Timeout | null>(null);
-
 
     const onSelectProduct = (selected: ProductSelect | null) => {
         if (!selected) return;
@@ -65,9 +56,7 @@ export default function AddItemsInvoices({
             productId: selected.value,
             unitPrice: selected.price,
             accountReceivableId: null,
-
         }));
-
 
         if (quantityRef.current) {
             setItem((prev) => ({
@@ -77,10 +66,7 @@ export default function AddItemsInvoices({
             quantityRef.current.select();
             quantityRef.current.focus();
         }
-    }
-
-
-
+    };
 
     const handleSubmit = async (): Promise<boolean> => {
         if (!invoice) {
@@ -89,9 +75,7 @@ export default function AddItemsInvoices({
         }
 
         //Evitar que se generen facturas a creditos si tiene una cuenta por cobrar asociada
-        const hasAccountReceivableItems = invoice.items?.some(
-            (item: InvoiceItem) => item.type === InvoiceItemType.RECEIVABLE
-        );
+        const hasAccountReceivableItems = invoice.items?.some((item: InvoiceItem) => item.type === InvoiceItemType.RECEIVABLE);
 
         if (invoice.isCredit && hasAccountReceivableItems) {
             openNotification('error', 'No se puede generar una factura a crédito con cuentas por cobrar asociadas');
@@ -110,7 +94,6 @@ export default function AddItemsInvoices({
             return false;
         }
 
-
         if (!invoice.isCredit && (montoRecibido === undefined || montoRecibido < totalFactura)) {
             openNotification('error', 'El monto recibido es menor al total de la factura');
             return false;
@@ -118,17 +101,23 @@ export default function AddItemsInvoices({
 
         setPaymentLoading(true);
 
+       
+        const payload = {
+            ...invoice,
+            userId: CashRegister?.userId,
+            cashRegisterId: CashRegister?.id,
+        };
 
-        const resp = await payInvoice(InvoiceId, invoice);
+        const resp = await payInvoice(InvoiceId, payload);
 
         setPaymentLoading(false);
 
         if (resp.success) {
-            openNotification("success", "Factura pagada correctamente");
-            setOpenPrintModal(true)
+            openNotification('success', 'Factura pagada correctamente');
+            setOpenPrintModal(true);
             return true; // ✅ pago exitoso
         } else {
-            openNotification("error", resp.message);
+            openNotification('error', resp.message);
             console.log(resp);
             return false; // ❌ fallo en el backend
         }
@@ -166,40 +155,42 @@ export default function AddItemsInvoices({
     };
     const handleDeteleItem = async (item: InvoiceItem) => {
         setItemloading(true);
-        confirmDialog({
-            title: 'Eliminar Item',
-            text: '¿Seguro que quieres eliminar este Item?',
-            confirmButtonText: 'Sí, eliminar',
-            icon: 'error',
-        }, async () => {
+        confirmDialog(
+            {
+                title: 'Eliminar Item',
+                text: '¿Seguro que quieres eliminar este Item?',
+                confirmButtonText: 'Sí, eliminar',
+                icon: 'error',
+            },
+            async () => {
+                const resp = await removeItemsInvoice(InvoiceId, item.id);
+                if (resp.success) {
+                    openNotification('success', 'Item eliminado correctamente');
+                    await fetchInvoiceData(InvoiceId);
 
-            const resp = await removeItemsInvoice(InvoiceId, item.id);
-            if (resp.success) {
-                openNotification('success', 'Item eliminado correctamente');
-                await fetchInvoiceData(InvoiceId);
+                    console.log('item eliminado', item);
 
-                console.log('item eliminado', item);
+                    setAccountReceivables((prev) => {
+                        if (!prev) return [];
+                        return prev.map((ar) =>
+                            ar.id === item.accountReceivableId
+                                ? {
+                                      ...ar,
 
-                setAccountReceivables(prev => {
-                    if (!prev) return [];
-                    return prev.map(ar =>
-                        ar.id === item.accountReceivableId
-                            ? {
-                                ...ar,
-
-                                AmountPaid: 0,
-                                uiStatus: null,
-                            }
-                            : ar
-                    );
-                });
-                return;
+                                      AmountPaid: 0,
+                                      uiStatus: null,
+                                  }
+                                : ar
+                        );
+                    });
+                    return;
+                }
+                openNotification('error', resp.message);
             }
-            openNotification('error', resp.message);
-        });
+        );
 
         setItemloading(false);
-    }
+    };
 
     const handleSearchAccountReceivables = async (studentId: string | null) => {
         if (!studentId) {
@@ -216,7 +207,6 @@ export default function AddItemsInvoices({
             const accounts = res.data?.accountsReceivable || [];
             if (accounts) {
                 setAccountReceivables(accounts);
-
             }
         } catch (error) {
             console.error('Error fetching accounts receivable:', error);
@@ -235,7 +225,6 @@ export default function AddItemsInvoices({
         }));
 
         try {
-
             const resp = await updateInvoice(InvoiceId, {
                 ...invoice,
                 studentId: studentId,
@@ -248,26 +237,28 @@ export default function AddItemsInvoices({
         } catch (error) {
             console.error('Error updating invoice with student:', error);
             openNotification('error', 'Error al actualizar el estudiante en la factura');
-
         }
-    }
+    };
 
     const handleCancelInvoice = async () => {
-        confirmDialog({
-            title: 'Cancelar Factura',
-            text: '¿Seguro que quieres cancelar esta factura?',
-            confirmButtonText: 'Sí, cancelar',
-            icon: 'warning',
-        }, async () => {
-            const resp = await cancelInvoice(InvoiceId);
-            if (resp.success) {
-                openNotification('success', 'Factura cancelada correctamente');
-                route.push(`/invoices/${cashRegisterId}`)
-            } else {
-                openNotification('error', resp.message);
+        confirmDialog(
+            {
+                title: 'Cancelar Factura',
+                text: '¿Seguro que quieres cancelar esta factura?',
+                confirmButtonText: 'Sí, cancelar',
+                icon: 'warning',
+            },
+            async () => {
+                const resp = await cancelInvoice(InvoiceId);
+                if (resp.success) {
+                    openNotification('success', 'Factura cancelada correctamente');
+                    route.push(`/invoices/${cashRegisterId}`);
+                } else {
+                    openNotification('error', resp.message);
+                }
             }
-        });
-    }
+        );
+    };
 
     useEffect(() => {
         if (invoice?.studentId) {
@@ -278,11 +269,7 @@ export default function AddItemsInvoices({
         }
     }, [invoice?.studentId]);
 
-
-
     useEffect(() => {
-
-
         if (commentRef.current) {
             clearTimeout(commentRef.current);
         }
@@ -297,10 +284,9 @@ export default function AddItemsInvoices({
 
     return (
         <div className="panel p-4">
-            <div className="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="md:col-span-8 col-span-12">
-
-                    <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-12">
+                <div className="col-span-12 md:col-span-8">
+                    <div className="mt-4 flex flex-col items-stretch gap-4 md:flex-row">
                         <div className="w-full md:w-[calc(100%-220px)]">
                             <SelectStudent
                                 value={student ?? undefined}
@@ -320,7 +306,7 @@ export default function AddItemsInvoices({
                             />
                         </div>
 
-                        <div className="w-full md:w-[220px] flex items-center justify-start">
+                        <div className="flex w-full items-center justify-start md:w-[220px]">
                             {student ? (
                                 <Button
                                     type="button"
@@ -340,14 +326,9 @@ export default function AddItemsInvoices({
                     </div>
 
                     {/* Sección de Productos */}
-                    <div className="flex flex-col md:flex-row items-stretch gap-4 mt-4">
+                    <div className="mt-4 flex flex-col items-stretch gap-4 md:flex-row">
                         <div className="w-full md:w-[calc(100%-220px)]">
-                            <SelectProduct
-                                ref={productRef}
-                                value={item?.productId ?? ''}
-                                onChange={onSelectProduct}
-                                disabled={itemLoading}
-                            />
+                            <SelectProduct ref={productRef} value={item?.productId ?? ''} onChange={onSelectProduct} disabled={itemLoading} />
                         </div>
 
                         <div className="w-full md:w-[220px]">
@@ -371,34 +352,34 @@ export default function AddItemsInvoices({
                                             handleAddItem(item);
                                         }
                                     }}
-                                    className={`w-full ${itemLoading ? 'pr-10 opacity-60 pointer-events-none' : ''}`}
+                                    className={`w-full ${itemLoading ? 'pointer-events-none pr-10 opacity-60' : ''}`}
                                 />
                                 {itemLoading && (
-                                    <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                                        <div className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto mt-4">
+                    <div className="mt-4 overflow-x-auto">
                         <table className="min-w-full table-auto">
                             <thead>
-                                <tr className="bg-gray-100 dark:bg-gray-700 text-sm">
-                                    <th className="text-left px-2 py-2">DESCRIPCION</th>
-                                    <th className="text-left px-2 py-2">CANTIDAD</th>
-                                    <th className="text-left px-2 py-2">PRECIO</th>
-                                    <th className="text-left px-2 py-2">SUBTOTAL</th>
-                                    <th className="text-left px-2 py-2">ITBS</th>
-                                    <th className="text-left px-2 py-2">TOTAL</th>
+                                <tr className="bg-gray-100 text-sm dark:bg-gray-700">
+                                    <th className="px-2 py-2 text-left">DESCRIPCION</th>
+                                    <th className="px-2 py-2 text-left">CANTIDAD</th>
+                                    <th className="px-2 py-2 text-left">PRECIO</th>
+                                    <th className="px-2 py-2 text-left">SUBTOTAL</th>
+                                    <th className="px-2 py-2 text-left">ITBS</th>
+                                    <th className="px-2 py-2 text-left">TOTAL</th>
                                     <th className="px-2 py-2"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {invoice?.items?.length === 0 && (
                                     <tr>
-                                        <td colSpan={7} className="text-center text-gray-500 dark:text-gray-400 italic py-4">
+                                        <td colSpan={7} className="py-4 text-center italic text-gray-500 dark:text-gray-400">
                                             No se han agregado items a esta factura.
                                         </td>
                                     </tr>
@@ -407,29 +388,26 @@ export default function AddItemsInvoices({
                                     <tr key={item.id} className="border-t text-sm">
                                         <td className="px-2 py-2">
                                             {item.productId ? (
-                                                <ProductLabel
-                                                    ProductId={item.productId}
-                                                />
-
+                                                <ProductLabel ProductId={item.productId} />
                                             ) : (
-                                                <span className="text-gray-500 dark:text-gray-400">
-                                                    {item.concept || 'Cuenta por cobrar'}
-                                                </span>
+                                                <span className="text-gray-500 dark:text-gray-400">{item.concept || 'Cuenta por cobrar'}</span>
                                             )}
                                         </td>
                                         <td className="px-2 py-2">{item.quantity}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.unitPrice || 0)}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.subtotal)}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.itbis)}</td>
-                                        <td className="px-2 py-2">{formatCurrency((item.subtotal + item.itbis) || 0)}</td>
+                                        <td className="px-2 py-2">{formatCurrency(item.subtotal + item.itbis || 0)}</td>
                                         <td className="px-2 py-2">
                                             <Button
                                                 variant="outline"
                                                 color="danger"
                                                 size="sm"
-                                                onClick={() => { handleDeteleItem(item) }}
+                                                onClick={() => {
+                                                    handleDeteleItem(item);
+                                                }}
                                             >
-                                                <TbX className='size-4' />
+                                                <TbX className="size-4" />
                                             </Button>
                                         </td>
                                     </tr>
@@ -438,11 +416,9 @@ export default function AddItemsInvoices({
                         </table>
                     </div>
                 </div>
-                <div className="md:col-span-4 col-span-12 space-y-2">
+                <div className="col-span-12 space-y-2 md:col-span-4">
                     <div className="mb-4 mt-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Comentario
-                        </label>
+                        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Comentario</label>
                         <textarea
                             rows={2}
                             value={invoice?.comment ?? ''}
@@ -455,7 +431,6 @@ export default function AddItemsInvoices({
                             placeholder="Escribe un comentario..."
                             className="form-input "
                         />
-
                     </div>
                     <div>
                         <div className="flex justify-between text-sm">
@@ -466,37 +441,20 @@ export default function AddItemsInvoices({
                             <span className="font-medium text-gray-600 dark:text-gray-300">ITBS:</span>
                             <span className="text-right">{invoice?.itbis?.toFixed(2) ?? '0.00'}</span>
                         </div>
-                        <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                        <div className="flex justify-between border-t pt-2 text-sm font-semibold">
                             <span className="text-gray-800 dark:text-gray-100">Total:</span>
-                            <span className="text-right"
-                            >
-                                {((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)).toFixed(2)}
-                            </span>
+                            <span className="text-right">{((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)).toFixed(2)}</span>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <div className="mt-6 flex flex-col md:flex-row justify-end gap-2">
-                <Button
-                    type="button"
-                    color="danger"
-                    onClick={handleCancelInvoice}
-                    className="w-full md:w-auto"
-                    icon={<TbCancel className='mr-1 size-6' />}
-                >
+            <div className="mt-6 flex flex-col justify-end gap-2 md:flex-row">
+                <Button type="button" color="danger" onClick={handleCancelInvoice} className="w-full md:w-auto" icon={<TbCancel className="mr-1 size-6" />}>
                     Cancelar
                 </Button>
 
-                <Button
-                    type="button"
-                    color="success"
-                    onClick={() => (setOpenModal(true))}
-                    className="w-full md:w-auto"
-                    icon={<TbCheck className='mr-1 size-6' />}
-                >
-
+                <Button type="button" color="success" onClick={() => setOpenModal(true)} className="w-full md:w-auto" icon={<TbCheck className="mr-1 size-6" />}>
                     Completar
                 </Button>
             </div>
@@ -507,16 +465,11 @@ export default function AddItemsInvoices({
                 // setInvoice={setInvoice}
                 handleSubmit={handleSubmit}
                 paymentLoading={paymentLoading}
-
             />
             <PrintInvoiceModal
                 invoiceId={invoice.id}
                 isCredit={invoice.isCredit}
-                returnedInvoice={Math.max(
-                    parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) -
-                    ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)),
-                    0
-                )}
+                returnedInvoice={Math.max(parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) - ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)), 0)}
                 openModal={openPrintModal}
                 setOpenModal={setOpenPrintModal}
             />
@@ -529,7 +482,6 @@ export default function AddItemsInvoices({
                 setItem={setItem}
                 setOpenModal={(open) => {
                     setOpenAccountReceivableModal(open);
-
                 }}
             />
         </div>

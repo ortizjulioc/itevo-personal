@@ -13,7 +13,7 @@ export default function InvoiceList({ cashRegisterId, userId }: { cashRegisterId
 
     // Construir query completo con branchId desde el inicio
     const query = useMemo(() => {
-        const queryParams = new URLSearchParams('status=DRAFT');
+        const queryParams = new URLSearchParams(`status=DRAFT&cashRegisterId=${cashRegisterId || ''}`);
         if (activeBranchId) {
             queryParams.set('branchId', activeBranchId);
         }
