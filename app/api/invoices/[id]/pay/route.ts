@@ -29,7 +29,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;
 
             const isCredit = body.isCredit !== undefined ? body.isCredit : invoice.isCredit;
-            console.log('isCredit:', isCredit);
+
             if (isCredit && !body.studentId && !invoice.studentId) {
                 throw new Error('Para facturas a crédito se debe especificar el ID del estudiante');
             }
