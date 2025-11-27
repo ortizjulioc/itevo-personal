@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCashRegisterClosure, getCashRegisterClosureByCashRegisterId } from '@/services/cash-register-closure-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { findCashRegisterById, getCashRegisterMovementSummary } from '@/services/cash-register-service';
+import { findCashRegisterById, getCashRegisterInvoicesSummary, getCashRegisterMovementSummary } from '@/services/cash-register-service';
 import { z } from 'zod';
 import { Prisma } from '@/utils/lib/prisma';
 import { CashRegisterStatus } from '@prisma/client';
@@ -68,6 +68,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     const { initialBalance, totalIncome, totalExpense, expectedTotal } = await getCashRegisterMovementSummary(id);
+    const {
+      totalCash: expectedTotalCash,
+      totalBankTransfer: expectedTotalTransfer,
+      totalCreditCard: expectedTotalCard,
+      totalCheck: expectedTotalCheck,
+    } = await getCashRegisterInvoicesSummary(id);
+
     const difference = (validatedData.totalCash + validatedData.totalCard + validatedData.totalCheck + validatedData.totalTransfer) - expectedTotal;
     const closureData = {
       closureDate: new Date(),
@@ -81,6 +88,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       difference,
       totalIncome,
       totalExpense,
+      expectedTotalCash: initialBalance + expectedTotalCash - totalExpense,
+      expectedTotalTransfer,
+      expectedTotalCard,
+      expectedTotalCheck,
       cashRegister: { connect: { id: id } },
       user: { connect: { id: validatedData.userId } },
     };
@@ -88,12 +99,12 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Start a transaction to ensure atomicity
     let closure: any = null;
     await Prisma.$transaction(async (tx) => {
-        closure = await createCashRegisterClosure(closureData, tx);
-        // Update the cash register status to closed
-        await tx.cashRegister.update({
-            where: { id: id },
-            data: { status: CashRegisterStatus.CLOSED },
-        });
+      closure = await createCashRegisterClosure(closureData, tx);
+      // Update the cash register status to closed
+      await tx.cashRegister.update({
+        where: { id: id },
+        data: { status: CashRegisterStatus.CLOSED },
+      });
     });
 
     await createLog({

@@ -117,8 +117,6 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
     //     }
     // }
 
-
-    console.log(closure);
     return (
         <>
             <div className=" grid grid-cols-12 gap-5">
@@ -176,20 +174,20 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-600">Esperado</p>
-                                <p className="text-base font-medium">{formatCurrency(closure.totalExpected)}</p>
+                                <p className="text-sm text-gray-600">Efectivo Esperado</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.expectedTotalCash)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Total Reportado</p>
-                                <p className="text-base font-medium">{formatCurrency(closure.totalCash + closure.totalCheck + closure.totalCard + closure.totalTransfer)}</p>
+                                <p className="text-sm text-gray-600">Efectivo Reportado</p>
+                                <p className="text-base font-medium">{formatCurrency(closure.totalCash)}</p>
                             </div>
 
                             <div>
                                 <p className="text-sm text-gray-600">Diferencia</p>
-                                <p className={`text-base font-medium ${closure.difference > 0 ? 'text-green-600' : closure.difference < 0 ? 'text-red-600' : 'text-gray-600'}`}>
-                                    {closure.difference > 0 && <>Sobrante: +{formatCurrency(closure.difference)}</>}
-                                    {closure.difference < 0 && <>Faltante: -{formatCurrency(Math.abs(closure.difference))}</>}
-                                    {closure.difference === 0 && <>Sin diferencia</>}
+                                <p className={`text-base font-medium ${(closure.totalCash - closure.expectedTotalCash) > 0 ? 'text-green-600' : (closure.totalCash - closure.expectedTotalCash) < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                                    {(closure.totalCash - closure.expectedTotalCash) > 0 && <>Sobrante: +{formatCurrency((closure.totalCash - closure.expectedTotalCash))}</>}
+                                    {(closure.totalCash - closure.expectedTotalCash) < 0 && <>Faltante: -{formatCurrency(Math.abs((closure.totalCash - closure.expectedTotalCash)))}</>}
+                                    {(closure.totalCash - closure.expectedTotalCash) === 0 && <>Sin diferencia</>}
                                 </p>
                             </div>
                             <div>
@@ -233,32 +231,39 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-600">Efectivo</p>
-                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo + cashRegister.initialBalance)}</p>
+                                <p className="text-sm text-gray-600">Ventas Efectivo</p>
+                                <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Tarjeta</p>
+                                <p className="text-sm text-gray-600">Ventas Tarjeta</p>
                                 <p className="text-base font-medium">{formatCurrency(resumenFacturas.tarjeta)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Transferencia</p>
+                                <p className="text-sm text-gray-600">Ventas Transferencia</p>
                                 <p className="text-base font-medium">{formatCurrency(resumenFacturas.transferencia)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Cheque</p>
+                                <p className="text-sm text-gray-600">Ventas Cheque</p>
                                 <p className="text-base font-medium">{formatCurrency(resumenFacturas.cheque)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-600">Ventas a Crédito</p>
+                                <p className="text-base font-medium text-yellow-600">{formatCurrency(resumenFacturas.credito)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Egresos</p>
                                 <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Total a Crédito</p>
-                                <p className="text-base font-medium text-yellow-600">{formatCurrency(resumenFacturas.credito)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Total</p>
+                                <p className="text-sm text-gray-600">Total General</p>
                                 <p className="text-base font-medium">{formatCurrency(total)}</p>
+                            </div>
+
+                            <div>
+                                <p className="text-sm text-gray-600">Efectivo esperado</p>
+                                <p className="text-base font-medium">
+                                    {formatCurrency((cashRegister?.initialBalance || 0) + resumenFacturas.efectivo - totalEgresos)}
+                                </p>
                             </div>
                         </div>
                     </div>

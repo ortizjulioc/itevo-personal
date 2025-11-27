@@ -26,51 +26,49 @@ export default function CloseCashRegister({ params }: Props) {
     const { CashRegister } = useFetchCashRegistersById(params?.id);
     const { cashMovements, loading } = useFetchCashMovements(params?.id)
     const { invoices, loading: invoiceLoading } = useFetchInvoices(params?.id)
-    console.log('cashMovements', cashMovements)
-
 
     function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
-    const summary = {
-        efectivo: 0,
-        tarjeta: 0,
-        transferencia: 0,
-        cheque: 0,
-        credito: 0,
-        total: 0,
-    };
+        const summary = {
+            efectivo: 0,
+            tarjeta: 0,
+            transferencia: 0,
+            cheque: 0,
+            credito: 0,
+            total: 0,
+        };
 
-    const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
+        const invoiceMap = new Map(invoices.map(inv => [inv.id, inv]));
 
-    cashMovements.forEach(movement => {
-        if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
-            const invoice = invoiceMap.get(movement.referenceId);
-            if (!invoice) return;
+        cashMovements.forEach(movement => {
+            if (movement.type === 'INCOME' && movement.referenceType === 'INVOICE') {
+                const invoice = invoiceMap.get(movement.referenceId);
+                if (!invoice) return;
 
-            const amount = invoice.subtotal + invoice.itbis;
-            summary.total += amount;
+                const amount = invoice.subtotal + invoice.itbis;
+                summary.total += amount;
 
-            switch (invoice.paymentMethod) {
-                case 'cash':
-                    summary.efectivo += amount;
-                    break;
-                case 'credit_card':
-                    summary.tarjeta += amount;
-                    break;
-                case 'bank_transfer':
-                    summary.transferencia += amount;
-                    break;
-                case 'check':
-                    summary.cheque += amount;
-                    break;
-                default:
-                    summary.credito += amount;
-                    break;
+                switch (invoice.paymentMethod) {
+                    case 'cash':
+                        summary.efectivo += amount;
+                        break;
+                    case 'credit_card':
+                        summary.tarjeta += amount;
+                        break;
+                    case 'bank_transfer':
+                        summary.transferencia += amount;
+                        break;
+                    case 'check':
+                        summary.cheque += amount;
+                        break;
+                    default:
+                        summary.credito += amount;
+                        break;
+                }
             }
-        }
-    });
+        });
 
-    return summary;
-}
+        return summary;
+    }
 
     function getTotalExpenses(cashMovements: any[]) {
         return cashMovements
@@ -87,10 +85,10 @@ export default function CloseCashRegister({ params }: Props) {
     const totalIngresos = getTotalIncome(cashMovements);
     const totalEgresos = getTotalExpenses(cashMovements);
     const total = totalIngresos - totalEgresos + (CashRegister?.initialBalance || 0);
-    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements,invoices);
+    const resumenFacturas = getInvoiceSummaryFromMovements(cashMovements, invoices);
 
 
-
+    const totalEfectivo = resumenFacturas.efectivo + (CashRegister?.initialBalance || 0) - totalEgresos;
 
     if (loading) return <Skeleton rows={6} columns={['FECHA', "DESCRIPCION", 'MONTO', "TIPO"]} />;
 
@@ -106,28 +104,32 @@ export default function CloseCashRegister({ params }: Props) {
                         </div>
 
                         <div>
-                            <p className="text-sm text-gray-600">Efectivo</p>
+                            <p className="text-sm text-gray-600">Ventas en Efectivo</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.efectivo)}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Tarjeta</p>
+                            <p className="text-sm text-gray-600">Ventas en Tarjeta</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.tarjeta)}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Transferencia</p>
+                            <p className="text-sm text-gray-600">Ventas en Transferencia</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.transferencia)}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Cheque</p>
+                            <p className="text-sm text-gray-600">Ventas en Cheque</p>
                             <p className="text-base font-medium">{formatCurrency(resumenFacturas.cheque)}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Total General</p>
+                            <p className="text-base font-medium">{formatCurrency(total)}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Egresos</p>
                             <p className="text-base font-medium text-red-600">- {formatCurrency(totalEgresos)}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Total</p>
-                            <p className="text-base font-medium">{formatCurrency(total)}</p>
+                            <p className="text-sm text-gray-600">Total Efectivo</p>
+                            <p className="text-base font-medium">{formatCurrency(totalEfectivo)}</p>
                         </div>
 
 

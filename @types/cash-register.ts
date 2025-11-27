@@ -11,6 +11,10 @@ export interface CashRegisterClosureResponse {
   totalTransfer: number;
   totalExpected: number;
   difference: number;
+  expectedTotalCash: number;
+  expectedTotalCard: number;
+  expectedTotalCheck: number;
+  expectedTotalTransfer: number;
   createdAt: string;
   updatedAt: string;
 

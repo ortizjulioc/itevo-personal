@@ -213,7 +213,7 @@ model CourseBranch {
   attendance        Attendance[]
   paymentPlan       CourseBranchPaymentPlan?
   accountReceivable AccountReceivable[]
-  rules            CourseBranchRules?
+  rules             CourseBranchRules?
 
   @@index([branchId], map: "courses_branches_branch_id_fkey")
   @@index([courseId], map: "courses_branches_course_id_fkey")
@@ -223,15 +223,15 @@ model CourseBranch {
 }
 
 model CourseBranchRules {
-    id             String   @id @default(uuid())
-    courseBranchId String   @unique @map("course_branch_id")
-    rules          Json
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  courseBranchId String   @unique @map("course_branch_id")
+  rules          Json
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-    courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
+  courseBranch CourseBranch @relation(fields: [courseBranchId], references: [id])
 
-    @@map("courses_branches_rules")
+  @@map("courses_branches_rules")
 }
 
 model CourseBranchPaymentPlan {
@@ -446,7 +446,7 @@ model Setting {
   email               String
   logo                String  @db.LongText // ruta o URL del logo
   rules               Json?
-  logoReport          String? @db.LongText @map("logo_report")
+  logoReport          String? @map("logo_report") @db.LongText
   titleReport         String? @map("title_report")
   descriptionReport   String? @map("description_report")
   defaultPassword     String? @map("default_password")
@@ -532,24 +532,28 @@ model CashMovement {
 }
 
 model CashRegisterClosure {
-  id             String       @id @default(uuid())
-  cashRegisterId String       @map("cash_register_id")
-  closureDate    DateTime     @map("closure_date")
-  initialBalance Float        @default(0) @map("initial_balance")
-  totalIncome    Float        @default(0) @map("total_income")
-  totalExpense   Float        @default(0) @map("total_expense")
-  cashBreakdown  Json?        @map("cash_breakdown")
-  totalCash      Float        @default(0) @map("total_cash")
-  totalCheck     Float        @default(0) @map("total_check")
-  totalCard      Float        @default(0) @map("total_card")
-  totalTransfer  Float        @default(0) @map("total_transfer")
-  totalExpected  Float        @default(0) @map("total_expected")
-  difference     Float        @default(0) @map("difference")
-  closedBy       String       @map("closed_by")
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
-  cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id])
-  user           User         @relation(fields: [closedBy], references: [id])
+  id                    String       @id @default(uuid())
+  cashRegisterId        String       @map("cash_register_id")
+  closureDate           DateTime     @map("closure_date")
+  initialBalance        Float        @default(0) @map("initial_balance")
+  totalIncome           Float        @default(0) @map("total_income")
+  totalExpense          Float        @default(0) @map("total_expense")
+  cashBreakdown         Json?        @map("cash_breakdown")
+  totalCash             Float        @default(0) @map("total_cash")
+  totalCheck            Float        @default(0) @map("total_check")
+  totalCard             Float        @default(0) @map("total_card")
+  totalTransfer         Float        @default(0) @map("total_transfer")
+  totalExpected         Float        @default(0) @map("total_expected")
+  difference            Float        @default(0) @map("difference")
+  expectedTotalCash     Float        @default(0) @map("expected_total_cash")
+  expectedTotalCard     Float        @default(0) @map("expected_total_card")
+  expectedTotalCheck    Float        @default(0) @map("expected_total_check")
+  expectedTotalTransfer Float        @default(0) @map("expected_total_transfer")
+  closedBy              String       @map("closed_by")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+  cashRegister          CashRegister @relation(fields: [cashRegisterId], references: [id])
+  user                  User         @relation(fields: [closedBy], references: [id])
 
   @@index([cashRegisterId], map: "cash_register_closures_cash_register_id_fkey")
   @@index([closedBy], map: "cash_register_closures_closed_by_fkey")
@@ -775,10 +779,10 @@ enum NcfType {
 }
 
 enum InvoiceStatus {
-  DRAFT    @map("draft")
+  DRAFT     @map("draft")
   COMPLETED @map("completed")
-  PAID     @map("paid")
-  CANCELED @map("canceled")
+  PAID      @map("paid")
+  CANCELED  @map("canceled")
 }
 
 enum InvoiceItemType {

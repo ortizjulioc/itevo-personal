@@ -72,7 +72,7 @@ const InfoField = ({ title, value }: { title: string; value: string | null }) =>
   )
 }
 
-function DifferenceLabel({ difference }: { difference: number }) {
+function DifferenceLabel({ difference, title }: { difference: number, title: string }) {
   let label = '*Sin diferencia';
   let style = styles.neutro;
 
@@ -85,14 +85,14 @@ function DifferenceLabel({ difference }: { difference: number }) {
   }
 
   return (
-  <View style={styles.infoField}>
-      <Text style={styles.infoFieldTitle}>Diferencia:</Text>
+    <View style={styles.infoField}>
+      <Text style={styles.infoFieldTitle}>{title}</Text>
       <View style={{ flex: 1, flexDirection: 'row', gap: 4 }}>
-      <Text>{formatCurrency(difference)}</Text>
-      <Text style={style}>{label}</Text>
+        <Text>{formatCurrency(difference)}</Text>
+        <Text style={style}>{label}</Text>
       </View>
     </View>
-);
+  );
 }
 
 export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, companyInfo: any, logo: Blob | null }) => {
@@ -101,11 +101,10 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
     closureDate,
     initialCash,
     expectedCash,
-    difference,
+    differenceCash,
     branch,
     user,
   } = closure;
-
 
   return (
     <Document>
@@ -126,13 +125,13 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
             <Text>RNC: {companyInfo.rnc}</Text>
             <Text>{companyInfo.address}</Text>
             <Text>
-                {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
+              {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
             <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
           </View>
 
           <View style={styles.line} />
-            <Text style={{ textAlign: 'center' }}>CIERRE DE TURNO</Text>
+          <Text style={{ textAlign: 'center' }}>CIERRE DE TURNO</Text>
           <View style={styles.line} />
 
           <View style={{ marginBottom: 6 }}>
@@ -140,12 +139,12 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
             <InfoField title="Usuario:" value={user} />
             <InfoField title="Apertura:" value={getFormattedDateTime(new Date(openingDate))} />
             <InfoField title="Cierre:" value={getFormattedDateTime(new Date(closureDate))} />
+
             <InfoField title="Efectivo inicial:" value={formatCurrency(initialCash)} />
             <InfoField title="Efectivo en caja:" value={formatCurrency(expectedCash)} />
-            <DifferenceLabel difference={difference} />
+            <DifferenceLabel title="Diferencia:" difference={differenceCash} />
 
           </View>
-
           <View style={styles.footer}>
             <View style={styles.line} />
             <Text style={{ textAlign: 'center' }}>Recibido por</Text>

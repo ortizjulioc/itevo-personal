@@ -67,7 +67,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
             acc[key as keyof typeof billsList] = value.quantity;
             return acc;
         }, {} as Record<keyof typeof billsList, number>);
-        
+
         const closureData = {
             cashBreakdown,
             userId: user.id,
@@ -87,9 +87,11 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
 
             } else {
                 setLoading(false)
+                openNotification("error", resp.message || "ocurrio un error al cerrar la caja")
             }
         } catch (error) {
             console.log(error)
+            openNotification("error", "Ocurrio un error inesperado al cerrar la caja")
             setLoading(false)
         }
 

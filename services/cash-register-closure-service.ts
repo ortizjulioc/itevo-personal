@@ -3,8 +3,8 @@ import { Prisma } from '@/utils/lib/prisma';
 import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 
 export const getCashRegisterClosureByCashRegisterId = async (
-    cashRegisterId: string,
-    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+  cashRegisterId: string,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
   return await prisma.cashRegisterClosure.findMany({
     where: {
@@ -38,6 +38,10 @@ export const getCashRegisterClosureById = async (
       totalCard: true,
       totalTransfer: true,
       totalExpected: true,
+      expectedTotalCash: true,
+      expectedTotalCard: true,
+      expectedTotalCheck: true,
+      expectedTotalTransfer: true,
       difference: true,
       createdAt: true,
       updatedAt: true,
@@ -79,8 +83,8 @@ export const getCashRegisterClosureById = async (
 
 
 export const createCashRegisterClosure = async (
-    data: PrismaTypes.CashRegisterClosureCreateInput,
-    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+  data: PrismaTypes.CashRegisterClosureCreateInput,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) => {
   return await prisma.cashRegisterClosure.create({ data });
 }

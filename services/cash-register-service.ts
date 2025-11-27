@@ -1,5 +1,5 @@
 import 'server-only';
-import { CashRegister as PrismaCashRegister, CashRegisterStatus } from "@prisma/client";
+import { CashRegister as PrismaCashRegister, CashRegisterStatus, InvoiceStatus } from "@prisma/client";
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from '@prisma/client';
 
@@ -183,4 +183,68 @@ export const getCashRegisterMovementSummary = async (cashRegisterId: string) => 
     expectedTotal,
   };
 };
+
+export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => {
+  const cashRegister = await Prisma.cashRegister.findUnique({
+    where: { id: cashRegisterId, deleted: false },
+    select: {
+      id: true,
+      initialBalance: true,
+      openingDate: true,
+    },
+  });
+
+  if (!cashRegister) throw new Error('Cash register not found');
+
+  const invoices = await Prisma.invoice.findMany({
+    where: {
+      cashRegisterId,
+      status: InvoiceStatus.PAID,
+    },
+    select: {
+      id: true,
+      subtotal: true,
+      itbis: true,
+      paymentMethod: true,
+    },
+  });
+
+  let totalCash = 0;
+  let totalBankTransfer = 0;
+  let totalCreditCard = 0;
+  let totalCheck = 0;
+  let totalOther = 0;
+
+  for (const invoice of invoices) {
+    switch (invoice.paymentMethod) {
+      case 'cash':
+        totalCash += invoice.subtotal + invoice.itbis;
+        break;
+      case 'bank_transfer':
+        totalBankTransfer += invoice.subtotal + invoice.itbis;
+        break;
+      case 'credit_card':
+        totalCreditCard += invoice.subtotal + invoice.itbis;
+        break;
+      case 'check':
+        totalCheck += invoice.subtotal + invoice.itbis;
+        break;
+      case 'other':
+        totalOther += invoice.subtotal + invoice.itbis;
+        break;
+    }
+  }
+
+  const total = totalCash + totalBankTransfer + totalCreditCard + totalCheck + totalOther;
+
+  return {
+    totalCash,
+    totalBankTransfer,
+    totalCreditCard,
+    totalCheck,
+    totalOther,
+    total,
+  };
+};
+
 

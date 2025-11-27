@@ -12,7 +12,7 @@ import { IoMdPrint } from "react-icons/io";
 export default function PrintClosure({ closureId, cashRegisterId }: { closureId: string, cashRegisterId: string }) {
     const { printPDF } = usePrintPDF();
     const { loading: loadingSettings, setting } = useFetchSetting();
-    const [loading, setLoading] =  useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const fetchData = async ({ closureId, cashRegisterId }: { closureId: string, cashRegisterId: string }) => {
         try {
@@ -43,11 +43,14 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
         const closureDataMaped = {
             openingDate: data.cashRegister.openingDate,
             closureDate: data.closureDate,
+
             initialCash: data.cashRegister.initialBalance,
-            expectedCash: data.totalExpected,
-            difference: data.difference,
+            expectedCash: data.expectedTotalCash,
+            differenceCash: data.totalCash - data.expectedTotalCash,
+
             branch: data.cashRegister.cashBox.branch.name,
             user: `${data.user.name} ${data.user.lastName}`,
+            cashBreakdown: data.cashBreakdown,
         };
 
         await printPDF(
