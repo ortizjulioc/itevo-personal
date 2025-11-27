@@ -73,6 +73,79 @@ async function getCashRegisterInvoicesSummary(prisma, cashRegisterId) {
     };
 }
 
+async function getCashRegisterMovementsSummary(prisma, cashRegisterId) {
+    const movements = await prisma.cashMovement.findMany({
+        where: { 
+            cashRegisterId,
+            deleted: false 
+        },
+        select: {
+            amount: true,
+            type: true,
+            referenceType: true,
+            referenceId: true,
+        },
+    });
+
+    let totalCash = 0;
+    let totalBankTransfer = 0;
+    let totalCreditCard = 0;
+    let totalCheck = 0;
+    let totalOther = 0;
+
+    for (const mv of movements) {
+        if (mv.referenceType !== "INVOICE") continue;
+
+        const invoice = await prisma.invoice.findUnique({
+            where: { id: mv.referenceId },
+            select: {
+                subtotal: true,
+                itbis: true,
+                paymentMethod: true,
+            },
+        });
+
+        if (!invoice) continue;
+
+        const amount = (invoice.subtotal + invoice.itbis) * (mv.type === "INCOME" ? 1 : -1);
+
+        switch (invoice.paymentMethod) {
+            case "cash":
+                totalCash += amount;
+                break;
+            case "bank_transfer":
+                totalBankTransfer += amount;
+                break;
+            case "credit_card":
+                totalCreditCard += amount;
+                break;
+            case "check":
+                totalCheck += amount;
+                break;
+            default:
+                totalOther += amount;
+                break;
+        }
+    }
+
+    const total =
+        totalCash +
+        totalBankTransfer +
+        totalCreditCard +
+        totalCheck +
+        totalOther;
+
+    return {
+        totalCash,
+        totalBankTransfer,
+        totalCreditCard,
+        totalCheck,
+        totalOther,
+        total,
+    };
+}
+
+
 
 async function main() {
     console.log("🔹 Iniciando recálculo de cierres...\n");
@@ -89,7 +162,7 @@ async function main() {
         try {
             console.log(`Procesando cierre ${closure.id}...`);
 
-            const summary = await getCashRegisterInvoicesSummary(
+            const summary = await getCashRegisterMovementsSummary(
                 prisma,
                 closure.cashRegisterId
             );
