@@ -12,18 +12,19 @@ import { confirmDialog, formatCurrency, openNotification } from '@/utils'
 import OptionalInfo from '@/components/common/optional-info'
 import { deleteInvoice } from '../../lib/request'
 import { useRouter } from 'next/navigation';
+import { InvoiceStatus } from '@prisma/client'
 
 export default function InvoiceDetails({ invoice }: { invoice: any }) {
     console.log(invoice, 'invoice')
     const route = useRouter();
-    const handleCancelInvoice = async() => {
+    const handleCancelInvoice = async () => {
         confirmDialog({
             title: 'Cancelar Factura',
             text: '¿Seguro que quieres cancelar esta factura?',
             confirmButtonText: 'Sí, cancelar',
             cancelButtonText: 'No, mantener',
             icon: 'error'
-        }, async() => {
+        }, async () => {
             console.log('Cancelar factura', invoice.id);
             const resp = await deleteInvoice(invoice.id);
             console.log(resp);
@@ -163,7 +164,7 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
                     >
                         Cancelar
                     </Button>
-                    {invoice.status === 'PAID' ? (
+                    {(invoice.status === InvoiceStatus.PAID || invoice.status === InvoiceStatus.COMPLETED) ? (
                         <PrintInvoice invoiceId={invoice.id} />
                     ) : (
                         <Tooltip title={'solo es posile imprimir facturas con el estado PAGADO'}>

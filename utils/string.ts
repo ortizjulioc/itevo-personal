@@ -37,6 +37,13 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 }
 
+export const formatNumber = (amount: number): string => {
+  return new Intl.NumberFormat('es-DO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 export function base64ToUint8Array(base64: string): Uint8Array {
   return new Uint8Array(Buffer.from(base64, 'base64'));
 }

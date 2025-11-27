@@ -9,6 +9,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { getFormattedDateTime } from '@/utils/date';
+import { formatNumber } from '@/utils';
 
 const styles = StyleSheet.create({
   page: {
@@ -92,7 +93,7 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
             <Text>RNC: {companyInfo.rnc}</Text>
             <Text>{companyInfo.address}</Text>
             <Text>
-                {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
+              {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
             <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
           </View>
@@ -110,7 +111,7 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
           <View style={styles.line} />
 
           <View style={styles.tableHeader}>
-            <Text style={{ marginRight: 3}}>Cant.</Text>
+            <Text style={{ marginRight: 3 }}>Cant.</Text>
             <Text style={{ flex: 1 }}>Descripción / Precio</Text>
             <Text>Subtotal</Text>
           </View>
@@ -120,9 +121,9 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
               <Text>{item.quantity}</Text>
               <View style={styles.columnText}>
                 <Text>{item.concept}</Text>
-                <Text style={{}}>{item.unitPrice.toFixed(2)}</Text>
+                <Text style={{}}>{formatNumber(item.unitPrice)}</Text>
               </View>
-              <Text>{(item.quantity * item.unitPrice).toFixed(2)}</Text>
+              <Text>{formatNumber(item.quantity * item.unitPrice)}</Text>
             </View>
           ))}
 
@@ -130,24 +131,24 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
 
           <View style={styles.row}>
             <Text>Subtotal:</Text>
-            <Text>{subtotal.toFixed(2)}</Text>
+            <Text>{formatNumber(subtotal)}</Text>
           </View>
 
           <View style={styles.row}>
             <Text>ITBIS:</Text>
-            <Text>{itbis.toFixed(2)}</Text>
+            <Text>{formatNumber(itbis)}</Text>
           </View>
 
           <View style={styles.row}>
             <Text>Total:</Text>
-            <Text style={{ fontWeight: 'bold' }}>{total.toFixed(2)}</Text>
+            <Text style={{ fontWeight: 'bold' }}>{formatNumber(total)}</Text>
           </View>
 
           <View style={styles.line} />
 
-          <Text>{PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)?.label}: {receivedAmount.toFixed(2)}</Text>
-          <Text>Recibido: {receivedAmount.toFixed(2)}</Text>
-          <Text>Devuelta: {returned.toFixed(2)}</Text>
+          <Text>{PAYMENT_METHODS_OPTIONS.find(option => option.value === paymentMethod)?.label}: {formatNumber(receivedAmount)}</Text>
+          <Text>Recibido: {formatNumber(receivedAmount)}</Text>
+          <Text>Devuelta: {formatNumber(returned)}</Text>
           <Text style={{ marginTop: 4 }}>Comentario: {comment}</Text>
           <Text style={{ marginTop: 4 }}>Le atendió: {user.name} {user.lastName}</Text>
 
