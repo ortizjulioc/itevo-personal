@@ -8,6 +8,8 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Branch } from '@prisma/client';
+import { printClosureDirect } from '@/components/common/print/closure';
+import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 
 
 const billsList: Record<string, number> = {
@@ -28,6 +30,7 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
     const { id } = useParams()
     const [loading, setLoading] = useState(false)
     const router = useRouter()
+    const { setting, loading: loadingSettings } = useFetchSetting();
 
     const cashRegisterId = Array.isArray(id) ? id[0] : id || '';
 
@@ -82,6 +85,11 @@ export default function ModalCashRegisterClose({ setOpenModal, openModal }: { se
 
 
             if (resp.success) {
+                await printClosureDirect({
+                    cashRegisterId,
+                    closureId: resp.data.id,
+                    setting: setting
+                })
                 openNotification("success", "caja cerrada con exito")
                 router.push("/invoices")
 
