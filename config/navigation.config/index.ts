@@ -181,7 +181,7 @@ const navigationConfig = [
         url: '/cash-registers',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: billingRoles
+        auth: cashierRoles
     },
      {
         key: 'cashBoxes',

@@ -1,13 +1,14 @@
 'use client';
+
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { useFetchCashRegistersById } from "../../invoices/lib/cash-register/use-fetch-cash-register";
 import CashRegisterDetails from "../components/cash-register-details";
-
-
+import { useSession } from "next-auth/react";
 
 export default function EditCashRegister({ params }: { params: { id: string } }) {
     const { id } = params;
     const { loading, CashRegister } = useFetchCashRegistersById(id);
+    const { data: session } = useSession();
 
     return (
         <div>
@@ -15,7 +16,7 @@ export default function EditCashRegister({ params }: { params: { id: string } })
 
 
             {loading && <FormSkeleton />}
-            {CashRegister && <CashRegisterDetails cashRegister={CashRegister} />}
+            {CashRegister && <CashRegisterDetails cashRegister={CashRegister} currentUser={session?.user} />}
         </div>
     )
 }

@@ -179,12 +179,12 @@ export const routeConfig = [
     {
         key: 'cash-registers',
         url: '/cash-registers',
-        authorization: billingRoles,
+        authorization: cashierRoles,
     },
     {
         key: 'cash-registers-subroutes',
         url: '/cash-registers/:path*',
-        authorization: billingRoles,
+        authorization: cashierRoles,
     },
     // Cuentas por cobrar - BillingAdmin, GeneralAdmin, SuperAdmin
     {

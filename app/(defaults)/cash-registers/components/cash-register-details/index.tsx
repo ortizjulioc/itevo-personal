@@ -1,3 +1,4 @@
+'use client';
 
 import React from 'react'
 import useFetchCashMovements from '../../lib/use-fetch-cash-movements';
@@ -14,10 +15,27 @@ import { TbPointFilled } from 'react-icons/tb';
 import { GenericSkeleton } from '@/components/common/Skeleton';
 import StickyFooter from '@/components/common/sticky-footer';
 import PrintClosure from '@/components/common/print/closure';
+import { CASHIER } from "@/constants/role.constant";
 
 
+export default function CashRegisterDetails({ cashRegister, currentUser }: { cashRegister: any, currentUser?: any }) {
 
-export default function CashRegisterDetails({ cashRegister }: { cashRegister: any }) {
+    const isCashier = currentUser?.roles?.some((role: any) => role.normalizedName === CASHIER);
+    const isOwner = cashRegister?.user?.id === currentUser?.id;
+
+
+    if (isCashier && !isOwner) {
+        return (
+            <div className="flex flex-col items-center justify-center panel p-4 text-center">
+                <h2 className="text-xl font-bold text-red-600">Acceso Denegado</h2>
+                <p>No tienes permisos para ver esta caja registradora.</p>
+                <Link href="/cash-registers">
+                    <Button className="mt-4">Volver al listado</Button>
+                </Link>
+            </div>
+        );
+    }
+
     const { cashMovements, loading: cashMovementsLoading } = useFetchCashMovements(cashRegister?.id);
     const { invoices, loading: invoiceLoading } = useFetchInvoices(`cashRegisterId=${cashRegister?.id}`);
     const { closure, loading: closureLoading } = useFetchClosure(cashRegister?.id);
@@ -175,7 +193,7 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
 
                             <div>
                                 <p className="text-sm text-gray-600">Efectivo Esperado</p>
-                                <p className="text-base font-medium">{formatCurrency(closure.expectedTotalCash)}</p>
+                                <p className="text-base font-medium">{formatCurrency((closure as any).expectedTotalCash)}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Efectivo Reportado</p>
@@ -184,10 +202,10 @@ export default function CashRegisterDetails({ cashRegister }: { cashRegister: an
 
                             <div>
                                 <p className="text-sm text-gray-600">Diferencia</p>
-                                <p className={`text-base font-medium ${(closure.totalCash - closure.expectedTotalCash) > 0 ? 'text-green-600' : (closure.totalCash - closure.expectedTotalCash) < 0 ? 'text-red-600' : 'text-gray-600'}`}>
-                                    {(closure.totalCash - closure.expectedTotalCash) > 0 && <>Sobrante: +{formatCurrency((closure.totalCash - closure.expectedTotalCash))}</>}
-                                    {(closure.totalCash - closure.expectedTotalCash) < 0 && <>Faltante: -{formatCurrency(Math.abs((closure.totalCash - closure.expectedTotalCash)))}</>}
-                                    {(closure.totalCash - closure.expectedTotalCash) === 0 && <>Sin diferencia</>}
+                                <p className={`text-base font-medium ${(closure.totalCash - (closure as any).expectedTotalCash) > 0 ? 'text-green-600' : (closure.totalCash - (closure as any).expectedTotalCash) < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                                    {(closure.totalCash - (closure as any).expectedTotalCash) > 0 && <>Sobrante: +{formatCurrency((closure.totalCash - (closure as any).expectedTotalCash))}</>}
+                                    {(closure.totalCash - (closure as any).expectedTotalCash) < 0 && <>Faltante: -{formatCurrency(Math.abs((closure.totalCash - (closure as any).expectedTotalCash)))}</>}
+                                    {(closure.totalCash - (closure as any).expectedTotalCash) === 0 && <>Sin diferencia</>}
                                 </p>
                             </div>
                             <div>
