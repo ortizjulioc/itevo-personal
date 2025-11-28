@@ -185,6 +185,7 @@ export const getCashRegisterMovementSummary = async (cashRegisterId: string) => 
 };
 
 export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => {
+  // 1. Validar que la caja existe
   const cashRegister = await Prisma.cashRegister.findUnique({
     where: { id: cashRegisterId, deleted: false },
     select: {
@@ -194,18 +195,18 @@ export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => 
     },
   });
 
-  if (!cashRegister) throw new Error('Cash register not found');
+  if (!cashRegister) throw new Error("Cash register not found");
 
-  const invoices = await Prisma.invoice.findMany({
+  // 2. Traer TODOS los movimientos de la caja
+  const movements = await Prisma.cashMovement.findMany({
     where: {
       cashRegisterId,
-      status: InvoiceStatus.PAID,
+      deleted: false,
+      referenceType: "INVOICE", // Solo movimientos ligados a facturas
     },
     select: {
-      id: true,
-      subtotal: true,
-      itbis: true,
-      paymentMethod: true,
+      type: true,            // INCOME | EXPENSE
+      referenceId: true,     // ID de la factura
     },
   });
 
@@ -215,27 +216,57 @@ export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => 
   let totalCheck = 0;
   let totalOther = 0;
 
-  for (const invoice of invoices) {
+  // 3. Procesar movimientos uno a uno
+  for (const mv of movements) {
+    // Buscar la factura correspondiente
+    if (!mv.referenceId) continue;
+
+    const invoice = await Prisma.invoice.findUnique({
+      where: { id: mv.referenceId },
+      select: {
+        subtotal: true,
+        itbis: true,
+        paymentMethod: true,
+      },
+    });
+
+    if (!invoice) continue;
+
+    const amount = invoice.subtotal + invoice.itbis;
+
+    // INCOME = positivo, EXPENSE = negativo
+    const signedAmount = mv.type === "INCOME" ? amount : -amount;
+
+    // Clasificar por método de pago
     switch (invoice.paymentMethod) {
-      case 'cash':
-        totalCash += invoice.subtotal + invoice.itbis;
+      case "cash":
+        totalCash += signedAmount;
         break;
-      case 'bank_transfer':
-        totalBankTransfer += invoice.subtotal + invoice.itbis;
+
+      case "bank_transfer":
+        totalBankTransfer += signedAmount;
         break;
-      case 'credit_card':
-        totalCreditCard += invoice.subtotal + invoice.itbis;
+
+      case "credit_card":
+        totalCreditCard += signedAmount;
         break;
-      case 'check':
-        totalCheck += invoice.subtotal + invoice.itbis;
+
+      case "check":
+        totalCheck += signedAmount;
         break;
-      case 'other':
-        totalOther += invoice.subtotal + invoice.itbis;
+
+      default:
+        totalOther += signedAmount;
         break;
     }
   }
 
-  const total = totalCash + totalBankTransfer + totalCreditCard + totalCheck + totalOther;
+  const total =
+    totalCash +
+    totalBankTransfer +
+    totalCreditCard +
+    totalCheck +
+    totalOther;
 
   return {
     totalCash,
@@ -246,5 +277,3 @@ export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => 
     total,
   };
 };
-
-

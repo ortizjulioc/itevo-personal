@@ -5,6 +5,7 @@ import { Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { InvoiceStatus } from '@prisma/client';
+import SelectStudent from '@/components/common/selects/select-student';
 
 
 interface SelectOption {
@@ -37,7 +38,7 @@ export default function SearchInvoice() {
         fromDate: searchParams.get('fromDate') || '',
         toDate: searchParams.get('toDate') || '',
         search: searchParams.get('search') || '',
-
+        studentId: searchParams.get('studentId') || '',
     });
 
 
@@ -93,6 +94,7 @@ export default function SearchInvoice() {
                 isClearable={true}
             />
 
+
             <Input
                 type="text"
                 placeholder="Buscar por N. DE FACTURA o NCF"
@@ -101,6 +103,10 @@ export default function SearchInvoice() {
 
             />
 
+            <SelectStudent
+                value={filters.studentId}
+                onChange={(selected) => setFilters(prev => ({ ...prev, studentId: selected ? selected.value : '' }))}
+            />
 
         </div>
     );
