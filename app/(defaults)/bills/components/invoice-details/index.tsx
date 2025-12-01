@@ -13,10 +13,22 @@ import OptionalInfo from '@/components/common/optional-info'
 import { deleteInvoice } from '../../lib/request'
 import { useRouter } from 'next/navigation';
 import { InvoiceStatus } from '@prisma/client'
+import { CASHIER } from '@/constants/role.constant'
+import Link from 'next/link'
 
-export default function InvoiceDetails({ invoice }: { invoice: any }) {
+export default function InvoiceDetails({ invoice, currentUser }: { invoice: any, currentUser?: any }) {
     console.log(invoice, 'invoice')
     const route = useRouter();
+
+    // Check if user is a cashier and if they own this invoice's cash register
+    const isCashier = currentUser?.roles?.some((role: any) => role.normalizedName === CASHIER);
+    const isOwnCashRegister = invoice?.cashRegister?.user?.id === currentUser?.id;
+
+    // Cashiers can only view invoices from their own cash register
+    const canViewInvoice = !isCashier || (isCashier && isOwnCashRegister);
+    // Cashiers cannot cancel invoices, only admins can
+    const canCancelInvoice = !isCashier;
+
     const handleCancelInvoice = async () => {
         confirmDialog({
             title: 'Cancelar Factura',
@@ -53,6 +65,20 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
         receivedAmount: "Monto Recibido"
 
     }
+    // If cashier doesn't own this cash register, show access denied
+    if (isCashier && !isOwnCashRegister) {
+        return (
+            <div className=" flex flex-col items-center justify-center h-screen panel p-4 text-center">
+                <h2 className="text-xl font-bold text-red-600">Acceso Denegado</h2>
+                <p>No tienes permisos para ver esta factura.</p>
+                <p className="text-sm text-gray-600 mt-2">Solo puedes ver facturas creadas en tu caja registradora.</p>
+                <Link href="/bills">
+                    <Button className="mt-4">Volver al listado</Button>
+                </Link>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="panel">
@@ -155,15 +181,19 @@ export default function InvoiceDetails({ invoice }: { invoice: any }) {
             </div>
             <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
                 <div className="flex justify-between">
-                    <Button
-                        icon={<TbCancel />}
-                        type="button"
-                        color="danger"
-                        className="w-full md:w-auto"
-                        onClick={handleCancelInvoice}
-                    >
-                        Cancelar
-                    </Button>
+                    {canCancelInvoice ? (
+                        <Button
+                            icon={<TbCancel />}
+                            type="button"
+                            color="danger"
+                            className="w-full md:w-auto"
+                            onClick={handleCancelInvoice}
+                        >
+                            Cancelar
+                        </Button>
+                    ) : (
+                        <div></div>
+                    )}
                     {(invoice.status === InvoiceStatus.PAID || invoice.status === InvoiceStatus.COMPLETED) ? (
                         <PrintInvoice invoiceId={invoice.id} />
                     ) : (

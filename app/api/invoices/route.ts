@@ -81,6 +81,11 @@ export async function GET(req: NextRequest) {
             ? (statusParam.split(',').map(s => s.trim()) as InvoiceStatus[])
             : undefined;
 
+        const cashRegisterIdsParam = searchParams.get('cashRegisterIds');
+        const cashRegisterIdsArray = cashRegisterIdsParam
+            ? cashRegisterIdsParam.split(',').map(id => id.trim())
+            : undefined;
+
         const filters = {
             search: searchParams.get('search') || undefined,
             type: searchParams.get('type') as NcfType | undefined,
@@ -90,6 +95,7 @@ export async function GET(req: NextRequest) {
             studentId: searchParams.get('studentId') || undefined,
             createdBy: searchParams.get('createdBy') || undefined,
             cashRegisterId: searchParams.get('cashRegisterId') || undefined,
+            cashRegisterIds: cashRegisterIdsArray,
             page: Number(searchParams.get('page') || '1'),
             pageSize: Number(searchParams.get('pageSize') || '10'),
         };

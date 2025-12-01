@@ -21,6 +21,13 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
           select: {
             id: true,
             cashBox: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                lastName: true,
+              }
+            }
           }
         },
         student: {

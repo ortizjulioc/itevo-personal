@@ -66,6 +66,7 @@ interface InvoiceFilter {
     studentId?: string;
     createdBy?: string;
     cashRegisterId?: string;
+    cashRegisterIds?: string[];
     page?: number;
     pageSize?: number;
 }
@@ -85,6 +86,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         studentId,
         createdBy,
         cashRegisterId,
+        cashRegisterIds,
         page = 1,
         pageSize = 10,
     } = filter;
@@ -96,6 +98,11 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
     if (cashRegisterId) where.cashRegisterId = cashRegisterId;
+    
+    // Allow filtering by multiple cash registers (for cashiers)
+    if (cashRegisterIds && cashRegisterIds.length > 0) {
+        where.cashRegisterId = { in: cashRegisterIds };
+    }
 
     // ✅ permitir múltiples estados
     if (status && Array.isArray(status) && status.length > 0) {

@@ -164,16 +164,16 @@ export const routeConfig = [
         url: '/invoices/:path*',
         authorization: cashierRoles,
     },
-    // Cuentas por pagar - BillingAdmin, GeneralAdmin, SuperAdmin
+    // Facturas/Bills - Cashier, BillingAdmin, GeneralAdmin, SuperAdmin
     {
         key: 'bills',
         url: '/bills',
-        authorization: billingRoles,
+        authorization: cashierRoles,
     },
     {
         key: 'bills-subroutes',
         url: '/bills/:path*',
-        authorization: billingRoles,
+        authorization: cashierRoles,
     },
     // Cajas registradoras - BillingAdmin, GeneralAdmin, SuperAdmin
     {
