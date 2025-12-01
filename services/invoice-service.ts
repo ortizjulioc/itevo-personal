@@ -208,7 +208,7 @@ export const updateInvoice = async (
             paymentDetails,
             comment,
             status: status || InvoiceStatus.DRAFT, // Si no se especifica, se mantiene en DRAFT
-            isCredit
+            isCredit,
         },
     });
 }

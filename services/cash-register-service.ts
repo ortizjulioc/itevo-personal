@@ -1,5 +1,5 @@
 import 'server-only';
-import { CashRegister as PrismaCashRegister, CashRegisterStatus, InvoiceStatus } from "@prisma/client";
+import { CashRegister as PrismaCashRegister, CashRegisterStatus, InvoiceStatus, CashMovementReferenceType } from "@prisma/client";
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from '@prisma/client';
 
@@ -155,7 +155,7 @@ export const getCashRegisterMovementSummary = async (cashRegisterId: string) => 
 
   const cashMovements = await Prisma.cashMovement.findMany({
     where: {
-      cashRegisterId,
+      cashRegisterId, deleted: false,
     },
     select: {
       amount: true,
@@ -202,7 +202,7 @@ export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => 
     where: {
       cashRegisterId,
       deleted: false,
-      referenceType: "INVOICE", // Solo movimientos ligados a facturas
+      referenceType: CashMovementReferenceType.INVOICE, // Solo movimientos ligados a facturas
     },
     select: {
       type: true,            // INCOME | EXPENSE
@@ -222,7 +222,7 @@ export const getCashRegisterInvoicesSummary = async (cashRegisterId: string) => 
     if (!mv.referenceId) continue;
 
     const invoice = await Prisma.invoice.findUnique({
-      where: { id: mv.referenceId },
+      where: { id: mv.referenceId, status: InvoiceStatus.PAID },
       select: {
         subtotal: true,
         itbis: true,
