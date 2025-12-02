@@ -34,9 +34,9 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
     try {
       let companyInfo = {
         companyName: setting?.companyName,
-        address: invoice.cashRegister?.branch?.address || setting?.address,
-        phone: invoice.cashRegister?.branch?.phone || setting?.phone,
-        email: invoice.cashRegister?.branch?.email || setting?.email,
+        address: invoice.cashRegister?.cashBox?.branch?.address || setting?.address,
+        phone: invoice.cashRegister?.cashBox?.branch?.phone || setting?.phone,
+        email: invoice.cashRegister?.cashBox?.branch?.email || setting?.email,
         logoUrl: setting?.logo,
         rnc: setting?.rnc,
       }
@@ -45,7 +45,7 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
       if (companyInfo.logoUrl) {
         blobLogo = await fetchImageAsBase64(companyInfo.logoUrl);
       }
-      console.log('Generating PDF for invoice:', invoice);
+
       const blob = invoice.isCredit
         ? await pdf(<CreditInvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob()
         : await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob();
