@@ -10,7 +10,7 @@ import {
 } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
 import { CashMovementResponse } from '@/@types/cash-register';
-import { formatCurrency } from '@/utils';
+import { formatCurrency, formatPhoneNumber } from '@/utils';
 import { getFormattedDateTime } from '@/utils/date';
 
 const styles = StyleSheet.create({
@@ -101,7 +101,7 @@ export const CustomDisbursementPDF = ({ disbursement, companyInfo, logo }: { dis
             <Text>
                 {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
-            <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
+            <Text>{companyInfo.phone ? `Tel: ${formatPhoneNumber(companyInfo.phone)}` : ''}</Text>
           </View>
 
           <View style={{ marginBottom: 6 }}>

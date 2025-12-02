@@ -56,6 +56,19 @@ export type CashMovementResponse = {
   updatedAt: string;     // Date → string
   deleted: boolean;
 
+  cashRegister: {
+    id: string;
+    cashBox: {
+      id: string;
+      branch: {
+        id: string;
+        name: string;
+        address: string;
+        phone: string | null;
+      };
+    };
+  },
+
   user: {
     id: string;
     username: string;

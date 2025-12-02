@@ -35,7 +35,6 @@ export async function printClosureDirect(params: PrintClosureParams) {
     }
 
     const data = await fetchClosure(closureId, cashRegisterId);
-    console.log('Closure Data:', data);
     if (!data) return;
 
     let blobLogo = null;
@@ -61,7 +60,6 @@ export async function printClosureDirect(params: PrintClosureParams) {
         phone: data.cashRegister.cashBox.branch.phone || setting.phone || '',
         email: setting.email || '',
     };
-    console.log('Company Info:', companyInfo);
 
     await printPDFDirect(
         <ClosurePDF
@@ -99,7 +97,6 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
         if (!setting) openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
         const data = await fetchData({ closureId, cashRegisterId });
         if (!data) return openNotification('error', 'No se encontró el cierre de caja para imprimir.');
-        console.log('Closure Data:', data);
 
         let blobLogo = null;
         if (setting?.logo) {

@@ -8,7 +8,7 @@ export const createCashMovement = async (
 ) => {
   return await prisma.cashMovement.create({
     data,
-    include: { user: true },
+    include: { user: true, cashRegister: { select: { id: true, cashBox: { select: { id: true, branch: true } } } } }
   });
 }
 
@@ -21,7 +21,7 @@ export const getCashMovementById = async (
       id,
       deleted: false
     },
-    include: { user: true }
+    include: { user: true, cashRegister: { select: { id: true, cashBox: { select: { id: true, branch: true } } } } }
   });
 }
 
