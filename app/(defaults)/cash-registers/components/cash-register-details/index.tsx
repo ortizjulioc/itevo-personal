@@ -326,7 +326,7 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
                                             </td>
                                             <td>
                                                 <div className="flex justify-end gap-2">
-                                                    {cashMovement.referenceType === 'INVOICE' && (
+                                                    {cashMovement.referenceType === 'INVOICE' ? (
                                                         <Tooltip title="detalles">
                                                             <Link href={`/bills/${cashMovement.referenceId}`}>
                                                                 <Button
@@ -336,7 +336,21 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
                                                                 />
                                                             </Link>
                                                         </Tooltip>
-                                                    )}
+                                                    ) : (
+                                                        <Tooltip title="detalles">
+                                                            <Link href={`/cash-registers/${cashRegister.id}/expenses/${cashMovement.id}`}>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />}
+                                                                />
+                                                            </Link>
+                                                        </Tooltip>
+                                                    )
+
+                                                    }
+
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -372,8 +386,8 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
 
             {!closureLoading && closure && (
                 <StickyFooter className='-mx-6 px-8 py-4 mt-6' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
@@ -381,7 +395,8 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
                         <PrintClosure closureId={closure.id} cashRegisterId={cashRegister.id} />
                     </div>
                 </StickyFooter>
-            )}
+            )
+            }
         </>
     );
 }

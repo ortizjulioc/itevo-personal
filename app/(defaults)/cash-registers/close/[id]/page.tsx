@@ -184,6 +184,13 @@ export default function CloseCashRegister({ params }: Props) {
                                                             </Link>
                                                         </Tooltip>
                                                     )}
+                                                    {cashMovement.type === "EXPENSE" && (
+                                                        <Tooltip title="detalles del egreso">
+                                                            <Link href={`/cash-registers/expenses/${cashMovement.id}`}>
+                                                                <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                            </Link>
+                                                        </Tooltip>
+                                                    )}
 
                                                 </div>
                                             </td>

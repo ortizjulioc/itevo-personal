@@ -49,7 +49,7 @@ export type CashMovementResponse = {
   type: "INCOME" | "EXPENSE"; // o los valores de tu enum CashMovementType
   amount: number;
   description: string | null;
-  referenceType: "INVOICE" | "PAYABLE" | null; // según tu enum CashMovementReferenceType
+  referenceType: "INVOICE" | "RECEIVABLE_PAYMENT" | "PAYABLE_PAYMENT" | "DISBURSEMENT" | null;
   referenceId: string | null;
   createdBy: string;
   createdAt: string;     // Date convertido a string en JSON
