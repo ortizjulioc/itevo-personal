@@ -5,7 +5,7 @@ import { getFormattedDateTime } from '@/utils/date'
 import PrintExpense from '@/components/common/print/expense'
 import { CashMovement } from '../../../lib/use-fetch-cash-movement-by-id'
 
-export default function ExpenseDetails({ cashMovement }: { cashMovement: CashMovement }) {
+export default function ExpenseDetails({ cashMovement, actionButton }: { cashMovement: CashMovement, actionButton?: React.ReactNode }) {
 
     return (
         <>
@@ -44,7 +44,8 @@ export default function ExpenseDetails({ cashMovement }: { cashMovement: CashMov
                 </div>
             </div>
             <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                    {actionButton}
                     <PrintExpense cashMovement={cashMovement} />
                 </div>
             </div>
