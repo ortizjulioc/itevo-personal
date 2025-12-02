@@ -59,7 +59,7 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
       await update({ activeBranchId: branchId });
 
       openNotification('success', `Sucursal cambiada a: ${data.branch.name}`);
-      
+
       // Recargar la página para actualizar los permisos y datos
       window.location.reload();
     } catch (error: any) {
@@ -73,20 +73,17 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
     <Dropdown
       offset={[0, 8]}
       placement="bottom-end"
-      btnClassName="relative group block"
+      disabled={loading}
+      btnClassName="relative group block badge bg-primary text-white px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 hover:bg-primary-dark transition-colors"
       menuClassName="!z-[9999]" // asegúrate que el dropdown quede arriba
       button={
-        <button
-          type="button"
-          className="badge bg-primary text-white px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 hover:bg-primary-dark transition-colors"
-          disabled={loading}
-        >
+        <>
           <span>{currentBranch?.name || branches[0]?.name}</span>
           <IconCaretDown className="w-3 h-3" />
-        </button>
+        </>
       }
     >
-      <ul className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
+      <ul className="w-[250px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90 bg-white dark:bg-black shadow-lg rounded-md">
         <li className="px-4 py-2 border-b border-white-light dark:border-white-light/10">
           <span className="text-xs text-gray-500 dark:text-gray-400">Sucursales disponibles</span>
         </li>
@@ -99,9 +96,8 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
                 type="button"
                 onClick={() => handleBranchChange(branch.id)}
                 disabled={loading || isActive}
-                className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors ${
-                  isActive ? 'bg-primary/20 dark:bg-primary/30 font-semibold' : ''
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors ${isActive ? 'bg-primary/20 dark:bg-primary/30 font-semibold' : ''
+                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <span>{branch.name}</span>
