@@ -20,7 +20,9 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
         cashRegister: {
           select: {
             id: true,
-            cashBox: true,
+            cashBox: {
+              select: { id: true, name: true, branch: true}
+            },
             user: {
               select: {
                 id: true,
