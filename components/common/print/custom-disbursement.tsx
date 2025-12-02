@@ -2,7 +2,7 @@
 import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 import { Button } from '@/components/ui';
 import { openNotification } from '@/utils';
-import { usePrintPDF } from '@/utils/hooks/use-print-pdf';
+// import { usePrintPDF } from '@/utils/hooks/use-print-pdf';
 import { fetchImageAsBase64 } from '@/utils/image';
 import { useEffect, useState } from 'react'
 import { IoMdPrint } from 'react-icons/io';
@@ -34,7 +34,6 @@ export async function printCustomDisbursement(params: PrintCustomDisbursementPar
     return null;
   }
 
-  // 1. Obtener desembolso
   const disbursement = disbursementData
     ? disbursementData
     : await fetchDisbursement(cashRegisterId, disbursementId);
@@ -44,17 +43,23 @@ export async function printCustomDisbursement(params: PrintCustomDisbursementPar
     return null;
   }
 
-  // 2. Obtener logo
   let blobLogo = null;
   if (setting.logo) {
     blobLogo = await fetchImageAsBase64(setting.logo);
   }
 
-  // 3. Generar PDF con react-pdf
+  const companyInfo = {
+    companyName: setting.companyName,
+    phone: disbursement.cashRegister.cashBox.branch.phone || setting.phone,
+    address: disbursement.cashRegister.cashBox.branch.address || setting.address,
+    email: setting.email,
+    rnc: setting.rnc,
+  };
+
   await printPDFDirect(
     <CustomDisbursementPDF
       disbursement={disbursement}
-      companyInfo={{ ...setting }}
+      companyInfo={companyInfo}
       logo={blobLogo}
     />,
     { cleanUpMilliseconds: 600000 }
@@ -80,7 +85,7 @@ async function fetchDisbursement(
 export default function PrintCustomDisbursement({ disbursementId, cashRegisterId, disbursementData, children }: PrintDisbursementProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const { setting, loading: loadingSettings } = useFetchSetting();
-  const { printPDF } = usePrintPDF();
+  // const { printPDF } = usePrintPDF();
 
 
   const onPrint = () => {
@@ -88,18 +93,19 @@ export default function PrintCustomDisbursement({ disbursementId, cashRegisterId
   };
 
   const handlePrintPDF = async (setting: any) => {
-    if (!setting) return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
-    const disbursement = await getDisbursementData();
-    if (!disbursement) return openNotification('error', 'No se encontró el desembolso para imprimir.');
+    await printCustomDisbursement({ disbursementId, cashRegisterId, setting, disbursementData });
+    // if (!setting) return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
+    // const disbursement = await getDisbursementData();
+    // if (!disbursement) return openNotification('error', 'No se encontró el desembolso para imprimir.');
 
-    let blobLogo = null;
-    if (setting.logo) {
-      blobLogo = await fetchImageAsBase64(setting.logo);
-    }
+    // let blobLogo = null;
+    // if (setting.logo) {
+    //   blobLogo = await fetchImageAsBase64(setting.logo);
+    // }
 
-    await printPDF(
-      <CustomDisbursementPDF disbursement={disbursement} companyInfo={{ ...setting }} logo={blobLogo} />, { cleanUpMilliseconds: 600000 }
-    );
+    // await printPDF(
+    //   <CustomDisbursementPDF disbursement={disbursement} companyInfo={{ ...setting }} logo={blobLogo} />, { cleanUpMilliseconds: 600000 }
+    // );
   };
 
   const getDisbursementData = async (): Promise<CashMovementResponse | null> => {

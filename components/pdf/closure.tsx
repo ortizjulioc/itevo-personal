@@ -10,7 +10,7 @@ import {
 } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
 import { getFormattedDateTime } from '@/utils/date';
-import { formatCurrency } from '@/utils';
+import { formatCurrency, formatPhoneNumber } from '@/utils';
 
 const styles = StyleSheet.create({
   page: {
@@ -105,7 +105,6 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
     branch,
     user,
   } = closure;
-
   return (
     <Document>
       <Page size={'A4'} style={styles.page}>
@@ -127,7 +126,7 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
             <Text>
               {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
-            <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
+            <Text>{companyInfo.phone ? `Tel: ${formatPhoneNumber(companyInfo.phone)}` : ''}</Text>
           </View>
 
           <View style={styles.line} />
