@@ -61,7 +61,7 @@ export default function ExpenseDetailsPage({ params }: { params: { id: string, m
                     cashMovement={cashMovement}
                     actionButton={
                         canCancel && !loading ? (
-                            <Button className="bg-red-600 hover:bg-red-700 text-white gap-2" onClick={handleDelete}>
+                            <Button color='danger' onClick={handleDelete}>
                                 <HiOutlineTrash className="text-lg" />
                                 Anular Egreso
                             </Button>
