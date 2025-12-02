@@ -4,6 +4,8 @@ import { formatCurrency } from '@/utils'
 import { getFormattedDateTime } from '@/utils/date'
 import PrintExpense from '@/components/common/print/expense'
 import { CashMovement } from '../../../lib/use-fetch-cash-movement-by-id'
+import PrintDisbursement from '@/components/common/print/disbursement'
+import PrintCustomDisbursement from '@/components/common/print/custom-disbursement'
 
 export default function ExpenseDetails({ cashMovement, actionButton }: { cashMovement: CashMovement, actionButton?: React.ReactNode }) {
 
@@ -46,7 +48,19 @@ export default function ExpenseDetails({ cashMovement, actionButton }: { cashMov
             <div className="panel sticky bottom-0 z-10 mt-5 bg-white p-4 shadow-md dark:bg-gray-900">
                 <div className="flex justify-end gap-2">
                     {actionButton}
-                    <PrintExpense cashMovement={cashMovement} />
+                    {cashMovement.PayablePayment ? (
+                        <PrintDisbursement
+                            paymentId={cashMovement.PayablePayment?.id || ''}
+                            payableId={cashMovement.PayablePayment?.accountPayableId || ''}
+
+                        />
+                    ) : (
+                        <PrintCustomDisbursement
+                            disbursementId={cashMovement.id}
+                            cashRegisterId={cashMovement.cashRegisterId}
+
+                        />
+                    )}
                 </div>
             </div>
         </>
