@@ -38,6 +38,7 @@ export interface CashRegisterClosureResponse {
         name: string;
         address: string;
         phone: string | null;
+        email: string | null;
       };
     };
   };

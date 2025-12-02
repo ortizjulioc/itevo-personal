@@ -2,7 +2,7 @@ import { CashRegisterClosureResponse } from "@/@types/cash-register";
 import useFetchSetting from "@/app/(defaults)/settings/lib/use-fetch-settings";
 import { ClosurePDF } from "@/components/pdf/closure";
 import Button from "@/components/ui/button";
-import { formatPhoneNumber, openNotification } from "@/utils";
+import { openNotification } from "@/utils";
 import { usePrintPDF } from "@/utils/hooks/use-print-pdf";
 import { fetchImageAsBase64 } from "@/utils/image";
 import apiRequest from "@/utils/lib/api-request/request";
@@ -58,7 +58,7 @@ export async function printClosureDirect(params: PrintClosureParams) {
         rnc: setting.rnc || '',
         address: data.cashRegister.cashBox.branch.address || setting.address || '',
         phone: data.cashRegister.cashBox.branch.phone || setting.phone || '',
-        email: setting.email || '',
+        email: data.cashRegister.cashBox.branch.email || setting.email || '',
     };
 
     await printPDFDirect(
@@ -121,7 +121,7 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
             rnc: setting?.rnc || '',
             address: data.cashRegister.cashBox.branch.address || setting?.address || '',
             phone: data.cashRegister.cashBox.branch.phone || setting?.phone || '',
-            email: setting?.email || '',
+            email: data.cashRegister.cashBox.branch.email || setting?.email || '',
         };
 
         await printPDF(

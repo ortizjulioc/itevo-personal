@@ -71,6 +71,7 @@ export const getCashRegisterClosureById = async (
                   name: true,
                   address: true,
                   phone: true,
+                  email: true,
                 },
               },
             },
