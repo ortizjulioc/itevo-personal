@@ -23,6 +23,12 @@ export const payablePaymentWithRelations = PrismaTypes.validator<PrismaTypes.Pay
             email: true,
           },
         },
+        courseBranch: {
+          select: {
+            id: true,
+            branch: true,
+          },
+        },
       },
     },
     cashMovement: {

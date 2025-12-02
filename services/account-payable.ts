@@ -243,7 +243,7 @@ export const getPayablePaymentById = async (
     },
     include: {
       cashMovement: { include: { user: true } },
-      accountPayable: { include: { teacher: true } },
+      accountPayable: { include: { teacher: true, courseBranch: { select: { id: true, branch: true } } } },
     },
   });
 };
