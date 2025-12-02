@@ -2,7 +2,7 @@ import { CashRegisterClosureResponse } from "@/@types/cash-register";
 import useFetchSetting from "@/app/(defaults)/settings/lib/use-fetch-settings";
 import { ClosurePDF } from "@/components/pdf/closure";
 import Button from "@/components/ui/button";
-import { openNotification } from "@/utils";
+import { formatPhoneNumber, openNotification } from "@/utils";
 import { usePrintPDF } from "@/utils/hooks/use-print-pdf";
 import { fetchImageAsBase64 } from "@/utils/image";
 import apiRequest from "@/utils/lib/api-request/request";
@@ -35,6 +35,7 @@ export async function printClosureDirect(params: PrintClosureParams) {
     }
 
     const data = await fetchClosure(closureId, cashRegisterId);
+    console.log('Closure Data:', data);
     if (!data) return;
 
     let blobLogo = null;
@@ -53,10 +54,19 @@ export async function printClosureDirect(params: PrintClosureParams) {
         cashBreakdown: data.cashBreakdown,
     };
 
+    const companyInfo = {
+        companyName: setting.companyName || '',
+        rnc: setting.rnc || '',
+        address: data.cashRegister.cashBox.branch.address || setting.address || '',
+        phone: data.cashRegister.cashBox.branch.phone || setting.phone || '',
+        email: setting.email || '',
+    };
+    console.log('Company Info:', companyInfo);
+
     await printPDFDirect(
         <ClosurePDF
             closure={closureMapped}
-            companyInfo={setting}
+            companyInfo={companyInfo}
             logo={blobLogo}
         />,
         { cleanUpMilliseconds: 600000 }
@@ -109,10 +119,18 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
             cashBreakdown: data.cashBreakdown,
         };
 
+        const companyInfo = {
+            companyName: setting?.companyName || '',
+            rnc: setting?.rnc || '',
+            address: data.cashRegister.cashBox.branch.address || setting?.address || '',
+            phone: data.cashRegister.cashBox.branch.phone || setting?.phone || '',
+            email: setting?.email || '',
+        };
+
         await printPDF(
             <ClosurePDF
                 closure={closureDataMaped}
-                companyInfo={setting}
+                companyInfo={companyInfo}
                 logo={blobLogo}
             />,
             { cleanUpMilliseconds: 600000 }
