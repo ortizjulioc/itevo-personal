@@ -21,7 +21,18 @@ export const getCashMovementById = async (
       id,
       deleted: false
     },
-    include: { user: true }
+    include: {
+      user: true,
+      PayablePayment: {
+        include: {
+          accountPayable: {
+            include: {
+              teacher: true
+            }
+          }
+        }
+      }
+    }
   });
 }
 
