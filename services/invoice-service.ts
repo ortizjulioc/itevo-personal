@@ -121,12 +121,8 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
 
     if (search) {
         where.OR = [
-            { invoiceNumber: { contains: search, mode: "insensitive" } },
-            {
-                student: {
-                    name: { contains: search, mode: "insensitive" },
-                },
-            },
+            { invoiceNumber: { contains: search } },
+            { ncf: { contains: search } },
         ];
     }
 
