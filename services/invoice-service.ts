@@ -131,6 +131,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     const [data, total] = await Prisma.$transaction([
         Prisma.invoice.findMany({
             where,
+            include: { student: true },
             orderBy: { date: "desc" },
             skip: (page - 1) * pageSize,
             take: pageSize,
