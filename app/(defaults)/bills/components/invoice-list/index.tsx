@@ -11,6 +11,7 @@ import InvoiceStatusField from "./invoice-status";
 import { getFormattedDateTime } from "@/utils/date";
 import OptionalInfo from "@/components/common/optional-info";
 import StudentLabel from "@/components/common/info-labels/student-label";
+import { PAYMENT_METHODS_OPTIONS } from "@/constants/invoice.constant";
 
 interface Props {
     className?: string;
@@ -34,11 +35,12 @@ export default function InvoiceList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
-                            <th className="text-left">N. DE FACTURA</th>
+                            <th className="text-left">NO. DE FACTURA</th>
                             <th>ESTUDIANTE</th>
-                            <th className="text-left">TOTAL</th>
-                            <th className="text-left">FECHA</th>
+                            <th className="text-left">FECHA DE CREACIÓN</th>
                             <th className="text-left">FECHA DE PAGO</th>
+                            <th className="text-left">METODO DE PAGO</th>
+                            <th className="text-left">TOTAL</th>
                             <th className="text-left">ESTADO</th>
 
                             <th />
@@ -55,17 +57,19 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
                                     <td className="text-left"> {invoice.studentId ? <OptionalInfo content={`${invoice.student?.firstName} ${invoice.student?.lastName}`} message="No registrado" /> : <OptionalInfo content='' />}</td>
-                                    <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
                                     <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
                                     <td className="text-left">
                                         <OptionalInfo content={invoice.paymentDate ? getFormattedDateTime(new Date(invoice.paymentDate)) : ''} message="No pagado" />
                                     </td>
-                                    <td
-                                        className={`text-left font-medium ${invoice.isCredit ? 'text-blue-500' : 'text-green-500'
-                                            }`}
-                                    >
-                                        {invoice.isCredit ? 'Crédito' : 'Contado'}
+                                    <td>
+                                        {invoice.isCredit
+                                            ? 'Crédito'
+                                            : invoice.paymentMethod
+                                            ? PAYMENT_METHODS_OPTIONS[invoice.paymentMethod as keyof typeof PAYMENT_METHODS_OPTIONS]
+                                            : <OptionalInfo content='' />
+                                        }
                                     </td>
+                                    <td className="text-left font-semibold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
                                     <td className="text-left">
                                         <InvoiceStatusField status={invoice.status} />
                                     </td>
