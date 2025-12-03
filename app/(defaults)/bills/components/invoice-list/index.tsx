@@ -10,6 +10,7 @@ import { HiOutlinePaperAirplane } from "react-icons/hi";
 import InvoiceStatusField from "./invoice-status";
 import { getFormattedDateTime } from "@/utils/date";
 import OptionalInfo from "@/components/common/optional-info";
+import StudentLabel from "@/components/common/info-labels/student-label";
 
 interface Props {
     className?: string;
@@ -25,7 +26,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
 
 
 
-    if (loading) return <Skeleton rows={7} columns={['N. DE FACTURA', 'NCF', 'TIPO', 'TOTAL', 'FECHA', 'FECHA DE PAGO', 'TIPO', 'ESTADO']} />;
+    if (loading) return <Skeleton rows={7} columns={['N. DE FACTURA', 'ESTUDIANTE', 'TOTAL', 'FECHA', 'FECHA DE PAGO', 'TIPO', 'ESTADO']} />;
 
     return (
         <div className={className}>
@@ -34,12 +35,10 @@ export default function InvoiceList({ className, query = '' }: Props) {
                     <thead>
                         <tr>
                             <th className="text-left">N. DE FACTURA</th>
-                            <th className="text-left">NCF</th>
-                            <th className="text-left">TIPO</th>
+                            <th>ESTUDIANTE</th>
                             <th className="text-left">TOTAL</th>
                             <th className="text-left">FECHA</th>
                             <th className="text-left">FECHA DE PAGO</th>
-                            <th className="text-left">TIPO</th>
                             <th className="text-left">ESTADO</th>
 
                             <th />
@@ -55,10 +54,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             return (
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
-                                    <td className="text-left">
-                                        <OptionalInfo content={invoice.ncf.includes('TEMP') ? '' : invoice.ncf} message="No disponible" />
-                                    </td>
-                                    <td className="text-left">{NCF_TYPES[invoice.type as keyof typeof NCF_TYPES].label}</td>
+                                    <td className="text-left">{invoice.studentId ? <StudentLabel studentId={invoice.studentId} /> : <OptionalInfo content='' />}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
                                     <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
                                     <td className="text-left">
