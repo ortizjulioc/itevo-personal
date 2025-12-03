@@ -57,6 +57,7 @@ model Branch {
   courseBranch CourseBranch[]
   userRole     UserRoleBranch[]
   cashBox      CashBox[]
+  products     Product[]
 
   @@map("branches")
 }
@@ -643,12 +644,14 @@ model Product {
   taxRate             Float   @default(0) @map("tax_rate")
   isTaxIncluded       Boolean @default(true) @map("is_tax_included")
   billingWithoutStock Boolean @default(true) @map("billing_without_stock")
+  branchId            String?  @map("branch_id")
 
   deleted       Boolean         @default(false)
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
   invoiceItems  InvoiceItem[]
   QuotationItem QuotationItem[]
+  branch        Branch?         @relation(fields: [branchId], references: [id])
 
   @@map("products")
 }

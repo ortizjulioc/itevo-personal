@@ -101,7 +101,7 @@ export default function BranchSwitcher({ branches }: BranchSwitcherProps) {
               >
                 <div className="flex items-center justify-between">
                   <span>{branch.name}</span>
-                  {isActive && <span className="text-xs text-primary">✓ Activa</span>}
+                  {isActive && <span className="text-xs text-primary min-w-max">✓ Activa</span>}
                 </div>
 
                 {branch.roles && branch.roles.length > 0 && (

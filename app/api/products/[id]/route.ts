@@ -6,10 +6,13 @@ import {
 } from '@/services/product-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/auth-options';
 
 // Obtener producto por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const session = await getServerSession(authOptions);
     const { id } = params;
 
     const product = await findProductById(id);
@@ -33,6 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // Actualizar producto por ID
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const session = await getServerSession(authOptions);
     const { id } = params;
     const body = await request.json();
 
@@ -42,7 +46,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
-    const updatedProduct = await updateProductById(id, body);
+    const updatedProduct = await updateProductById(id, {
+      ...body,
+      branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+    });
 
     await createLog({
       action: 'PUT',
