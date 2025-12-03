@@ -96,6 +96,7 @@ export async function GET(req: NextRequest) {
             createdBy: searchParams.get('createdBy') || undefined,
             cashRegisterId: searchParams.get('cashRegisterId') || undefined,
             cashRegisterIds: cashRegisterIdsArray,
+            isCredit: searchParams.get('isCredit') ? searchParams.get('isCredit') === 'true' : undefined,
             page: Number(searchParams.get('page') || '1'),
             pageSize: Number(searchParams.get('pageSize') || '10'),
         };

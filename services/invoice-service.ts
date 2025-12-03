@@ -67,6 +67,7 @@ interface InvoiceFilter {
     createdBy?: string;
     cashRegisterId?: string;
     cashRegisterIds?: string[];
+    isCredit?: boolean;
     page?: number;
     pageSize?: number;
 }
@@ -87,6 +88,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         createdBy,
         cashRegisterId,
         cashRegisterIds,
+        isCredit,
         page = 1,
         pageSize = 10,
     } = filter;
@@ -98,7 +100,7 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
     if (cashRegisterId) where.cashRegisterId = cashRegisterId;
-    
+    if (typeof isCredit === 'boolean') where.isCredit = isCredit;
     // Allow filtering by multiple cash registers (for cashiers)
     if (cashRegisterIds && cashRegisterIds.length > 0) {
         where.cashRegisterId = { in: cashRegisterIds };
