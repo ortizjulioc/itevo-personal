@@ -66,6 +66,7 @@ export type CashMovementResponse = {
         name: string;
         address: string;
         phone: string | null;
+        email: string | null;
       };
     };
   },
