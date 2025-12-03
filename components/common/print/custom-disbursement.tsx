@@ -52,7 +52,7 @@ export async function printCustomDisbursement(params: PrintCustomDisbursementPar
     companyName: setting.companyName,
     phone: disbursement.cashRegister.cashBox.branch.phone || setting.phone,
     address: disbursement.cashRegister.cashBox.branch.address || setting.address,
-    email: setting.email,
+    email: disbursement.cashRegister.cashBox.branch.email || setting.email,
     rnc: setting.rnc,
   };
 

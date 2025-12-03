@@ -38,6 +38,7 @@ type DisbursementData = {
         name: string;
         address: string;
         phone: string;
+        email: string;
       };
     };
   };
@@ -69,7 +70,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
       companyName: setting.companyName,
       rnc: setting.rnc,
       address: disbursement.accountPayable.courseBranch.branch.address || setting.address,
-      email: setting.email,
+      email: disbursement.accountPayable.courseBranch.branch.email || setting.email,
       phone: disbursement.accountPayable.courseBranch.branch.phone || setting.phone,
     };
 
@@ -108,6 +109,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
               name: data.accountPayable.courseBranch.branch.name,
               address: data.accountPayable.courseBranch.branch.address,
               phone: data.accountPayable.courseBranch.branch.phone || '',
+              email: data.accountPayable.courseBranch.branch.email || '',
             },
           },
         },
