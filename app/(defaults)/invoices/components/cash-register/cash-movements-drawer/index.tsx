@@ -1,6 +1,6 @@
 'use client';
 import Drawer from '@/components/ui/drawer';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useFetchCashMovements from '@/app/(defaults)/cash-registers/lib/use-fetch-cash-movements';
 import { Tab } from '@headlessui/react';
 import { formatCurrency } from '@/utils';
@@ -10,6 +10,8 @@ import Link from 'next/link';
 import PrintExpense from '@/components/common/print/expense';
 import PrintInvoice from '@/components/common/print/invoice';
 import { HiOutlineEye } from 'react-icons/hi';
+import PrintCustomDisbursement from '@/components/common/print/custom-disbursement';
+import PrintDisbursement from '@/components/common/print/disbursement';
 
 interface CashMovementsDrawerProps {
     open: boolean;
@@ -18,13 +20,19 @@ interface CashMovementsDrawerProps {
 }
 
 export default function CashMovementsDrawer({ open, setOpen, cashRegisterId }: CashMovementsDrawerProps) {
-    const { cashMovements, loading } = useFetchCashMovements(cashRegisterId);
+    const { cashMovements, loading, fetchCashMovementsData } = useFetchCashMovements(cashRegisterId);
     const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
 
     const filteredMovements = cashMovements.filter(m => {
         if (filter === 'ALL') return true;
         return m.type === filter;
     });
+
+    useEffect(() => {
+        if (open === true) {
+            fetchCashMovementsData(cashRegisterId, '');
+        }
+    }, [open]);
 
     const categories = ['Todos', 'Ingresos', 'Egresos'];
 
@@ -112,8 +120,16 @@ export default function CashMovementsDrawer({ open, setOpen, cashRegisterId }: C
                                         {/* Reimprimir */}
                                         {movement.referenceType === 'INVOICE' && movement.referenceId ? (
                                             <PrintInvoice invoiceId={movement.referenceId} />
+                                        ) : movement.PayablePayment ? (
+                                            <PrintDisbursement
+                                                paymentId={movement.PayablePayment?.id || ''}
+                                                payableId={movement.PayablePayment?.accountPayableId || ''}
+                                            />
                                         ) : (
-                                            <PrintExpense cashMovement={movement} />
+                                            <PrintCustomDisbursement
+                                                disbursementId={movement.id}
+                                                cashRegisterId={movement.cashRegisterId}
+                                            />
                                         )}
                                     </div>
                                 </div>
