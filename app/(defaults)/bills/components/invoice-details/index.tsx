@@ -122,6 +122,9 @@ export default function InvoiceDetails({ invoice, currentUser }: { invoice: any,
                         <p>
                             <strong>N. Factura:</strong> {invoice.invoiceNumber}
                         </p>
+                        <p>
+                            <strong>Estudiante:</strong> {invoice.studentId ? <OptionalInfo content={`${invoice.student?.firstName} ${invoice.student?.lastName}`} message="No registrado" /> : <OptionalInfo content='' />}
+                        </p>
                     </div>
                 </div>
                 <div>

@@ -54,7 +54,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             return (
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
-                                    <td className="text-left">{invoice.studentId ? <StudentLabel studentId={invoice.studentId} /> : <OptionalInfo content='' />}</td>
+                                    <td className="text-left"> {invoice.studentId ? <OptionalInfo content={`${invoice.student?.firstName} ${invoice.student?.lastName}`} message="No registrado" /> : <OptionalInfo content='' />}</td>
                                     <td className="text-left font-bold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
                                     <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
                                     <td className="text-left">
