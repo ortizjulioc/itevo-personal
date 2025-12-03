@@ -168,23 +168,23 @@ export const routeConfig = [
     {
         key: 'bills',
         url: '/bills',
-        authorization: cashierRoles,
+        authorization: billingRoles,
     },
     {
         key: 'bills-subroutes',
         url: '/bills/:path*',
-        authorization: cashierRoles,
+        authorization: billingRoles,
     },
     // Cajas registradoras - BillingAdmin, GeneralAdmin, SuperAdmin
     {
         key: 'cash-registers',
         url: '/cash-registers',
-        authorization: cashierRoles,
+        authorization: billingRoles,
     },
     {
         key: 'cash-registers-subroutes',
         url: '/cash-registers/:path*',
-        authorization: cashierRoles,
+        authorization: billingRoles,
     },
     // Cuentas por cobrar - BillingAdmin, GeneralAdmin, SuperAdmin
     {
