@@ -42,6 +42,8 @@ export default function PrintEnrollment({ enrollmentId, courseBranchId, children
     if (setting.logoReport) {
       blobLogo = await fetchImageAsBase64(setting.logoReport);
     }
+
+    console.log({ enrollment, courseBranchRule });
     await printPDF(
       <EnrollmentPDF
         enrollment={enrollment}
