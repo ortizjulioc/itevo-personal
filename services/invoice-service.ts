@@ -66,6 +66,8 @@ interface InvoiceFilter {
     studentId?: string;
     createdBy?: string;
     cashRegisterId?: string;
+    cashRegisterIds?: string[];
+    isCredit?: boolean;
     page?: number;
     pageSize?: number;
 }
@@ -85,6 +87,8 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         studentId,
         createdBy,
         cashRegisterId,
+        cashRegisterIds,
+        isCredit,
         page = 1,
         pageSize = 10,
     } = filter;
@@ -96,6 +100,11 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
     if (studentId) where.studentId = studentId;
     if (createdBy) where.createdBy = createdBy;
     if (cashRegisterId) where.cashRegisterId = cashRegisterId;
+    if (typeof isCredit === 'boolean') where.isCredit = isCredit;
+    // Allow filtering by multiple cash registers (for cashiers)
+    if (cashRegisterIds && cashRegisterIds.length > 0) {
+        where.cashRegisterId = { in: cashRegisterIds };
+    }
 
     // ✅ permitir múltiples estados
     if (status && Array.isArray(status) && status.length > 0) {
@@ -112,18 +121,15 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
 
     if (search) {
         where.OR = [
-            { invoiceNumber: { contains: search, mode: "insensitive" } },
-            {
-                student: {
-                    name: { contains: search, mode: "insensitive" },
-                },
-            },
+            { invoiceNumber: { contains: search } },
+            { ncf: { contains: search } },
         ];
     }
 
     const [data, total] = await Prisma.$transaction([
         Prisma.invoice.findMany({
             where,
+            include: { student: true },
             orderBy: { date: "desc" },
             skip: (page - 1) * pageSize,
             take: pageSize,

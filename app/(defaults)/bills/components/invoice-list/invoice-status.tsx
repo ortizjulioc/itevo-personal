@@ -19,7 +19,7 @@ const InvoiceLabel = {
 export default function InvoiceStatusField({ status }: { status: InvoiceStatus }) {
     return (
         <span
-            className={` inline-flex items-center gap-1 font-bold min-w-max italic text-${InvoiceColor[status]}`}
+            className={` inline-flex items-center gap-1 font-bold min-w-max text-${InvoiceColor[status]}`}
         >
              <TbPointFilled className="relative top-[1px] text-sm" />
             {InvoiceLabel[status]}

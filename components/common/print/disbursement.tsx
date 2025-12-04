@@ -31,6 +31,16 @@ type DisbursementData = {
       name: string;
       lastName: string;
     };
+    courseBranch: {
+      id: string;
+      branch: {
+        id: string;
+        name: string;
+        address: string;
+        phone: string;
+        email: string;
+      };
+    };
   };
 }
 
@@ -46,6 +56,7 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
   };
 
   const handlePrintPDF = async (setting: any) => {
+    setLoading(true);
     if (!setting) return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
     const disbursement = await getDisbursementData();
     if (!disbursement) return openNotification('error', 'No se encontró el desembolso para imprimir.');
@@ -55,14 +66,25 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
       blobLogo = await fetchImageAsBase64(setting.logo);
     }
 
+    const companyInfo = {
+      companyName: setting.companyName,
+      rnc: setting.rnc,
+      address: disbursement.accountPayable.courseBranch.branch.address || setting.address,
+      email: disbursement.accountPayable.courseBranch.branch.email || setting.email,
+      phone: disbursement.accountPayable.courseBranch.branch.phone || setting.phone,
+    };
+
     await printPDF(
-      <DisbursementPDF disbursement={disbursement} companyInfo={{ ...setting }} logo={blobLogo} />, { cleanUpMilliseconds: 600000 }
+      <DisbursementPDF disbursement={disbursement} companyInfo={companyInfo} logo={blobLogo} />, { cleanUpMilliseconds: 600000 }
     );
+    setLoading(false);
   };
 
   const getDisbursementData = async (): Promise<DisbursementData | null> => {
     setLoading(true);
     const resp = await apiRequest.get<PayablePaymentWithRelations>(`/account-payable/${payableId}/payments/${paymentId}`);
+    console.log({ resp });
+    setLoading(false);
     if (resp.success && resp.data) {
       // Handle successful response
       const data = resp.data;
@@ -72,20 +94,29 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
         date: getFormattedDateTime(new Date(data.paymentDate), { hour12: true }),
         description: data.cashMovement?.description || `Pago de cuenta por pagar al profesor ${data.accountPayable.teacher.firstName} ${data.accountPayable.teacher.lastName}`,
         user: {
-            name: data.cashMovement.user.name,
-            lastName: data.cashMovement.user.lastName,
+          name: data.cashMovement.user.name,
+          lastName: data.cashMovement.user.lastName,
         },
         accountPayable: {
-            teacher: {
-                name: data.accountPayable.teacher.firstName,
-                lastName: data.accountPayable.teacher.lastName,
+          teacher: {
+            name: data.accountPayable.teacher.firstName,
+            lastName: data.accountPayable.teacher.lastName,
+          },
+          courseBranch: {
+            id: data.accountPayable.courseBranch.id,
+            branch: {
+              id: data.accountPayable.courseBranch.branch.id,
+              name: data.accountPayable.courseBranch.branch.name,
+              address: data.accountPayable.courseBranch.branch.address,
+              phone: data.accountPayable.courseBranch.branch.phone || '',
+              email: data.accountPayable.courseBranch.branch.email || '',
             },
+          },
         },
       };
     } else {
       openNotification('error', resp.message || 'Error al obtener los datos del desembolso');
     }
-    setLoading(false);
     return null;
   }
 
@@ -100,16 +131,15 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
         <div onClick={onPrint} className='cursor-pointer'>
           {children && children({ loading, onPrint })}
         </div>
-     ) : (
+      ) : (
         <Button
           onClick={onPrint}
           loading={loading}
           icon={<IoMdPrint className='text-lg ' />}
         >
-
           {loading ? 'Generando documento ...' : 'Imprimir'}
         </Button>
-     )}
+      )}
     </>
   )
 }

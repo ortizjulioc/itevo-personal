@@ -38,6 +38,7 @@ export interface CashRegisterClosureResponse {
         name: string;
         address: string;
         phone: string | null;
+        email: string | null;
       };
     };
   };
@@ -49,12 +50,26 @@ export type CashMovementResponse = {
   type: "INCOME" | "EXPENSE"; // o los valores de tu enum CashMovementType
   amount: number;
   description: string | null;
-  referenceType: "INVOICE" | "PAYABLE" | null; // según tu enum CashMovementReferenceType
+  referenceType: "INVOICE" | "RECEIVABLE_PAYMENT" | "PAYABLE_PAYMENT" | "DISBURSEMENT" | null;
   referenceId: string | null;
   createdBy: string;
   createdAt: string;     // Date convertido a string en JSON
   updatedAt: string;     // Date → string
   deleted: boolean;
+
+  cashRegister: {
+    id: string;
+    cashBox: {
+      id: string;
+      branch: {
+        id: string;
+        name: string;
+        address: string;
+        phone: string | null;
+        email: string | null;
+      };
+    };
+  },
 
   user: {
     id: string;

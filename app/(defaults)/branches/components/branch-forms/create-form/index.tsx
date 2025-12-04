@@ -60,6 +60,10 @@ export default function CreateBranchForm() {
                             </Field>
                         </FormItem>
 
+                        <FormItem name="email" label="Correo electrónico" invalid={Boolean(errors.email && touched.email)} errorMessage={errors.email}>
+                            <Field type="text" name="email" component={Input} placeholder="Correo electrónico" />
+                        </FormItem>
+
                         <div className="mt-6 flex justify-end gap-2">
                             <Button type="button" color="danger" onClick={() => route.back()}>
                                 Cancelar

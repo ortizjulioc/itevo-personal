@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getProducts, createProduct } from '@/services/product-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 // Obtener todos los productos con búsqueda y paginación
 export async function GET(request: NextRequest) {
@@ -27,9 +29,13 @@ export async function GET(request: NextRequest) {
 // Crear un nuevo producto
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await request.json();
 
-    const newProduct = await createProduct(body);
+    const newProduct = await createProduct({
+      ...body,
+      branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+    });
 
     await createLog({
       action: 'POST',

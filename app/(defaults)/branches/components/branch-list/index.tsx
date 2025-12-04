@@ -51,6 +51,7 @@ export default function BranchList({ className, query = '' }: Props) {
                             <th>NOMBRE</th>
                             <th>DIRECCION</th>
                             <th>TELEFONO</th>
+                            <th>EMAIL</th>
                             <th />
                         </tr>
                     </thead>
@@ -72,7 +73,11 @@ export default function BranchList({ className, query = '' }: Props) {
                                     <td>
                                     <OptionalInfo content={formatPhoneNumber(branch.phone)} />
                                     </td>
-                                   
+                                    <td>
+                                        <div className="whitespace-nowrap">
+                                            <OptionalInfo content={branch.email || undefined} />
+                                        </div>
+                                    </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
                                             <Tooltip title="Eliminar">

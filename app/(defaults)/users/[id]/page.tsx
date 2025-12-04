@@ -91,10 +91,11 @@ export default function EditUser({ params }: { params: { id: string } }) {
                 roles: [role],
                 name: '',
                 phone: '',
-                deleted: false,
                 address: '',
+                email: '',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                deleted: false,
               },
             ];
           }

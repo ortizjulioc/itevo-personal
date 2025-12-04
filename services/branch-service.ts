@@ -15,6 +15,7 @@ export const getBranches = async (search: string, page: number, top: number) => 
             name: true,
             address: true,
             phone: true,
+            email: true,
         },
         where: {
             deleted: false,
@@ -46,6 +47,7 @@ export const findBranchById = async (id: string) => {
             name: true,
             address: true,
             phone: true,
+            email: true,
         },
         where: {
             id: id,

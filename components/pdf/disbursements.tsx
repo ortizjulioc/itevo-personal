@@ -9,6 +9,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
+import { formatPhoneNumber } from '@/utils/string';
 
 const styles = StyleSheet.create({
   page: {
@@ -99,7 +100,7 @@ export const DisbursementPDF = ({ disbursement, companyInfo, logo }: { disbursem
             <Text>
                 {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
-            <Text>{companyInfo.phone ? `Tel: ${companyInfo.phone}` : ''}</Text>
+            <Text>{companyInfo.phone ? `Tel: ${formatPhoneNumber(companyInfo.phone)}` : ''}</Text>
           </View>
 
           <View style={{ marginBottom: 6 }}>

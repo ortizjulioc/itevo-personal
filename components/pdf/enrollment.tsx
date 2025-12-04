@@ -138,7 +138,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
   const schedules = formatScheduleList(enrollment.courseBranch.schedules || []);
   return (
     <Document>
-      <Page size={'A4'} style={styles.page}>
+      <Page size={'LETTER'} style={styles.page}>
         <View style={styles.container}>
           <View style={styles.logo}>
             {companyInfo.logo && (

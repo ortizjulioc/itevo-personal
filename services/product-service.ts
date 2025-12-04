@@ -1,9 +1,14 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
+import { getServerSession } from 'next-auth';
 
 // Obtener todos los productos con búsqueda y paginación
 export async function getProducts(search = '', page = 1, top = 10) {
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+
   const skip = (page - 1) * top;
 
   const where: PrismaTypes.ProductWhereInput = {
@@ -12,6 +17,7 @@ export async function getProducts(search = '', page = 1, top = 10) {
       { name: { contains: search } },
       { description: { contains: search } },
     ],
+    ...(branchId ? { branchId } : {}),
   };
 
   const [products, totalProducts] = await Promise.all([
@@ -37,12 +43,18 @@ export async function findProductById(
   id: string,
   prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
 ) {
-  return await prisma.product.findUnique({ where: { id, deleted: false } });
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+  return await prisma.product.findUnique({ where: 
+    { id, deleted: false, ...(branchId ? { branchId } : {}) }
+  });
 }
 
 // Buscar producto por código
 export async function findProductByCode(code: number) {
-  return await Prisma.product.findUnique({ where: { code, deleted: false } });
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+  return await Prisma.product.findUnique({ where: { code, deleted: false, ...(branchId ? { branchId } : {}) } });
 }
 
 // Actualizar producto por ID

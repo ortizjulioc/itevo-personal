@@ -53,10 +53,18 @@ export async function printClosureDirect(params: PrintClosureParams) {
         cashBreakdown: data.cashBreakdown,
     };
 
+    const companyInfo = {
+        companyName: setting.companyName || '',
+        rnc: setting.rnc || '',
+        address: data.cashRegister.cashBox.branch.address || setting.address || '',
+        phone: data.cashRegister.cashBox.branch.phone || setting.phone || '',
+        email: data.cashRegister.cashBox.branch.email || setting.email || '',
+    };
+
     await printPDFDirect(
         <ClosurePDF
             closure={closureMapped}
-            companyInfo={setting}
+            companyInfo={companyInfo}
             logo={blobLogo}
         />,
         { cleanUpMilliseconds: 600000 }
@@ -89,7 +97,6 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
         if (!setting) openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
         const data = await fetchData({ closureId, cashRegisterId });
         if (!data) return openNotification('error', 'No se encontró el cierre de caja para imprimir.');
-        console.log('Closure Data:', data);
 
         let blobLogo = null;
         if (setting?.logo) {
@@ -109,10 +116,18 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
             cashBreakdown: data.cashBreakdown,
         };
 
+        const companyInfo = {
+            companyName: setting?.companyName || '',
+            rnc: setting?.rnc || '',
+            address: data.cashRegister.cashBox.branch.address || setting?.address || '',
+            phone: data.cashRegister.cashBox.branch.phone || setting?.phone || '',
+            email: data.cashRegister.cashBox.branch.email || setting?.email || '',
+        };
+
         await printPDF(
             <ClosurePDF
                 closure={closureDataMaped}
-                companyInfo={setting}
+                companyInfo={companyInfo}
                 logo={blobLogo}
             />,
             { cleanUpMilliseconds: 600000 }

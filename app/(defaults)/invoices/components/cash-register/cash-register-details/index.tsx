@@ -13,23 +13,24 @@ import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/m
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
 import { Invoice } from '@prisma/client';
 import DisbursementModal from '../../disbursement-modal';
+import CashMovementsDrawer from '../cash-movements-drawer';
 
 export interface CashRegister {
-  id: string;
-  status: string;
-  openingDate: string | Date;
-  initialBalance: number;
-  deleted: boolean;
-  user: {
     id: string;
-    name: string;
-  };
-  cashBox: {
-    id: string;
-    name: string;
-  };
-  createdAt: string | Date;
-  updatedAt: string | Date;
+    status: string;
+    openingDate: string | Date;
+    initialBalance: number;
+    deleted: boolean;
+    user: {
+        id: string;
+        name: string;
+    };
+    cashBox: {
+        id: string;
+        name: string;
+    };
+    createdAt: string | Date;
+    updatedAt: string | Date;
 }
 
 
@@ -43,6 +44,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
     const [loadingAction, setLoadingAction] = React.useState<string | null>(null);
     const [openModalClose, setOpenModalClose] = React.useState(false);
     const router = useRouter();
+    const [openModalMovements, setOpenModalMovements] = React.useState(false);
 
     useEffect(() => {
         if (!CashRegister?.id) return;
@@ -156,6 +158,24 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 Desembolsos
                                             </button>
                                         </li>
+                                        <li>
+                                            <button
+                                                type="button"
+                                                disabled={loadingAction !== null}
+                                                onClick={async () => {
+                                                    setLoadingAction('movements');
+                                                    await new Promise((res) => setTimeout(res, 200));
+                                                    setOpenModalMovements(true);
+                                                    setLoadingAction(null);
+                                                }}
+                                                className="dropdown-item w-full flex items-center gap-2"
+                                            >
+                                                {loadingAction === 'movements' && (
+                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
+                                                )}
+                                                Movimientos de caja
+                                            </button>
+                                        </li>
                                         <li className="border-t">
                                             <button
                                                 type="button"
@@ -199,6 +219,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                     <AttendanceModal setOpenModal={setOpenModalAttendance} openModal={openModalAttendance} />
                     <DisbursementModal setOpenModal={setOpenModalDisbursement} openModal={openModalDisbursement} />
                     <ModalCashRegisterClose setOpenModal={setOpenModalClose} openModal={openModalClose} />
+                    <CashMovementsDrawer open={openModalMovements} setOpen={setOpenModalMovements} cashRegisterId={CashRegister.id} />
                 </div>
             </div>
         </div>
