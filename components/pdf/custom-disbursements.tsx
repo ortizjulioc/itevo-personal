@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   Document,
+  Font,
   Image,
   Page,
   StyleSheet,
@@ -13,11 +14,37 @@ import { CashMovementResponse } from '@/@types/cash-register';
 import { formatCurrency, formatPhoneNumber } from '@/utils';
 import { getFormattedDateTime } from '@/utils/date';
 
+Font.register({
+  family: 'Roboto Mono',
+  fonts: [
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Regular.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Bold.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Italic.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-BoldItalic.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'italic',
+    },
+  ],
+});
+
 const styles = StyleSheet.create({
   page: {
     padding: 2,
     fontSize: 8,
-    fontFamily: 'Helvetica',
+    fontFamily: 'Roboto Mono',
     lineHeight: 1.2,
   },
   container: {
@@ -99,7 +126,7 @@ export const CustomDisbursementPDF = ({ disbursement, companyInfo, logo }: { dis
             <Text>RNC: {companyInfo.rnc}</Text>
             <Text>{companyInfo.address}</Text>
             <Text>
-                {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
+              {`${companyInfo.email ? `Correo: ${companyInfo.email}` : ''}`}
             </Text>
             <Text>{companyInfo.phone ? `Tel: ${formatPhoneNumber(companyInfo.phone)}` : ''}</Text>
           </View>

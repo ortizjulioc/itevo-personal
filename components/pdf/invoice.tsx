@@ -16,22 +16,22 @@ Font.register({
   family: 'Roboto Mono',
   fonts: [
     {
-      src: '/fonts/roboto-mono/RobotoMono-Regular.ttf', // Regular 400
+      src: '/fonts/roboto-mono/RobotoMono-Regular.ttf',
       fontWeight: 'normal',
       fontStyle: 'normal',
     },
     {
-      src: '/fonts/roboto-mono/RobotoMono-Bold.ttf', // Bold 700
+      src: '/fonts/roboto-mono/RobotoMono-Bold.ttf',
       fontWeight: 'bold',
       fontStyle: 'normal',
     },
     {
-      src: '/fonts/roboto-mono/RobotoMono-Italic.ttf', // Italic 400
+      src: '/fonts/roboto-mono/RobotoMono-Italic.ttf',
       fontWeight: 'normal',
       fontStyle: 'italic',
     },
     {
-      src: '/fonts/roboto-mono/RobotoMono-BoldItalic.ttf', // Bold Italic 700
+      src: '/fonts/roboto-mono/RobotoMono-BoldItalic.ttf',
       fontWeight: 'bold',
       fontStyle: 'italic',
     },
