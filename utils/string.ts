@@ -44,8 +44,8 @@ export const formatNumber = (amount: number): string => {
   }).format(amount);
 }
 
-export function base64ToUint8Array(base64: string): Uint8Array {
-  return new Uint8Array(Buffer.from(base64, 'base64'));
+export function base64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
+  return new Uint8Array(Buffer.from(base64, 'base64')) as Uint8Array<ArrayBuffer>;
 }
 
 export function formatIdentification(identification: string, type?: IdentificationType): string {

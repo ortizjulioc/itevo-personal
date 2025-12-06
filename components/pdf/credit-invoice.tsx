@@ -10,12 +10,39 @@ import {
 } from '@react-pdf/renderer';
 import { getFormattedDateTime } from '@/utils/date';
 import { formatNumber } from '@/utils';
+import { Font } from '@react-pdf/renderer';
+
+Font.register({
+  family: 'Roboto Mono',
+  fonts: [
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Regular.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Bold.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Italic.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-BoldItalic.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'italic',
+    },
+  ],
+});
 
 const styles = StyleSheet.create({
   page: {
     padding: 2,
     fontSize: 8,
-    fontFamily: 'Courier',
+    fontFamily: 'Roboto Mono',
   },
   container: {
     width: 192, // Menos de 72mm (72mm = ~204.094pt)

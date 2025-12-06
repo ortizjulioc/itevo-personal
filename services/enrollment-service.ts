@@ -128,6 +128,7 @@ export const findEnrollmentById = async (id: string) => {
                     firstName: true,
                     lastName: true,
                     phone: true,
+                    code: true,
                 },
             },
             courseBranch: {

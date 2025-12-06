@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   Document,
+  Font,
   Image,
   Page,
   StyleSheet,
@@ -12,11 +13,37 @@ import { Style } from '@react-pdf/types';
 import { getFormattedDateTime } from '@/utils/date';
 import { formatCurrency, formatPhoneNumber } from '@/utils';
 
+Font.register({
+  family: 'Roboto Mono',
+  fonts: [
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Regular.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Bold.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'normal',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-Italic.ttf',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    {
+      src: '/fonts/roboto-mono/RobotoMono-BoldItalic.ttf',
+      fontWeight: 'bold',
+      fontStyle: 'italic',
+    },
+  ],
+});
+
 const styles = StyleSheet.create({
   page: {
     padding: 2,
     fontSize: 8,
-    fontFamily: 'Helvetica',
+    fontFamily: 'Roboto Mono',
     lineHeight: 1.2,
   },
   container: {
