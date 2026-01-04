@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { getSoldInventoryReport } from '@/services/report-service';
+import ExcelJS from 'exceljs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,13 +35,38 @@ export async function GET(request: NextRequest) {
 
     const report = await getSoldInventoryReport(branchId, fromDate, toDate, productIds);
 
-    return NextResponse.json(report, { status: 200 });
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Reporte de Ventas');
+
+    worksheet.columns = [
+      { header: 'Código', key: 'productCode', width: 15 },
+      { header: 'Producto', key: 'productName', width: 40 },
+      { header: 'Cantidad Vendida', key: 'quantitySold', width: 20 },
+      { header: 'Monto Total', key: 'totalAmount', width: 20 },
+    ];
+
+    report.forEach(item => {
+      worksheet.addRow(item);
+    });
+
+    // Format currency column
+    worksheet.getColumn('totalAmount').numFmt = '"$"#,##0.00';
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="reporte_ventas_${from}_${to}.xlsx"`,
+      },
+    });
 
   } catch (error) {
     await createLog({
       action: 'GET',
       description: formatErrorMessage(error),
-      origin: 'reports/inventory/sold',
+      origin: 'reports/inventory/sold/download',
       success: false,
     });
     return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });

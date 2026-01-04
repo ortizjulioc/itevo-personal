@@ -1,0 +1,137 @@
+'use client';
+import { useState } from 'react';
+import IconDownload from '@/components/icon/icon-download';
+import { SoldInventoryReportItem } from '@/services/report-service';
+import Swal from 'sweetalert2';
+import DatePicker from '@/components/ui/date-picker';
+import { formatCurrency } from '@/utils';
+
+const SoldInventoryReport = () => {
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
+  const [reportData, setReportData] = useState<SoldInventoryReportItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const fetchReport = async () => {
+    if (!dateRange[0] || !dateRange[1]) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Rango de fechas incompleto',
+        text: 'Por favor selecciona una fecha de inicio y fin.',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const from = formatDate(dateRange[0]);
+      const to = formatDate(dateRange[1]);
+      const response = await fetch(`/api/reports/inventory/sold?from=${from}&to=${to}`);
+
+      if (!response.ok) {
+        throw new Error('Error al obtener el reporte');
+      }
+
+      const data = await response.json();
+      setReportData(data);
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo cargar el reporte.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadReport = () => {
+    if (!dateRange[0] || !dateRange[1]) return;
+    const from = formatDate(dateRange[0]);
+    const to = formatDate(dateRange[1]);
+    window.open(`/api/reports/inventory/sold/download?from=${from}&to=${to}`, '_blank');
+  };
+
+  const totalQuantity = reportData.reduce((acc, item) => acc + item.quantitySold, 0);
+  const totalAmount = reportData.reduce((acc, item) => acc + item.totalAmount, 0);
+
+  return (
+    <div>
+      <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <h1 className="text-xl font-bold">Reporte de Ventas por Producto</h1>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <div className="flex items-center gap-2">
+            <label className="mb-0">Fecha:</label>
+            <div className="w-64">
+              <DatePicker
+                mode="range"
+                value={dateRange}
+                onChange={(dates) => {
+                  if (Array.isArray(dates)) {
+                    setDateRange(dates as [Date | null, Date | null]);
+                  }
+                }}
+                placeholder="Seleccionar rango"
+              />
+            </div>
+          </div>
+          <button type="button" className="btn btn-primary" onClick={fetchReport} disabled={loading}>
+            {loading ? 'Cargando...' : 'Buscar'}
+          </button>
+          <button type="button" className="btn btn-outline-success" onClick={downloadReport} disabled={!dateRange[0] || !dateRange[1]}>
+            <IconDownload className="mr-2" />
+            Descargar Excel
+          </button>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="table-responsive">
+          <table className="table-hover">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th className="text-center">Cantidad Vendida</th>
+                <th className="text-right">Monto Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData.length > 0 ? (
+                reportData.map((item) => (
+                  <tr key={item.productId}>
+                    <td>{item.productCode}</td>
+                    <td>{item.productName}</td>
+                    <td className="text-center">{item.quantitySold}</td>
+                    <td className="text-right">{formatCurrency(item.totalAmount)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center py-5">
+                    No hay datos para mostrar. Selecciona un rango de fechas y haz clic en Buscar.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {reportData.length > 0 && (
+              <tfoot>
+                <tr className="font-bold bg-gray-100 dark:bg-gray-800 h-8">
+                  <td colSpan={2} className="text-right">Totales:</td>
+                  <td className="text-center">{totalQuantity}</td>
+                  <td className="text-right">{formatCurrency(totalAmount)}</td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SoldInventoryReport;

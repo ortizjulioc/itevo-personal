@@ -17,14 +17,15 @@ import {
     TbReportMoney,
     TbCheckupList,
     TbCashRegister,
+    TbChartBar,
 } from 'react-icons/tb';
 
-import { 
-    SUPER_ADMIN, 
-    GENERAL_ADMIN, 
-    ACADEMIC_ADMIN, 
-    BILLING_ADMIN, 
-    CASHIER, 
+import {
+    SUPER_ADMIN,
+    GENERAL_ADMIN,
+    ACADEMIC_ADMIN,
+    BILLING_ADMIN,
+    CASHIER,
     ASSISTANT,
     // Mantener compatibilidad
     ADMIN,
@@ -183,7 +184,7 @@ const navigationConfig = [
         subItems: [],
         auth: billingRoles
     },
-     {
+    {
         key: 'cashBoxes',
         title: 'Cajas',
         icon: LiaCashRegisterSolid,
@@ -243,6 +244,22 @@ const navigationConfig = [
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: [SUPER_ADMIN]
+    },
+    {
+        key: 'reports',
+        title: 'Reportes',
+        type: NAV_ITEM_TYPE_TITLE,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'sales-report',
+        title: 'Ventas',
+        icon: TbChartBar,
+        url: '/reports/sold-inventory',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
     }
 ];
 
