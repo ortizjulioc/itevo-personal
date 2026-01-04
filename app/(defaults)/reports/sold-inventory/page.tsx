@@ -5,6 +5,7 @@ import { SoldInventoryReportItem } from '@/services/report-service';
 import Swal from 'sweetalert2';
 import DatePicker from '@/components/ui/date-picker';
 import { formatCurrency } from '@/utils';
+import { Button } from '@/components/ui';
 
 const SoldInventoryReport = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
@@ -79,13 +80,12 @@ const SoldInventoryReport = () => {
               />
             </div>
           </div>
-          <button type="button" className="btn btn-primary" onClick={fetchReport} disabled={loading}>
+          <Button type="button" onClick={fetchReport} disabled={loading}>
             {loading ? 'Cargando...' : 'Buscar'}
-          </button>
-          <button type="button" className="btn btn-outline-success" onClick={downloadReport} disabled={!dateRange[0] || !dateRange[1]}>
-            <IconDownload className="mr-2" />
+          </Button>
+          <Button type="button" color="success" icon={<IconDownload />} onClick={downloadReport} disabled={!dateRange[0] || !dateRange[1]}>
             Descargar Excel
-          </button>
+          </Button>
         </div>
       </div>
 
