@@ -9,6 +9,7 @@ import Button from '@/components/ui/button';
 import { IconFile, IconSearch, IconDownload } from '@/components/icon';
 import ViewTitle from '@/components/common/ViewTitle';
 import Swal from 'sweetalert2';
+import StickyFooter from '@/components/common/sticky-footer';
 import { INVOICE_STATUS_OPTIONS, PAYMENT_METHODS_OPTIONS } from '@/constants/invoice.constant';
 import { InvoiceStatus } from '@prisma/client';
 
@@ -211,16 +212,19 @@ const GeneralSalesReport = () => {
                 ))
               )}
             </tbody>
-            <tfoot>
-              <tr className="font-bold bg-gray-50 dark:bg-gray-800">
-                <td colSpan={6} className="text-right">Total General:</td>
-                <td className="text-right">
-                  {formatCurrency(reportData.reduce((sum, item) => sum + item.total, 0))}
-                </td>
-              </tr>
-            </tfoot>
           </table>
         </div>
+
+        {reportData.length > 0 && (
+          <StickyFooter className='-mx-6 px-8 py-4 mt-6' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
+            <div className="flex justify-end items-center gap-4">
+              <span className="font-bold text-lg">Total General:</span>
+              <span className="font-bold text-xl text-primary">
+                {formatCurrency(reportData.reduce((sum, item) => sum + item.total, 0))}
+              </span>
+            </div>
+          </StickyFooter>
+        )}
       </div>
     </div>
   );

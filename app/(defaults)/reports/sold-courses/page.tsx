@@ -4,8 +4,9 @@ import IconDownload from '@/components/icon/icon-download';
 import { SoldCourseReportItem } from '@/services/report-service';
 import Swal from 'sweetalert2';
 import DatePicker from '@/components/ui/date-picker';
-import { formatCurrency } from '@/utils';
+import { formatCurrency, formatNumber } from '@/utils';
 import { Button } from '@/components/ui';
+import StickyFooter from '@/components/common/sticky-footer';
 
 const SoldCoursesReport = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
@@ -118,17 +119,23 @@ const SoldCoursesReport = () => {
                 </tr>
               )}
             </tbody>
-            {reportData.length > 0 && (
-              <tfoot>
-                <tr className="font-bold bg-gray-100 dark:bg-gray-800 h-8">
-                  <td colSpan={2} className="text-right">Totales:</td>
-                  <td className="text-center">{totalQuantity}</td>
-                  <td className="text-right">{formatCurrency(totalAmount)}</td>
-                </tr>
-              </tfoot>
-            )}
           </table>
         </div>
+
+        {reportData.length > 0 && (
+          <StickyFooter className='-mx-6 px-8 py-4 mt-6' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
+            <div className="flex justify-end items-center gap-8">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-lg">Total Cantidad:</span>
+                <span className="font-bold text-xl">{formatNumber(totalQuantity)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-lg">Monto Total:</span>
+                <span className="font-bold text-xl text-primary">{formatCurrency(totalAmount)}</span>
+              </div>
+            </div>
+          </StickyFooter>
+        )}
       </div>
     </div>
   );
