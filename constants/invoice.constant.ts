@@ -4,3 +4,10 @@ export const PAYMENT_METHODS_OPTIONS = {
   bank_transfer: 'Transferencia',
   check: 'Cheque',
 }
+
+export const INVOICE_STATUS_OPTIONS = {
+  PAID: 'Pagada',
+  COMPLETED: 'Completada',
+  DRAFT: 'Borrador',
+  CANCELED: 'Cancelada',
+}

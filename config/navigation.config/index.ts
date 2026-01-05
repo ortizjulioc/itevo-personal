@@ -221,6 +221,40 @@ const navigationConfig = [
         auth: billingRoles
     },
     {
+        key: 'reports',
+        title: 'Reportes',
+        type: NAV_ITEM_TYPE_TITLE,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'sales-report',
+        title: 'Ventas por Productos',
+        icon: TbChartBar,
+        url: '/reports/sold-inventory',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'sales-courses-report',
+        title: 'Ventas por Curso',
+        icon: TbChartBar,
+        url: '/reports/sold-courses',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'general-sales-report',
+        title: 'Reporte General',
+        icon: TbChartBar,
+        url: '/reports/general-sales',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
         key: 'auth',
         title: 'Autorización',
         type: NAV_ITEM_TYPE_TITLE,
@@ -244,31 +278,6 @@ const navigationConfig = [
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: [SUPER_ADMIN]
-    },
-    {
-        key: 'reports',
-        title: 'Reportes',
-        type: NAV_ITEM_TYPE_TITLE,
-        subItems: [],
-        auth: billingRoles
-    },
-    {
-        key: 'sales-report',
-        title: 'Ventas',
-        icon: TbChartBar,
-        url: '/reports/sold-inventory',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-        auth: billingRoles
-    },
-    {
-        key: 'sales-courses-report',
-        title: 'Ventas por Curso',
-        icon: TbChartBar,
-        url: '/reports/sold-courses',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-        auth: billingRoles
     }
 ];
 
