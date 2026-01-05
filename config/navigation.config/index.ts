@@ -260,6 +260,15 @@ const navigationConfig = [
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: billingRoles
+    },
+    {
+        key: 'sales-courses-report',
+        title: 'Ventas por Curso',
+        icon: TbChartBar,
+        url: '/reports/sold-courses',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
     }
 ];
 
