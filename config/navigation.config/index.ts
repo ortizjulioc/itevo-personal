@@ -228,6 +228,15 @@ const navigationConfig = [
         auth: billingRoles
     },
     {
+        key: 'general-sales-report',
+        title: 'Reporte General',
+        icon: TbChartBar,
+        url: '/reports/general-sales',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
         key: 'sales-report',
         title: 'Ventas por Productos',
         icon: TbChartBar,
@@ -241,15 +250,6 @@ const navigationConfig = [
         title: 'Ventas por Curso',
         icon: TbChartBar,
         url: '/reports/sold-courses',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-        auth: billingRoles
-    },
-    {
-        key: 'general-sales-report',
-        title: 'Reporte General',
-        icon: TbChartBar,
-        url: '/reports/general-sales',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: billingRoles

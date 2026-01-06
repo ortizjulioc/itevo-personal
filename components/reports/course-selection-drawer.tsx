@@ -105,7 +105,7 @@ const CourseSelectionDrawer = ({ open, onClose, selectedCourses, onSelectionChan
                   <div className="flex-1">
                     <div className="font-semibold text-sm">{course.name}</div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Code: {course.code}
+                      Código: {course.code}
                     </div>
                     <div className="flex justify-between items-center mt-2 text-xs">
                       {/* <span className="font-medium text-primary">RD${course.price.toFixed(2)}</span> */}
