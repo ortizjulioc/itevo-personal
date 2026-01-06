@@ -37,10 +37,10 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 }
 
-export const formatNumber = (amount: number): string => {
+export const formatNumber = (amount: number, decimalPlaces?: number): string => {
   return new Intl.NumberFormat('es-DO', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: decimalPlaces === 0 ? 0 : 2,
+    maximumFractionDigits: decimalPlaces === 0 ? 0 : 2,
   }).format(amount);
 }
 

@@ -1,6 +1,6 @@
 'use client';
 import classNames from 'classnames';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface CheckboxProps {
   children?: React.ReactNode
@@ -57,6 +57,10 @@ export default function Checkbox({
 }: CheckboxProps) {
 
   const [internalChecked, setInternalChecked] = useState(checked || false);
+
+  useEffect(() => {
+    setInternalChecked(checked || false);
+  }, [checked]);
 
   const getVariantClass = () => {
     switch (variant) {

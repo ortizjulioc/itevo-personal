@@ -7,11 +7,16 @@ import DatePicker from '@/components/ui/date-picker';
 import { formatCurrency, formatNumber } from '@/utils';
 import { Button } from '@/components/ui';
 import StickyFooter from '@/components/common/sticky-footer';
+import ProductSelectionDrawer from '@/components/reports/product-selection-drawer';
+import Badge from '@/components/ui/badge';
+import { IconX, IconPlus } from '@/components/icon';
 
 const SoldInventoryReport = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
   const [reportData, setReportData] = useState<SoldInventoryReportItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const formatDate = (date: Date) => {
     return date.toISOString().split('T')[0];
@@ -31,7 +36,14 @@ const SoldInventoryReport = () => {
     try {
       const from = formatDate(dateRange[0]);
       const to = formatDate(dateRange[1]);
-      const response = await fetch(`/api/reports/inventory/sold?from=${from}&to=${to}`);
+      let url = `/api/reports/inventory/sold?from=${from}&to=${to}`;
+
+      if (selectedProducts.length > 0) {
+        const productIds = selectedProducts.map(p => p.id).join(',');
+        url += `&productIds=${productIds}`;
+      }
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Error al obtener el reporte');
@@ -55,7 +67,18 @@ const SoldInventoryReport = () => {
     if (!dateRange[0] || !dateRange[1]) return;
     const from = formatDate(dateRange[0]);
     const to = formatDate(dateRange[1]);
-    window.open(`/api/reports/inventory/sold/download?from=${from}&to=${to}`, '_blank');
+    let url = `/api/reports/inventory/sold/download?from=${from}&to=${to}`;
+
+    if (selectedProducts.length > 0) {
+      const productIds = selectedProducts.map(p => p.id).join(',');
+      url += `&productIds=${productIds}`;
+    }
+
+    window.open(url, '_blank');
+  };
+
+  const removeProduct = (productId: string) => {
+    setSelectedProducts(selectedProducts.filter(p => p.id !== productId));
   };
 
   const totalQuantity = reportData.reduce((acc, item) => acc + item.quantitySold, 0);
@@ -71,6 +94,7 @@ const SoldInventoryReport = () => {
             <div className="w-64">
               <DatePicker
                 mode="range"
+                className="w-auto"
                 value={dateRange}
                 onChange={(dates) => {
                   if (Array.isArray(dates)) {
@@ -81,6 +105,12 @@ const SoldInventoryReport = () => {
               />
             </div>
           </div>
+
+          <Button type="button" variant="outline" onClick={() => setIsDrawerOpen(true)}>
+            <IconPlus className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+            Seleccionar Productos
+          </Button>
+
           <Button type="button" onClick={fetchReport} disabled={loading}>
             {loading ? 'Cargando...' : 'Buscar'}
           </Button>
@@ -89,6 +119,31 @@ const SoldInventoryReport = () => {
           </Button>
         </div>
       </div>
+
+      {selectedProducts.length > 0 && (
+        <div className="mb-5 flex flex-wrap gap-2 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+          <div className="w-full text-xs font-semibold text-gray-500 mb-1">Productos filtrados:</div>
+          {selectedProducts.map(product => (
+            <Badge key={product.id} variant="primary" outline className="flex items-center gap-1 pr-1">
+              {product.name}
+              <button
+                type="button"
+                onClick={() => removeProduct(product.id)}
+                className="hover:bg-primary hover:text-white rounded-full p-0.5 transition-colors"
+              >
+                <IconX className="w-3 h-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      <ProductSelectionDrawer
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        selectedProducts={selectedProducts}
+        onSelectionChange={setSelectedProducts}
+      />
 
       <div className="panel">
         <div className="table-responsive">
@@ -107,7 +162,7 @@ const SoldInventoryReport = () => {
                   <tr key={item.productId}>
                     <td>{item.productCode}</td>
                     <td>{item.productName}</td>
-                    <td className="text-center">{item.quantitySold}</td>
+                    <td className="text-center">{formatNumber(item.quantitySold, 0)}</td>
                     <td className="text-right">{formatCurrency(item.totalAmount)}</td>
                   </tr>
                 ))
