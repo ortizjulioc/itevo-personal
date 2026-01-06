@@ -7,11 +7,16 @@ import DatePicker from '@/components/ui/date-picker';
 import { formatCurrency, formatNumber } from '@/utils';
 import { Button } from '@/components/ui';
 import StickyFooter from '@/components/common/sticky-footer';
+import CourseSelectionDrawer from '@/components/reports/course-selection-drawer';
+import Badge from '@/components/ui/badge';
+import { IconX, IconPlus } from '@/components/icon';
 
 const SoldCoursesReport = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
   const [reportData, setReportData] = useState<SoldCourseReportItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState<any[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const formatDate = (date: Date) => {
     return date.toISOString().split('T')[0];
@@ -31,7 +36,14 @@ const SoldCoursesReport = () => {
     try {
       const from = formatDate(dateRange[0]);
       const to = formatDate(dateRange[1]);
-      const response = await fetch(`/api/reports/courses/sold?from=${from}&to=${to}`);
+      let url = `/api/reports/courses/sold?from=${from}&to=${to}`;
+
+      if (selectedCourses.length > 0) {
+        const courseIds = selectedCourses.map(c => c.id).join(',');
+        url += `&courseIds=${courseIds}`;
+      }
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Error al obtener el reporte');
@@ -55,7 +67,18 @@ const SoldCoursesReport = () => {
     if (!dateRange[0] || !dateRange[1]) return;
     const from = formatDate(dateRange[0]);
     const to = formatDate(dateRange[1]);
-    window.open(`/api/reports/courses/sold/download?from=${from}&to=${to}`, '_blank');
+    let url = `/api/reports/courses/sold/download?from=${from}&to=${to}`;
+
+    if (selectedCourses.length > 0) {
+      const courseIds = selectedCourses.map(c => c.id).join(',');
+      url += `&courseIds=${courseIds}`;
+    }
+
+    window.open(url, '_blank');
+  };
+
+  const removeCourse = (courseId: string) => {
+    setSelectedCourses(selectedCourses.filter(c => c.id !== courseId));
   };
 
   const totalQuantity = reportData.reduce((acc, item) => acc + item.quantitySold, 0);
@@ -71,6 +94,7 @@ const SoldCoursesReport = () => {
             <div className="w-64">
               <DatePicker
                 mode="range"
+                className="w-auto"
                 value={dateRange}
                 onChange={(dates) => {
                   if (Array.isArray(dates)) {
@@ -81,6 +105,12 @@ const SoldCoursesReport = () => {
               />
             </div>
           </div>
+
+          <Button type="button" variant="outline" onClick={() => setIsDrawerOpen(true)}>
+            <IconPlus className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+            Seleccionar Cursos
+          </Button>
+
           <Button type="button" onClick={fetchReport} disabled={loading}>
             {loading ? 'Cargando...' : 'Buscar'}
           </Button>
@@ -89,6 +119,31 @@ const SoldCoursesReport = () => {
           </Button>
         </div>
       </div>
+
+      {selectedCourses.length > 0 && (
+        <div className="mb-5 flex flex-wrap gap-2 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+          <div className="w-full text-xs font-semibold text-gray-500 mb-1">Cursos filtrados:</div>
+          {selectedCourses.map(course => (
+            <Badge key={course.id} variant="primary" outline className="flex items-center gap-1 pr-1">
+              {course.name}
+              <button
+                type="button"
+                onClick={() => removeCourse(course.id)}
+                className="hover:bg-primary hover:text-white rounded-full p-0.5 transition-colors"
+              >
+                <IconX className="w-3 h-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      <CourseSelectionDrawer
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        selectedCourses={selectedCourses}
+        onSelectionChange={setSelectedCourses}
+      />
 
       <div className="panel">
         <div className="table-responsive">
@@ -107,7 +162,7 @@ const SoldCoursesReport = () => {
                   <tr key={item.courseId}>
                     <td>{item.courseCode}</td>
                     <td>{item.courseName}</td>
-                    <td className="text-center">{item.quantitySold}</td>
+                    <td className="text-center">{formatNumber(item.quantitySold, 0)}</td>
                     <td className="text-right">{formatCurrency(item.totalAmount)}</td>
                   </tr>
                 ))
@@ -127,7 +182,7 @@ const SoldCoursesReport = () => {
             <div className="flex justify-end items-center gap-8">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg">Total Cantidad:</span>
-                <span className="font-bold text-xl">{formatNumber(totalQuantity)}</span>
+                <span className="font-bold text-xl">{formatNumber(totalQuantity, 0)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg">Monto Total:</span>
