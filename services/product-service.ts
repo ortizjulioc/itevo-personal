@@ -33,6 +33,26 @@ export async function getProducts(search = '', page = 1, top = 10) {
   return { products, totalProducts };
 }
 
+// Obtener todos los productos para exportación (sin paginación)
+export async function getAllProducts(search = '') {
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+
+  const where: PrismaTypes.ProductWhereInput = {
+    deleted: false,
+    OR: [
+      { name: { contains: search } },
+      { description: { contains: search } },
+    ],
+    ...(branchId ? { branchId } : {}),
+  };
+
+  return await Prisma.product.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 // Crear un producto
 export async function createProduct(data: PrismaTypes.ProductCreateInput) {
   return await Prisma.product.create({ data });
@@ -45,8 +65,9 @@ export async function findProductById(
 ) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
-  return await prisma.product.findUnique({ where: 
-    { id, deleted: false, ...(branchId ? { branchId } : {}) }
+  return await prisma.product.findUnique({
+    where:
+      { id, deleted: false, ...(branchId ? { branchId } : {}) }
   });
 }
 

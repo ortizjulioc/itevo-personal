@@ -17,14 +17,15 @@ import {
     TbReportMoney,
     TbCheckupList,
     TbCashRegister,
+    TbChartBar,
 } from 'react-icons/tb';
 
-import { 
-    SUPER_ADMIN, 
-    GENERAL_ADMIN, 
-    ACADEMIC_ADMIN, 
-    BILLING_ADMIN, 
-    CASHIER, 
+import {
+    SUPER_ADMIN,
+    GENERAL_ADMIN,
+    ACADEMIC_ADMIN,
+    BILLING_ADMIN,
+    CASHIER,
     ASSISTANT,
     // Mantener compatibilidad
     ADMIN,
@@ -183,7 +184,7 @@ const navigationConfig = [
         subItems: [],
         auth: billingRoles
     },
-     {
+    {
         key: 'cashBoxes',
         title: 'Cajas',
         icon: LiaCashRegisterSolid,
@@ -215,6 +216,40 @@ const navigationConfig = [
         title: 'Rangos de NCF',
         icon: TbReceiptTax,
         url: '/ncfranges',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'reports',
+        title: 'Reportes',
+        type: NAV_ITEM_TYPE_TITLE,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'general-sales-report',
+        title: 'Reporte General',
+        icon: TbChartBar,
+        url: '/reports/general-sales',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'sales-report',
+        title: 'Ventas por Productos',
+        icon: TbChartBar,
+        url: '/reports/sold-inventory',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
+        key: 'sales-courses-report',
+        title: 'Ventas por Curso',
+        icon: TbChartBar,
+        url: '/reports/sold-courses',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: billingRoles
