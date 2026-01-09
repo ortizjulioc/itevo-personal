@@ -160,7 +160,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
             <View style={{ width: '50%' }}>
               <InfoField title='Nombre: ' value={`${enrollment.student.code} - ${enrollment.student.firstName} ${enrollment.student.lastName}`} />
               <InfoField title='Curso: ' value={enrollment.courseBranch.course.name} />
-              <InfoField title='Promoción:' value={enrollment.courseBranch.course.code} />
+              {/* <InfoField title='Promoción:' value={enrollment.courseBranch.course.code} /> */}
               <InfoField title='Cuota:' value={formatCurrency(enrollment.courseBranch.amount)} />
             </View>
             <View style={{ width: '50%' }}>
