@@ -77,7 +77,43 @@ export async function POST(request: Request) {
             continue;
           }
 
-          // Validar duplicados
+          // --- NORMALIZACIÓN ---
+          // Normalizar cédula
+          let identification: string | null = student.cedula ? String(student.cedula).trim().toUpperCase() : null;
+          let identificationType = "CEDULA";
+
+          if (identification) {
+            if (identification.includes("MENOR") || identification.includes("SIN CEDULA") || identification === "") {
+              identification = null;
+            } else {
+              // Dejar solo números
+              identification = identification.replace(/\D/g, "");
+              if (identification.length === 0) {
+                identification = null;
+              } else if (identification.length !== 11) {
+                identificationType = "PASAPORTE";
+              }
+            }
+          }
+
+          // Normalizar teléfono
+          let phone: string | null = student.telefono ? String(student.telefono) : null;
+          if (phone) {
+            // Separar por coma, slash o backslash
+            const parts = phone.split(/[,/\\]/);
+            const normalizedParts = parts
+              .map((p) => p.replace(/\D/g, "")) // Solo números
+              .filter((p) => p.length > 0); // Quitar vacíos
+
+            if (normalizedParts.length > 0) {
+              phone = normalizedParts.join(",");
+            } else {
+              phone = null;
+            }
+          }
+          // ---------------------
+
+          // Validar duplicados con datos normalizados
           if (student.email) {
             const exists = await findStudentByEmail(student.email);
             if (exists) {
@@ -86,8 +122,8 @@ export async function POST(request: Request) {
             }
           }
 
-          if (student.cedula) {
-            const exists = await findStudentByIdentification(student.cedula);
+          if (identification) {
+            const exists = await findStudentByIdentification(identification);
             if (exists) {
               errors.push({ index, code: "E_IDENTIFICATION_EXISTS", error: "La cédula ya está en uso." });
               continue;
@@ -113,8 +149,9 @@ export async function POST(request: Request) {
               code: student.generatedCode,
               firstName: student.nombres,
               lastName: student.apellidos,
-              identification: student.cedula || null,
-              phone: student.telefono || null,
+              identification: identification,
+              identificationType: identificationType as any,
+              phone: phone,
               email: student.email || null,
               address: student.direccion || null,
               hasTakenCourses: false,
