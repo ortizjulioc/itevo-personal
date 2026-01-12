@@ -740,6 +740,7 @@ model StudentScholarship {
 
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
+    deleted   Boolean  @default(false)
 
     @@map("students_scholarships")
 }

@@ -1,22 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
-import { getScholarships, createScholarship } from '@/services/scholarship-service';
+
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
+import { createStudentScholarship, getStudentsScholarships } from '@/services/studentScholarship-service';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
+        const { id } = params;
 
-        const { scholarships, totalScholarships } = await getScholarships(search, page, top);
+        const { studentsScholarships, totalStudentsScholarships } = await getStudentsScholarships(search, page, top, id);
 
         return NextResponse.json(
             {
-                data: scholarships,
-                total: totalScholarships,
+                data: studentsScholarships,
+                total: totalStudentsScholarships,
             },
             { status: 200 }
         );
@@ -30,34 +32,38 @@ export async function GET(request: NextRequest) {
 }
 
 //--------------------------------------------------------------------------------
-// Crear una nueva beca
-export async function POST(request: NextRequest) {
+// Crear una nueva beca asignada a un estudiante
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
+        const { id } = params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud
-        const { isValid, message } = validateObject(body, ['name']);
+        const { isValid, message } = validateObject(body, ['scholarshipId']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
-        const scholarship = await createScholarship(body);
+        // Agregar el studentId al cuerpo de la solicitud
+        body.studentId = id;
+
+        const studentScholarship = await createStudentScholarship(body);
         await createLog({
             action: 'POST',
-            description: `Se creó la beca con la siguiente información: \n${JSON.stringify(scholarship, null, 2)}`,
-            origin: 'scholarships',
-            elementId: scholarship.id,
+            description: `Se creó la beca asignada al estudiante con la siguiente información: \n${JSON.stringify(studentScholarship, null, 2)}`,
+            origin: 'student-scholarships',
+            elementId: studentScholarship.id,
             success: true,
         });
-        return NextResponse.json(scholarship, { status: 201 });
+        return NextResponse.json(studentScholarship, { status: 201 });
     } catch (error) {
         console.log(error);
         await createLog({
             action: 'POST',
             description: formatErrorMessage(error),
-            origin: 'scholarships',
+            origin: 'student-scholarships',
             success: false,
         });
-        return NextResponse.json({ code: 'E_INTERNAL_SERVER', message: 'Error interno del servidor' }, { status: 500 });
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
