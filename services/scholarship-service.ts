@@ -2,7 +2,7 @@ import 'server-only';
 import { Scholarship as PrismaScholasip } from '@prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
-interface Scholarship extends Omit<PrismaScholasip, 'id' | 'updatedAt' | 'createAt' | 'deleted'> {}
+interface Scholarship extends Omit<PrismaScholasip, 'id' | 'updatedAt' | 'createAt' | 'deleted'> { }
 
 // Obtener becas con paginación y búsqueda
 export const getScholarships = async (search: string, page: number, top: number) => {
