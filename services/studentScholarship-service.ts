@@ -74,7 +74,7 @@ export const findStudentScholarshipById = async (id: string) => {
             deleted: false,
         },
     });
-}
+};
 
 //--------------------------------------------------------------------------------
 // Actualizar beca asignada a un estudiante por ID
@@ -90,9 +90,22 @@ export const updateStudentScholarshipById = async (id: string, data: StudentScho
 
 //--------------------------------------------------------------------------------
 // Eliminar beca asignada a un estudiante por ID (borrado lógico)
-export const deleteStudentScholarship = async (id: string) => {
+export const deleteStudentScholarshipById = async (id: string) => {
     return Prisma.studentScholarship.update({
         where: { id },
         data: { deleted: true },
     });
+};
+
+//--------------------------------------------------------------------------------
+// funcion para verificar si una beca ya está asignada a un estudiante
+export const isScholarshipAssignedToStudent = async (studentId: string, scholarshipId: string): Promise<boolean> => {
+    const student_scholarshipCount = await Prisma.studentScholarship.findFirst({
+        where: {
+            studentId: studentId,
+            scholarshipId: scholarshipId,
+            deleted: false,
+        },
+    });
+    return !!student_scholarshipCount;
 };

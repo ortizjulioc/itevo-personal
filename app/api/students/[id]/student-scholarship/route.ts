@@ -3,7 +3,7 @@ import { validateObject } from '@/utils';
 
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { createStudentScholarship, getStudentsScholarships } from '@/services/studentScholarship-service';
+import { createStudentScholarship, getStudentsScholarships, isScholarshipAssignedToStudent } from '@/services/studentScholarship-service';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
@@ -46,6 +46,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
         // Agregar el studentId al cuerpo de la solicitud
         body.studentId = id;
+        //validar que el estudiante no tenga ya esa beca asignada
+        const studentWithScholarship = await isScholarshipAssignedToStudent(body.studentId, body.scholarshipId);
+        if (studentWithScholarship) {
+            return NextResponse.json({ code: 'E_SCHOLARSHIP_ALREADY_ASSIGNED', message: 'El estudiante ya tiene asignada esta beca' }, { status: 400 });
+        }
 
         const studentScholarship = await createStudentScholarship(body);
         await createLog({
@@ -67,3 +72,5 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
+//--------------------------------------------------------------------------------
+//eliminar una beca asignada a un estudiante (soft delete)
