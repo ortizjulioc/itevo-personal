@@ -15,6 +15,7 @@ export const getScholarships = async (search: string, page: number, top: number)
             description: true,
             type: true,
             value: true,
+            isActive: true,
         },
         where: {
             deleted: false,
@@ -51,6 +52,7 @@ export const findScholarshipById = async (id: string) => {
             description: true,
             type: true,
             value: true,
+            isActive: true,
         },
         where: {
             id: id,

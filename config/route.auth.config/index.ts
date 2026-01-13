@@ -1,9 +1,9 @@
-import { 
-    SUPER_ADMIN, 
-    GENERAL_ADMIN, 
-    ACADEMIC_ADMIN, 
-    BILLING_ADMIN, 
-    CASHIER, 
+import {
+    SUPER_ADMIN,
+    GENERAL_ADMIN,
+    ACADEMIC_ADMIN,
+    BILLING_ADMIN,
+    CASHIER,
     ASSISTANT,
     // Mantener compatibilidad
     ADMIN,
@@ -135,6 +135,17 @@ export const routeConfig = [
         key: 'promotions-subroutes',
         url: '/promotions/:path*',
         authorization: academicRoles,
+    },
+    // Becas - Admin, GeneralAdmin, SuperAdmin
+    {
+        key: 'scholarships',
+        url: '/scholarships',
+        authorization: [SUPER_ADMIN, GENERAL_ADMIN, ADMIN],
+    },
+    {
+        key: 'scholarships-subroutes',
+        url: '/scholarships/:path*',
+        authorization: [SUPER_ADMIN, GENERAL_ADMIN, ADMIN],
     },
     // Horarios - AcademicAdmin, GeneralAdmin, SuperAdmin
     {
