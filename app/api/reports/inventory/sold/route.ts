@@ -18,24 +18,30 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
+    const cashRegisterId = searchParams.get('cashRegisterId');
     const from = searchParams.get('from');
     const to = searchParams.get('to');
     const productIdsParam = searchParams.get('productIds');
 
-    if (!from || !to) {
-      return NextResponse.json({ error: 'Missing required parameters: from, to' }, { status: 400 });
+    if (!cashRegisterId && (!from || !to)) {
+      return NextResponse.json({ error: 'Missing required parameters: from and to OR cashRegisterId' }, { status: 400 });
     }
 
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
+    let fromDate: Date | undefined;
+    let toDate: Date | undefined;
 
-    if (to.length <= 10) {
-      toDate.setHours(23, 59, 59, 999);
+    if (from && to) {
+      fromDate = new Date(from);
+      toDate = new Date(to);
+
+      if (to.length <= 10) {
+        toDate.setHours(23, 59, 59, 999);
+      }
     }
 
     const productIds = productIdsParam ? productIdsParam.split(',').map(id => id.trim()) : undefined;
 
-    const report = await getSoldInventoryReport(branchId, fromDate, toDate, productIds);
+    const report = await getSoldInventoryReport(branchId, fromDate, toDate, productIds, cashRegisterId || undefined);
 
     return NextResponse.json(report, { status: 200 });
 
