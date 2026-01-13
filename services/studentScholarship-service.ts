@@ -14,6 +14,10 @@ export const getStudentsScholarships = async (search: string, page: number, top:
             studentId: true,
             assignedAt: true,
             assignedBy: true,
+            validUntil: true,
+            isRedeemed: true,
+            active: true,
+            reason: true,
             scholarship: {
                 select: {
                     id: true,
