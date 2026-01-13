@@ -18,6 +18,7 @@ import {
     TbCheckupList,
     TbCashRegister,
     TbChartBar,
+    TbCertificate,
 } from 'react-icons/tb';
 
 import {
@@ -123,6 +124,15 @@ const navigationConfig = [
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: academicRoles
+    },
+    {
+        key: 'scholarships',
+        title: 'Catálogo de Becas',
+        icon: TbCertificate,
+        url: '/scholarships',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [SUPER_ADMIN, GENERAL_ADMIN, ADMIN]
     },
 
     {
