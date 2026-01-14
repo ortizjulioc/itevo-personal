@@ -15,6 +15,7 @@ import 'flatpickr/dist/flatpickr.css';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import Checkbox from '@/components/ui/checkbox';
 import { useSession } from 'next-auth/react';
+import UserLabel from '@/components/common/info-labels/user-label';
 
 interface Props {
     studentId: string;
@@ -99,6 +100,7 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
         });
     };
 
+    console.log('SCHOLARSHIPS:', scholarships);
     return (
         <Drawer open={isOpen} onClose={onClose} title="Gestionar Becas" className="max-w-md">
             <div className="flex flex-col gap-6 p-4 h-full">
@@ -194,18 +196,80 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                     ) : (
                         <div className="flex flex-col gap-3">
                             {scholarships.map((item: any) => (
-                                <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded shadow-sm hover:shadow-md transition-shadow">
-                                    <div>
-                                        <p className="font-medium text-gray-800 dark:text-white-light">{item.scholarship?.name || 'Beca'}</p>
+                                <div key={item.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="flex items-start justify-between p-3 border-b border-gray-100 dark:border-gray-800">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className="font-semibold text-gray-900 dark:text-white-light">
+                                                    {item.scholarship?.name || 'Beca'}
+                                                </p>
+                                                {item.active ? (
+                                                    <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
+                                                        Activa
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 rounded">
+                                                        Inactiva
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Details Grid */}
+                                            <div className="space-y-1 mt-2">
+                                                {item.courseBranch && (
+                                                    <div className="flex items-start gap-2 text-xs">
+                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Oferta Académica:</span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
+                                                            {item.courseBranch.name}
+                                                            {item.courseBranch.course && (
+                                                                <span className="text-gray-500 dark:text-gray-400">
+                                                                    {' '}- {item.courseBranch.course.name}
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {item.validUntil && (
+                                                    <div className="flex items-start gap-2 text-xs">
+                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Válida hasta:</span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
+                                                            {new Date(item.validUntil).toLocaleDateString('es-ES', {
+                                                                day: '2-digit',
+                                                                month: 'long',
+                                                                year: 'numeric'
+                                                            })}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {item.reason && (
+                                                    <div className="flex items-start gap-2 text-xs">
+                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Motivo:</span>
+                                                        <span className="text-gray-700 dark:text-gray-300">{item.reason}</span>
+                                                    </div>
+                                                )}
+
+                                                {item.assignedBy && (
+                                                    <div className="flex items-start gap-2 text-xs">
+                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Asignada por:</span>
+                                                        <span className="text-gray-700 dark:text-gray-300">
+                                                            <UserLabel UserId={item.assignedBy} />
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            icon={<IconTrashLines className="w-4 h-4" />}
+                                            color="danger"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDelete(item.id)}
+                                            className="p-2 border-none hover:bg-red-50 dark:hover:bg-red-900/20 ml-2"
+                                        />
                                     </div>
-                                    <Button
-                                        icon={<IconTrashLines className="w-4 h-4" />}
-                                        color="danger"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleDelete(item.id)}
-                                        className="p-2 border-none hover:bg-red-50 dark:hover:bg-red-900/20"
-                                    />
                                 </div>
                             ))}
                         </div>
