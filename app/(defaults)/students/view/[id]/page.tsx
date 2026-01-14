@@ -7,10 +7,12 @@ import StudentEnrollments from "../../components/student-details/student-enrollm
 import StickyFooter from "@/components/common/sticky-footer";
 import Tooltip from "@/components/ui/tooltip";
 import { Button } from "@/components/ui";
-import { IconEdit, IconTrashLines, IconUserPlus } from "@/components/icon";
+import { IconEdit, IconTrashLines, IconUserPlus, IconAward } from "@/components/icon";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteStudent } from "../../lib/request";
+import StudentScholarshipsManager from "../../components/student-details/student-scholarships-manager";
+import { useState } from "react";
 
 export default function StudentView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
     const id = params?.id; // Extraer el ID de params
@@ -35,6 +37,8 @@ export default function StudentView({ params, searchParams }: { params: { id: st
             }
         });
     }
+
+    const [showScholarships, setShowScholarships] = useState(false);
 
     return (
         <div>
@@ -68,6 +72,16 @@ export default function StudentView({ params, searchParams }: { params: { id: st
                                 </Tooltip>
                             </div>
                             <div className="flex gap-2">
+                                <Tooltip title="Becas">
+                                    <Button
+                                        onClick={() => setShowScholarships(true)}
+                                        icon={<IconAward className="size-4" />}
+                                        color="warning"
+                                        className="min-w-max"
+                                    >
+                                        Becas
+                                    </Button>
+                                </Tooltip>
                                 <Tooltip title="Editar">
                                     <Link href={`/students/${student.id}`} className="w-full">
                                         <Button
@@ -92,6 +106,12 @@ export default function StudentView({ params, searchParams }: { params: { id: st
                             </div>
                         </div>
                     </StickyFooter>
+
+                    <StudentScholarshipsManager
+                        studentId={student.id}
+                        isOpen={showScholarships}
+                        onClose={() => setShowScholarships(false)}
+                    />
                 </>
             )}
 
