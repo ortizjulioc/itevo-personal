@@ -14,7 +14,6 @@ export const removeStudentScholarship = async (studentId: string, studentScholar
     return await apiRequest.remove<any>(`/students/${studentId}/student-scholarship/${studentScholarshipId}`);
 };
 
-export const getScholarships = async (params: any = {}) => {
-    const queryString = objectToQueryString(params);
-    return await apiRequest.get<any>(`/scholarschips${queryString}`);
+export const getScholarships = async (studentId: string) => {
+    return await apiRequest.get<any>(`/students/${studentId}/student-scholarship`);
 };
