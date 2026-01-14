@@ -6,8 +6,8 @@ export const getStudentScholarships = async (studentId: string, params: any = {}
     return await apiRequest.get<any>(`/students/${studentId}/student-scholarship${queryString}`);
 };
 
-export const assignScholarship = async (studentId: string, scholarshipId: string) => {
-    return await apiRequest.post<any>(`/students/${studentId}/student-scholarship`, { scholarshipId });
+export const assignScholarship = async (studentId: string, payload: any) => {
+    return await apiRequest.post<any>(`/students/${studentId}/student-scholarship`, payload);
 };
 
 export const removeStudentScholarship = async (studentId: string, studentScholarshipId: string) => {
