@@ -65,6 +65,8 @@ export const findStudentScholarshipById = async (id: string) => {
             studentId: true,
             assignedAt: true,
             assignedBy: true,
+            courseBranchId: true,
+
             scholarship: {
                 select: {
                     id: true,
