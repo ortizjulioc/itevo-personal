@@ -17,6 +17,7 @@ export const getStudentsScholarships = async (search: string, page: number, top:
             assignedBy: true,
             validUntil: true,
             isRedeemed: true,
+            courseBranchId: true,
             active: true,
             reason: true,
             scholarship: {
