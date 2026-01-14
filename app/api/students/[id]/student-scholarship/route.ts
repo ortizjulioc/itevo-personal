@@ -1,3 +1,4 @@
+import { Scholarship } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 
@@ -35,42 +36,47 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // Crear una nueva beca asignada a un estudiante
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const { id } = params;
+        const { id: studentId } = params; // ID del estudiante desde la URL
         const body = await request.json();
-
-        // Validar el cuerpo de la solicitud
-        const { isValid, message } = validateObject(body, ['scholarshipId']);
+        console.log('BODY_POST_SCHOLARSHIP:', body);
+        // 1. Validar campos obligatorios
+        const { isValid, message } = validateObject(body, ['scholarshipId', 'assignedBy']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
-        // Agregar el studentId al cuerpo de la solicitud
-        body.studentId = id;
-        //validar que el estudiante no tenga ya esa beca asignada
-        const studentWithScholarship = await isScholarshipAssignedToStudent(body.studentId, body.scholarshipId);
-        if (studentWithScholarship) {
-            return NextResponse.json({ code: 'E_SCHOLARSHIP_ALREADY_ASSIGNED', message: 'El estudiante ya tiene asignada esta beca' }, { status: 400 });
+        // 2. Verificar si ya existe
+        const isAssigned = await isScholarshipAssignedToStudent(studentId, body.scholarshipId);
+        if (isAssigned) {
+            return NextResponse.json(
+                {
+                    code: 'E_SCHOLARSHIP_ALREADY_ASSIGNED',
+                    message: 'El estudiante ya tiene asignada esta beca',
+                },
+                { status: 400 }
+            );
         }
 
-        const studentScholarship = await createStudentScholarship(body);
+        // 3. Crear el registro usando IDs directos (Modo Unchecked)
+        // Esto mapea scholarshipId, assignedBy y courseBranchId automáticamente
+        const studentScholarship = await createStudentScholarship({
+            ...body,
+            studentId: studentId, // Inyectamos el ID de la URL
+        });
+
         await createLog({
             action: 'POST',
-            description: `Se creó la beca asignada al estudiante con la siguiente información: \n${JSON.stringify(studentScholarship, null, 2)}`,
+            description: `Beca asignada con éxito al estudiante: ${studentId}`,
             origin: 'student-scholarships',
             elementId: studentScholarship.id,
             success: true,
         });
+
+
         return NextResponse.json(studentScholarship, { status: 201 });
     } catch (error) {
-        console.log(error);
-        await createLog({
-            action: 'POST',
-            description: formatErrorMessage(error),
-            origin: 'student-scholarships',
-            success: false,
-        });
+        console.error('ERROR_POST_SCHOLARSHIP:', error);
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 //--------------------------------------------------------------------------------
-//eliminar una beca asignada a un estudiante (soft delete)
