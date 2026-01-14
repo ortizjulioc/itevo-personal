@@ -100,7 +100,7 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
         });
     };
 
-    console.log('SCHOLARSHIPS:', scholarships);
+
     return (
         <Drawer open={isOpen} onClose={onClose} title="Gestionar Becas" className="max-w-md">
             <div className="flex flex-col gap-6 p-4 h-full">
@@ -219,14 +219,16 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                                                 {item.courseBranch && (
                                                     <div className="flex items-start gap-2 text-xs">
                                                         <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Oferta Académica:</span>
-                                                        <span className="text-gray-700 dark:text-gray-300">
-                                                            {item.courseBranch.name}
-                                                            {item.courseBranch.course && (
-                                                                <span className="text-gray-500 dark:text-gray-400">
-                                                                    {' '}- {item.courseBranch.course.name}
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-gray-700 dark:text-gray-300">
+                                                                {item.courseBranch.course?.name || item.courseBranch.name || 'N/A'}
+                                                            </span>
+                                                            {item.courseBranch.modality && (
+                                                                <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded w-fit">
+                                                                    {item.courseBranch.modality}
                                                                 </span>
                                                             )}
-                                                        </span>
+                                                        </div>
                                                     </div>
                                                 )}
 

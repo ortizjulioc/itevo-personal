@@ -17,7 +17,6 @@ const useFetchStudentScholarships = (studentId: string) => {
                 // La API devuelve { data: [], total: 0 }
                 // apiRequest probablemente envuelve esto en { success: true, data: { data: [], total: 0 } }
                 const scholarshipsData = response.data?.data || response.data || [];
-                console.log('✅ SCHOLARSHIPS DATA:', scholarshipsData);
                 setScholarships(scholarshipsData);
                 setTotal(response.data?.total || 0);
             } else {
