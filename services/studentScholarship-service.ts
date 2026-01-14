@@ -1,6 +1,7 @@
 import 'server-only';
 import { StudentScholarship as PrismaStudentScholarship } from '@prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
+import { Prisma as prismaTypes } from '@prisma/client';
 
 interface StudentScholarship extends Omit<PrismaStudentScholarship, 'id' | 'updatedAt' | 'createAt' | 'deleted'> {}
 
@@ -48,9 +49,10 @@ export const getStudentsScholarships = async (search: string, page: number, top:
 
 //----------------------------------------------------------------------------------
 // Crear una nueva beca asignada a un estudiante
-export const createStudentScholarship = async (data: StudentScholarship) => {
-    const studentScholarship = await Prisma.studentScholarship.create({ data });
-    return studentScholarship;
+export const createStudentScholarship = async (data: prismaTypes.StudentScholarshipUncheckedCreateInput) => {
+    return await Prisma.studentScholarship.create({
+        data,
+    });
 };
 
 //--------------------------------------------------------------------------------
