@@ -141,7 +141,7 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                                 </div>
 
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Válida Hasta</label>
+                                    <label className="text-xs text-gray-500 mb-1 block">Válida Hasta (Opcional)</label>
                                     <Flatpickr
                                         value={validUntil ? [validUntil] : []}
                                         options={{
@@ -155,7 +155,7 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                                 </div>
 
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Motivo</label>
+                                    <label className="text-xs text-gray-500 mb-1 block">Motivo (Opcional)</label>
                                     <Input
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
@@ -195,89 +195,112 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                         <p className="text-gray-500 text-center italic mt-10">No tiene becas asignadas.</p>
                     ) : (
                         <div className="flex flex-col gap-3">
-                            {scholarships.map((item: any) => (
-                                <div key={item.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-start justify-between p-3 border-b border-gray-100 dark:border-gray-800">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <p className="font-semibold text-gray-900 dark:text-white-light">
-                                                    {item.scholarship?.name || 'Beca'}
-                                                </p>
-                                                {item.active ? (
-                                                    <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
-                                                        Activa
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 rounded">
-                                                        Inactiva
-                                                    </span>
-                                                )}
-                                            </div>
+                            {scholarships.map((item: any) => {
+                                const isExpired = item.validUntil && new Date(item.validUntil) < new Date();
+                                const showActive = item.active && !isExpired;
 
-                                            {/* Details Grid */}
-                                            <div className="space-y-1 mt-2">
-                                                {item.courseBranch && (
-                                                    <div className="flex items-start gap-2 text-xs">
-                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Oferta Académica:</span>
-                                                        <div className="flex flex-col gap-1">
+                                return (
+                                    <div key={item.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-start justify-between p-3 border-b border-gray-100 dark:border-gray-800">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <p className="font-semibold text-gray-900 dark:text-white-light">
+                                                        {item.scholarship?.name || 'Beca'}
+                                                    </p>
+                                                    {isExpired ? (
+                                                        <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded">
+                                                            Vencida
+                                                        </span>
+                                                    ) : showActive ? (
+                                                        <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
+                                                            Activa
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 rounded">
+                                                            Inactiva
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Details Grid */}
+                                                <div className="space-y-1 mt-2">
+                                                    {item.courseBranch && (
+                                                        <div className="flex items-start gap-2 text-xs">
+                                                            <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Oferta Académica:</span>
                                                             <span className="text-gray-700 dark:text-gray-300">
                                                                 {item.courseBranch.course?.name || item.courseBranch.name || 'N/A'}
+                                                                {item.courseBranch.modality && (
+                                                                    <span className="text-gray-500 dark:text-gray-400 ml-1">
+                                                                        ({item.courseBranch.modality.charAt(0).toUpperCase() + item.courseBranch.modality.slice(1).toLowerCase()})
+                                                                    </span>
+                                                                )}
+                                                                {item.courseBranch.teacher && (
+                                                                    <span className="text-gray-500 dark:text-gray-400 ml-1">
+                                                                        - {item.courseBranch.teacher.firstName} {item.courseBranch.teacher.lastName}
+                                                                    </span>
+                                                                )}
                                                             </span>
-                                                            {item.courseBranch.modality && (
-                                                                <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded w-fit">
-                                                                    {item.courseBranch.modality}
-                                                                </span>
-                                                            )}
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )}
 
-                                                {item.validUntil && (
-                                                    <div className="flex items-start gap-2 text-xs">
-                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Válida hasta:</span>
-                                                        <span className="text-gray-700 dark:text-gray-300">
-                                                            {new Date(item.validUntil).toLocaleDateString('es-ES', {
-                                                                day: '2-digit',
-                                                                month: 'long',
-                                                                year: 'numeric'
-                                                            })}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                    {item.validUntil && (
+                                                        <div className="flex items-start gap-2 text-xs">
+                                                            <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Válida hasta:</span>
+                                                            <span className={isExpired ? "text-red-600 dark:text-red-400 font-semibold" : "text-gray-700 dark:text-gray-300"}>
+                                                                {new Date(item.validUntil).toLocaleDateString('es-ES', {
+                                                                    day: '2-digit',
+                                                                    month: 'long',
+                                                                    year: 'numeric'
+                                                                })}
+                                                            </span>
+                                                        </div>
+                                                    )}
 
-                                                {item.reason && (
-                                                    <div className="flex items-start gap-2 text-xs">
-                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Motivo:</span>
-                                                        <span className="text-gray-700 dark:text-gray-300">{item.reason}</span>
-                                                    </div>
-                                                )}
+                                                    {item.reason && (
+                                                        <div className="flex items-start gap-2 text-xs">
+                                                            <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Motivo:</span>
+                                                            <span className="text-gray-700 dark:text-gray-300">{item.reason}</span>
+                                                        </div>
+                                                    )}
 
-                                                {item.assignedBy && (
-                                                    <div className="flex items-start gap-2 text-xs">
-                                                        <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Asignada por:</span>
-                                                        <span className="text-gray-700 dark:text-gray-300">
-                                                            <UserLabel UserId={item.assignedBy} />
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                    {item.assignedBy && (
+                                                        <div className="flex items-start gap-2 text-xs">
+                                                            <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Asignada por:</span>
+                                                            <span className="text-gray-700 dark:text-gray-300">
+                                                                <UserLabel UserId={item.assignedBy} />
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    {item.courseBranch?.schedules && item.courseBranch.schedules.length > 0 && (
+                                                        <div className="flex items-start gap-2 text-xs">
+                                                            <span className="text-gray-500 dark:text-gray-400 font-medium min-w-[100px]">Horario:</span>
+                                                            <span className="text-gray-700 dark:text-gray-300">
+                                                                {item.courseBranch.schedules.map((s: any) =>
+                                                                    `${s.day}: ${s.startTime}-${s.endTime}`
+                                                                ).join(', ')}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <Button
-                                            icon={<IconTrashLines className="w-4 h-4" />}
-                                            color="danger"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleDelete(item.id)}
-                                            className="p-2 border-none hover:bg-red-50 dark:hover:bg-red-900/20 ml-2"
-                                        />
+                                            <Button
+                                                icon={<IconTrashLines className="w-4 h-4" />}
+                                                color="danger"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleDelete(item.id)}
+                                                className="p-2 border-none hover:bg-red-50 dark:hover:bg-red-900/20 ml-2"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
             </div>
-        </Drawer>
+        </Drawer >
     );
 }
