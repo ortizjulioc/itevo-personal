@@ -6,7 +6,7 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus } from "@prisma/client";
+import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
 import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
@@ -137,7 +137,51 @@ export async function POST(request: Request) {
 
                 const receivables: any[] = [];
                 const startDate = new Date(courseBranch.startDate);
-                const amountPerInstallment = courseBranch.amount;
+                // 1. Detección de beca
+                const activeScholarship = await prisma.studentScholarship.findFirst({
+                    where: {
+                        studentId: student.id,
+                        active: true,
+                        OR: [
+                            { courseBranchId: courseBranch.id },
+                            { courseBranchId: null }
+                        ],
+                        scholarship: { isActive: true }
+                    },
+                    include: { scholarship: true },
+                    orderBy: { courseBranchId: 'desc' } // Prioritize specific rule (string) over global (null)? Need to verify sort order.
+                });
+
+                console.log('Enrollment: Checking scholarships for student:', student.id);
+                console.log('Enrollment: Current Course:', courseBranch.id, courseBranch.course?.name);
+                if (activeScholarship) {
+                    console.log('Enrollment: Found Active Scholarship:', {
+                        id: activeScholarship.id,
+                        name: activeScholarship.scholarship?.name,
+                        scope: activeScholarship.courseBranchId ? 'Specific Course' : 'Global'
+                    });
+                } else {
+                    console.log('Enrollment: No active scholarship found matching criteria.');
+                }
+
+                // 2. Cálculo del monto base por cuota
+                let amountPerInstallment = courseBranch.amount;
+                let conceptSuffix = "";
+
+                if (activeScholarship && activeScholarship.scholarship) {
+                    const { type, value, name } = activeScholarship.scholarship;
+                    let discount = 0;
+                    if (type === ScholarshipType.percentage) {
+                        discount = amountPerInstallment * (value / 100);
+                    } else if (type === ScholarshipType.fixed_amount) {
+                        discount = value;
+                    }
+
+                    // Evitar negativos
+                    if (discount > amountPerInstallment) discount = amountPerInstallment;
+                    amountPerInstallment -= discount;
+                    conceptSuffix = ` (Beca: ${name})`;
+                }
 
                 if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
                     receivables.push({
@@ -211,7 +255,7 @@ export async function POST(request: Request) {
                         amount: amountPerInstallment,
                         dueDate,
                         status: PaymentStatus.PENDING,
-                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}`,
+                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
                     });
 
                 }
