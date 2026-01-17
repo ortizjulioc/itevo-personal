@@ -50,21 +50,14 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
         if (!CashRegister?.id) return;
 
         if (CashRegister.status === 'CLOSED') {
-            Swal.fire({
-                title: 'Caja cerrada',
-                text: 'Esta caja ya fue cerrada y no puede ser modificada.',
-                icon: 'warning',
-                confirmButtonText: 'Ir a facturación',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-            }).then(() => {
-                router.push('/invoices');
-            });
+            router.push('/invoices');
             return;
         }
 
         fetchInvoicesData(`cashRegisterId=${CashRegister.id}`);
     }, [CashRegister.id]);
+
+
 
     const draftInvoices = invoices.filter(inv => inv.status === 'DRAFT');
 

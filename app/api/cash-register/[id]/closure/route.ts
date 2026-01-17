@@ -32,13 +32,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const { id } = params;
 
-    const closure = await getCashRegisterClosureByCashRegisterId(id);
+    const closures = await getCashRegisterClosureByCashRegisterId(id);
 
-    if (!closure) {
+    if (!closures || closures.length === 0) {
       return NextResponse.json({ code: 'E_CLOSURE_NOT_FOUND', message: 'Cierre de caja no encontrado' }, { status: 404 });
     }
 
-    return NextResponse.json(closure, { status: 200 });
+    return NextResponse.json(closures[0], { status: 200 });
   } catch (error) {
     await createLog({
       action: 'GET',

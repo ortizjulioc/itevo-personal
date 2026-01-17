@@ -4,7 +4,7 @@ import { Button, Pagination } from "@/components/ui";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
-import { TbPointFilled } from "react-icons/tb";
+import { TbPointFilled, TbEye } from "react-icons/tb";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import useFetchCashRegisters from "../../../lib/cash-register/use-fetch-cash-register";
 import { ViewTitle } from "@/components/common";
@@ -33,11 +33,11 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
         lastName?: string;
         roles?: any[];
         branches?: any[];
-      };
+    };
 
 
     rawParams.userId = user?.id;
-    rawParams.status = 'OPEN';
+    // rawParams.status = 'OPEN';
 
     const finalQuery = new URLSearchParams(rawParams).toString();
 
@@ -47,7 +47,7 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
     }
 
 
-  console.log(cashRegisters)
+    console.log(cashRegisters)
     if (loading) return <Skeleton rows={4} columns={['CAJA', 'USUARIO', 'FECHA DE CREACION', 'ESTADO']} />;
 
     return (
@@ -105,9 +105,11 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
                                         <td>
                                             <div className="flex gap-2 justify-end">
 
-                                                <Tooltip title="Facturar">
-                                                    <Link href={`/invoices/${CashRegister.id}`}>
-                                                        <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                <Tooltip title={CashRegister.status === 'OPEN' ? "Facturar" : "Ver Detalle"}>
+                                                    <Link href={CashRegister.status === 'OPEN' ? `/invoices/${CashRegister.id}` : `/invoices/closed/${CashRegister.id}`}>
+                                                        <Button variant="outline" size="sm" icon={
+                                                            CashRegister.status === 'OPEN' ? <HiOutlinePaperAirplane className="size-4 rotate-90" /> : <TbEye className="size-4" />
+                                                        } />
                                                     </Link>
                                                 </Tooltip>
 
