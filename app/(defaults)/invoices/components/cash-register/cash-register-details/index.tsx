@@ -122,7 +122,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 Registro de asistencia
                                             </button>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <button
                                                 type="button"
                                                 disabled={loadingAction !== null}
@@ -139,7 +139,7 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                                                 )}
                                                 Desembolso a profesor
                                             </button>
-                                        </li>
+                                        </li> */}
                                         <li>
                                             <button
                                                 type="button"
