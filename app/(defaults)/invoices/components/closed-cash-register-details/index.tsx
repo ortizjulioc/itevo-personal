@@ -9,6 +9,8 @@ import { openNotification } from '@/utils';
 import PrintClosure from '@/components/common/print/closure';
 import Skeleton from '@/components/common/Skeleton';
 import { CashRegister } from '../../lib/cash-register/use-fetch-cash-register';
+import CashRegisterProductReport from '@/app/(defaults)/cash-registers/components/reports/cash-register-product-report';
+import CashRegisterCourseReport from '@/app/(defaults)/cash-registers/components/reports/cash-register-course-report';
 
 const billsList: Record<string, number> = {
   twoThousand: 2000,
@@ -188,6 +190,15 @@ export default function ClosedCashRegisterDetails({ CashRegister }: { CashRegist
           </div>
         </div>
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-5 mb-5">
+        <div className="col-span-12 md:col-span-6">
+          <CashRegisterProductReport cashRegisterId={CashRegister.id} />
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <CashRegisterCourseReport cashRegisterId={CashRegister.id} />
+        </div>
+      </div>
+    </div >
   );
 }
