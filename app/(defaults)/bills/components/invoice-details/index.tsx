@@ -13,7 +13,7 @@ import OptionalInfo from '@/components/common/optional-info'
 import { deleteInvoice } from '../../lib/request'
 import { useRouter } from 'next/navigation';
 import { InvoiceStatus } from '@prisma/client'
-import { CASHIER } from '@/constants/role.constant'
+import { CASHIER, SUPER_ADMIN, GENERAL_ADMIN } from '@/constants/role.constant'
 import Link from 'next/link'
 
 export default function InvoiceDetails({ invoice, currentUser }: { invoice: any, currentUser?: any }) {
@@ -26,8 +26,11 @@ export default function InvoiceDetails({ invoice, currentUser }: { invoice: any,
 
     // Cashiers can only view invoices from their own cash register
     const canViewInvoice = !isCashier || (isCashier && isOwnCashRegister);
-    // Cashiers cannot cancel invoices, only admins can
-    const canCancelInvoice = !isCashier;
+
+    // Only admins can cancel invoices
+    const canCancelInvoice = currentUser?.roles?.some((role: any) =>
+        [SUPER_ADMIN, GENERAL_ADMIN].includes(role.normalizedName)
+    );
 
     const handleCancelInvoice = async () => {
         confirmDialog({

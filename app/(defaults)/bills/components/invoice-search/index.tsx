@@ -6,6 +6,8 @@ import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { InvoiceStatus } from '@prisma/client';
 import SelectStudent from '@/components/common/selects/select-student';
+import { useSession } from 'next-auth/react';
+import { SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN } from '@/constants/role.constant';
 
 
 interface SelectOption {
@@ -18,6 +20,12 @@ export default function SearchInvoice() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
+    const { data: session } = useSession();
+
+    const userRoles = session?.user?.roles || [];
+    const hasFullAccess = userRoles.some((role: any) =>
+        [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN].includes(role.normalizedName)
+    );
 
     const NCF_TYPES_OPTIONS = Object.values(NCF_TYPES).map((type) => ({
         value: type.code,
@@ -61,38 +69,42 @@ export default function SearchInvoice() {
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">
 
-            <DatePicker
+            {hasFullAccess && (
+                <>
+                    <DatePicker
 
-                value={filters.fromDate ? new Date(filters.fromDate) : undefined}
-                onChange={(date) => setFilters(prev => ({ ...prev, fromDate: extractDate(date) }))}
-                placeholder="Fecha Desde"
-                isClearable
+                        value={filters.fromDate ? new Date(filters.fromDate) : undefined}
+                        onChange={(date) => setFilters(prev => ({ ...prev, fromDate: extractDate(date) }))}
+                        placeholder="Fecha Desde"
+                        isClearable
 
-            />
-            <DatePicker
+                    />
+                    <DatePicker
 
-                value={filters.toDate ? new Date(filters.toDate) : undefined}
-                onChange={(date) => setFilters(prev => ({ ...prev, toDate: extractDate(date) }))}
-                placeholder="Fecha Hasta"
-                isClearable
-            />
+                        value={filters.toDate ? new Date(filters.toDate) : undefined}
+                        onChange={(date) => setFilters(prev => ({ ...prev, toDate: extractDate(date) }))}
+                        placeholder="Fecha Hasta"
+                        isClearable
+                    />
 
-            <Select
-                options={NCF_TYPES_OPTIONS}
-                value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === filters.type)}
-                onChange={(option) => handleFilterChange('type', option as SelectOption | null)}
-                isSearchable={false}
-                placeholder="-Tipo Factura-"
-                isClearable={true}
-            />
-            <Select
-                options={STATUS_OPTIONS}
-                value={STATUS_OPTIONS.find((status) => status.value === filters.status)}
-                onChange={(option) => handleFilterChange('status', option as SelectOption | null)}
-                isSearchable={false}
-                placeholder="-Estado-"
-                isClearable={true}
-            />
+                    <Select
+                        options={NCF_TYPES_OPTIONS}
+                        value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === filters.type)}
+                        onChange={(option) => handleFilterChange('type', option as SelectOption | null)}
+                        isSearchable={false}
+                        placeholder="-Tipo Factura-"
+                        isClearable={true}
+                    />
+                    <Select
+                        options={STATUS_OPTIONS}
+                        value={STATUS_OPTIONS.find((status) => status.value === filters.status)}
+                        onChange={(option) => handleFilterChange('status', option as SelectOption | null)}
+                        isSearchable={false}
+                        placeholder="-Estado-"
+                        isClearable={true}
+                    />
+                </>
+            )}
 
 
             <Input

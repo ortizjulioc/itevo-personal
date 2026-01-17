@@ -179,12 +179,12 @@ export const routeConfig = [
     {
         key: 'bills',
         url: '/bills',
-        authorization: billingRoles,
+        authorization: [...billingRoles, ASSISTANT],
     },
     {
         key: 'bills-subroutes',
         url: '/bills/:path*',
-        authorization: billingRoles,
+        authorization: [...billingRoles, ASSISTANT],
     },
     // Cajas registradoras - BillingAdmin, GeneralAdmin, SuperAdmin
     {
