@@ -164,34 +164,44 @@ export async function POST(request: Request) {
                     console.log('Enrollment: No active scholarship found matching criteria.');
                 }
 
-                // 2. Cálculo del monto base por cuota
+                // 2. Cálculo del monto base por cuota y matrícula
                 let amountPerInstallment = courseBranch.amount;
+                let enrollmentAmount = courseBranch.enrollmentAmount || 0;
                 let conceptSuffix = "";
 
                 if (activeScholarship && activeScholarship.scholarship) {
                     const { type, value, name } = activeScholarship.scholarship;
-                    let discount = 0;
+                    let installmentDiscount = 0;
+                    let enrollmentDiscount = 0;
+
                     if (type === ScholarshipType.percentage) {
-                        discount = amountPerInstallment * (value / 100);
+                        installmentDiscount = amountPerInstallment * (value / 100);
+                        enrollmentDiscount = enrollmentAmount * (value / 100);
                     } else if (type === ScholarshipType.fixed_amount) {
-                        discount = value;
+                        installmentDiscount = value;
+                        enrollmentDiscount = value;
                     }
 
-                    // Evitar negativos
-                    if (discount > amountPerInstallment) discount = amountPerInstallment;
-                    amountPerInstallment -= discount;
+                    // Evitar negativos y aplicar descuento - Cuota
+                    if (installmentDiscount > amountPerInstallment) installmentDiscount = amountPerInstallment;
+                    amountPerInstallment -= installmentDiscount;
+
+                     // Evitar negativos y aplicar descuento - Inscripción
+                    if (enrollmentDiscount > enrollmentAmount) enrollmentDiscount = enrollmentAmount;
+                    enrollmentAmount -= enrollmentDiscount;
+
                     conceptSuffix = ` (Beca: ${name})`;
                 }
 
-                if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
+                if (enrollmentAmount > 0) {
                     receivables.push({
                         // enrollmentId: enrollment.id,
-                        amount: courseBranch.enrollmentAmount,
+                        amount: enrollmentAmount,
                         studentId: student.id,
                         courseBranchId: courseBranch.id,
                         dueDate: startDate, // mismo día de inicio
                         status: PaymentStatus.PENDING,
-                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}`,
+                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}${conceptSuffix}`,
                     });
                 }
 

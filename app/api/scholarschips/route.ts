@@ -4,6 +4,8 @@ import { getScholarships, createScholarship } from '@/services/scholarship-servi
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
+import { ScholarshipType } from '@prisma/client';
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -36,11 +38,35 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud
-        const { isValid, message } = validateObject(body, ['name']);
+        const { isValid, message } = validateObject(body, ['name', 'type', 'value']);
         if (!isValid) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS', message }, { status: 400 });
         }
 
+        const value = Number(body.value);
+
+        if (value === 0) {
+            return NextResponse.json({
+                code: 'E_INVALID_VALUE',
+                message: 'El valor de la beca no puede ser 0'
+            }, { status: 400 });
+        }
+
+        if (body.type === ScholarshipType.percentage) {
+            if (!Number.isInteger(value)) {
+                return NextResponse.json({
+                    code: 'E_INVALID_VALUE',
+                    message: 'El porcentaje debe ser un número entero'
+                }, { status: 400 });
+            }
+
+            if (value < 1 || value > 100) {
+                return NextResponse.json({
+                    code: 'E_INVALID_VALUE',
+                    message: 'El porcentaje debe estar entre 1 y 100'
+                }, { status: 400 });
+            }
+        }
         const scholarship = await createScholarship(body);
         await createLog({
             action: 'POST',
