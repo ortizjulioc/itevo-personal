@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         }
 
         // 2. Verificar si ya existe
-        const isAssigned = await isScholarshipAssignedToStudent(studentId, body.scholarshipId);
+        const isAssigned = await isScholarshipAssignedToStudent(studentId, body.scholarshipId, body.courseBranchId);
         if (isAssigned) {
             return NextResponse.json(
                 {
