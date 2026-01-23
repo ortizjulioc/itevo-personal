@@ -16,6 +16,8 @@ import { useState, useEffect } from 'react';
 import ModalOpenFormStudent from './modal-open-form-student';
 import AssignScholarshipDrawer from '@/components/common/drawers/assign-scholarship-drawer';
 import { getScholarships } from '@/app/(defaults)/students/lib/student-scholarship-request';
+import { useSession } from 'next-auth/react';
+import { SUPER_ADMIN, GENERAL_ADMIN, ADMIN } from '@/constants/role.constant';
 
 interface OptionSelect {
     value: string;
@@ -38,6 +40,13 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
     const [selectedCourseBranchId, setSelectedCourseBranchId] = useState<string>(courseBranchId || '');
     const [applicableScholarship, setApplicableScholarship] = useState<any>(null);
     const [loadingScholarship, setLoadingScholarship] = useState<boolean>(false);
+    const { data: session } = useSession();
+
+    // Verificar si el usuario tiene permisos para asignar becas
+    const userRoles = (session?.user as any)?.roles || [];
+    const canManageScholarships = userRoles.some((role: any) =>
+        [SUPER_ADMIN, GENERAL_ADMIN, ADMIN].includes(role.normalizedName)
+    );
 
     // Verificar becas aplicables cuando cambia el estudiante o la oferta académica
     useEffect(() => {
@@ -158,7 +167,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                 }}
                             />
 
-                            {values.studentId && !loadingScholarship && (
+                            {canManageScholarships && values.studentId && !loadingScholarship && (
                                 applicableScholarship ? (
                                     <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                                         <div className="flex items-center gap-2">
@@ -193,7 +202,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                 )
                             )}
 
-                            {values.studentId && loadingScholarship && (
+                            {canManageScholarships && values.studentId && loadingScholarship && (
                                 <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
                                     <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                                         Verificando becas...
@@ -243,12 +252,14 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                             setFieldValue={setFieldValue}
                         />
 
-                        <AssignScholarshipDrawer
-                            isOpen={scholarshipDrawer}
-                            onClose={() => setScholarshipDrawer(false)}
-                            studentId={selectedStudentId}
-                            courseBranchId={selectedCourseBranchId}
-                        />
+                        {canManageScholarships && (
+                            <AssignScholarshipDrawer
+                                isOpen={scholarshipDrawer}
+                                onClose={() => setScholarshipDrawer(false)}
+                                studentId={selectedStudentId}
+                                courseBranchId={selectedCourseBranchId}
+                            />
+                        )}
                     </Form>
 
                 )}

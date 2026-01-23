@@ -13,12 +13,21 @@ import { useRouter } from "next/navigation";
 import { deleteStudent } from "../../lib/request";
 import StudentScholarshipsManager from "../../components/student-details/student-scholarships-manager";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { SUPER_ADMIN, GENERAL_ADMIN, ADMIN } from "@/constants/role.constant";
 
 export default function StudentView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
     const id = params?.id; // Extraer el ID de params
     const router = useRouter();
     const query = objectToQueryString({ ...searchParams, studentId: id }); // Combinar id con searchParams
     const { loading, student } = useFetchStudentById(id);
+    const { data: session } = useSession();
+
+    // Verificar si el usuario tiene permisos para asignar becas
+    const userRoles = (session?.user as any)?.roles || [];
+    const canManageScholarships = userRoles.some((role: any) =>
+        [SUPER_ADMIN, GENERAL_ADMIN, ADMIN].includes(role.normalizedName)
+    );
 
     const onDelete = async (id: string) => {
         confirmDialog({
@@ -72,16 +81,18 @@ export default function StudentView({ params, searchParams }: { params: { id: st
                                 </Tooltip>
                             </div>
                             <div className="flex gap-2">
-                                <Tooltip title="Becas">
-                                    <Button
-                                        onClick={() => setShowScholarships(true)}
-                                        icon={<IconAward className="size-4" />}
-                                        color="warning"
-                                        className="min-w-max"
-                                    >
-                                        Becas
-                                    </Button>
-                                </Tooltip>
+                                {canManageScholarships && (
+                                    <Tooltip title="Becas">
+                                        <Button
+                                            onClick={() => setShowScholarships(true)}
+                                            icon={<IconAward className="size-4" />}
+                                            color="warning"
+                                            className="min-w-max"
+                                        >
+                                            Becas
+                                        </Button>
+                                    </Tooltip>
+                                )}
                                 <Tooltip title="Editar">
                                     <Link href={`/students/${student.id}`} className="w-full">
                                         <Button
@@ -107,11 +118,13 @@ export default function StudentView({ params, searchParams }: { params: { id: st
                         </div>
                     </StickyFooter>
 
-                    <StudentScholarshipsManager
-                        studentId={student.id}
-                        isOpen={showScholarships}
-                        onClose={() => setShowScholarships(false)}
-                    />
+                    {canManageScholarships && (
+                        <StudentScholarshipsManager
+                            studentId={student.id}
+                            isOpen={showScholarships}
+                            onClose={() => setShowScholarships(false)}
+                        />
+                    )}
                 </>
             )}
 
