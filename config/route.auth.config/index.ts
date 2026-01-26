@@ -136,7 +136,7 @@ export const routeConfig = [
         url: '/promotions/:path*',
         authorization: academicRoles,
     },
-    // Becas - Admin, GeneralAdmin, SuperAdmin
+    // Catálogo de Becas - Admin, GeneralAdmin, SuperAdmin
     {
         key: 'scholarships',
         url: '/scholarships',

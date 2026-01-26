@@ -7,7 +7,6 @@ export const accountReceivableWithRelations = PrismaTypes.validator<PrismaTypes.
     courseBranchId: true,
     amount: true,
     dueDate: true,
-    concept: true,
     status: true,
     amountPaid: true,
     student: {

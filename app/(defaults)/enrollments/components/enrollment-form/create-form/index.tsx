@@ -11,13 +11,8 @@ import SelectStudent from '@/components/common/selects/select-student';
 import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
 import Tooltip from '@/components/ui/tooltip';
 import { IoMdAddCircleOutline } from 'react-icons/io';
-import { MdCardGiftcard } from 'react-icons/md';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ModalOpenFormStudent from './modal-open-form-student';
-import AssignScholarshipDrawer from '@/components/common/drawers/assign-scholarship-drawer';
-import { getScholarships } from '@/app/(defaults)/students/lib/student-scholarship-request';
-import { useSession } from 'next-auth/react';
-import { SUPER_ADMIN, GENERAL_ADMIN, ADMIN } from '@/constants/role.constant';
 
 interface OptionSelect {
     value: string;
@@ -35,64 +30,6 @@ interface statusOption {
 export default function CreateEnrollmentForm({ courseBranchId, studentId }: { courseBranchId?: string, studentId?: string }) {
     const route = useRouter();
     const [modal, setModal] = useState<boolean>(false);
-    const [scholarshipDrawer, setScholarshipDrawer] = useState<boolean>(false);
-    const [selectedStudentId, setSelectedStudentId] = useState<string>(studentId || '');
-    const [selectedCourseBranchId, setSelectedCourseBranchId] = useState<string>(courseBranchId || '');
-    const [applicableScholarship, setApplicableScholarship] = useState<any>(null);
-    const [loadingScholarship, setLoadingScholarship] = useState<boolean>(false);
-    const { data: session } = useSession();
-
-    // Verificar si el usuario tiene permisos para asignar becas
-    const userRoles = (session?.user as any)?.roles || [];
-    const canManageScholarships = userRoles.some((role: any) =>
-        [SUPER_ADMIN, GENERAL_ADMIN, ADMIN].includes(role.normalizedName)
-    );
-
-    // Verificar becas aplicables cuando cambia el estudiante o la oferta académica
-    useEffect(() => {
-        const checkScholarships = async () => {
-            if (!selectedStudentId) {
-                setApplicableScholarship(null);
-                return;
-            }
-
-            setLoadingScholarship(true);
-            try {
-                const response = await getScholarships(selectedStudentId);
-                if (response.success && response.data?.data) {
-                    const scholarships = response.data.data;
-                    const now = new Date();
-
-                    // Buscar beca aplicable
-                    const applicable = scholarships.find((scholarship: any) => {
-                        // Debe estar activa
-                        if (!scholarship.active) return false;
-
-                        // No debe estar vencida
-                        if (scholarship.validUntil && new Date(scholarship.validUntil) < now) return false;
-
-                        // Debe corresponder a la oferta académica o ser general (null)
-                        if (scholarship.courseBranch) {
-                            return scholarship.courseBranch.id === selectedCourseBranchId;
-                        }
-
-                        // Beca general (sin oferta académica específica)
-                        return true;
-                    });
-
-                    console.log('Applicable Scholarship:', applicable);
-                    setApplicableScholarship(applicable || null);
-                }
-            } catch (error) {
-                console.error('Error checking scholarships:', error);
-            } finally {
-                setLoadingScholarship(false);
-            }
-        };
-
-        checkScholarships();
-    }, [selectedStudentId, selectedCourseBranchId]);
-
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
@@ -137,7 +74,6 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                         value={values.courseBranchId}
                                         onChange={(option: CourseBranchSelect | null) => {
                                             form.setFieldValue('courseBranchId', option?.value || '');
-                                            setSelectedCourseBranchId(option?.value || '');
                                         }}
                                     />
                                 )}
@@ -163,52 +99,8 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                 value={values.studentId}
                                 onChange={(option: OptionSelect | null) => {
                                     setFieldValue('studentId', option?.value || '');
-                                    setSelectedStudentId(option?.value || '');
                                 }}
                             />
-
-                            {canManageScholarships && values.studentId && !loadingScholarship && (
-                                applicableScholarship ? (
-                                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                                        <div className="flex items-center gap-2">
-                                            <MdCardGiftcard className="w-5 h-5 text-green-600 dark:text-green-400" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-semibold text-green-800 dark:text-green-300">
-                                                    Beca: {applicableScholarship.scholarship?.name}
-                                                </p>
-                                                <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
-                                                    Cobertura: {applicableScholarship.scholarship?.type === 'percentage'
-                                                        ? `${applicableScholarship.scholarship?.value}%`
-                                                        : `$${applicableScholarship.scholarship?.value?.toLocaleString()}`}
-                                                    {' • '}
-                                                    {applicableScholarship.courseBranch
-                                                        ? 'Específica para este curso'
-                                                        : 'Beca general'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        color="success"
-                                        icon={<MdCardGiftcard className="w-4 h-4" />}
-                                        onClick={() => setScholarshipDrawer(true)}
-                                        className="mt-2 w-full"
-                                    >
-                                        Asignar Beca (Opcional)
-                                    </Button>
-                                )
-                            )}
-
-                            {canManageScholarships && values.studentId && loadingScholarship && (
-                                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                                        Verificando becas...
-                                    </p>
-                                </div>
-                            )}
                         </FormItem>
 
                         <FormItem name="status" label="Estado" invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
@@ -244,22 +136,12 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                             <Button loading={isSubmitting} type="submit">
                                 {isSubmitting ? 'Guardando...' : 'Guardar'}
                             </Button>
-                        </div>
+                            <ModalOpenFormStudent
+                                modal={modal} setModal={setModal}
+                                setFieldValue={setFieldValue}
 
-                        <ModalOpenFormStudent
-                            modal={modal}
-                            setModal={setModal}
-                            setFieldValue={setFieldValue}
-                        />
-
-                        {canManageScholarships && (
-                            <AssignScholarshipDrawer
-                                isOpen={scholarshipDrawer}
-                                onClose={() => setScholarshipDrawer(false)}
-                                studentId={selectedStudentId}
-                                courseBranchId={selectedCourseBranchId}
                             />
-                        )}
+                        </div>
                     </Form>
 
                 )}

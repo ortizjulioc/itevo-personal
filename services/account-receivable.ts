@@ -82,7 +82,6 @@ export const getAccountsReceivable = async (
         courseBranchId: true,
         amount: true,
         dueDate: true,
-        concept: true,
         status: true,
         amountPaid: true,
         student: {
@@ -132,7 +131,6 @@ export const findAccountReceivableById = async (
       courseBranchId: true,
       amount: true,
       dueDate: true,
-      concept: true,
       status: true,
       amountPaid: true,
       student: {

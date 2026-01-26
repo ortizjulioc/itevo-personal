@@ -29,7 +29,7 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
   } = useFetchAccountsReceivables(query || '');
   const [changingStatus, setChangingStatus] = React.useState<{ [key: string]: boolean }>({});
 
-  const onChangeStatus = async (id: string, status: PaymentStatus | null) => {
+  const onChangeStatus = async(id: string, status: PaymentStatus | null) => {
     if (status) {
       // Handle status change logic here
       setChangingStatus((prev) => ({ ...prev, [id]: true }));
@@ -55,9 +55,7 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
     console.error(error);
     openNotification('error', error);
   }
-
-  console.log(accountsReceivable);
-  if (loading) return <Skeleton rows={6} columns={['#', 'ESTUDIANTE', 'CONCEPTO', 'CURSO', 'FECHA DE VENCIMIENTO', 'MONTO', 'ESTADO']} />;
+  if (loading) return <Skeleton rows={6} columns={['#', 'ESTUDIANTE', 'CURSO', 'FECHA DE VENCIMIENTO', 'MONTO', 'ESTADO']} />;
 
   return (
     <div className={className}>
@@ -67,7 +65,6 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
             <tr>
               <th>#</th>
               <th>ESTUDIANTE</th>
-              <th>CONCEPTO</th>
               <th>CURSO</th>
               <th>FECHA DE VENCIMIENTO</th>
               <th>MONTO</th>
@@ -77,7 +74,7 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
           <tbody>
             {accountsReceivable?.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron cuentas por cobrar registradas</td>
+                <td colSpan={6} className="text-center text-gray-500 dark:text-gray-600 italic">No se encontraron cuentas por cobrar registradas</td>
               </tr>
             )}
             {accountsReceivable?.map((receivable: AccountReceivableWithRelations, index: number) => {
@@ -94,12 +91,9 @@ export default function AccountsReceivableList({ className, query }: AccountsRec
                     </Link>
                   </td>
                   <td>
-                    <span className="text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase">{receivable.concept || 'N/A'}</span>
-                  </td>
-                  <td>
                     <OptionalInfo
-                      content={receivable?.courseBranch?.course?.name || ''}
-                      message="Sin curso asignado"
+                     content={receivable?.courseBranch?.course?.name || ''}
+                        message="Sin curso asignado"
                     />
                   </td>
                   <td>{getFormattedDate(new Date(receivable.dueDate))}</td>

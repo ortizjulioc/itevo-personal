@@ -6,7 +6,7 @@ import { createLog } from "@/utils/log";
 import { findCourseBranchById } from "@/services/course-branch-service";
 import { findStudentById } from "@/services/student-service";
 import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from "@prisma/client";
+import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus } from "@prisma/client";
 import { Prisma } from "@/utils/lib/prisma";
 import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from "@/utils/date";
 import { getHolidays } from "@/services/holiday-service";
@@ -137,59 +137,17 @@ export async function POST(request: Request) {
 
                 const receivables: any[] = [];
                 const startDate = new Date(courseBranch.startDate);
-                // 1. Detección de beca
-                const activeScholarship = await prisma.studentScholarship.findFirst({
-                    where: {
-                        studentId: student.id,
-                        active: true,
-                        OR: [
-                            { courseBranchId: courseBranch.id },
-                            { courseBranchId: null }
-                        ],
-                        scholarship: { isActive: true }
-                    },
-                    include: { scholarship: true },
-                    orderBy: { courseBranchId: 'desc' } // Prioritize specific rule (string) over global (null)? Need to verify sort order.
-                });
+                const amountPerInstallment = courseBranch.amount;
 
-                // 2. Cálculo del monto base por cuota y matrícula
-                let amountPerInstallment = courseBranch.amount;
-                let enrollmentAmount = courseBranch.enrollmentAmount || 0;
-                let conceptSuffix = "";
-
-                if (activeScholarship && activeScholarship.scholarship) {
-                    const { type, value, name } = activeScholarship.scholarship;
-                    let installmentDiscount = 0;
-                    let enrollmentDiscount = 0;
-
-                    if (type === ScholarshipType.percentage) {
-                        installmentDiscount = amountPerInstallment * (value / 100);
-                        enrollmentDiscount = enrollmentAmount * (value / 100);
-                    } else if (type === ScholarshipType.fixed_amount) {
-                        installmentDiscount = value;
-                        enrollmentDiscount = value;
-                    }
-
-                    // Evitar negativos y aplicar descuento - Cuota
-                    if (installmentDiscount > amountPerInstallment) installmentDiscount = amountPerInstallment;
-                    amountPerInstallment -= installmentDiscount;
-
-                    // Evitar negativos y aplicar descuento - Inscripción
-                    if (enrollmentDiscount > enrollmentAmount) enrollmentDiscount = enrollmentAmount;
-                    enrollmentAmount -= enrollmentDiscount;
-
-                    conceptSuffix = ` (Beca: ${name})`;
-                }
-
-                if (enrollmentAmount > 0) {
+                if (courseBranch.enrollmentAmount && courseBranch.enrollmentAmount > 0) {
                     receivables.push({
                         // enrollmentId: enrollment.id,
-                        amount: enrollmentAmount,
+                        amount: courseBranch.enrollmentAmount,
                         studentId: student.id,
                         courseBranchId: courseBranch.id,
                         dueDate: startDate, // mismo día de inicio
                         status: PaymentStatus.PENDING,
-                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}${conceptSuffix}`,
+                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}`,
                     });
                 }
 
@@ -246,17 +204,15 @@ export async function POST(request: Request) {
                         dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
                     }
 
-                    if (amountPerInstallment > 0) {
-                        receivables.push({
-                            // enrollmentId: enrollment.id,
-                            studentId: student.id,
-                            courseBranchId: courseBranch.id,
-                            amount: amountPerInstallment,
-                            dueDate,
-                            status: PaymentStatus.PENDING,
-                            concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
-                        });
-                    }
+                    receivables.push({
+                        // enrollmentId: enrollment.id,
+                        studentId: student.id,
+                        courseBranchId: courseBranch.id,
+                        amount: amountPerInstallment,
+                        dueDate,
+                        status: PaymentStatus.PENDING,
+                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}`,
+                    });
 
                 }
 
