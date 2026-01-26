@@ -152,18 +152,6 @@ export async function POST(request: Request) {
                     orderBy: { courseBranchId: 'desc' } // Prioritize specific rule (string) over global (null)? Need to verify sort order.
                 });
 
-                console.log('Enrollment: Checking scholarships for student:', student.id);
-                console.log('Enrollment: Current Course:', courseBranch.id, courseBranch.course?.name);
-                if (activeScholarship) {
-                    console.log('Enrollment: Found Active Scholarship:', {
-                        id: activeScholarship.id,
-                        name: activeScholarship.scholarship?.name,
-                        scope: activeScholarship.courseBranchId ? 'Specific Course' : 'Global'
-                    });
-                } else {
-                    console.log('Enrollment: No active scholarship found matching criteria.');
-                }
-
                 // 2. Cálculo del monto base por cuota y matrícula
                 let amountPerInstallment = courseBranch.amount;
                 let enrollmentAmount = courseBranch.enrollmentAmount || 0;
@@ -186,7 +174,7 @@ export async function POST(request: Request) {
                     if (installmentDiscount > amountPerInstallment) installmentDiscount = amountPerInstallment;
                     amountPerInstallment -= installmentDiscount;
 
-                     // Evitar negativos y aplicar descuento - Inscripción
+                    // Evitar negativos y aplicar descuento - Inscripción
                     if (enrollmentDiscount > enrollmentAmount) enrollmentDiscount = enrollmentAmount;
                     enrollmentAmount -= enrollmentDiscount;
 
@@ -258,15 +246,17 @@ export async function POST(request: Request) {
                         dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
                     }
 
-                    receivables.push({
-                        // enrollmentId: enrollment.id,
-                        studentId: student.id,
-                        courseBranchId: courseBranch.id,
-                        amount: amountPerInstallment,
-                        dueDate,
-                        status: PaymentStatus.PENDING,
-                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
-                    });
+                    if (amountPerInstallment > 0) {
+                        receivables.push({
+                            // enrollmentId: enrollment.id,
+                            studentId: student.id,
+                            courseBranchId: courseBranch.id,
+                            amount: amountPerInstallment,
+                            dueDate,
+                            status: PaymentStatus.PENDING,
+                            concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
+                        });
+                    }
 
                 }
 
