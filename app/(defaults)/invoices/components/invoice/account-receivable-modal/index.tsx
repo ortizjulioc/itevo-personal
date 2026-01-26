@@ -58,19 +58,19 @@ export default function AccountReceivableModal({
             setItem(newItem);
             const resp = await handleAddItemsInvoice(newItem);
 
-            if (resp){
-            setAccountsReceivables(prev => {
-                if (!prev) return [];
-                return prev.map(ar =>
-                    ar.id === item.id
-                        ? {
-                              ...ar,
-                              amountPaid: ar.amountPaid + value,
-                              uiStatus: 'ADDED',
-                          }
-                        : ar
-                );
-            });
+            if (resp) {
+                setAccountsReceivables(prev => {
+                    if (!prev) return [];
+                    return prev.map(ar =>
+                        ar.id === item.id
+                            ? {
+                                ...ar,
+                                amountPaid: ar.amountPaid + value,
+                                uiStatus: 'ADDED',
+                            }
+                            : ar
+                    );
+                });
             }
 
         } catch (error) {
@@ -89,84 +89,90 @@ export default function AccountReceivableModal({
         });
 
     const renderTable = (items: any[]) => (
-        <table className="min-w-full table-auto bg-white dark:bg-gray-800 rounded shadow">
-            <thead>
-                <tr className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                    <th className="px-4 py-2 text-center">Fecha de Vencimiento</th>
-                    <th className="px-4 py-2 text-center">Precio</th>
-                    <th className="px-4 py-2 text-center">Abonado</th>
-                    <th className="px-4 py-2 text-center">Pendiente</th>
-                    <th className="px-4 py-2 text-center">Cantidad a Pagar</th>
-                    <th className="px-4 py-2 text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {items.map(item => {
-                    const maxAmount = item.amount - item.amountPaid;
-                    const isPaid = maxAmount <= 0;
-                    const inputId = `amount-${item.id}`;
-                    const isLoading = loadingId === item.id;
+        <div className="overflow-x-auto">
+            <table className="min-w-full table-auto bg-white dark:bg-gray-800 rounded shadow">
+                <thead>
+                    <tr className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <th className="px-4 py-2 text-left min-w-[200px]">Concepto</th>
+                        <th className="px-4 py-2 text-center">Fecha de Vencimiento</th>
+                        <th className="px-4 py-2 text-center">Precio</th>
+                        <th className="px-4 py-2 text-center">Abonado</th>
+                        <th className="px-4 py-2 text-center">Pendiente</th>
+                        <th className="px-4 py-2 text-center">Cantidad a Pagar</th>
+                        <th className="px-4 py-2 text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items.map(item => {
+                        const maxAmount = item.amount - item.amountPaid;
+                        const isPaid = maxAmount <= 0;
+                        const inputId = `amount-${item.id}`;
+                        const isLoading = loadingId === item.id;
 
-                    return (
-                        <tr key={item.id} className="border-t border-gray-200 dark:border-gray-700">
-                            <td className="px-4 py-2 text-sm text-center">{formatDate(item.dueDate)}</td>
-                            <td className="px-4 py-2 text-sm text-center">{formatCurrency(item.amount)}</td>
-                            <td className="px-4 py-2 text-sm text-center">{formatCurrency(item.amountPaid)}</td>
-                            <td className="px-4 py-2 text-sm text-center">
-                                {item.uiStatus === 'ADDED' ? (
-                                    <span className="text-blue-600 font-semibold">Agregado</span>
-                                ) : isPaid ? (
-                                    <span className="text-green-600 font-semibold">Pagado</span>
-                                ) : (
-                                    <span className="text-red-600">{formatCurrency(maxAmount)}</span>
-                                )}
-                            </td>
-                            <td className="px-4 py-2 text-center">
-                                <Input
-                                    id={inputId}
-                                    type="number"
-                                    defaultValue={maxAmount === 0 ? '' : maxAmount}
-                                    max={maxAmount}
-                                    min={0}
-                                    step="0.01"
-                                    className="w-32"
-                                    disabled={isLoading || isPaid}
-                                    onWheel={e => (e.target as HTMLInputElement).blur()}
-                                    onChange={e => {
-                                        const value = parseFloat(e.target.value);
-                                        if (value > maxAmount) {
-                                            e.target.value = maxAmount.toString();
-                                            openNotification('warning', `El monto máximo a pagar es ${maxAmount.toFixed(2)}`);
-                                        }
-                                        if (value < 0) e.target.value = '';
-                                    }}
-                                />
-                            </td>
-                            <td className="px-4 py-2 text-center">
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    className="mx-auto"
-                                    loading={isLoading}
-                                    disabled={isLoading || isPaid}
-                                    onClick={() => {
-                                        const inputEl = document.getElementById(inputId) as HTMLInputElement;
-                                        const value = parseFloat(inputEl?.value || '0');
-                                        if (value > 0 && value <= maxAmount) {
-                                            handleAddItem(item, value);
-                                        } else {
-                                            openNotification('error', 'Por favor, ingrese un monto válido.');
-                                        }
-                                    }}
-                                >
-                                    {isPaid ? 'Pagado' : 'Agregar'}
-                                </Button>
-                            </td>
-                        </tr>
-                    );
-                })}
-            </tbody>
-        </table>
+                        return (
+                            <tr key={item.id} className="border-t border-gray-200 dark:border-gray-700">
+                                <td className="px-4 py-2 text-sm text-left min-w-[200px]">
+                                    {item.concept || 'Sin concepto'}
+                                </td>
+                                <td className="px-4 py-2 text-sm text-center">{formatDate(item.dueDate)}</td>
+                                <td className="px-4 py-2 text-sm text-center">{formatCurrency(item.amount)}</td>
+                                <td className="px-4 py-2 text-sm text-center">{formatCurrency(item.amountPaid)}</td>
+                                <td className="px-4 py-2 text-sm text-center">
+                                    {item.uiStatus === 'ADDED' ? (
+                                        <span className="text-blue-600 font-semibold">Agregado</span>
+                                    ) : isPaid ? (
+                                        <span className="text-green-600 font-semibold">Pagado</span>
+                                    ) : (
+                                        <span className="text-red-600">{formatCurrency(maxAmount)}</span>
+                                    )}
+                                </td>
+                                <td className="px-4 py-2 text-center">
+                                    <Input
+                                        id={inputId}
+                                        type="number"
+                                        defaultValue={maxAmount === 0 ? '' : maxAmount}
+                                        max={maxAmount}
+                                        min={0}
+                                        step="0.01"
+                                        className="w-32"
+                                        disabled={isLoading || isPaid}
+                                        onWheel={e => (e.target as HTMLInputElement).blur()}
+                                        onChange={e => {
+                                            const value = parseFloat(e.target.value);
+                                            if (value > maxAmount) {
+                                                e.target.value = maxAmount.toString();
+                                                openNotification('warning', `El monto máximo a pagar es ${maxAmount.toFixed(2)}`);
+                                            }
+                                            if (value < 0) e.target.value = '';
+                                        }}
+                                    />
+                                </td>
+                                <td className="px-4 py-2 text-center">
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        className="mx-auto"
+                                        loading={isLoading}
+                                        disabled={isLoading || isPaid}
+                                        onClick={() => {
+                                            const inputEl = document.getElementById(inputId) as HTMLInputElement;
+                                            const value = parseFloat(inputEl?.value || '0');
+                                            if (value > 0 && value <= maxAmount) {
+                                                handleAddItem(item, value);
+                                            } else {
+                                                openNotification('error', 'Por favor, ingrese un monto válido.');
+                                            }
+                                        }}
+                                    >
+                                        {isPaid ? 'Pagado' : 'Agregar'}
+                                    </Button>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
     );
 
     return (
@@ -195,7 +201,7 @@ export default function AccountReceivableModal({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all max-h-[90vh] overflow-y-auto">
+                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all max-h-[90vh] overflow-y-auto">
                                 <Button
                                     variant="outline"
                                     type="button"

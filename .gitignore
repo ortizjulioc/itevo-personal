@@ -43,6 +43,3 @@ logs
 
 # Uploaded files
 /public/uploads
-
-#packages
-package-lock.json
