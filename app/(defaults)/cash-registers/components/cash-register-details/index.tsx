@@ -136,7 +136,6 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
     //         openNotification('error', 'No se puede imprimir el cierre. Faltan datos del cierre o caja');
     //     }
     // }
-
     return (
         <>
             <div className=" grid grid-cols-12 gap-5">

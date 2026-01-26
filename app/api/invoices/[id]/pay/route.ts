@@ -81,7 +81,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                     cashRegister: { connect: { id: invoice.cashRegisterId } },
                     type: CashMovementType.INCOME,
                     amount: invoice.subtotal + invoice.itbis,
-                    description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
+                    description: `Pago de factura ${invoice.invoiceNumber}`,
                     referenceType: CashMovementReferenceType.INVOICE,
                     referenceId: updatedInvoice.id,
                     user: { connect: { id: invoice.createdBy } },

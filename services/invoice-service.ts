@@ -298,7 +298,7 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
                 cashRegisterId: invoice.cashRegisterId,
                 type: CashMovementType.INCOME,
                 amount: invoice.subtotal + invoice.itbis,
-                description: `Pago de factura ${invoice.invoiceNumber} (${finalType})`,
+                description: `Pago de factura ${invoice.invoiceNumber}`,
                 referenceType: CashMovementReferenceType.INVOICE,
                 referenceId: invoiceId,
                 createdBy: invoice.createdBy,
