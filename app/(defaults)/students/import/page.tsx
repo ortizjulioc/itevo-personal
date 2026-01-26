@@ -154,11 +154,6 @@ export default function StudentImport() {
         title="Importar Estudiantes"
         className="mb-6"
         showBackPage
-      // rightComponent={
-      //   <Button variant="outline" onClick={() => router.push('/students')}>
-      //     Volver a la lista
-      //   </Button>
-      // }
       />
 
       <div className="panel">
@@ -172,6 +167,26 @@ export default function StudentImport() {
               <Button size="sm" onClick={downloadTemplate} icon={<IconDownload />}>
                 Descargar Plantilla
               </Button>
+            </div>
+
+            <div className="mb-6 p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900 text-sm">
+              <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Instrucciones del Archivo</h4>
+              <ul className="list-disc pl-5 space-y-1 text-blue-700 dark:text-blue-400">
+                <li>Formatos soportados: <strong>.xlsx, .xls, .csv, .json</strong></li>
+                <li>
+                  Columnas requeridas:
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Nombres</span>,
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Apellidos</span>
+                </li>
+                <li>
+                  Columnas opcionales:
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Cedula</span>,
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Telefono</span>,
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Email</span>,
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Direccion</span>
+                </li>
+                <li className="italic text-xs mt-2">Los encabezados no distinguen mayúsculas/minúsculas (ej. "Nombre", "nombre", "NOMBRE" son válidos).</li>
+              </ul>
             </div>
 
             <div className="flex items-center justify-center w-full mb-6">
