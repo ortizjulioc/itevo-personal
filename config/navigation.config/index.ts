@@ -127,7 +127,7 @@ const navigationConfig = [
     },
     {
         key: 'scholarships',
-        title: 'Catálogo de Becas',
+        title: 'Catalogo de Becas',
         icon: TbCertificate,
         url: '/scholarships',
         type: NAV_ITEM_TYPE_ITEM,

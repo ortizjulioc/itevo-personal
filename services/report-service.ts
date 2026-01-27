@@ -11,35 +11,27 @@ export interface SoldInventoryReportItem {
 
 export async function getSoldInventoryReport(
   branchId: string,
-  from?: Date,
-  to?: Date,
-  productIds?: string[],
-  cashRegisterId?: string
+  from: Date,
+  to: Date,
+  productIds?: string[]
 ): Promise<SoldInventoryReportItem[]> {
-  const whereClause: any = {
-    type: 'PRODUCT',
-    invoice: {
-      status: { in: ['PAID', 'COMPLETED'] },
-    },
-    ...(productIds && productIds.length > 0 ? { productId: { in: productIds } } : {}),
-  };
-
-  if (cashRegisterId) {
-    whereClause.invoice.cashRegisterId = cashRegisterId;
-  } else if (from && to) {
-    whereClause.invoice.date = {
-      gte: from,
-      lte: to,
-    };
-    whereClause.invoice.cashRegister = {
-      cashBox: {
-        branchId: branchId,
-      },
-    };
-  }
-
   const invoiceItems = await Prisma.invoiceItem.findMany({
-    where: whereClause,
+    where: {
+      type: 'PRODUCT',
+      invoice: {
+        status: { in: ['PAID', 'COMPLETED'] },
+        date: {
+          gte: from,
+          lte: to,
+        },
+        cashRegister: {
+          cashBox: {
+            branchId: branchId,
+          },
+        },
+      },
+      ...(productIds && productIds.length > 0 ? { productId: { in: productIds } } : {}),
+    },
     include: {
       product: true,
     },
@@ -79,39 +71,31 @@ export interface SoldCourseReportItem {
 
 export async function getSoldCoursesReport(
   branchId: string,
-  from?: Date,
-  to?: Date,
-  courseIds?: string[],
-  cashRegisterId?: string
+  from: Date,
+  to: Date,
+  courseIds?: string[]
 ): Promise<SoldCourseReportItem[]> {
-  const whereClause: any = {
-    type: 'RECEIVABLE',
-    invoice: {
-      status: { in: ['PAID', 'COMPLETED'] },
-    },
-    accountReceivable: {
-      courseBranch: {
-        courseId: courseIds && courseIds.length > 0 ? { in: courseIds } : undefined,
-      },
-    },
-  };
-
-  if (cashRegisterId) {
-    whereClause.invoice.cashRegisterId = cashRegisterId;
-  } else if (from && to) {
-    whereClause.invoice.date = {
-      gte: from,
-      lte: to,
-    };
-    whereClause.invoice.cashRegister = {
-      cashBox: {
-        branchId: branchId,
-      },
-    };
-  }
-
   const invoiceItems = await Prisma.invoiceItem.findMany({
-    where: whereClause,
+    where: {
+      type: 'RECEIVABLE',
+      invoice: {
+        status: { in: ['PAID', 'COMPLETED'] },
+        date: {
+          gte: from,
+          lte: to,
+        },
+        cashRegister: {
+          cashBox: {
+            branchId: branchId,
+          },
+        },
+      },
+      accountReceivable: {
+        courseBranch: {
+          courseId: courseIds && courseIds.length > 0 ? { in: courseIds } : undefined,
+        },
+      },
+    },
     include: {
       accountReceivable: {
         include: {

@@ -18,30 +18,24 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const cashRegisterId = searchParams.get('cashRegisterId');
     const from = searchParams.get('from');
     const to = searchParams.get('to');
     const courseIdsParam = searchParams.get('courseIds');
 
-    if (!cashRegisterId && (!from || !to)) {
-      return NextResponse.json({ error: 'Missing required parameters: from and to OR cashRegisterId' }, { status: 400 });
+    if (!from || !to) {
+      return NextResponse.json({ error: 'Missing required parameters: from, to' }, { status: 400 });
     }
 
-    let fromDate: Date | undefined;
-    let toDate: Date | undefined;
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
 
-    if (from && to) {
-      fromDate = new Date(from);
-      toDate = new Date(to);
-
-      if (to.length <= 10) {
-        toDate.setHours(23, 59, 59, 999);
-      }
+    if (to.length <= 10) {
+      toDate.setHours(23, 59, 59, 999);
     }
 
     const courseIds = courseIdsParam ? courseIdsParam.split(',').map(id => id.trim()) : undefined;
 
-    const report = await getSoldCoursesReport(branchId, fromDate, toDate, courseIds, cashRegisterId || undefined);
+    const report = await getSoldCoursesReport(branchId, fromDate, toDate, courseIds);
 
     return NextResponse.json(report);
   } catch (error) {

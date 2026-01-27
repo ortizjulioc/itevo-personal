@@ -16,8 +16,6 @@ import { GenericSkeleton } from '@/components/common/Skeleton';
 import StickyFooter from '@/components/common/sticky-footer';
 import PrintClosure from '@/components/common/print/closure';
 import { CASHIER } from "@/constants/role.constant";
-import CashRegisterProductReport from '../reports/cash-register-product-report';
-import CashRegisterCourseReport from '../reports/cash-register-course-report';
 
 
 export default function CashRegisterDetails({ cashRegister, currentUser }: { cashRegister: any, currentUser?: any }) {
@@ -390,14 +388,6 @@ export default function CashRegisterDetails({ cashRegister, currentUser }: { cas
                 </div >
             </div >
 
-            <div className="grid grid-cols-12 gap-5 mb-5">
-                <div className="col-span-12 md:col-span-6">
-                    <CashRegisterProductReport cashRegisterId={cashRegister.id} />
-                </div>
-                <div className="col-span-12 md:col-span-6">
-                    <CashRegisterCourseReport cashRegisterId={cashRegister.id} />
-                </div>
-            </div>
             {!closureLoading && closure && (
                 <StickyFooter className='-mx-6 px-8 py-4 mt-6' stickyClass='border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'>
                     <div className="flex justify-end gap-2">
