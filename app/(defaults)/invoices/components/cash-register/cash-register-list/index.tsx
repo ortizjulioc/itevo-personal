@@ -23,6 +23,7 @@ interface Props {
 export default function CashRegisterList({ className, query = '', cashRegisterId }: Props) {
 
     const { data: session } = useSession();
+
     const rawParams = queryStringToObject(query);
     const user = session?.user as {
         id: string;
@@ -47,14 +48,15 @@ export default function CashRegisterList({ className, query = '', cashRegisterId
     }
 
 
-    console.log(cashRegisters)
+
+    const hasOpenCashRegister = cashRegisters?.some((cr: CashRegister) => cr.status === 'OPEN');
     if (loading) return <Skeleton rows={4} columns={['CAJA', 'USUARIO', 'FECHA DE CREACION', 'ESTADO']} />;
 
     return (
         <>
             <ViewTitle className='mb-6' title="Facturacion" rightComponent={
                 <>
-                    {cashRegisters?.length === 0 && (
+                    {!hasOpenCashRegister && (
                         <CashRegisterModal />
                     )}
 
