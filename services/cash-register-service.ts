@@ -81,7 +81,7 @@ export const findCashRegisterById = async (id: string) => {
       initialBalance: true,
       deleted: true,
       user: {
-        select: { id: true, name: true }
+        select: { id: true, name: true, lastName: true, username: true }
       },
       cashBox: { select: { id: true, name: true } },
       createdAt: true,
