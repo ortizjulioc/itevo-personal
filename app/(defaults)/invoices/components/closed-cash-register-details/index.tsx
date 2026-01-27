@@ -1,8 +1,6 @@
 'use client';
-import { Button, Input } from '@/components/ui';
 import { Tab } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { getFormattedDateTime } from '@/utils/date';
 import apiRequest from '@/utils/lib/api-request/request';
 import { openNotification } from '@/utils';
@@ -25,8 +23,9 @@ const billsList: Record<string, number> = {
   one: 1,
 };
 
+import { ViewTitle } from '@/components/common';
+
 export default function ClosedCashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [closureData, setClosureData] = useState<any>(null);
 
@@ -61,41 +60,38 @@ export default function ClosedCashRegisterDetails({ CashRegister }: { CashRegist
     totalCheck,
     totalTransfer,
     initialBalance,
-    totalIncome,
-    totalExpense,
-    expectedTotal,
     difference,
     closureDate
   } = closureData;
 
-  const totalCalculated = totalCash + totalCard + totalCheck + totalTransfer;
 
+  console.log(CashRegister);
   return (
     <div className="mb-5">
-      <div className="rounded border border-white-light bg-white shadow-sm dark:border-[#1b2e4b] dark:bg-[#191e3a] p-5 mb-5">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
-          <div>
-            <h4 className="text-xl font-bold">Detalle de Caja Cerrada</h4>
-            <div className="text-sm text-gray-500">
-              Cerrada el: {getFormattedDateTime(new Date(closureDate), { hour12: true })}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => router.push('/invoices')}>
-              Volver
-            </Button>
+      <ViewTitle
+        title="Detalle de Caja Cerrada"
+        showBackPage={true}
+        rightComponent={
+          <>
             <PrintClosure closureId={closureData.id} cashRegisterId={CashRegister.id} />
+          </>
+        }
+      />
+      <div className="rounded border border-white-light bg-white shadow-sm dark:border-[#1b2e4b] dark:bg-[#191e3a] p-5 my-5">
+        {/* <div className="mb-5">
+          <div className="text-sm text-gray-500">
+            Cerrada el: {getFormattedDateTime(new Date(closureDate), { hour12: true })}
           </div>
-        </div>
+        </div> */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-gray-50 p-3 rounded dark:bg-[#0e1726]">
             <div className="text-gray-500 text-sm">Caja</div>
             <div className="font-bold text-lg">{CashRegister.cashBox.name}</div>
           </div>
           <div className="bg-gray-50 p-3 rounded dark:bg-[#0e1726]">
             <div className="text-gray-500 text-sm">Cajero</div>
-            <div className="font-bold text-lg">{CashRegister.user.name}</div>
+            <div className="font-bold text-lg">{CashRegister.user.name} {CashRegister.user.lastName}</div>
           </div>
           <div className="bg-gray-50 p-3 rounded dark:bg-[#0e1726]">
             <div className="text-gray-500 text-sm">Apertura</div>
@@ -105,10 +101,10 @@ export default function ClosedCashRegisterDetails({ CashRegister }: { CashRegist
             <div className="text-gray-500 text-sm">Cierre</div>
             <div className="font-bold text-lg">{getFormattedDateTime(new Date(closureDate), { hour12: true })}</div>
           </div>
-          <div className="bg-gray-50 p-3 rounded dark:bg-[#0e1726]">
+          {/* <div className="bg-gray-50 p-3 rounded dark:bg-[#0e1726]">
             <div className="text-gray-500 text-sm">Balance Inicial</div>
             <div className="font-bold text-lg">RD$ {initialBalance?.toLocaleString()}</div>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
