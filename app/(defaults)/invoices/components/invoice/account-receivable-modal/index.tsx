@@ -52,7 +52,7 @@ export default function AccountReceivableModal({
                 unitPrice: value,
                 subtotal: value,
                 itbis: 0,
-                concept: `Cuota curso: ${item.courseBranch?.course?.name ?? 'Otro'}`,
+                concept: item.concept || `Cuota curso: ${item.courseBranch?.course?.name ?? 'Otro'}`,
             };
 
             setItem(newItem);
