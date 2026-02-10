@@ -27,12 +27,7 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
         openNotification('error', error);
     }
 
-    const enrollmentStatus = [
-        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-    ];
+
     const onStatusChange = async (id: string, status: EnrollmentStatus) => {
                 try {
                     const enrollment = enrollments?.find(cb => cb.id === id);
@@ -40,12 +35,12 @@ export default function StudentEnrollments({ className, query = '' }: Props) {
                         openNotification('error', 'No se encontró la oferta académica');
                         return;
                     }
-        
+
                     const resp = await updateEnrollment(id, {
                         ...enrollment,
                         status, // actualizamos solo el campo necesario
                     });
-        
+
                     if (resp.success) {
                         setEnrollments(enrollments.map((cb) =>
                             cb.id === id ? { ...cb, status } : cb

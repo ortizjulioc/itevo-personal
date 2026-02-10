@@ -1,16 +1,16 @@
-import { NextResponse, NextRequest } from "next/server";
-import { validateObject } from "@/utils";
-import { getEnrollments, createEnrollment } from "@/services/enrollment-service";
-import { formatErrorMessage } from "@/utils/error-to-string";
-import { createLog } from "@/utils/log";
-import { findCourseBranchById } from "@/services/course-branch-service";
-import { findStudentById } from "@/services/student-service";
-import { createManyAccountsReceivable } from "@/services/account-receivable";
-import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from "@prisma/client";
-import { Prisma } from "@/utils/lib/prisma";
-import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from "@/utils/date";
-import { getHolidays } from "@/services/holiday-service";
-import { addMonths } from "date-fns";
+import { NextResponse, NextRequest } from 'next/server';
+import { validateObject } from '@/utils';
+import { getEnrollments, createEnrollment } from '@/services/enrollment-service';
+import { formatErrorMessage } from '@/utils/error-to-string';
+import { createLog } from '@/utils/log';
+import { findCourseBranchById } from '@/services/course-branch-service';
+import { findStudentById } from '@/services/student-service';
+import { createManyAccountsReceivable } from '@/services/account-receivable';
+import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from '@prisma/client';
+import { Prisma } from '@/utils/lib/prisma';
+import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from '@/utils/date';
+import { getHolidays } from '@/services/holiday-service';
+import { addMonths } from 'date-fns';
 
 export async function GET(request: NextRequest) {
     try {
@@ -28,14 +28,17 @@ export async function GET(request: NextRequest) {
             status: searchParams.get('status') || undefined,
             enrollmentDate: searchParams.get('enrollmentDate') || undefined,
             courseBranchId: searchParams.get('courseBranchId') || undefined,
-        }
+        };
 
         const { enrollments, totalEnrollments } = await getEnrollments(filters);
 
-        return NextResponse.json({
-            enrollments,
-            totalEnrollments,
-        }, { status: 200 });
+        return NextResponse.json(
+            {
+                enrollments,
+                totalEnrollments,
+            },
+            { status: 200 }
+        );
     } catch (error) {
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
@@ -62,19 +65,25 @@ export async function POST(request: Request) {
         }
 
         if (courseBranch.status === CourseBranchStatus.DRAFT || courseBranch.status === CourseBranchStatus.CANCELED || courseBranch.status === CourseBranchStatus.COMPLETED) {
-            return NextResponse.json({
-                code: 'E_COURSE_BRANCH_INVALID',
-                error: 'Course branch is not active',
-                message: 'Este curso no está disponible para inscripciones',
-            }, { status: 400 });
+            return NextResponse.json(
+                {
+                    code: 'E_COURSE_BRANCH_INVALID',
+                    error: 'Course branch is not active',
+                    message: 'Este curso no está disponible para inscripciones',
+                },
+                { status: 400 }
+            );
         }
 
         if (courseBranch.endDate && new Date(courseBranch.endDate) < new Date()) {
-            return NextResponse.json({
-                code: 'E_COURSE_BRANCH_EXPIRED',
-                error: 'Course branch has expired',
-                message: 'El curso ha expirado',
-            }, { status: 400 });
+            return NextResponse.json(
+                {
+                    code: 'E_COURSE_BRANCH_EXPIRED',
+                    error: 'Course branch has expired',
+                    message: 'El curso ha expirado',
+                },
+                { status: 400 }
+            );
         }
 
         if (courseBranch.capacity && courseBranch.capacity > 0) {
@@ -86,11 +95,14 @@ export async function POST(request: Request) {
             });
 
             if (enrolledCount >= courseBranch.capacity) {
-                return NextResponse.json({
-                    code: 'E_COURSE_BRANCH_FULL',
-                    error: 'Course branch is full',
-                    message: 'El curso ha alcanzado su capacidad máxima',
-                }, { status: 400 });
+                return NextResponse.json(
+                    {
+                        code: 'E_COURSE_BRANCH_FULL',
+                        error: 'Course branch is full',
+                        message: 'El curso ha alcanzado su capacidad máxima',
+                    },
+                    { status: 400 }
+                );
             }
         }
 
@@ -109,11 +121,14 @@ export async function POST(request: Request) {
                 });
 
                 if (existingEnrollment) {
-                    return NextResponse.json({
-                        code: 'E_STUDENT_ALREADY_ENROLLED',
-                        error: 'Student is already enrolled in this course branch',
-                        message: 'El estudiante ya está inscrito en este curso',
-                    }, { status: 400 });
+                    return NextResponse.json(
+                        {
+                            code: 'E_STUDENT_ALREADY_ENROLLED',
+                            error: 'Student is already enrolled in this course branch',
+                            message: 'El estudiante ya está inscrito en este curso',
+                        },
+                        { status: 400 }
+                    );
                 }
 
                 const paymentPlan = await prisma.courseBranchPaymentPlan.findUnique({
@@ -121,19 +136,25 @@ export async function POST(request: Request) {
                 });
 
                 if (!paymentPlan) {
-                    return NextResponse.json({
-                        code: 'E_PAYMENT_PLAN_NOT_FOUND',
-                        error: 'Payment plan not found for this course branch',
-                        message: 'El curso no tiene plan de pago configurado',
-                    }, { status: 400 });
+                    return NextResponse.json(
+                        {
+                            code: 'E_PAYMENT_PLAN_NOT_FOUND',
+                            error: 'Payment plan not found for this course branch',
+                            message: 'El curso no tiene plan de pago configurado',
+                        },
+                        { status: 400 }
+                    );
                 }
 
-                const enrollment = await createEnrollment({
-                    student: { connect: { id: student.id } },
-                    courseBranch: { connect: { id: courseBranch.id } },
-                    enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
-                    status: body.status,
-                }, prisma);
+                const enrollment = await createEnrollment(
+                    {
+                        student: { connect: { id: student.id } },
+                        courseBranch: { connect: { id: courseBranch.id } },
+                        enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
+                        status: body.status,
+                    },
+                    prisma
+                );
 
                 const receivables: any[] = [];
                 const startDate = new Date(courseBranch.startDate);
@@ -142,20 +163,17 @@ export async function POST(request: Request) {
                     where: {
                         studentId: student.id,
                         active: true,
-                        OR: [
-                            { courseBranchId: courseBranch.id },
-                            { courseBranchId: null }
-                        ],
-                        scholarship: { isActive: true }
+                        OR: [{ courseBranchId: courseBranch.id }, { courseBranchId: null }],
+                        scholarship: { isActive: true },
                     },
                     include: { scholarship: true },
-                    orderBy: { courseBranchId: 'desc' } // Prioritize specific rule (string) over global (null)? Need to verify sort order.
+                    orderBy: { courseBranchId: 'desc' }, // Prioritize specific rule (string) over global (null)? Need to verify sort order.
                 });
 
                 // 2. Cálculo del monto base por cuota y matrícula
                 let amountPerInstallment = courseBranch.amount;
                 let enrollmentAmount = courseBranch.enrollmentAmount || 0;
-                let conceptSuffix = "";
+                let conceptSuffix = '';
 
                 if (activeScholarship && activeScholarship.scholarship) {
                     const { type, value, name } = activeScholarship.scholarship;
@@ -212,7 +230,7 @@ export async function POST(request: Request) {
                             } else {
                                 // las siguientes cuotas se calculan sumando semanas desde la primera
                                 dueDate = new Date(getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true));
-                                dueDate.setDate(dueDate.getDate() + (i * 7));
+                                dueDate.setDate(dueDate.getDate() + i * 7);
                             }
                             break;
 
@@ -257,7 +275,6 @@ export async function POST(request: Request) {
                             concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
                         });
                     }
-
                 }
 
                 // 4. Insertar las cuentas por cobrar
@@ -267,41 +284,48 @@ export async function POST(request: Request) {
 
                 //Crear logs de auditoría
                 await createLog({
-                    action: "POST",
+                    action: 'POST',
                     description: `Se creó un nuevo enrollment con la siguiente información: \n${JSON.stringify(enrollment, null, 2)}`,
-                    origin: "enrollments",
+                    origin: 'enrollments',
                     elementId: enrollment.id,
                     success: true,
                 });
 
                 if (receivables.length > 0) {
                     await createLog({
-                        action: "POST",
+                        action: 'POST',
                         description: `Se crearon las siguientes cuentas por cobrar para el enrollment ${enrollment.id}: \n${JSON.stringify(receivables, null, 2)}`,
-                        origin: "enrollments",
+                        origin: 'enrollments',
                         elementId: enrollment.id,
                         success: true,
                     });
                 }
 
-                return NextResponse.json({
-                    enrollment,
-                    receivables,
-                }, { status: 200 });
+                return NextResponse.json(
+                    {
+                        enrollment,
+                        receivables,
+                    },
+                    { status: 200 }
+                );
             } else {
-                return NextResponse.json({
-                    code: 'E_COURSE_BRANCH_INVALID',
-                    error: 'Course branch is invalid or missing required fields',
-                    message: 'El curso no es válido o falta información requerida',
-                }, { status: 400 });
+                return NextResponse.json(
+                    {
+                        code: 'E_COURSE_BRANCH_INVALID',
+                        error: 'Course branch is invalid or missing required fields',
+                        message: 'El curso no es válido o falta información requerida',
+                    },
+                    { status: 400 }
+                );
             }
         });
     } catch (error) {
+        console.log('Error al crear un enrollment', error);
         await createLog({
-            action: "POST",
+            action: 'POST',
             description: `Error al crear un enrollment: ${formatErrorMessage(error)}`,
-            origin: "enrollments",
-            elementId: request.headers.get("origin") || "",
+            origin: 'enrollments',
+            elementId: request.headers.get('origin') || '',
             success: false,
         });
 

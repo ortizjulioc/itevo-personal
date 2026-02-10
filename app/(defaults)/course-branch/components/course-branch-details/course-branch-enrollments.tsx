@@ -29,12 +29,7 @@ export default function CourseBranchEnrollments({ className, query = '' }: Props
         openNotification('error', error);
     }
 
-    const enrollmentStatus = [
-        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-    ];
+
     console.log('enrollments', enrollments);
 
     if (loading) return <Skeleton rows={3} columns={['ESTUDIANTE', 'FECHA DE INSCRIPCION', 'ESTADO']} />;

@@ -15,12 +15,7 @@ interface SelectEnrollmentStatusProps {
 }
 
 export default function SelectEnrollmentStatus({ value, ...rest }: SelectEnrollmentStatusProps) {
-        const enrollmentStatus = [
-        { value: ENROLLMENT_STATUS.WAITING, label: 'En espera' },
-        { value: ENROLLMENT_STATUS.ENROLLED, label: 'Inscrito' },
-        { value: ENROLLMENT_STATUS.COMPLETED, label: 'Completado' },
-        { value: ENROLLMENT_STATUS.ABANDONED, label: 'Abandonado' },
-    ];
+
     const options = Object.values(EnrollmentStatus).map((status) => ({
         value: status,
         label: <StatusEnrollment status={status as any} />,

@@ -113,6 +113,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
 
     const statusOptions = [
         { value: 'WAITING', label: <StatusEnrollment status={EnrollmentStatus.WAITING} /> },
+        { value: 'CONFIRMED', label: <StatusEnrollment status={EnrollmentStatus.CONFIRMED} /> },
         { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} /> },
         { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} /> },
         { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} /> },
