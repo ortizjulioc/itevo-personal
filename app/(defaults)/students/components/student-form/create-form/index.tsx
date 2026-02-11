@@ -79,7 +79,7 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
                                 type="text"
                                 name="firstName"
                                 component={Input}
-                                onChange={(e: any) => setFieldValue('firstName', e.target.value.toUpperCase())}
+                                onChange={(e: any) => setFieldValue('firstName', e.target.value)}
                             />
                         </FormItem>
 
@@ -94,7 +94,7 @@ export default function CreateStudentForm({ onClose }: CreateStudentFormProps) {
                                 type="text"
                                 name="lastName"
                                 component={Input}
-                                onChange={(e: any) => setFieldValue('lastName', e.target.value.toUpperCase())}
+                                onChange={(e: any) => setFieldValue('lastName', e.target.value)}
                             />
                         </FormItem>
 
