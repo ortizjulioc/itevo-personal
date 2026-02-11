@@ -5,7 +5,7 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { findCourseBranchById } from '@/services/course-branch-service';
 import { findStudentById } from '@/services/student-service';
-import { createManyAccountsReceivable } from '@/services/account-receivable';
+import { createManyAccountsReceivable, generateEnrollmentReceivables } from '@/services/account-receivable';
 import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from '@prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from '@/utils/date';
@@ -156,131 +156,15 @@ export async function POST(request: Request) {
                     prisma
                 );
 
-                const receivables: any[] = [];
-                const startDate = new Date(courseBranch.startDate);
-                // 1. Detección de beca
-                const activeScholarship = await prisma.studentScholarship.findFirst({
-                    where: {
-                        studentId: student.id,
-                        active: true,
-                        OR: [{ courseBranchId: courseBranch.id }, { courseBranchId: null }],
-                        scholarship: { isActive: true },
-                    },
-                    include: { scholarship: true },
-                    orderBy: { courseBranchId: 'desc' }, // Prioritize specific rule (string) over global (null)? Need to verify sort order.
-                });
-
-                // 2. Cálculo del monto base por cuota y matrícula
-                let amountPerInstallment = courseBranch.amount;
-                let enrollmentAmount = courseBranch.enrollmentAmount || 0;
-                let conceptSuffix = '';
-
-                if (activeScholarship && activeScholarship.scholarship) {
-                    const { type, value, name } = activeScholarship.scholarship;
-                    let installmentDiscount = 0;
-                    let enrollmentDiscount = 0;
-
-                    if (type === ScholarshipType.percentage) {
-                        installmentDiscount = amountPerInstallment * (value / 100);
-                        enrollmentDiscount = enrollmentAmount * (value / 100);
-                    } else if (type === ScholarshipType.fixed_amount) {
-                        installmentDiscount = value;
-                        enrollmentDiscount = value;
-                    }
-
-                    // Evitar negativos y aplicar descuento - Cuota
-                    if (installmentDiscount > amountPerInstallment) installmentDiscount = amountPerInstallment;
-                    amountPerInstallment -= installmentDiscount;
-
-                    // Evitar negativos y aplicar descuento - Inscripción
-                    if (enrollmentDiscount > enrollmentAmount) enrollmentDiscount = enrollmentAmount;
-                    enrollmentAmount -= enrollmentDiscount;
-
-                    conceptSuffix = ` (Beca: ${name})`;
+                let receivables: any[] = [];
+                if (body.status === EnrollmentStatus.ENROLLED) {
+                    receivables = await generateEnrollmentReceivables(enrollment.id, prisma);
                 }
 
-                if (enrollmentAmount > 0) {
-                    receivables.push({
-                        // enrollmentId: enrollment.id,
-                        amount: enrollmentAmount,
-                        studentId: student.id,
-                        courseBranchId: courseBranch.id,
-                        dueDate: startDate, // mismo día de inicio
-                        status: PaymentStatus.PENDING,
-                        concept: `Inscripción al curso ${courseBranch?.course?.name || ''}${conceptSuffix}`,
-                    });
-                }
-
-                for (let i = 0; i < paymentPlan.installments; i++) {
-                    let dueDate = new Date(startDate);
-                    console.log('Calculating due date for installment', i + 1);
-                    console.log('Initial due date:', dueDate);
-
-                    switch (paymentPlan.frequency) {
-                        case 'MONTHLY':
-                            const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
-                            dueDate = addMonths(dateWithDay, i + 1);
-                            console.log('Monthly due date:', dueDate);
-                            break;
-
-                        case 'WEEKLY':
-                            if (i === 0) {
-                                // primera cuota: buscar el próximo día de clase
-                                dueDate = getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true);
-                            } else {
-                                // las siguientes cuotas se calculan sumando semanas desde la primera
-                                dueDate = new Date(getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true));
-                                dueDate.setDate(dueDate.getDate() + i * 7);
-                            }
-                            break;
-
-                        case 'BIWEEKLY':
-                            dueDate.setDate(dueDate.getDate() + i * 14);
-                            console.log('Biweekly due date:', dueDate);
-                            break;
-
-                        case 'PER_CLASS':
-                            // usar las sesiones del curso si tienes las fechas
-                            // por simplicidad aquí lo tratamos como semanal
-                            dueDate.setDate(dueDate.getDate() + i * 7);
-                            console.log('Per class due date (treated as weekly):', dueDate);
-                            break;
-
-                        case 'ONCE':
-                            if (i === 0) {
-                                dueDate.setDate(dueDate.getDate());
-                                console.log('Once due date:', dueDate);
-                            } else {
-                                continue; // no generar más de una cuota
-                            }
-                            break;
-
-                        default:
-                            throw new Error(`Unsupported frequency: ${paymentPlan.frequency}`);
-                    }
-
-                    // aplicar días de gracia si existen
-                    if (paymentPlan.graceDays && paymentPlan.graceDays > 0) {
-                        dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
-                    }
-
-                    if (amountPerInstallment > 0) {
-                        receivables.push({
-                            // enrollmentId: enrollment.id,
-                            studentId: student.id,
-                            courseBranchId: courseBranch.id,
-                            amount: amountPerInstallment,
-                            dueDate,
-                            status: PaymentStatus.PENDING,
-                            concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
-                        });
-                    }
-                }
-
-                // 4. Insertar las cuentas por cobrar
-                await prisma.accountReceivable.createMany({
-                    data: receivables,
-                });
+                // 4. Insertar las cuentas por cobrar (Logic moved to generateEnrollmentReceivables service)
+                // await prisma.accountReceivable.createMany({
+                //     data: receivables,
+                // });
 
                 //Crear logs de auditoría
                 await createLog({
@@ -291,15 +175,15 @@ export async function POST(request: Request) {
                     success: true,
                 });
 
-                if (receivables.length > 0) {
-                    await createLog({
-                        action: 'POST',
-                        description: `Se crearon las siguientes cuentas por cobrar para el enrollment ${enrollment.id}: \n${JSON.stringify(receivables, null, 2)}`,
-                        origin: 'enrollments',
-                        elementId: enrollment.id,
-                        success: true,
-                    });
-                }
+                // if (receivables.length > 0) {
+                //     await createLog({
+                //         action: 'POST',
+                //         description: `Se crearon las siguientes cuentas por cobrar para el enrollment ${enrollment.id}: \n${JSON.stringify(receivables, null, 2)}`,
+                //         origin: 'enrollments',
+                //         elementId: enrollment.id,
+                //         success: true,
+                //     });
+                // }
 
                 return NextResponse.json(
                     {
