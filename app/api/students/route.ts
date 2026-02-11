@@ -66,12 +66,12 @@ export async function POST(request: Request) {
             // Crear el estudiante
             const student = await createStudent({
                 code: body.code,
-                firstName: body.firstName,
-                lastName: body.lastName,
-                email: body.email,
-                identification: body.identification,
-                address: body.address,
-                phone: body.phone,
+                firstName: body.firstName.trim(),
+                lastName: body.lastName.trim(),
+                email: body.email.trim(),
+                identification: body.identification.trim(),
+                address: body.address.trim(),
+                phone: body.phone.trim(),
                 hasTakenCourses: body.hasTakenCourses,
                 identificationType: body.identificationType ?? IdentificationType.CEDULA,
                 branch: { connect: { id: body.branchId } },
