@@ -3,15 +3,26 @@ import apiRequest from "@/utils/lib/api-request/request";
 import { Enrollment } from "@prisma/client";
 import { EnrollmentWithRelations } from '@/@types/enrollment';
 
+export interface EnrollmentSummary {
+  total: number;
+  waiting: number;
+  confirmed: number;
+  enrolled: number;
+  completed: number;
+  abandoned: number;
+}
+
 export interface EnrollmentResponse {
   enrollments: EnrollmentWithRelations[];
   totalEnrollments: number;
+  summary: EnrollmentSummary;
 }
 
 const useFetchEnrollments = (query: string, options: { [key: string]: any } = {}) => {
   const { preventFirstFetch = false } = options;
   const [enrollments, setEnrollments] = useState<EnrollmentWithRelations[]>([]);
   const [totalEnrollments, setTotalEnrollments] = useState<number>(0);
+  const [summary, setSummary] = useState<EnrollmentSummary | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +35,7 @@ const useFetchEnrollments = (query: string, options: { [key: string]: any } = {}
       }
       setEnrollments(response.data?.enrollments || []);
       setTotalEnrollments(response.data?.totalEnrollments || 0);
+      setSummary(response.data?.summary || null);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -42,6 +54,7 @@ const useFetchEnrollments = (query: string, options: { [key: string]: any } = {}
   return {
     enrollments,
     totalEnrollments,
+    summary,
     loading,
     error,
     setEnrollments,

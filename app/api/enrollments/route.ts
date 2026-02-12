@@ -32,12 +32,13 @@ export async function GET(request: NextRequest) {
             courseBranchId: searchParams.get('courseBranchId') || undefined,
         };
 
-        const { enrollments, totalEnrollments } = await getEnrollments(filters);
+        const { enrollments, totalEnrollments, summary } = await getEnrollments(filters);
 
         return NextResponse.json(
             {
                 enrollments,
                 totalEnrollments,
+                summary,
             },
             { status: 200 }
         );

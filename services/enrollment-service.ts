@@ -96,7 +96,46 @@ export const getEnrollments = async (filters: any) => {
         where,
     });
 
-    return { enrollments, totalEnrollments };
+    // Calcular resumen de estados
+    const statusCounts = await Prisma.enrollment.groupBy({
+        by: ['status'],
+        where,
+        _count: {
+            status: true,
+        },
+    });
+
+    const summary = {
+        total: totalEnrollments,
+        waiting: 0,
+        confirmed: 0,
+        enrolled: 0,
+        completed: 0,
+        abandoned: 0,
+    };
+
+    statusCounts.forEach((item) => {
+        const count = item._count.status;
+        switch (item.status) {
+            case EnrollmentStatus.WAITING:
+                summary.waiting = count;
+                break;
+            case EnrollmentStatus.CONFIRMED:
+                summary.confirmed = count;
+                break;
+            case EnrollmentStatus.ENROLLED:
+                summary.enrolled = count;
+                break;
+            case EnrollmentStatus.COMPLETED:
+                summary.completed = count;
+                break;
+            case EnrollmentStatus.ABANDONED:
+                summary.abandoned = count;
+                break;
+        }
+    });
+
+    return { enrollments, totalEnrollments, summary };
 };
 
 export const createEnrollment = async (data: PrismaTypes.EnrollmentCreateInput, prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma) => {

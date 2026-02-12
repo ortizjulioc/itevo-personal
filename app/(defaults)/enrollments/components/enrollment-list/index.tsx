@@ -15,15 +15,21 @@ import { useState } from "react";
 import { IoIosMore } from "react-icons/io";
 import PrintEnrollment from "@/components/common/print/enrollment";
 
+import { EnrollmentWithRelations } from "@/@types/enrollment";
+
 interface Props {
     className?: string;
     query?: string;
+    enrollments: EnrollmentWithRelations[];
+    totalEnrollments: number;
+    loading: boolean;
+    error: string | null;
+    setEnrollments: React.Dispatch<React.SetStateAction<EnrollmentWithRelations[]>>;
 }
 
-export default function EnrollmentList({ className, query = '' }: Props) {
+export default function EnrollmentList({ className, query = '', enrollments, totalEnrollments, loading, error, setEnrollments }: Props) {
     const params = queryStringToObject(query);
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-    const { loading, error, enrollments, totalEnrollments, setEnrollments } = useFetchEnrollments(query);
     if (error) {
         openNotification('error', error);
     }

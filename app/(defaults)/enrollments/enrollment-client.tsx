@@ -11,6 +11,8 @@ import EnrollmentList from './components/enrollment-list';
 import SearchEnrollments from './components/search-enrollment';
 import { objectToQueryString } from '@/utils';
 import { useActiveBranch } from '@/utils/hooks/use-active-branch';
+import EnrollmentSummaryCards from './components/enrollment-summary';
+import useFetchEnrollments from './lib/use-fetch-enrollments';
 
 export default function Enrollment({ searchParams }: { searchParams?: { search?: string; page?: string } }) {
   const params = useSearchParams();
@@ -27,6 +29,8 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
   // Excluir showFilters de los parámetros que se pasan a la lista para evitar recargas innecesarias
   const { showFilters: _, ...paramsForQuery } = paramsWithBranch;
   const query = objectToQueryString(paramsForQuery || {});
+
+  const { enrollments, totalEnrollments, summary, loading, error, setEnrollments } = useFetchEnrollments(query);
 
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());
@@ -58,8 +62,18 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
           </div>
         }
       />
+
+      <EnrollmentSummaryCards summary={summary} loading={loading} />
+
       <div>{showFilters && <SearchEnrollments />}</div>
-      <EnrollmentList query={query} />
+      <EnrollmentList
+        query={query}
+        enrollments={enrollments}
+        totalEnrollments={totalEnrollments}
+        loading={loading}
+        error={error}
+        setEnrollments={setEnrollments}
+      />
     </div>
   );
 }
