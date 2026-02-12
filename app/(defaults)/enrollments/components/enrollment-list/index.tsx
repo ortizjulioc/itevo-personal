@@ -1,20 +1,18 @@
 'use client';
 import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
-import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
+import { Pagination } from "@/components/ui";
+import { IconEdit, IconPrinter, IconTrashLines } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
-import useFetchEnrollments from "../../lib/use-fetch-enrollments";
 import { deleteEnrollment, updateEnrollment } from "../../lib/request";
 import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
 import { EnrollmentStatus } from "@prisma/client";
 import { formatScheduleList } from "@/utils/schedule";
 import { useState } from "react";
-import { IoIosMore } from "react-icons/io";
-import PrintEnrollment from "@/components/common/print/enrollment";
 
+import PrintEnrollmentModal from "@/components/common/print/print-enrollment-modal";
 import { EnrollmentWithRelations } from "@/@types/enrollment";
 
 interface Props {
@@ -30,6 +28,12 @@ interface Props {
 export default function EnrollmentList({ className, query = '', enrollments, totalEnrollments, loading, error, setEnrollments }: Props) {
     const params = queryStringToObject(query);
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const [printModal, setPrintModal] = useState<{ open: boolean; enrollmentId: string; courseBranchId: string }>({
+        open: false,
+        enrollmentId: '',
+        courseBranchId: ''
+    });
+
     if (error) {
         openNotification('error', error);
     }
@@ -120,29 +124,11 @@ export default function EnrollmentList({ className, query = '', enrollments, tot
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-3 justify-end">
-                                            <div className="relative inline-block text-left">
-                                                <button
-                                                    className="p-2 rounded-full hover:bg-gray-100 cursor-pointer left-auto right-full "
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setOpenDropdownId(prev => (prev === enrollment.id ? null : enrollment.id));
-                                                    }}
-                                                >
-                                                    <IoIosMore className="text-xl rotate-90" />
+                                            <Tooltip title="Imprimir">
+                                                <button onClick={() => setPrintModal({ open: true, enrollmentId: enrollment.id, courseBranchId: enrollment.courseBranchId })}>
+                                                    <IconPrinter className="size-5 hover:text-primary hover:cursor-pointer" />
                                                 </button>
-
-                                                {openDropdownId === enrollment.id && (
-                                                    <div
-                                                        className="fixed right-4 mt-2 w-auto  z-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <div className="p-2">
-
-                                                            <PrintEnrollment enrollmentId={enrollment.id} courseBranchId={enrollment.courseBranchId} />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
+                                            </Tooltip>
                                             <Tooltip title="Eliminar">
                                                 <button onClick={() => onDelete(enrollment.id)}>
                                                     <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
@@ -169,6 +155,15 @@ export default function EnrollmentList({ className, query = '', enrollments, tot
                     top={parseInt(params?.top || '10')}
                 />
             </div>
+
+            {printModal.open && (
+                <PrintEnrollmentModal
+                    modal={printModal.open}
+                    setModal={(val) => setPrintModal(prev => ({ ...prev, open: val }))}
+                    enrollmentId={printModal.enrollmentId}
+                    courseBranchId={printModal.courseBranchId}
+                />
+            )}
         </div>
     );
 };
