@@ -1,4 +1,5 @@
 import { formatCurrency, formatPhoneNumber } from '@/utils';
+import { getFormattedDate } from '@/utils/date';
 import { formatScheduleList } from '@/utils/schedule';
 import {
   Document,
@@ -165,6 +166,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
             </View>
             <View style={{ width: '50%' }}>
               <InfoField title='Inscripción:' value={formatCurrency(enrollment.courseBranch.enrollmentAmount || 0)} />
+              <InfoField title='Fecha:' value={getFormattedDate(new Date(enrollment.enrollmentDate))} />
               <InfoField title='Horario: ' value={schedules} />
               <InfoField title='Teléfono:' value={formatPhoneList(enrollment.student.phone)} />
             </View>
