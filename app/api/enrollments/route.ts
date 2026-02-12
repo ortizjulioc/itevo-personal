@@ -25,8 +25,10 @@ export async function GET(request: NextRequest) {
             branchId: searchParams.get('branchId') || undefined,
             promotionId: searchParams.get('promotionId') || undefined,
             modality: searchParams.get('modality') || undefined,
+
             status: searchParams.get('status') || undefined,
-            enrollmentDate: searchParams.get('enrollmentDate') || undefined,
+            startDate: searchParams.get('startDate') || undefined,
+            endDate: searchParams.get('endDate') || undefined,
             courseBranchId: searchParams.get('courseBranchId') || undefined,
         };
 

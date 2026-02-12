@@ -24,7 +24,9 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
     ...(activeBranchId && { branchId: activeBranchId }),
   };
 
-  const query = objectToQueryString(paramsWithBranch || {});
+  // Excluir showFilters de los parámetros que se pasan a la lista para evitar recargas innecesarias
+  const { showFilters: _, ...paramsForQuery } = paramsWithBranch;
+  const query = objectToQueryString(paramsForQuery || {});
 
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());

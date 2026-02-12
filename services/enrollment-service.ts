@@ -1,39 +1,32 @@
 import 'server-only';
-import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
+import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {
-    const {
-        studentId,
-        courseId,
-        teacherId,
-        branchId,
-        promotionId,
-        modality,
-        status,
-        enrollmentDate,
-        page,
-        top,
-        courseBranchId
-    } = filters;
+    const { studentId, courseId, teacherId, branchId, promotionId, modality, status, startDate, endDate, page, top, courseBranchId } = filters;
     const skip = (page - 1) * top;
-
 
     const where: PrismaTypes.EnrollmentWhereInput = {
         deleted: false,
         ...(courseBranchId && { courseBranchId }),
         ...(studentId && { studentId }),
         ...(status && {
-            status: (Object.values(EnrollmentStatus) as string[]).includes(status.toUpperCase())
-                ? (status.toUpperCase() as EnrollmentStatus)
-                : undefined,
+            status: (Object.values(EnrollmentStatus) as string[]).includes(status.toUpperCase()) ? (status.toUpperCase() as EnrollmentStatus) : undefined,
         }),
-        ...(enrollmentDate && {
-            enrollmentDate: {
-                gte: new Date(new Date(enrollmentDate).setHours(0, 0, 0, 0)),
-                lte: new Date(new Date(enrollmentDate).setHours(23, 59, 59, 999)),
-            },
-        }),
+        ...(startDate &&
+            endDate && {
+                enrollmentDate: {
+                    gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+                    lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+                },
+            }),
+        ...(startDate &&
+            !endDate && {
+                enrollmentDate: {
+                    gte: new Date(new Date(startDate).setHours(0, 0, 0, 0)),
+                    lte: new Date(new Date(startDate).setHours(23, 59, 59, 999)),
+                },
+            }),
         courseBranch: {
             deleted: false,
             ...(courseId && { courseId }),
@@ -45,34 +38,40 @@ export const getEnrollments = async (filters: any) => {
     };
 
     // Filtrar por enrollmentDate
-    if (enrollmentDate) {
-        const date = new Date(enrollmentDate);
-        if (!isNaN(date.getTime())) {
+    // Filtrar por enrollmentDate (Range)
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
             where.enrollmentDate = {
-                gte: new Date(date.setHours(0, 0, 0, 0)), // Desde las 00:00
-                lte: new Date(date.setHours(23, 59, 59, 999)) // Hasta las 23:59
+                gte: new Date(start.setHours(0, 0, 0, 0)),
+                lte: new Date(end.setHours(23, 59, 59, 999)),
+            };
+        }
+    } else if (startDate) {
+        const start = new Date(startDate);
+        if (!isNaN(start.getTime())) {
+            where.enrollmentDate = {
+                gte: new Date(start.setHours(0, 0, 0, 0)),
+                lte: new Date(start.setHours(23, 59, 59, 999)),
             };
         }
     }
 
-     // Filtrar por `status` con valores de Prisma EnrollmentStatus
-     if (status) {
+    // Filtrar por `status` con valores de Prisma EnrollmentStatus
+    if (status) {
         const normalizedStatus = status.toUpperCase(); // Convertimos a minúsculas
         const validStatuses = Object.values(EnrollmentStatus); // Obtenemos los valores del enum de Prisma
 
         if (validStatuses.includes(normalizedStatus as EnrollmentStatus)) {
             where.status = normalizedStatus as EnrollmentStatus;
         } else {
-            throw new Error(`Estado inválido: ${status}. Los valores válidos son: ${validStatuses.join(", ")}`);
+            throw new Error(`Estado inválido: ${status}. Los valores válidos son: ${validStatuses.join(', ')}`);
         }
     }
 
-
-
     const enrollments = await Prisma.enrollment.findMany({
-        orderBy: [
-            { enrollmentDate: 'asc' },
-        ],
+        orderBy: [{ enrollmentDate: 'desc' }],
         include: {
             student: true,
             courseBranch: {
@@ -94,7 +93,7 @@ export const getEnrollments = async (filters: any) => {
     });
 
     const totalEnrollments = await Prisma.enrollment.count({
-        where
+        where,
     });
 
     return { enrollments, totalEnrollments };
@@ -114,7 +113,6 @@ export const createEnrollment = async (data: PrismaTypes.EnrollmentCreateInput, 
 
 // Obtener enrollment por ID
 export const findEnrollmentById = async (id: string) => {
-
     const enrollment = await Prisma.enrollment.findUnique({
         where: {
             id: id,
@@ -158,21 +156,19 @@ export const findEnrollmentById = async (id: string) => {
                                     endTime: true,
                                     weekday: true,
                                 },
-                            }
+                            },
                         },
-                    }
+                    },
                 },
             },
         },
     });
 
     return enrollment;
-
 };
 
 // Actualizar enrollment por ID
 export const updateEnrollmentById = async (id: string, data: any) => {
-
     return Prisma.enrollment.update({
         where: { id },
         data: {

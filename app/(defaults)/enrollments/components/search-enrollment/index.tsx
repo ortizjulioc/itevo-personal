@@ -42,7 +42,8 @@ export default function SearchEnrollments() {
         courseId: searchParams.get('courseBranchId') || '',
         teacherId: searchParams.get('teacherId') || '',
         status: searchParams.get('status') || '',
-        enrollmentDate: searchParams.get('enrollmentDate') || '',
+        startDate: searchParams.get('startDate') || '',
+        endDate: searchParams.get('endDate') || '',
     });
 
 
@@ -55,15 +56,18 @@ export default function SearchEnrollments() {
 
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
 
         Object.entries(filters).forEach(([key, value]) => {
             if (value) params.set(key, value);
             else params.delete(key);
         });
 
+        params.delete('page');
+
         router.push(`${pathname}?${params.toString()}`);
-    }, [filters, pathname, router, searchParams]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters, pathname, router]);
 
 
 
@@ -94,12 +98,22 @@ export default function SearchEnrollments() {
             />
 
             <DatePicker
-
-                value={filters.enrollmentDate ? new Date(filters.enrollmentDate) : undefined}
-                onChange={(date) => setFilters(prev => ({ ...prev, enrollmentDate: extractDate(date) }))}
-                placeholder="Fecha de inscripcion"
+                mode="range"
+                value={[
+                    filters.startDate ? new Date(filters.startDate) : null,
+                    filters.endDate ? new Date(filters.endDate) : null
+                ]}
+                onChange={(date) => {
+                    if (Array.isArray(date)) {
+                        setFilters(prev => ({
+                            ...prev,
+                            startDate: extractDate(date[0]),
+                            endDate: extractDate(date[1])
+                        }));
+                    }
+                }}
+                placeholder="Rango de fecha"
                 isClearable
-
             />
         </div>
     );
