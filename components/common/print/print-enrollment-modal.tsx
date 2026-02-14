@@ -39,7 +39,7 @@ export default function PrintEnrollmentModal({ modal, setModal, enrollmentId, co
                 <EnrollmentPDF
                     enrollment={enrollment}
                     companyInfo={{ ...setting, logo: blobLogo }}
-                    rules={courseBranchRule?.rules || setting.rules || []}
+                    rules={((courseBranchRule?.rules || setting.rules || []) as unknown) as string[]}
                 />,
                 { cleanUpMilliseconds: 600000 }
             );
@@ -57,12 +57,12 @@ export default function PrintEnrollmentModal({ modal, setModal, enrollmentId, co
         if (!isLoading && enrollment && setting && modal && !generating) {
             handlePrint();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, enrollment, setting, modal]);
 
     return (
         <Transition appear show={modal} as={Fragment}>
-            <Dialog as="div" open={modal} onClose={() => {}}>
+            <Dialog as="div" open={modal} onClose={() => { }}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
