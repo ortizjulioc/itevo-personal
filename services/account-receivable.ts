@@ -322,7 +322,7 @@ import { EnrollmentStatus, ScholarshipType } from '@prisma/client';
 import { addDaysToDate, getNextDayOfWeek } from '@/utils/date';
 import { addMonths } from 'date-fns';
 
-export const generateEnrollmentReceivables = async (enrollmentId: string, prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma) => {
+export const generateEnrollmentReceivables = async (enrollmentId: string, status: string, prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma) => {
     // 1. Obtener enrollment con datos necesarios
     const enrollment = await prisma.enrollment.findUnique({
         where: { id: enrollmentId },
@@ -346,23 +346,6 @@ export const generateEnrollmentReceivables = async (enrollmentId: string, prisma
 
     if (!paymentPlan) {
         throw new Error('Payment plan not found');
-    }
-
-    // 2. Verificar si ya existen cuentas por cobrar para este enrollment (idempotencia basica)
-    // Usamos una busqueda por studentId y courseBranchId y concepto similar, o idealmente si tuvieramos enrollmentId en AR
-    // Como no hay enrollmentId en AR, buscamos por student y courseBranch y fecha reciente o estado pendiente
-    const existingReceivables = await prisma.accountReceivable.count({
-        where: {
-            studentId: student.id,
-            courseBranchId: courseBranch.id,
-            // Opcional: filtrar por fecha de creación reciente para no confundir con inscripciones pasadas si se permite re-inscripcion
-            // Pero por ahora asumimos que si hay deuda pendiente o pagada asociada a este curso, ya se generaron.
-        },
-    });
-
-    if (existingReceivables > 0) {
-        console.log(`Receivables already exist for student ${student.id} in course ${courseBranch.id}`);
-        return []; // Ya existen, no hacemos nada
     }
 
     const receivables: any[] = [];
@@ -407,72 +390,100 @@ export const generateEnrollmentReceivables = async (enrollmentId: string, prisma
         conceptSuffix = ` (Beca: ${name})`;
     }
 
-    // 5. Generar Cobro de Inscripción
-    if (enrollmentAmount > 0) {
-        receivables.push({
-            amount: enrollmentAmount,
-            studentId: student.id,
-            courseBranchId: courseBranch.id,
-            dueDate: startDate,
-            status: PaymentStatus.PENDING,
-            concept: `Inscripción al curso ${courseBranch?.course?.name || ''}${conceptSuffix}`,
-        });
-    }
-
-    // 6. Generar Cuotas
-    for (let i = 0; i < paymentPlan.installments; i++) {
-        let dueDate = new Date(startDate);
-
-        switch (paymentPlan.frequency) {
-            case 'MONTHLY':
-                const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
-                dueDate = addMonths(dateWithDay, i + 1);
-                break;
-
-            case 'WEEKLY':
-                if (i === 0) {
-                    dueDate = getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true);
-                } else {
-                    dueDate = new Date(getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true));
-                    dueDate.setDate(dueDate.getDate() + i * 7);
-                }
-                break;
-
-            case 'BIWEEKLY':
-                dueDate.setDate(dueDate.getDate() + i * 14);
-                break;
-
-            case 'PER_CLASS':
-                dueDate.setDate(dueDate.getDate() + i * 7);
-                break;
-
-            case 'ONCE':
-                if (i === 0) {
-                    dueDate.setDate(dueDate.getDate());
-                } else {
-                    continue;
-                }
-                break;
-
-            default:
-                // throw new Error(`Unsupported frequency: ${paymentPlan.frequency}`);
-                // Log instead of throw to avoid breaking entire transaction? or throw to be safe.
-                break;
-        }
-
-        if (paymentPlan.graceDays && paymentPlan.graceDays > 0) {
-            dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
-        }
-
-        if (amountPerInstallment > 0) {
-            receivables.push({
+    // 5. Generar Cobro de Inscripción (Solo si estado es CONFIRMED o ENROLLED)
+    if (status === EnrollmentStatus.CONFIRMED || status === EnrollmentStatus.ENROLLED) {
+        // Verificar si ya existe el cobro de inscripción
+        const existingEnrollmentFee = await prisma.accountReceivable.findFirst({
+            where: {
                 studentId: student.id,
                 courseBranchId: courseBranch.id,
-                amount: amountPerInstallment,
-                dueDate,
+                concept: {
+                    startsWith: 'Inscripción', // Asumimos que el concepto empieza con "Inscripción"
+                },
+            },
+        });
+
+        if (!existingEnrollmentFee && enrollmentAmount > 0) {
+            receivables.push({
+                amount: enrollmentAmount,
+                studentId: student.id,
+                courseBranchId: courseBranch.id,
+                dueDate: startDate,
                 status: PaymentStatus.PENDING,
-                concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
+                concept: `Inscripción al curso ${courseBranch?.course?.name || ''}${conceptSuffix}`,
             });
+        }
+    }
+
+    // 6. Generar Cuotas (Solo si estado es ENROLLED)
+    if (status === EnrollmentStatus.ENROLLED) {
+        // Verificar si ya existen cuotas
+        const existingInstallments = await prisma.accountReceivable.findFirst({
+            where: {
+                studentId: student.id,
+                courseBranchId: courseBranch.id,
+                concept: {
+                    startsWith: 'Cuota', // Asumimos que el concepto empieza con "Cuota"
+                },
+            },
+        });
+
+        if (!existingInstallments) {
+            for (let i = 0; i < paymentPlan.installments; i++) {
+                let dueDate = new Date(startDate);
+
+                switch (paymentPlan.frequency) {
+                    case 'MONTHLY':
+                        const dateWithDay = addDaysToDate(dueDate, paymentPlan.dayOfMonth || dueDate.getDate());
+                        dueDate = addMonths(dateWithDay, i + 1);
+                        break;
+
+                    case 'WEEKLY':
+                        if (i === 0) {
+                            dueDate = getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true);
+                        } else {
+                            dueDate = new Date(getNextDayOfWeek(startDate, paymentPlan.dayOfWeek ?? startDate.getDay(), true));
+                            dueDate.setDate(dueDate.getDate() + i * 7);
+                        }
+                        break;
+
+                    case 'BIWEEKLY':
+                        dueDate.setDate(dueDate.getDate() + i * 14);
+                        break;
+
+                    case 'PER_CLASS':
+                        dueDate.setDate(dueDate.getDate() + i * 7);
+                        break;
+
+                    case 'ONCE':
+                        if (i === 0) {
+                            dueDate.setDate(dueDate.getDate());
+                        } else {
+                            continue;
+                        }
+                        break;
+
+                    default:
+                        // throw new Error(`Unsupported frequency: ${paymentPlan.frequency}`);
+                        // Log instead of throw to avoid breaking entire transaction? or throw to be safe.
+                        break;
+                }
+
+                if (paymentPlan.graceDays && paymentPlan.graceDays > 0) {
+                    dueDate.setDate(dueDate.getDate() + paymentPlan.graceDays);
+                }
+
+                if (amountPerInstallment > 0) {
+                    receivables.push({
+                        studentId: student.id,
+                        courseBranchId: courseBranch.id,
+                        amount: amountPerInstallment,
+                        dueDate,
+                        status: PaymentStatus.PENDING,
+                        concept: `Cuota ${i + 1} de ${paymentPlan.installments} - Curso: ${courseBranch?.course?.name || ''}${conceptSuffix}`,
+                    });
+                }
+            }
         }
     }
 

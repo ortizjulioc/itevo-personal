@@ -160,8 +160,8 @@ export async function POST(request: Request) {
                 );
 
                 let receivables: any[] = [];
-                if (body.status === EnrollmentStatus.ENROLLED) {
-                    receivables = await generateEnrollmentReceivables(enrollment.id, prisma);
+                if (body.status === EnrollmentStatus.ENROLLED || body.status === EnrollmentStatus.CONFIRMED) {
+                    receivables = await generateEnrollmentReceivables(enrollment.id, body.status, prisma);
                 }
 
                 // 4. Insertar las cuentas por cobrar (Logic moved to generateEnrollmentReceivables service)

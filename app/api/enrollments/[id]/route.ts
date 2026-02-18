@@ -45,10 +45,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
         const updatedEnrollment = await updateEnrollmentById(id, body);
 
-        // Generar cuentas por cobrar si el estado cambia a ENROLLED
+        // Generar cuentas por cobrar si el estado cambia a CONFIRMED o ENROLLED
         let receivables: any[] = [];
-        if (body.status === EnrollmentStatus.ENROLLED && previousStatus !== EnrollmentStatus.ENROLLED) {
-            receivables = await generateEnrollmentReceivables(id, Prisma);
+        if ((body.status === EnrollmentStatus.ENROLLED || body.status === EnrollmentStatus.CONFIRMED) && previousStatus !== body.status) {
+            receivables = await generateEnrollmentReceivables(id, body.status, Prisma);
         }
 
         await createLog({
