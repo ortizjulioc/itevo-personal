@@ -45,10 +45,10 @@ type PaymentPlan = {
 
 export default function ConfirmationFields({ values, className, onChangeTab }: ConfirmationFieldsProps) {
   const { id } = useParams();
-  const courseBranchId = Array.isArray(id) ? id[0] : id;
+  const courseBranchId = (Array.isArray(id) ? id[0] : id) ?? '';
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
-//   const params = useURLSearchParams();
-//   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
+  //   const params = useURLSearchParams();
+  //   const { courses } = useFetchcourses(params.get('prerequisite') ? `search=${params.get('prerequisite')}` : '');
   const { preRequisites } = useCourseBranch();
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -204,8 +204,8 @@ export default function ConfirmationFields({ values, className, onChangeTab }: C
                     {paymentPlan.frequency === 'WEEKLY' && paymentPlan.dayOfWeek !== null
                       ? ` (${weekdayNames[paymentPlan.dayOfWeek]})`
                       : paymentPlan.frequency === 'MONTHLY' && paymentPlan.dayOfMonth
-                      ? ` (Día ${paymentPlan.dayOfMonth})`
-                      : ''}
+                        ? ` (Día ${paymentPlan.dayOfMonth})`
+                        : ''}
                   </p>
                   <p className="text-gray-800">Cuotas: {paymentPlan.installments}</p>
                   <p className="text-gray-800">Días de gracia: {paymentPlan.graceDays}</p>

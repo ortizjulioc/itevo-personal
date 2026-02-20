@@ -9,9 +9,9 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener un rango de NCF por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const ncfRange = await findNcfRangeById(id);
 
@@ -32,9 +32,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar un rango de NCF por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const { isValid, message } = validateObject(body, [
@@ -79,9 +79,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar (soft delete) un rango de NCF por ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const existing = await findNcfRangeById(id);
     if (!existing) {

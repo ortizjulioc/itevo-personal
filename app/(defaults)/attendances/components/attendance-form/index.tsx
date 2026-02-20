@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { Button, FormItem, Input, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
@@ -18,7 +19,7 @@ import { useState } from 'react';
 
 interface statusOption {
     value: string;
-    label: JSX.Element;
+    label: React.ReactElement;
 }
 const customStyles: StylesConfig<statusOption, false> = {
     menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({

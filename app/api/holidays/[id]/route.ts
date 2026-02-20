@@ -6,9 +6,9 @@ import { createLog } from "@/utils/log";
 
 // Obtener holidays por ID
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const holiday = await findHolidayById(id);
 
@@ -30,9 +30,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // Actuzalizar holiday por ID
 
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -72,9 +72,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 // Eliminar holiday por ID (soft delete)
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si el holiday existe
         const holiday = await findHolidayById(id);

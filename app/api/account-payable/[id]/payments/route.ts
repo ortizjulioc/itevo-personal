@@ -10,12 +10,13 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 import { newPayablePayment, getPayablePaymentsByAccountPayableId } from '@/services/account-payable';
 
 const CreatePayablePaymentSchema = z.object({
-  amount: z.number().positive(),
-  cashRegisterId: z.string().uuid(),
-  description: z.string().optional(),
+    amount: z.number().positive(),
+    cashRegisterId: z.string().uuid(),
+    description: z.string().optional(),
 });
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
         const session = await getServerSession(authOptions);
         const body = await request.json();
@@ -40,15 +41,15 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
                 cashRegister: { connect: { id: validatedData.cashRegisterId } },
                 type: CashMovementType.EXPENSE,
                 amount: validatedData.amount,
-                description: validatedData.description || `Pago de cuenta por pagar ${params.id}`,
+                description: validatedData.description || `Pago de cuenta por pagar ${id}`,
                 referenceType: CashMovementReferenceType.PAYABLE_PAYMENT,
-                referenceId: params.id,
+                referenceId: id,
                 user: { connect: { id: session.user.id || '' } },
             }, prisma);
 
             // Create payment record
             const payment = await newPayablePayment(
-                params.id,
+                id,
                 validatedData.amount,
                 cashMovement.id,
                 prisma
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
                 action: 'POST',
                 description: `Se creó un pago de cuenta por pagar con los siguientes datos: ${JSON.stringify(payment, null, 2)}`,
                 origin: 'account-payable/[id]/payments',
-                elementId: params.id,
+                elementId: id,
                 success: true,
             });
             return payment;
@@ -70,24 +71,25 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
             action: 'POST',
             description: `Error processing payment: ${formatErrorMessage(error)}`,
             origin: 'account-payable/[id]/payments',
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
         // Fetch payments for the specified account payable
-        const payments = await getPayablePaymentsByAccountPayableId(params.id);
+        const payments = await getPayablePaymentsByAccountPayableId(id);
         return NextResponse.json({ payments }, { status: 200 });
     } catch (error) {
         await createLog({
             action: 'GET',
             description: `Error fetching payments: ${formatErrorMessage(error)}`,
             origin: 'account-payable/[id]/payments',
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });

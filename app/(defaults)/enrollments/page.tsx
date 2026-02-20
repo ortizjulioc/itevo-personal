@@ -7,6 +7,7 @@ export const metadata = {
   title: 'Inscripciones',
 };
 
-export default function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {
-  return <Enrollment searchParams={searchParams} />;
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
+  const params = await searchParams;
+  return <Enrollment searchParams={params} />;
 }

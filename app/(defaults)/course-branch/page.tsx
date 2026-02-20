@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'Oferta Académica',
 };
 
-export default function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {
-  return <CourseBranchClient searchParams={searchParams} />;
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
+  const params = await searchParams;
+  return <CourseBranchClient searchParams={params} />;
 }

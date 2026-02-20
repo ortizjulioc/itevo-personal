@@ -6,13 +6,13 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { createStudentScholarship, getStudentsScholarships, isScholarshipAssignedToStudent } from '@/services/studentScholarship-service';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
-        const { id } = params;
+        const { id } = await params;
 
         const { studentsScholarships, totalStudentsScholarships } = await getStudentsScholarships(search, page, top, id);
 
@@ -34,9 +34,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 //--------------------------------------------------------------------------------
 // Crear una nueva beca asignada a un estudiante
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: studentId } = params; // ID del estudiante desde la URL
+        const { id: studentId } = await params; // ID del estudiante desde la URL
         const body = await request.json();
         console.log('BODY_POST_SCHOLARSHIP:', body);
         // 1. Validar campos obligatorios

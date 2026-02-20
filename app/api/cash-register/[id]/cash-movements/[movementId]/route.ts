@@ -3,9 +3,9 @@ import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string, movementId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string, movementId: string }> }) {
     try {
-        const { movementId } = params;
+        const { movementId } = await params;
 
         const cashMovement = await getCashMovementById(movementId);
         if (!cashMovement) {
@@ -29,9 +29,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 
 // 🔴 Anular (eliminar lógicamente) un movimiento de caja
-export async function DELETE(request: NextRequest, { params }: { params: { id: string, movementId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string, movementId: string }> }) {
   try {
-    const { id, movementId } = params;
+    const { id, movementId } = await params;
 
     const existing = await getCashMovementById(movementId);
     if (!existing) {

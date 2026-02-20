@@ -13,14 +13,15 @@ export const metadata: Metadata = {
 };
 
 interface NcfRangeProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function NcfRange({ searchParams }: NcfRangeProps) {
-    const query = objectToQueryString(searchParams || {});
+export default async function NcfRange({ searchParams }: NcfRangeProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
     return (
         <div>
             <ViewTitle className='mb-6' title="Rangos NCF" rightComponent={

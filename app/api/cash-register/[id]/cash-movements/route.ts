@@ -5,27 +5,27 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { validateObject } from '@/utils';
 
 // Get cash movements by cash register ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-    try {
-        const { id } = params;
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
 
-        const cashMovements = await getCashMovementsByCashRegisterId(id);
+    const cashMovements = await getCashMovementsByCashRegisterId(id);
 
-        return NextResponse.json(cashMovements, { status: 200 });
-    } catch (error) {
-        await createLog({
-        action: 'GET',
-        description: formatErrorMessage(error),
-        origin: 'cash-register/[id]/cash-movements',
-        success: false,
-        });
-        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
-    }
+    return NextResponse.json(cashMovements, { status: 200 });
+  } catch (error) {
+    await createLog({
+      action: 'GET',
+      description: formatErrorMessage(error),
+      origin: 'cash-register/[id]/cash-movements',
+      success: false,
+    });
+    return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+  }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id : cashRegisterId } = params;
+    const { id: cashRegisterId } = await params;
     const body = await request.json();
 
     // Validar campos obligatorios
@@ -39,13 +39,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     const cashMovement = await createCashMovement({
-        cashRegister: { connect: { id: cashRegisterId } },
-        type: body.type,
-        amount: body.amount,
-        description: body.description || null,
-        referenceType: body.referenceType || null,
-        referenceId: body.referenceId || null,
-        user: { connect: { id: body.createdBy } },
+      cashRegister: { connect: { id: cashRegisterId } },
+      type: body.type,
+      amount: body.amount,
+      description: body.description || null,
+      referenceType: body.referenceType || null,
+      referenceId: body.referenceId || null,
+      user: { connect: { id: body.createdBy } },
     });
 
     await createLog({

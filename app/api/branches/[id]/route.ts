@@ -5,9 +5,9 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener sucursal por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const branch = await findBranchById(id);
 
@@ -28,9 +28,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar sucursal por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -69,9 +69,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar sucursal por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si la sucursal existe
         const branch = await findBranchById(id);

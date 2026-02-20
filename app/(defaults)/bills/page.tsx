@@ -6,12 +6,13 @@ export const metadata: Metadata = {
 };
 
 interface InvoiceProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function Invoice({ searchParams }: InvoiceProps) {
-    return <BillsClient searchParams={searchParams} />;
+export default async function Invoice({ searchParams }: InvoiceProps) {
+    const params = await searchParams;
+    return <BillsClient searchParams={params} />;
 }

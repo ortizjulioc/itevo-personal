@@ -16,13 +16,13 @@ interface ScheduleFieldProps {
   className?: string;
 }
 
-export default function ScheduleField({ className,loading }: ScheduleFieldProps) {
+export default function ScheduleField({ className, loading }: ScheduleFieldProps) {
   const { id } = useParams();
-  const courseBranchId = Array.isArray(id) ? id[0] : id;
-  const { schedules,fetchSchedulesData } = useFetchSchedule();
+  const courseBranchId = (Array.isArray(id) ? id[0] : id) ?? '';
+  const { schedules, fetchSchedulesData } = useFetchSchedule();
   const { schedules: courseSchedules } = useFetchScheduleByCourseId(courseBranchId);
   const [assignedSchedules, setAssignedSchedules] = useState<string[]>([]);
-  const [modal, setModal] =useState<boolean>(false)
+  const [modal, setModal] = useState<boolean>(false)
 
   const onChange = async (scheduleId: string) => {
     if (assignedSchedules.includes(scheduleId)) {
@@ -74,7 +74,7 @@ export default function ScheduleField({ className,loading }: ScheduleFieldProps)
           setModal={setModal}
           fetchSchedulesData={fetchSchedulesData}
           assignSchedule={assignSchedule}
-          />
+        />
 
       </div>
     </div>

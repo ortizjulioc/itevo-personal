@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, use } from 'react';
 import { useFetchCashRegistersById } from '../lib/cash-register/use-fetch-cash-register';
 import CashRegisterDetails from '../components/cash-register/cash-register-details';
 import { ViewTitle } from '@/components/common';
@@ -24,8 +24,8 @@ interface CashRegister {
   updatedAt: string;
 }
 
-export default function Layout({ children, params }: { children: React.ReactNode; params: { id: string; billid: string | null } }) {
-  const { id, billid } = params;
+export default function Layout({ children, params }: { children: React.ReactNode; params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { loading, CashRegister } = useFetchCashRegistersById(id);
 
   return (

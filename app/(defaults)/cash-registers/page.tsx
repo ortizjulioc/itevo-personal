@@ -15,11 +15,11 @@ export const metadata: Metadata = {
 };
 
 interface CashRegisterProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
         userId: string;
-    };
+    }>;
 }
 
 import { CASHIER } from "@/constants/role.constant";
@@ -28,7 +28,8 @@ export default async function CashRegister({ searchParams }: CashRegisterProps) 
     const session = await getServerSession(authOptions);
     const isCashier = session?.user?.roles.some((role: any) => role.normalizedName === CASHIER);
 
-    const queryParams = { ...searchParams };
+    const resolvedParams = await searchParams;
+    const queryParams = { ...resolvedParams };
 
     if (isCashier && session?.user?.id) {
         queryParams.userId = session.user.id;

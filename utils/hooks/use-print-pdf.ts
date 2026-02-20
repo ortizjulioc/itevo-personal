@@ -10,7 +10,7 @@ type UsePrintPDFOptions = {
 };
 
 export function usePrintPDF() {
-  const printPDF = useCallback(async (doc: React.ReactElement, options: UsePrintPDFOptions = {}) => {
+  const printPDF = useCallback(async (doc: React.ReactElement<any>, options: UsePrintPDFOptions = {}) => {
     try {
       const { kioskMode, onAfterPrint, cleanUpMilliseconds = 30000 } = options;
 

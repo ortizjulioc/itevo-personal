@@ -1,6 +1,6 @@
 import { pdf } from "@react-pdf/renderer";
 
-export async function printPDFDirect(component: JSX.Element, options?: { cleanUpMilliseconds?: number }) {
+export async function printPDFDirect(component: React.ReactElement<any>, options?: { cleanUpMilliseconds?: number }) {
   const blob = await pdf(component).toBlob();
   const blobUrl = URL.createObjectURL(blob);
 

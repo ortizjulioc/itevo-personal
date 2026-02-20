@@ -15,9 +15,9 @@ import { Prisma } from '@/utils/lib/prisma';
 import { IdentificationType } from '@prisma/client';
 
 // Obtener estudiante por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const student = await findStudentById(id);
 
@@ -32,9 +32,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar estudiante por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
-        const { id } = params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -112,7 +112,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             action: 'PUT',
             description: `Error actualizando un estudiante. ${formatErrorMessage(error)}`,
             origin: 'students/[id]',
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
 
@@ -121,9 +121,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar teacher por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
-        const { id } = params;
 
         // Verificar si el teacher existe
         const student = await findStudentById(id);
@@ -152,7 +152,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             action: 'DELETE',
             description: `Error al eliminar un estudiante. ${formatErrorMessage(error)}`,
             origin: 'students/[id]',
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
 

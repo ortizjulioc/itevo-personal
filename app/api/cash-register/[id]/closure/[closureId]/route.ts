@@ -5,9 +5,9 @@ import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string, closureId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string, closureId: string }> }) {
     try {
-        const { id, closureId } = params;
+        const { id, closureId } = await params;
         const closure = await getCashRegisterClosureById(id, closureId);
 
         if (!closure) {
@@ -26,9 +26,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string, closureId: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string, closureId: string }> }) {
     try {
-        const { id, closureId } = params;
+        const { id, closureId } = await params;
 
         const closure = await Prisma.cashRegisterClosure.findUnique({
             where: { id: closureId },

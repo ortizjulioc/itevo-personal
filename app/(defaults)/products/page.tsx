@@ -13,15 +13,16 @@ export const metadata: Metadata = {
 };
 
 interface ProductProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function Product({ searchParams }: ProductProps) {
-    const query = objectToQueryString(searchParams || {});
-    const search = searchParams?.search || '';
+export default async function Product({ searchParams }: ProductProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
+    const search = params?.search || '';
 
     const handleDownload = () => {
         window.open(`/api/products/download?search=${search}`, '_blank');

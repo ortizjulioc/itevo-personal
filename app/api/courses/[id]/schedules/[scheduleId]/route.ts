@@ -31,9 +31,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function DELETE (request: NextRequest, { params }: { params: { id: string, scheduleId: string}}) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string, scheduleId: string }> }) {
   try {
-    const { id, scheduleId } = params;
+    const { id, scheduleId } = await params;
     if (!id || !scheduleId) {
       return NextResponse.json({
         message: "Missing id or scheduleId",

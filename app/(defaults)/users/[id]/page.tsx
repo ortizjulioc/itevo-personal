@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { UpdateUserForm } from "../components/user-forms";
 import { useFetchUserById, UserWithBranchesAndRoles } from "../lib/use-fetch-users";
@@ -53,8 +54,8 @@ import { UserContext } from "@/context/user";
 
 // export const UserContext = createContext<UserContextType>(UserInitialValues);
 
-export default function EditUser({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default function EditUser({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const { loading, user, setUser } = useFetchUserById(id);
     const { roles } = useFetchRole('');
 

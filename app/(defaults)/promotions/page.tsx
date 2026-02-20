@@ -12,21 +12,22 @@ export const metadata: Metadata = {
 };
 
 interface RoleListsProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function RoleLists({ searchParams }: RoleListsProps) {
-    const query = objectToQueryString(searchParams || {});
+export default async function RoleLists({ searchParams }: RoleListsProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
     return (
         <div>
             <ViewTitle className='mb-6' title="Promociones" rightComponent={
                 <>
                     <SearchInput placeholder="Buscar promociones" />
                     <Link href="/promotions/new">
-                        <Button icon={<IconPlusCircle/>}>Crear promoción</Button>
+                        <Button icon={<IconPlusCircle />}>Crear promoción</Button>
                     </Link>
                 </>
             } />

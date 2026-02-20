@@ -4,9 +4,9 @@ import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try { 
-    const { id } = params;
+    const { id } = await params;
 
     const courseSchedules = await getCourseSchedulesByCourseId(id);
 
@@ -29,9 +29,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     // Validate the request body
     const { isValid, message } = validateObject(body, ['scheduleId']);

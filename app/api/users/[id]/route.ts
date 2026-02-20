@@ -5,9 +5,9 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
 // Obtener usuario por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const user = await findUserById(id);
 
@@ -17,14 +17,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(user, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
 // Actualizar usuario por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
-        const { id } = params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -61,18 +61,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             action: "PUT",
             description: `Error al actualizar un usuario. ${formatErrorMessage(error)}`,
             origin: "users/[id]",
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
 // Eliminar usuario por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si el usuario existe
         const user = await findUserById(id);
@@ -106,6 +106,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }

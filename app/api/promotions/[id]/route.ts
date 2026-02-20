@@ -5,9 +5,9 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
 // Obtener promoción por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const promotion = await findPromotionById(id);
 
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar promoción por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         const { isValid, message } = validateObject(body, ['description', 'startDate', 'endDate']);
@@ -67,9 +67,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar promoción por ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const promotion = await findPromotionById(id);
         if (!promotion) {

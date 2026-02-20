@@ -7,10 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string, paymentId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string, paymentId: string }> }) {
     try {
         console.log("Request received to update payment plan");
-        const { id, paymentId } = params;
+        const { id, paymentId } = await params;
         const body: PaymentPlanBody = await request.json();
 
         const { isValid, message } = validateObject(body, ['frequency']);

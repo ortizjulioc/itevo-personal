@@ -9,8 +9,8 @@ import { findCourseBranchById } from '@/services/course-branch-service';
 
 
 // obtener una asistencia por id
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         const attendanceRecord = await findAttendanceRecordById(id);
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar un registro de asistencia por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         const body = await request.json();
@@ -76,8 +76,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar un registro de asistencia por ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         const attendanceRecord = await findAttendanceRecordById(id);

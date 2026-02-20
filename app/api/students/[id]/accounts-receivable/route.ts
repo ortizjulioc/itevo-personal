@@ -4,9 +4,9 @@ import { createLog } from '@/utils/log';
 import { findAccountsReceivableByStudentId } from '@/services/student-service';
 
 // Obtener todas las cuentas por cobrar para un studentId
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id: studentId } = params;
+    const { id: studentId } = await params;
 
     // Validar que studentId sea un string no vacío
     if (!studentId) {

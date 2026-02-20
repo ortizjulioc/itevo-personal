@@ -8,17 +8,16 @@ export const metadata: Metadata = {
 };
 
 interface CashRegisterProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
         userId: string;
-    };
+    }>;
 }
 
-export default function CashRegister({ searchParams }: CashRegisterProps) {
-
-
-    const query = objectToQueryString(searchParams || {});
+export default async function CashRegister({ searchParams }: CashRegisterProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
 
     return (
         <div>

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { routeConfig } from '@/config/route.auth.config';
 
 export default withAuth(
-  async function middleware(req) {
+  async function proxy(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth?.token;
 

@@ -20,4 +20,6 @@ export interface ApiResponse<T> {
 export interface RequestOptions {
     url?: string;
     data?: any;
+    params?: any;
+    method?: string;
 }

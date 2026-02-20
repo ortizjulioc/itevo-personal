@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { useFetchInvoiceById } from "../lib/use-fetch-invoices";
 import InvoiceDetails from "../components/invoice-details";
@@ -6,8 +7,8 @@ import { useSession } from "next-auth/react";
 
 
 
-export default function EditProduct({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default function EditProduct({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const { loading, invoice } = useFetchInvoiceById(id);
     const { data: session } = useSession();
 

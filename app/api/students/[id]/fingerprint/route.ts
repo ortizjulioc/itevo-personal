@@ -10,8 +10,8 @@ const FingerprintSchema = z.object({
   studentId: z.string().uuid("Invalid student ID format"),
   sensorType: z.string().optional(), // Optional field for sensor type
 });
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const body = await req.json();
 
     try {
@@ -58,8 +58,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         // Find the fingerprint by student ID
@@ -92,8 +92,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         const fingerprint = await findFingerprintByStudentId(id);

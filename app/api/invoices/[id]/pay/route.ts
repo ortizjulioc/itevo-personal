@@ -8,8 +8,8 @@ import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 import { createCashMovement } from '@/services/cash-movement';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params; // ID de la factura
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params; // ID de la factura
     try {
         const body: InvoicePaymentData = await req.json();
 

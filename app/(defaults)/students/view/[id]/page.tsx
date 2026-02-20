@@ -15,11 +15,13 @@ import StudentScholarshipsManager from "../../components/student-details/student
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { SUPER_ADMIN, GENERAL_ADMIN, ADMIN } from "@/constants/role.constant";
+import { use } from 'react';
 
-export default function StudentView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
-    const id = params?.id; // Extraer el ID de params
+export default function StudentView({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<any> }) {
+    const { id } = use(params); // Extraer el ID de params
+    const sp = use(searchParams);
     const router = useRouter();
-    const query = objectToQueryString({ ...searchParams, studentId: id }); // Combinar id con searchParams
+    const query = objectToQueryString({ ...sp, studentId: id }); // Combinar id con searchParams
     const { loading, student } = useFetchStudentById(id);
     const { data: session } = useSession();
 

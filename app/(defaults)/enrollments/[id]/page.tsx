@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { useFetchEnrollmentById } from "../lib/use-fetch-enrollments";
 import UpdateEnrollmentForm from "../components/enrollment-form/update-form";
@@ -6,8 +7,8 @@ import PrintEnrollment from "@/components/common/print/enrollment";
 
 
 
-export default function EditEnrollment({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default function EditEnrollment({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const { loading, enrollment } = useFetchEnrollmentById(id);
 
     return (

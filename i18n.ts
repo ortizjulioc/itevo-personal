@@ -25,13 +25,18 @@ const getLang = () => {
         lang = cookies.get('i18nextLng');
     } else {
         const cookies = cookieObj.cookies();
-        lang = cookies.get('i18nextLng')?.value;
+        // Check if cookies() returns a promise (Next.js 15+)
+        if (cookies instanceof Promise || typeof cookies.then === 'function') {
+            lang = null;
+        } else {
+            lang = cookies.get('i18nextLng')?.value;
+        }
     }
     return lang;
 };
 
-export const getTranslation = () => {
-    const lang = getLang();
+export const getTranslation = (langArg?: string) => {
+    const lang = langArg || getLang();
     const data: any = langObj[lang || 'en'];
 
     const t = (key: string) => {
@@ -39,7 +44,6 @@ export const getTranslation = () => {
     };
 
     const initLocale = (themeLocale: string) => {
-        const lang = getLang();
         i18n.changeLanguage(lang || themeLocale);
     };
 

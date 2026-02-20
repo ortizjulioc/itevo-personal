@@ -20,8 +20,8 @@ interface InvoiceItemInput {
     concept: string;
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-    const { id } = params; // ID de la factura
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params; // ID de la factura
     try {
         const body: InvoiceItemInput = await req.json();
 
