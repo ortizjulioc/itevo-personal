@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { use } from 'react'
 import { formatCurrency } from '@/utils'
 import { getFormattedDateTime } from '@/utils/date'
 import Tooltip from '@/components/ui/tooltip'
@@ -13,19 +13,17 @@ import ButtonCloseCashRegister from '../../components/button-close-cash-register
 import { useFetchCashRegistersById } from '@/app/(defaults)/invoices/lib/cash-register/use-fetch-cash-register'
 
 interface Props {
-    params: {
-        search?: string;
-        page?: string;
-        top?: string
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default function CloseCashRegister({ params }: Props) {
+    const { id } = use(params);
 
-    const { CashRegister } = useFetchCashRegistersById(params?.id);
-    const { cashMovements, loading } = useFetchCashMovements(params?.id)
-    const { invoices, loading: invoiceLoading } = useFetchInvoices(params?.id)
+    const { CashRegister } = useFetchCashRegistersById(id);
+    const { cashMovements, loading } = useFetchCashMovements(id)
+    const { invoices, loading: invoiceLoading } = useFetchInvoices(id)
 
     function getInvoiceSummaryFromMovements(cashMovements: any[], invoices: any[]) {
         const summary = {

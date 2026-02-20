@@ -1,12 +1,13 @@
 'use client';
+import React from 'react';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import { UpdateRoleForm} from "../components/role-forms";
 import { useFetchRoleById } from "../lib/use-fetch-roles";
 
 
 
-export default function EditRol({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default function EditRol({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const { loading, role } = useFetchRoleById(id);
     return (
         <div>

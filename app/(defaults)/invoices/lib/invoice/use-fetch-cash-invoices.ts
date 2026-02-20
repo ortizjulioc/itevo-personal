@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Invoice , InvoiceItem, User } from "@prisma/client";
+import type { Invoice, InvoiceItem, User } from "@prisma/client";
 
 
 
@@ -13,8 +13,8 @@ export interface ItemsResponse {
     items: InvoiceItem[];
     totalItems: number;
 }
-export interface InvoicebyId extends Invoice{
-    items:InvoiceItem[]
+export interface InvoicebyId extends Invoice {
+    items: InvoiceItem[]
 }
 
 
@@ -23,11 +23,16 @@ const useFetchInvoices = (query: string) => {
     const [totalInvoices, setTotalInvoices] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    
+
     const fetchInvoicesData = useCallback(async (queryParam: string) => {
         setLoading(true);
         try {
-            const response = await apiRequest.get<InvoicesResponse>(`/invoices?${queryParam}`);
+            const queryParams = new URLSearchParams(queryParam);
+            const paramsOb: any = {};
+            queryParams.forEach((value, key) => {
+                paramsOb[key] = value;
+            });
+            const response = await apiRequest.get<InvoicesResponse>(`/invoices`, { params: paramsOb });
             if (!response.success) {
                 throw new Error(response.message);
             }
@@ -44,12 +49,12 @@ const useFetchInvoices = (query: string) => {
             setLoading(false);
         }
     }, []);
-    
+
     useEffect(() => {
         fetchInvoicesData(query);
     }, [query, fetchInvoicesData]);
 
-    return { invoices, setTotalInvoices, loading, error, setInvoices, totalInvoices,fetchInvoicesData };
+    return { invoices, setTotalInvoices, loading, error, setInvoices, totalInvoices, fetchInvoicesData };
 };
 
 export const useFetchInvoicesById = (id: string) => {
@@ -81,7 +86,7 @@ export const useFetchInvoicesById = (id: string) => {
     return { invoice, loading, error, setInvoice, fetchInvoiceData };
 }
 
-export const useFetchItemInvoices= (id: string) => {
+export const useFetchItemInvoices = (id: string) => {
     const [items, setItems] = useState<InvoiceItem[]>([]);
     const [totalItems, setTotalItems] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -107,12 +112,12 @@ export const useFetchItemInvoices= (id: string) => {
     };
 
     useEffect(() => {
-        
+
 
         fetchItemsData(id);
     }, [id]);
 
-    return { items, setTotalItems, loading, error, setItems, totalItems,fetchItemsData };
+    return { items, setTotalItems, loading, error, setItems, totalItems, fetchItemsData };
 };
 
 export default useFetchInvoices;

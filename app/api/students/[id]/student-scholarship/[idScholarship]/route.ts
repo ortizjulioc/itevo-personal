@@ -6,9 +6,9 @@ import { createLog } from '@/utils/log';
 
 import { findStudentScholarshipById, updateStudentScholarshipById, deleteStudentScholarshipById } from '@/services/studentScholarship-service';
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string; idScholarship: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string; idScholarship: string }> }) {
     try {
-        const { idScholarship } = params;
+        const { idScholarship } = await params;
 
         const deletedStudentScholarship = await deleteStudentScholarshipById(idScholarship);
         console.log(idScholarship);
@@ -34,9 +34,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
 //--------------------------------------------------------------------------------
 // Actualizar una beca asignada a un estudiante por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string; idScholarship: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string; idScholarship: string }> }) {
     try {
-        const { idScholarship } = params;
+        const { idScholarship } = await params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud
@@ -65,9 +65,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 //--------------------------------------------------------------------------------
 // Obtener una beca asignada a un estudiante por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string; idScholarship: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string; idScholarship: string }> }) {
     try {
-        const { idScholarship } = params;
+        const { idScholarship } = await params;
 
         const studentScholarship = await findStudentScholarshipById(idScholarship);
         return NextResponse.json(studentScholarship, { status: 200 });

@@ -12,21 +12,22 @@ export const metadata: Metadata = {
 };
 
 interface BranchListsProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function BranchLists({ searchParams }: BranchListsProps) {
-    const query = objectToQueryString(searchParams || {});
+export default async function BranchLists({ searchParams }: BranchListsProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
     return (
         <div>
             <ViewTitle className='mb-6' title="Sucursales" rightComponent={
                 <>
                     <SearchInput placeholder="Buscar Sucursales" />
                     <Link href="/branches/new">
-                        <Button icon={<IconPlusCircle/>}>Crear sucursal</Button>
+                        <Button icon={<IconPlusCircle />}>Crear sucursal</Button>
                     </Link>
                 </>
             } />

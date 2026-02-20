@@ -5,9 +5,9 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
 // Obtener schedule por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const schedule = await findScheduleById(id);
 
@@ -26,9 +26,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar schedule por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -74,9 +74,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Eliminar schedule por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si el rol existe
         const schedule = await findScheduleById(id);

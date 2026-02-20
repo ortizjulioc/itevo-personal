@@ -7,7 +7,7 @@ import { GroupBase } from 'react-select';
 
 export interface ProductSelect {
   value: string;
-  label: JSX.Element;
+  label: React.ReactElement;
   price: number;
 }
 

@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconPlusCircle} from "@/components/icon";
+import { IconPlusCircle } from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -12,11 +12,12 @@ export const metadata: Metadata = {
   title: 'Estudiantes',
 };
 interface StudentListProps {
-  searchParams?: {
-      search?: string;
-      page?: string;
-  };
+  searchParams: Promise<{
+    search?: string;
+    page?: string;
+  }>;
 }
-export default function Students({ searchParams }: StudentListProps) {
-  return <StudentsClient searchParams={searchParams} />;
+export default async function Students({ searchParams }: StudentListProps) {
+  const params = await searchParams;
+  return <StudentsClient searchParams={params} />;
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import Select from 'react-select';
 import { EnrollmentStatus } from '@prisma/client';
 import { GroupBase } from 'react-select';
@@ -6,7 +7,7 @@ import StatusEnrollment from '@/components/common/info-labels/status/status-enro
 
 export type SelectEnrollmentStatusType = {
     value: string;
-    label: string | JSX.Element;
+    label: string | React.ReactElement;
 };
 
 interface SelectEnrollmentStatusProps {

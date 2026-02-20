@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconPlusCircle} from "@/components/icon";
+import { IconPlusCircle } from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -10,13 +10,14 @@ export const metadata: Metadata = {
   title: 'Cursos',
 };
 interface CoursetListProps {
-  searchParams?: {
-      search?: string;
-      page?: string;
-  };
+  searchParams: Promise<{
+    search?: string;
+    page?: string;
+  }>;
 }
-export default function Coursets({ searchParams }: CoursetListProps) {
-  const query = objectToQueryString(searchParams || {});
+export default async function Coursets({ searchParams }: CoursetListProps) {
+  const params = await searchParams;
+  const query = objectToQueryString(params || {});
   return (
     <div>
       <ViewTitle className='mb-6' title="Cursos" rightComponent={
@@ -26,10 +27,10 @@ export default function Coursets({ searchParams }: CoursetListProps) {
             <Button icon={<IconPlusCircle />}>Crear curso</Button>
           </Link>
 
-         
+
         </>
       } />
-       <CoursetList query={query} />
+      <CoursetList query={query} />
     </div>
   )
 }

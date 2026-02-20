@@ -11,11 +11,14 @@ import { IconEdit, IconTrashLines, IconUserPlus } from "@/components/icon";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function CourseBranchView({ params, searchParams }: { params: { id: string }, searchParams: Record<string, any> }) {
+import { use } from 'react';
 
-    const id = params?.id; // Extraer el ID de params
+export default function CourseBranchView({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<any> }) {
+
+    const { id } = use(params); // Extraer el ID de params
+    const sp = use(searchParams);
     const router = useRouter();
-    const query = objectToQueryString({ ...searchParams, courseBranchId: id }); // Combinar id con searchParams
+    const query = objectToQueryString({ ...sp, courseBranchId: id }); // Combinar id con searchParams
     const { loading, courseBranch } = useFetchCourseBranchById(id);
 
     const onDelete = async (id: string) => {

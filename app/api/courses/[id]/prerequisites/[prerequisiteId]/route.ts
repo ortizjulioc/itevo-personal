@@ -4,10 +4,10 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
 // Eliminar prerequisito por ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string, prerequisiteId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string, prerequisiteId: string }> }) {
     try {
-        const { id } = params;
-        const { prerequisiteId } = params;
+        const { id } = await params;
+        const { prerequisiteId } = await params;
 
         // Verificar si el prerequisito existe en el curso
         const prerequisite = await findPrerequisiteById(id, prerequisiteId);

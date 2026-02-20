@@ -8,17 +8,17 @@ import { SessionProvider } from 'next-auth/react';
 
 interface IProps {
     children?: ReactNode;
-    
+    lang?: string;
 }
 
-const ProviderComponent = ({ children }: IProps) => {
+const ProviderComponent = ({ children, lang }: IProps) => {
     return (
         <SessionProvider  >
-        <Provider store={store}>
-            <Suspense fallback={<Loading />}>
-                <App>{children} </App>
-            </Suspense>
-        </Provider>
+            <Provider store={store}>
+                <Suspense fallback={<Loading />}>
+                    <App lang={lang}>{children} </App>
+                </Suspense>
+            </Provider>
         </SessionProvider>
     );
 };

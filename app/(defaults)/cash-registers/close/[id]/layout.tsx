@@ -1,16 +1,14 @@
 'use client';
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { ViewTitle } from '@/components/common';
-import TableSkeleton, { GenericSkeleton } from '@/components/common/Skeleton';
+import { GenericSkeleton } from '@/components/common/Skeleton';
 import { useFetchCashRegistersById } from '../../../invoices/lib/cash-register/use-fetch-cash-register';
 import CashRegisterDetails from '../../../invoices/components/cash-register/cash-register-details';
 
-export default function Layout({ children, params }: { children: React.ReactNode, params: { id: string, billid: string | null } }) {
-    const { id, } = params;
+export default function Layout({ children, params }: { children: React.ReactNode, params: Promise<{ id: string }> }) {
+    const { id } = React.use(params);
     const { loading, CashRegister } = useFetchCashRegistersById(id);
-
-
 
     return (
         <div className="px-2 md:px-6">

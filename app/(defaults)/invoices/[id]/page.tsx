@@ -1,6 +1,6 @@
 'use client';
 
-export default function EditCashRegister({ params }: { params: { id: string } }) {
+export default function EditCashRegister({ params }: { params: Promise<{ id: string }> }) {
     return (
         <div>
         </div>

@@ -12,15 +12,16 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
         top?: string;
-    };
+    }>;
 }
 
-export default function ScholarshipPage({ searchParams }: Props) {
-    const query = objectToQueryString(searchParams || {});
+export default async function ScholarshipPage({ searchParams }: Props) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
     return (
         <div>
             <ViewTitle className='mb-6' title="Catálogo de Becas" rightComponent={

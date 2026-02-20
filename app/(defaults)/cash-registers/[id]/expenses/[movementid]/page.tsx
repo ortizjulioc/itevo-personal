@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { FormSkeleton, ViewTitle } from "@/components/common";
 import useFetchCashMovementById from "../../../lib/use-fetch-cash-movement-by-id";
 import ExpenseDetails from "../components/expense-details";
@@ -11,8 +12,8 @@ import { openNotification } from "@/utils";
 import Swal from "sweetalert2";
 import { HiOutlineTrash } from "react-icons/hi";
 
-export default function ExpenseDetailsPage({ params }: { params: { id: string, movementid: string } }) {
-    const { id, movementid } = params;
+export default function ExpenseDetailsPage({ params }: { params: Promise<{ id: string, movementid: string }> }) {
+    const { id, movementid } = React.use(params);
     const { loading, cashMovement } = useFetchCashMovementById(id, movementid);
     const { data: session } = useSession();
     const router = useRouter();

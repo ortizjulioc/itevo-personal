@@ -11,7 +11,7 @@ import { Select } from '@/components/ui';
 export interface AccountsReceivableSelect {
   value: string;
   amount: number;
-  label: JSX.Element | string;
+  label: React.ReactElement | string;
   account?: AccountReceivable;
   concept?: string;
 }

@@ -12,14 +12,15 @@ export const metadata: Metadata = {
 };
 
 interface UsersProps {
-    searchParams?: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
-export default function Users({ searchParams }: UsersProps) {
-    const query = objectToQueryString(searchParams || {});
+export default async function Users({ searchParams }: UsersProps) {
+    const params = await searchParams;
+    const query = objectToQueryString(params || {});
     return (
         <div>
             <ViewTitle className='mb-6' title="Usuarios" rightComponent={

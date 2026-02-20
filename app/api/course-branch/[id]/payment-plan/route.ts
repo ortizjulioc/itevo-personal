@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const courseBranch = await findCourseBranchById(id);
     if (!courseBranch) {
       return NextResponse.json({ code: 'E_COURSE_BRANCH_NOT_FOUND', error: 'Course branch not found' }, { status: 404 });
@@ -29,9 +29,9 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body: PaymentPlanBody = await request.json();
 
     const { isValid, message } = validateObject(body, ['frequency']);

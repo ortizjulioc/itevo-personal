@@ -56,15 +56,15 @@ export default function SearchInvoice() {
 
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams();
 
         Object.entries(filters).forEach(([key, value]) => {
             if (value) params.set(key, value);
-            else params.delete(key);
         });
 
         router.push(`${pathname}?${params.toString()}`);
-    }, [filters, pathname, router, searchParams]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters]);
 
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">

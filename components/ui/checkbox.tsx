@@ -96,8 +96,12 @@ export default function Checkbox({
         className={checkboxClasses}
         checked={internalChecked}
         onChange={handleChange}
-        {...field}
-        {...form}
+        {...(field ? {
+          name: field.name,
+          value: field.value,
+          onBlur: field.onBlur,
+          ref: field.ref,
+        } : {})}
       />
       <span
         className={classNames({ [MAP_TEXT_COLORED[color]]: textColored })}

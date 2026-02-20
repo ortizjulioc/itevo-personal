@@ -28,9 +28,9 @@ const CreateClosureSchema = z.object({
 });
 
 // Obtener cierre de caja por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const closures = await getCashRegisterClosureByCashRegisterId(id);
 
@@ -51,9 +51,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Crear cierre de caja
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const validatedData = CreateClosureSchema.parse(body);

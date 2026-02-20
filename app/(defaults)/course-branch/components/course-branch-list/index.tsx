@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { confirmDialog, formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination, Select } from "@/components/ui";
 import { IconEdit, IconTrashLines } from "@/components/icon";
@@ -24,7 +25,7 @@ interface Props {
 
 type StatusOption = {
     value: CourseBranchStatus;
-    label: string | JSX.Element;
+    label: string | React.ReactElement;
 };
 
 export default function CourseBranchList({ className, query = '' }: Props) {

@@ -1,5 +1,5 @@
 import { SearchInput, ViewTitle } from "@/components/common";
-import { IconPlusCircle} from "@/components/icon";
+import { IconPlusCircle } from "@/components/icon";
 import { Button } from "@/components/ui";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -10,13 +10,14 @@ export const metadata: Metadata = {
   title: 'Profesores',
 };
 interface TeacherListProps {
-  searchParams?: {
-      search?: string;
-      page?: string;
-  };
+  searchParams: Promise<{
+    search?: string;
+    page?: string;
+  }>;
 }
-export default function Teachers({ searchParams }: TeacherListProps) {
-  const query = objectToQueryString(searchParams || {});
+export default async function Teachers({ searchParams }: TeacherListProps) {
+  const params = await searchParams;
+  const query = objectToQueryString(params || {});
   return (
     <div>
       <ViewTitle className='mb-6' title="Profesores" rightComponent={
@@ -26,10 +27,10 @@ export default function Teachers({ searchParams }: TeacherListProps) {
             <Button icon={<IconPlusCircle />}>Crear profesor</Button>
           </Link>
 
-         
+
         </>
       } />
-       <TeacherList query={query} />
+      <TeacherList query={query} />
     </div>
   )
 }

@@ -6,10 +6,14 @@ import { toggleRTL, toggleTheme, toggleMenu, toggleLayout, toggleAnimation, togg
 import Loading from '@/components/layouts/loading';
 import { getTranslation } from '@/i18n';
 
-function App({ children }: PropsWithChildren) {
+interface IAppProps extends PropsWithChildren {
+    lang?: string;
+}
+
+function App({ children, lang }: IAppProps) {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const dispatch = useDispatch();
-    const { initLocale } = getTranslation();
+    const { initLocale } = getTranslation(lang);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -28,9 +32,8 @@ function App({ children }: PropsWithChildren) {
 
     return (
         <div
-            className={`${(themeConfig.sidebar && 'toggle-sidebar') || ''} ${themeConfig.menu} ${themeConfig.layout} ${
-                themeConfig.rtlClass
-            } main-section relative font-nunito text-sm font-normal antialiased`}
+            className={`${(themeConfig.sidebar && 'toggle-sidebar') || ''} ${themeConfig.menu} ${themeConfig.layout} ${themeConfig.rtlClass
+                } main-section relative font-nunito text-sm font-normal antialiased`}
         >
             {isLoading ? <Loading /> : children}
         </div>

@@ -7,9 +7,9 @@ import { CourseBranchStatus, Modality } from '@prisma/client';
 import { COURSE_BRANCH_STATUS } from '@/constants/status.constant';
 
 // Obtener courseBranch por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const courseBranch = await findCourseBranchById(id);
 
@@ -19,14 +19,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         return NextResponse.json(courseBranch, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
 // Actualizar courseBranch por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         if (body.status === COURSE_BRANCH_STATUS.DRAFT) {
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         }
 
         if (body.startDate && body.endDate && body.startDate > body.endDate) {
-            return NextResponse.json({ code: 'E_INVALID_DATE_RANGE'}, { status: 400 });
+            return NextResponse.json({ code: 'E_INVALID_DATE_RANGE' }, { status: 400 });
         }
 
         // Traer los horarios de los cursos para calcular las sesiones
@@ -97,14 +97,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }
 
 // Eliminar course por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si el rol existe
         const courseBranch = await findCourseBranchById(id);
@@ -138,6 +138,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             success: false,
         });
 
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }

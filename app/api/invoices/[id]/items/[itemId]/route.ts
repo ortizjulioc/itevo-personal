@@ -10,8 +10,8 @@ import { deleteEarningFromAccountsPayable, getAccountPayableByCourseBranchId } f
 const Prisma = new PrismaClient();
 
 // Handler DELETE para eliminar un ítem de la factura
-export async function DELETE(req: NextRequest, { params }: { params: { id: string; itemId: string } }) {
-  const { id, itemId } = params; // ID de la factura y del ítem
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string; itemId: string }> }) {
+  const { id, itemId } = await params; // ID de la factura y del ítem
   try {
     let invoiceUpdated;
     // Iniciar transacción

@@ -1,4 +1,5 @@
 import ProviderComponent from '@/components/layouts/provider-component';
+import { cookies } from 'next/headers';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import '../styles/global.css';
@@ -19,12 +20,15 @@ const nunito = Nunito({
     variable: '--font-nunito',
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const cookieStore = await cookies();
+    const lang = cookieStore.get('i18nextLng')?.value || 'en';
+
     return (
         <html lang="en">
             <body className={nunito.variable}>
                 <NextTopLoader showSpinner={false} color='#4361ee' />
-                <ProviderComponent>{children}</ProviderComponent>
+                <ProviderComponent lang={lang}>{children}</ProviderComponent>
             </body>
         </html>
     );

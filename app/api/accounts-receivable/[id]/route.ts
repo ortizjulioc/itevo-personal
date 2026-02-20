@@ -6,9 +6,9 @@ import { PaymentStatus } from '@prisma/client';
 import { cancelAccountReceivableById, findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 
 // Obtener una cuenta por cobrar por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const accountReceivable = await findAccountReceivableById(id);
 
@@ -29,9 +29,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Actualizar una cuenta por cobrar por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Validación de campos requeridos
@@ -89,9 +89,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Cancelar (soft delete) una cuenta por cobrar por ID
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const existing = await findAccountReceivableById(id);
     if (!existing) {

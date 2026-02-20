@@ -17,7 +17,7 @@ import { createAttendance, updateAttendance } from '../lib/request';
 
 interface AttendanceStatusOption {
   value: string;
-  label: JSX.Element;
+  label: React.ReactElement;
 }
 
 const statusOptions: AttendanceStatusOption[] = [

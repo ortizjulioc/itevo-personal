@@ -4,15 +4,16 @@ import CreateEnrollmentForm from "../components/enrollment-form/create-form";
 
 
 interface EnrollmentListProps {
-  searchParams?: {
+  searchParams: Promise<{
     courseBranchId?: string;
     studentId?: string;
-  };
+  }>;
 }
 
-export default function NewEnrollment({ searchParams }: EnrollmentListProps) {
-  const courseBranchId = searchParams?.courseBranchId || ''
-  const studentId = searchParams?.studentId || ''
+export default async function NewEnrollment({ searchParams }: EnrollmentListProps) {
+  const params = await searchParams;
+  const courseBranchId = params?.courseBranchId || ''
+  const studentId = params?.studentId || ''
 
   console.log('oferta academica', courseBranchId)
 

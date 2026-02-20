@@ -5,9 +5,9 @@ import { createLog } from "@/utils/log";
 import { validateObject } from "@/utils";
 
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         const { isValid, message } = validateObject(body, ['prerequisiteId']);
@@ -61,9 +61,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const course = await findCourseById(id);
         if (!course) {
             return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });

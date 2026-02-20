@@ -6,9 +6,9 @@ import { createLog } from '@/utils/log';
 
 
 // Actualizar la configuracion de empresa por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
-        const { id } = params;
         const body = await request.json();
 
         // Validar el cuerpo de la solicitud (usando la validación existente)
@@ -39,9 +39,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
             action: "PUT",
             description: `Error al actualizar la configuración de empresa: ${formatErrorMessage(error)}`,
             origin: "settings/[id]",
-            elementId: params.id,
+            elementId: id,
             success: false,
         });
-        return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
     }
 }

@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { Button, Checkbox, FormItem, Input, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
@@ -21,7 +22,7 @@ interface OptionSelect {
 
 interface statusOption {
     value: string;
-    label: JSX.Element;
+    label: React.ReactElement;
 }
 export interface CourseBranchSelectOption {
     value: string;

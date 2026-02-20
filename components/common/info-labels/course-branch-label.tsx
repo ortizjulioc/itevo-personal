@@ -21,9 +21,9 @@ export default function CourseBranchLabel({ CourseBranchId, isSelected, showTeac
     if (!courseBranchFromProps && CourseBranchId) {
       const fetchCourseBranchById = async () => {
         try {
-          const response = await apiRequest.get<CourseBranch>(`/course-branch/${CourseBranchId}`);
+          const response = await apiRequest.get<CourseBranch>(`course-branch/${CourseBranchId}`);
           const data = response.data;
-  
+
           if (
             response.success &&
             data &&

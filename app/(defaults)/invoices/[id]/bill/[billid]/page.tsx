@@ -7,8 +7,8 @@ import InvoiceProvider from './invoice-provider';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
 
-export default function Bill({ params }: { params: { id: string, billid: string } }) {
-    const { billid, id: cashRegisterId } = params;
+export default function Bill({ params }: { params: Promise<{ id: string, billid: string }> }) {
+    const { billid, id: cashRegisterId } = React.use(params);
     const { loading, invoice, fetchInvoiceData, setInvoice } = useFetchInvoicesById(billid);
     const router = useRouter();
     const [alertShown, setAlertShown] = useState(false);

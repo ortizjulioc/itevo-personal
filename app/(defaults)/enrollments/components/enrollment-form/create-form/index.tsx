@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { Button, FormItem, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
@@ -25,11 +26,11 @@ interface OptionSelect {
 }
 interface CourseBranchSelect {
     value: string;
-    label: JSX.Element;
+    label: React.ReactElement;
 }
 interface statusOption {
     value: string;
-    label: JSX.Element;
+    label: React.ReactElement;
 }
 
 export default function CreateEnrollmentForm({ courseBranchId, studentId }: { courseBranchId?: string, studentId?: string }) {

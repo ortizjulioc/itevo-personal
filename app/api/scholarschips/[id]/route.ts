@@ -4,9 +4,9 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 
 // Obtener beca por ID
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const scholarship = await findScholarshipById(id);
 
@@ -27,9 +27,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 //------------------------------------------------------------------------------------------------
 // Actualizar beca por ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         // Verificar si la beca existe
@@ -63,9 +63,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 //------------------------------------------------------------------------------------------------
 // Eliminar beca por ID (soft delete)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Verificar si la beca existe
         const scholarship = await findScholarshipById(id);

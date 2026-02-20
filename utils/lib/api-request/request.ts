@@ -11,17 +11,22 @@ async function apiRequest<T>(params: AxiosRequestConfig): Promise<ApiResponse<T>
         return { success: true, data: response.data, message: '', error: null };
     } catch (error) {
         const axiosError = error as AxiosError;
-        console.error('Error:', axiosError);
+        const url = axiosError.config?.url;
+        const status = axiosError.response?.status;
+        const responseData = axiosError.response?.data;
+        console.error(`[API Error] ${status} ${url}`, responseData);
 
         const errorResponse = axiosError.response?.data as ApiErrorResponse;
-        const message = errorResponse?.message || typedErrorsCode[errorResponse?.code] || errorResponse?.error || 'Ocurrió un error inesperado. Contacte al administrador del sistema.';
+        const message = errorResponse?.message || typedErrorsCode[errorResponse?.code] || errorResponse?.error || `Error ${status}: ${url} - Contacte al administrador del sistema.`;
         return { success: false, message, error: axiosError, data: null };
     }
 }
 
 async function get<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const { params, ...restOptions } = options;
     return await apiRequest<T>({
-        ...options,
+        ...restOptions,
+        params,
         url: `/api/${path}`,
         method: 'GET',
     });

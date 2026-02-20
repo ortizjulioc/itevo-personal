@@ -4,6 +4,7 @@ export const metadata = {
   title: 'Asistencias',
 };
 
-export default function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {
-  return <AttendanceClient searchParams={searchParams} />;
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
+  const params = await searchParams;
+  return <AttendanceClient searchParams={params} />;
 }
