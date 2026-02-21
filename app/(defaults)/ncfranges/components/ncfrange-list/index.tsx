@@ -9,6 +9,35 @@ import useFetchNcfRanges from "../../libs/use-fetch-nfcranges";
 import { deleteNcfRange } from "../../libs/request";
 import NcfStatus from "./NcfStatus";
 import { getFormattedDate } from "@/utils/date";
+import { NcfType } from "@prisma/client";
+
+const ncfTypeToCode: Record<NcfType, string> = {
+    FACTURA_CREDITO_FISCAL: "01",
+    FACTURA_CONSUMO: "02",
+    NOTA_DEBITO: "03",
+    NOTA_CREDITO: "04",
+    COMPROBANTE_COMPRAS: "11",
+    REGISTRO_UNICO_INGRESOS: "12",
+    GASTOS_MENORES: "13",
+    REGIMENES_ESPECIALES: "14",
+    GUBERNAMENTAL: "15",
+    EXPORTACION: "16",
+    PAGO_EXTERIOR: "17",
+};
+
+const ncfTypeToName: Record<NcfType, string> = {
+    FACTURA_CREDITO_FISCAL: "Factura de Crédito Fiscal",
+    FACTURA_CONSUMO: "Factura de Consumo",
+    NOTA_DEBITO: "Nota de Débito",
+    NOTA_CREDITO: "Nota de Crédito",
+    COMPROBANTE_COMPRAS: "Comprobante de Compras",
+    REGISTRO_UNICO_INGRESOS: "Registro Único de Ingresos",
+    GASTOS_MENORES: "Gastos Menores",
+    REGIMENES_ESPECIALES: "Regímenes Especiales",
+    GUBERNAMENTAL: "Gubernamental",
+    EXPORTACION: "Exportación",
+    PAGO_EXTERIOR: "Pago Exterior",
+};
 
 interface Props {
     className?: string;
@@ -48,6 +77,7 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                 <table className="table-hover">
                     <thead>
                         <tr>
+                            <th className="text-left">TIPO</th>
                             <th className="text-left">N. AUTORIZACION</th>
                             <th className="text-left">FECHA VENCIMIENTO</th>
                             <th className="text-left">NCF INICIAL</th>
@@ -68,21 +98,24 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                             return (
                                 <tr key={ncfRange.id}>
                                     <td>
+                                        <div className="whitespace-nowrap">{ncfTypeToName[ncfRange.type]}</div>
+                                    </td>
+                                    <td>
                                         <div className="whitespace-nowrap">{ncfRange.authorizationNumber}</div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">{getFormattedDate(new Date(ncfRange.dueDate))}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfRange.startSequence}`}</div>
+                                        <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfTypeToCode[ncfRange.type]}${ncfRange.startSequence.toString().padStart(8, '0')}`}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfRange.endSequence}`}</div>
+                                        <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfTypeToCode[ncfRange.type]}${ncfRange.endSequence.toString().padStart(8, '0')}`}</div>
                                     </td>
                                     <td>
-                                    <div className="whitespace-nowrap">
-                                        {Math.max(0, ncfRange.endSequence - ncfRange.currentSequence + 1)}
-                                    </div>
+                                        <div className="whitespace-nowrap">
+                                            {Math.max(0, ncfRange.endSequence - ncfRange.currentSequence)}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">

@@ -56,11 +56,12 @@ export default function Checkbox({
   textColored = false
 }: CheckboxProps) {
 
-  const [internalChecked, setInternalChecked] = useState(checked || false);
+  const isChecked = field && field.checked !== undefined ? field.checked : checked;
+  const [internalChecked, setInternalChecked] = useState(isChecked || false);
 
   useEffect(() => {
-    setInternalChecked(checked || false);
-  }, [checked]);
+    setInternalChecked(isChecked || false);
+  }, [isChecked]);
 
   const getVariantClass = () => {
     switch (variant) {
@@ -86,6 +87,9 @@ export default function Checkbox({
     setInternalChecked(newChecked);
     if (onChange) {
       onChange(newChecked);
+    }
+    if (field && field.onChange) {
+      field.onChange(e);
     }
   };
 
