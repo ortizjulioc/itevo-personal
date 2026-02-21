@@ -12,11 +12,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params; // ID de la factura
     try {
         const body: InvoicePaymentData = await req.json();
+        console.log("body", body);
 
         let newInvoiceData: Invoice | null = null;
         // Verificar que la factura existe
         await Prisma.$transaction(async (tx) => {
-            const invoice = await findInvoiceById(id, tx, { cashRegister: true });
+            const invoice = await findInvoiceById(id, tx, { cashRegister: { include: { cashBox: true } } });
             if (!invoice) throw new Error(`Factura con ID ${id} no encontrada`);
             if (invoice.status !== InvoiceStatus.DRAFT) throw new Error(`Solo se pueden pagar facturas en estado DRAFT (actual: ${invoice.status})`);
             if (invoice.items.length === 0) throw new Error('No se puede pagar una factura sin ítems');
@@ -25,9 +26,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
             const finalType = (body.type || invoice.type) as NcfType;
             const settings = await getSettings(tx);
-            const USE_NCF = settings?.billingWithoutNcf !== true;
-            const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;
-
+            const USE_NCF = Boolean(!settings?.billingWithoutNcf);
+            const ncf = USE_NCF ? await generateNcf(tx, finalType, (invoice.cashRegister as any)?.cashBox?.branchId) : invoice.ncf;
             const isCredit = body.isCredit !== undefined ? body.isCredit : invoice.isCredit;
 
             if (isCredit && !body.studentId && !invoice.studentId) {

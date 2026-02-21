@@ -1,9 +1,14 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from '@prisma/client';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
+import { getServerSession } from 'next-auth';
 
 // Obtener todos los rangos de NCF con búsqueda, paginación y conteo total
 export async function getNcfRanges(search = '', page = 1, top = 10) {
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+
   const skip = (page - 1) * top;
 
   const where: PrismaTypes.NcfRangeWhereInput = {
@@ -12,6 +17,7 @@ export async function getNcfRanges(search = '', page = 1, top = 10) {
       { authorizationNumber: { contains: search } },
     ],
     deleted: false,
+    ...(branchId ? { branchId } : {}),
   };
 
   const [ncfRanges, totalNcfRanges] = await Promise.all([
@@ -34,7 +40,9 @@ export async function createNcfRange(data: PrismaTypes.NcfRangeCreateInput) {
 
 // Buscar un rango de NCF por ID
 export async function findNcfRangeById(id: string) {
-  return await Prisma.ncfRange.findUnique({ where: { id, deleted: false } });
+  const session = await getServerSession(authOptions);
+  const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
+  return await Prisma.ncfRange.findUnique({ where: { id, deleted: false, ...(branchId ? { branchId } : {}) } });
 }
 
 // Actualizar un rango de NCF por ID

@@ -101,6 +101,10 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
   const returned = receivedAmount - total;
 
+  const isValidNCF = (ncf: string) => {
+    return ncf.startsWith('B');
+  }
+
   return (
     <Document>
       <Page size={'A4'} style={styles.page}>
@@ -131,8 +135,9 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
           <View style={styles.line} /> */}
 
           <Text>Factura No. {invoiceNumber}</Text>
+          {isValidNCF(invoice.ncf) && <Text>NCF: {invoice.ncf}</Text>}
           <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
-          <Text>Cliente: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
+          <Text>Estudiante: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>
           <View style={styles.line} />

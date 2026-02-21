@@ -59,6 +59,7 @@ model Branch {
     userRole     UserRoleBranch[]
     cashBox      CashBox[]
     products     Product[]
+    ncfRanges    NcfRange[]
 
     @@map("branches")
 }
@@ -578,7 +579,11 @@ model NcfRange {
     updatedAt           DateTime @updatedAt @map("updated_at")
     deleted             Boolean  @default(false)
     dueDate             DateTime @map("due_date")
+    branchId            String?  @map("branch_id")
 
+    branch Branch? @relation(fields: [branchId], references: [id])
+
+    @@index([branchId], map: "ncf_ranges_branch_id_fkey")
     @@map("ncf_ranges")
 }
 

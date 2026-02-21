@@ -21,7 +21,7 @@ const ncfTypeToCode: Record<NcfType, string> = {
  * @param ncfType Tipo de NCF requerido
  * @returns NCF generado
  */
-export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClient, ncfType: NcfType): Promise<string> {
+export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClient, ncfType: NcfType, branchId?: string | null): Promise<string> {
     const maxRetries = 5; // Límite de reintentos para evitar bucles infinitos
     let attempt = 0;
 
@@ -31,6 +31,7 @@ export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClie
             where: {
                 isActive: true,
                 type: ncfType,
+                ...(branchId ? { branchId } : {}),
             },
             orderBy: { currentSequence: 'asc' },
             select: { id: true, prefix: true, currentSequence: true, endSequence: true },

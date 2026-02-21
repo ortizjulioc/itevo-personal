@@ -46,6 +46,8 @@ export default function PrintInvoice({ invoiceId }: PrintInvoiceProps) {
         blobLogo = await fetchImageAsBase64(companyInfo.logoUrl);
       }
 
+      console.log(invoice);
+
       const blob = invoice.isCredit
         ? await pdf(<CreditInvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob()
         : await pdf(<InvoicePDF invoice={invoice} companyInfo={companyInfo} logo={blobLogo} />).toBlob();

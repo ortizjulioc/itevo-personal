@@ -279,7 +279,7 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
         // Buscar la factura
         const invoice = await tx.invoice.findUnique({
             where: { id: invoiceId },
-            include: { cashRegister: true, items: true },
+            include: { cashRegister: { include: { cashBox: true } }, items: true },
         });
 
         if (!invoice) throw new Error(`Factura con ID ${invoiceId} no encontrada`);
@@ -290,7 +290,7 @@ export const payInvoice = async (invoiceId: string, paymentData: InvoicePaymentD
 
         const finalType = paymentData.type || invoice.type;
 
-        const ncf = USE_NCF ? await generateNcf(tx, finalType) : invoice.ncf;
+        const ncf = USE_NCF ? await generateNcf(tx, finalType, invoice.cashRegister.cashBox.branchId) : invoice.ncf;
 
         // Crear el movimiento de caja
         await tx.cashMovement.create({

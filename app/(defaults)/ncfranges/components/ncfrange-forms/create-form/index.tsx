@@ -27,7 +27,7 @@ export default function CreateNcfRangeForm() {
         const valuesToSend =
         {
             ...values,
-            currentSequence: values.startSequence,
+            currentSequence: values.startSequence - 1,
         };
 
 
@@ -75,7 +75,7 @@ export default function CreateNcfRangeForm() {
                         </FormItem>
 
                         <FormItem name="startSequence" label="Secuencia inicial" invalid={Boolean(errors.startSequence && touched.startSequence)} errorMessage={errors.startSequence}>
-                            <Field type="number"  name="startSequence" component={Input} placeholder="Secuencia inicial" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
+                            <Field type="number" name="startSequence" component={Input} placeholder="Secuencia inicial" onWheel={(e: React.WheelEvent<HTMLInputElement>) => (e.target as HTMLInputElement).blur()} />
                         </FormItem>
 
                         <FormItem name="endSequence" label="Secuencia final" invalid={Boolean(errors.endSequence && touched.endSequence)} errorMessage={errors.endSequence}>

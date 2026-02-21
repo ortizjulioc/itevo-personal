@@ -4,6 +4,8 @@ import { getNcfRanges, createNcfRange } from '@/services/ncf-range-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { NcfType } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 // Obtener todos los rangos de NCF con búsqueda y paginación
 export async function GET(request: NextRequest) {
@@ -33,6 +35,7 @@ export async function GET(request: NextRequest) {
 // Crear un nuevo rango de NCF
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await request.json();
 
     // Validación de campos requeridos
@@ -47,17 +50,20 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (!Object.values(NcfType).includes(body.type)) {
-        return NextResponse.json({
-          code: 'E_INVALID_TYPE_NCF',
-          message: `El tipo de NCF debe ser uno de los siguientes: ${Object.values(NcfType).join(', ')}`,
-        }, { status: 400 });
-      }
+      return NextResponse.json({
+        code: 'E_INVALID_TYPE_NCF',
+        message: `El tipo de NCF debe ser uno de los siguientes: ${Object.values(NcfType).join(', ')}`,
+      }, { status: 400 });
+    }
 
     if (!isValid) {
       return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
     }
 
-    const ncfRange = await createNcfRange(body);
+    const ncfRange = await createNcfRange({
+      ...body,
+      branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+    });
 
     await createLog({
       action: 'POST',
