@@ -11,6 +11,7 @@ import { StylesConfig, GroupBase } from 'react-select';
 import PrintInvoiceMpdal from '../print-invoice';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
 import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
+import useFetchSetting from '../../../../settings/lib/use-fetch-settings';
 
 type OptionType = {
     value: string;
@@ -31,7 +32,7 @@ const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
 interface CustomModalProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
-    handleSubmit: () => Promise<boolean>;
+    handleSubmit: (generateNcf: boolean) => Promise<boolean>;
     paymentLoading: boolean;
 }
 
@@ -59,6 +60,8 @@ export default function PayInvoice({
 }: CustomModalProps) {
     const { invoice, setInvoice } = useInvoice();
     const [openPrintModal, setOpenPrintModal] = useState(false);
+    const { setting } = useFetchSetting();
+    const [generateNcf, setGenerateNcf] = useState(true);
 
     const handleDetailsChange = (key: string, value: string) => {
         const currentDetails = (invoice.paymentDetails || {}) as Record<string, any>;
@@ -242,40 +245,55 @@ export default function PayInvoice({
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
                                         {/* Tipo de comprobante */}
                                         <div className="col-span-4 space-y-4">
-                                            <div>
-                                                <label className="text-lg font-bold block mb-2">Tipo de comprobante</label>
-                                                <Select
-                                                    options={NCF_TYPES_OPTIONS}
-                                                    value={NCF_TYPES_OPTIONS.find((option) => option.value === invoice?.type)}
-                                                    onChange={(selected: any) =>
-                                                        setInvoice({
-                                                            ...invoice,
-                                                            type: selected.value,
-                                                        })
-                                                    }
-                                                    placeholder="-Modalidades-"
-                                                    menuPortalTarget={document.body}
-
-                                                />
-                                            </div>
-
-                                            {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
+                                            {Boolean(!setting?.billingWithoutNcf) && (
                                                 <div>
-                                                    <Input
-                                                        className="Input"
-                                                        placeholder="RNC del cliente"
-                                                        value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
-                                                        onChange={(e) =>
-                                                            setInvoice({
-                                                                ...invoice,
-                                                                paymentDetails: {
-                                                                    ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
-                                                                    customerRnc: e.target.value,
-                                                                },
-                                                            })
-                                                        }
-                                                    />
+                                                    <Checkbox
+                                                        checked={generateNcf}
+                                                        onChange={() => setGenerateNcf(!generateNcf)}
+                                                    >
+                                                        Generar Comprobante
+                                                    </Checkbox>
                                                 </div>
+                                            )}
+
+                                            {generateNcf && (
+                                                <>
+                                                    <div>
+                                                        <label className="text-lg font-bold block mb-2">Tipo de comprobante</label>
+                                                        <Select
+                                                            options={NCF_TYPES_OPTIONS}
+                                                            value={NCF_TYPES_OPTIONS.find((option) => option.value === invoice?.type)}
+                                                            onChange={(selected: any) =>
+                                                                setInvoice({
+                                                                    ...invoice,
+                                                                    type: selected.value,
+                                                                })
+                                                            }
+                                                            placeholder="-Modalidades-"
+                                                            menuPortalTarget={document.body}
+
+                                                        />
+                                                    </div>
+
+                                                    {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
+                                                        <div>
+                                                            <Input
+                                                                className="Input"
+                                                                placeholder="RNC del cliente"
+                                                                value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
+                                                                onChange={(e) =>
+                                                                    setInvoice({
+                                                                        ...invoice,
+                                                                        paymentDetails: {
+                                                                            ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                                                                            customerRnc: e.target.value,
+                                                                        },
+                                                                    })
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
 
                                             <div>
@@ -361,7 +379,7 @@ export default function PayInvoice({
                                         <Button
                                             type="button"
                                             onClick={async () => {
-                                                const success = await handleSubmit();
+                                                const success = await handleSubmit(generateNcf);
                                                 if (success) {
                                                     setTimeout(() => {
                                                         setOpenPrintModal(true);

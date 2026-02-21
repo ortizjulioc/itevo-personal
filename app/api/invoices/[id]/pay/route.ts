@@ -12,7 +12,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params; // ID de la factura
     try {
         const body: InvoicePaymentData = await req.json();
-        console.log("body", body);
 
         let newInvoiceData: Invoice | null = null;
         // Verificar que la factura existe
@@ -26,7 +25,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
             const finalType = (body.type || invoice.type) as NcfType;
             const settings = await getSettings(tx);
-            const USE_NCF = Boolean(!settings?.billingWithoutNcf);
+            let USE_NCF = Boolean(!settings?.billingWithoutNcf);
+            if (USE_NCF) {
+                USE_NCF = Boolean(body.generateNcf);
+            }
             const ncf = USE_NCF ? await generateNcf(tx, finalType, (invoice.cashRegister as any)?.cashBox?.branchId) : invoice.ncf;
             const isCredit = body.isCredit !== undefined ? body.isCredit : invoice.isCredit;
 

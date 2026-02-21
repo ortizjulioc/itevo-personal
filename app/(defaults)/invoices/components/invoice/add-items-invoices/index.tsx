@@ -30,7 +30,7 @@ export interface AccountsReceivablesResponse {
 
 export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegisterId }: { InvoiceId: string; fetchInvoiceData: (id: string) => Promise<void>; cashRegisterId: string }) {
     const { id } = useParams();
-    
+
     const { loading, CashRegister } = useFetchCashRegistersById(cashRegisterId);
     const { invoice, setInvoice } = useInvoice();
 
@@ -68,7 +68,7 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
         }
     };
 
-    const handleSubmit = async (): Promise<boolean> => {
+    const handleSubmit = async (generateNcf: boolean = true): Promise<boolean> => {
         if (!invoice) {
             openNotification('error', 'No hay información de la factura');
             return false;
@@ -101,11 +101,12 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
 
         setPaymentLoading(true);
 
-       
+
         const payload = {
             ...invoice,
             userId: CashRegister?.userId,
             cashRegisterId: CashRegister?.id,
+            generateNcf,
         };
 
         const resp = await payInvoice(InvoiceId, payload);
@@ -175,11 +176,11 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
                         return prev.map((ar) =>
                             ar.id === item.accountReceivableId
                                 ? {
-                                      ...ar,
+                                    ...ar,
 
-                                      AmountPaid: 0,
-                                      uiStatus: null,
-                                  }
+                                    AmountPaid: 0,
+                                    uiStatus: null,
+                                }
                                 : ar
                         );
                     });
@@ -461,8 +462,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
             <PayInvoice
                 openModal={openModal}
                 setOpenModal={setOpenModal}
-                // Invoice={nvoice}
-                // setInvoice={setInvoice}
                 handleSubmit={handleSubmit}
                 paymentLoading={paymentLoading}
             />

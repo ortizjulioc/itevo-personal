@@ -55,6 +55,7 @@ export interface InvoicePaymentData {
     paymentDetails?: any; // JSON con detalles adicionales
     type?: NcfType;
     isCredit?: boolean;
+    generateNcf?: boolean;
 }
 
 interface InvoiceFilter {
