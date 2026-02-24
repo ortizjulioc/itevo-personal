@@ -1,0 +1,9 @@
+services:
+  next-app:
+    build: .
+    container_name: mi-next-app
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - NODE_ENV=production
