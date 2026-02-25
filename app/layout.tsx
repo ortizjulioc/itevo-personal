@@ -9,8 +9,8 @@ import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | ITEVO - Software de facturación y gestión de cursos',
-        default: 'ITEVO - Software de facturación y gestión de cursos',
+        template: '%s | [PRUEBAS] ITEVO - Software de facturación',
+        default: '[PRUEBAS] ITEVO - Software de facturación y gestión de cursos',
     },
 };
 const nunito = Nunito({
@@ -27,7 +27,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang="en">
             <body className={nunito.variable}>
-                <NextTopLoader showSpinner={false} color='#4361ee' />
+                {/* BANNER DE PRUEBAS */}
+                <div className="pointer-events-none fixed bottom-0 left-0 z-[99999] w-full bg-danger py-2 text-center text-sm font-bold tracking-widest text-white shadow-md">
+                    ⚠️ ENTORNO DE PRUEBAS - LOS DATOS MOSTRADOS NO SON DE PRODUCCIÓN ⚠️
+                </div>
+                {/* MARCA DE AGUA FLOTANTE */}
+                <div className="pointer-events-none fixed inset-0 z-[99998] flex items-center justify-center overflow-hidden opacity-[0.03]">
+                    <div className="-rotate-45 transform whitespace-nowrap text-[10rem] font-black text-danger">VERSIÓN DE PRUEBA</div>
+                </div>
+                <NextTopLoader showSpinner={false} color="#f59e0b" />
                 <ProviderComponent lang={lang}>{children}</ProviderComponent>
             </body>
         </html>
