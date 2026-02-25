@@ -62,6 +62,41 @@ export default function PayInvoice({
     const [openPrintModal, setOpenPrintModal] = useState(false);
     const { setting } = useFetchSetting();
     const [generateNcf, setGenerateNcf] = useState(true);
+    const [isVerifyingRnc, setIsVerifyingRnc] = useState(false);
+    const [rncError, setRncError] = useState<string | null>(null);
+
+    const checkRnc = async (rnc: string) => {
+        if (!rnc) return;
+        setIsVerifyingRnc(true);
+        setRncError(null);
+        try {
+            const res = await fetch(`https://rnc-api.anderlfrias.com/api/rnc/${rnc}`);
+            const data = await res.json();
+
+            if (data.success === false) {
+                setRncError(data.message || 'Error al buscar RNC');
+                const pd = (invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? { ...invoice.paymentDetails } as Record<string, any> : {};
+                delete pd.datosContribuyente;
+                delete pd.customerName;
+                setInvoice({ ...invoice, paymentDetails: pd });
+            } else if (data.datosContribuyente) {
+                const pd = (invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? { ...invoice.paymentDetails } as Record<string, any> : {};
+                pd.datosContribuyente = data.datosContribuyente;
+                pd.customerName = data.datosContribuyente['Nombre/Razón Social'] || data.datosContribuyente['Nombre Comercial'] || '';
+                setInvoice({ ...invoice, paymentDetails: pd });
+            } else {
+                setRncError('RNC no encontrado');
+                const pd = (invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? { ...invoice.paymentDetails } as Record<string, any> : {};
+                delete pd.datosContribuyente;
+                delete pd.customerName;
+                setInvoice({ ...invoice, paymentDetails: pd });
+            }
+        } catch (e) {
+            setRncError('Error de red al consultar el RNC');
+        } finally {
+            setIsVerifyingRnc(false);
+        }
+    };
 
     const handleDetailsChange = (key: string, value: string) => {
         const currentDetails = (invoice.paymentDetails || {}) as Record<string, any>;
@@ -228,8 +263,8 @@ export default function PayInvoice({
                 >
                     <div className="fixed inset-0" />
                 </Transition.Child>
-                <div className="fixed inset-0 bg-[black]/60 z-[999]">
-                    <div className="flex items-start justify-center min-h-screen px-4">
+                <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+                    <div className="flex items-start justify-center min-h-screen px-4 py-8">
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -269,28 +304,62 @@ export default function PayInvoice({
                                                                     type: selected.value,
                                                                 })
                                                             }
-                                                            placeholder="-Modalidades-"
-                                                            menuPortalTarget={document.body}
-
+                                                            placeholder="-Tipos de comprobantes-"
+                                                            menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                                                            styles={customStyles}
                                                         />
                                                     </div>
 
                                                     {invoice?.type !== NCF_TYPES.FACTURA_CONSUMO.code && (
-                                                        <div>
-                                                            <Input
-                                                                className="Input"
-                                                                placeholder="RNC del cliente"
-                                                                value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
-                                                                onChange={(e) =>
-                                                                    setInvoice({
-                                                                        ...invoice,
-                                                                        paymentDetails: {
-                                                                            ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
-                                                                            customerRnc: e.target.value,
-                                                                        },
-                                                                    })
-                                                                }
-                                                            />
+                                                        <div className="space-y-2">
+                                                            <label className="text-lg font-bold block mb-2">RNC/Cédula del cliente</label>
+                                                            <div className="flex gap-2">
+                                                                <Input
+                                                                    className="Input flex-1"
+                                                                    placeholder="RNC / Cédula"
+                                                                    value={(invoice?.paymentDetails as Record<string, any>)?.customerRnc || ''}
+                                                                    onChange={(e) =>
+                                                                        setInvoice({
+                                                                            ...invoice,
+                                                                            paymentDetails: {
+                                                                                ...((invoice.paymentDetails && typeof invoice.paymentDetails === 'object') ? invoice.paymentDetails : {}),
+                                                                                customerRnc: e.target.value,
+                                                                            },
+                                                                        })
+                                                                    }
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault();
+                                                                            checkRnc((invoice?.paymentDetails as Record<string, any>)?.customerRnc);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <Button
+                                                                    type="button"
+                                                                    onClick={() => checkRnc((invoice?.paymentDetails as Record<string, any>)?.customerRnc)}
+                                                                    disabled={isVerifyingRnc || !(invoice?.paymentDetails as Record<string, any>)?.customerRnc}
+                                                                >
+                                                                    {isVerifyingRnc ? 'Buscando...' : 'Buscar'}
+                                                                </Button>
+                                                            </div>
+
+                                                            {rncError && (
+                                                                <p className="text-red-500 text-sm mt-1">{rncError}</p>
+                                                            )}
+
+                                                            {(invoice?.paymentDetails as Record<string, any>)?.datosContribuyente && (
+                                                                <div className="mt-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 text-sm overflow-y-auto max-h-48 custom-scrollbar">
+                                                                    {Object.entries((invoice?.paymentDetails as Record<string, any>).datosContribuyente).map(([key, value]) => {
+                                                                        if (!value) return null;
+                                                                        return (
+                                                                            <div key={key} className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 dark:border-gray-700 last:border-0 py-1.5">
+                                                                                <span className="font-semibold text-gray-600 dark:text-gray-400 break-words">{key}:</span>
+                                                                                <span className="text-gray-800 dark:text-gray-200 sm:text-right sm:ml-2 break-words">{String(value)}</span>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </>

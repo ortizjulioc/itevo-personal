@@ -132,7 +132,14 @@ export const CreditInvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any,
 
           <Text>Factura No. {invoiceNumber}</Text>
           <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
-          <Text>Estudiante: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
+          {student ? (
+            <Text>Estudiante: {student.firstName || ''} {student.lastName || ''}</Text>
+          ) : (invoice.paymentDetails as Record<string, any>)?.datosContribuyente ? (
+            <>
+              <Text>Cliente: {(invoice.paymentDetails as Record<string, any>).customerName || ''}</Text>
+              <Text>RNC/Cédula: {(invoice.paymentDetails as Record<string, any>).customerRnc || ''}</Text>
+            </>
+          ) : null}
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA A CREDITO</Text>
           <View style={styles.line} />
