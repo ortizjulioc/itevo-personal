@@ -10,7 +10,11 @@ export const createValidationSchema = Yup.object().shape({
     type: Yup.string().oneOf(VALID_NCF_TYPE_CODES, 'El tipo seleccionado no es válido')
         .required('El tipo es requerido'),
     startSequence: Yup.number().required('La secuencia inicial es requerida').integer('La secuencia inicial debe ser un número entero').positive('La secuencia inicial debe ser un número positivo'),
-    endSequence: Yup.number().required('La secuencia final es requerida').integer('La secuencia final debe ser un número entero').positive('La secuencia final debe ser un número positivo'),
+    endSequence: Yup.number().required('La secuencia final es requerida').integer('La secuencia final debe ser un número entero').positive('La secuencia final debe ser un número positivo').test('is-greater', 'La secuencia final debe ser mayor o igual a la inicial', function (value) {
+        const { startSequence } = this.parent;
+        if (value === undefined || value === null || startSequence === undefined || startSequence === null) return true;
+        return value >= startSequence;
+    }),
     dueDate: Yup.date().nullable(),
     authorizationNumber: Yup.string().required('El número de autorización es requerido'),
 
@@ -21,7 +25,11 @@ export const updateValidationSchema = Yup.object().shape({
     type: Yup.string().oneOf(VALID_NCF_TYPE_CODES, 'El tipo seleccionado no es válido')
         .required('El tipo es requerido'),
     startSequence: Yup.number().required('La secuencia inicial es requerida').integer('La secuencia inicial debe ser un número entero').positive('La secuencia inicial debe ser un número positivo'),
-    endSequence: Yup.number().required('La secuencia final es requerida').integer('La secuencia final debe ser un número entero').positive('La secuencia final debe ser un número positivo'),
+    endSequence: Yup.number().required('La secuencia final es requerida').integer('La secuencia final debe ser un número entero').positive('La secuencia final debe ser un número positivo').test('is-greater', 'La secuencia final debe ser mayor o igual a la inicial', function (value) {
+        const { startSequence } = this.parent;
+        if (value === undefined || value === null || startSequence === undefined || startSequence === null) return true;
+        return value >= startSequence;
+    }),
     dueDate: Yup.date().nullable(),
     authorizationNumber: Yup.string().required('El número de autorización es requerido'),
 

@@ -1,7 +1,7 @@
 import { NcfType, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
 
 // Mapeo de NcfType a sus códigos de dos dígitos
-const ncfTypeToCode: Record<NcfType, string> = {
+export const ncfTypeToCode: Record<NcfType, string> = {
     FACTURA_CREDITO_FISCAL: "01",
     FACTURA_CONSUMO: "02",
     NOTA_DEBITO: "03",
