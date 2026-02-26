@@ -43,7 +43,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       'startSequence',
       'endSequence',
       'currentSequence',
-      'dueDate',
       'authorizationNumber',
     ]);
 
