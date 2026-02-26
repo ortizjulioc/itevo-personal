@@ -36,6 +36,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                     <thead>
                         <tr>
                             <th className="text-left">NO. DE FACTURA</th>
+                            <th className="text-left">NCF</th>
                             <th>ESTUDIANTE</th>
                             <th className="text-left">FECHA DE CREACIÓN</th>
                             <th className="text-left">FECHA DE PAGO</th>
@@ -56,6 +57,7 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             return (
                                 <tr key={invoice.id}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
+                                    <td className="text-left">{invoice.ncf.startsWith('B') ? invoice.ncf : <OptionalInfo />}</td>
                                     <td className="text-left"> {invoice.studentId ? <OptionalInfo content={`${invoice.student?.firstName} ${invoice.student?.lastName}`} message="No registrado" /> : <OptionalInfo content='' />}</td>
                                     <td className="text-left">{getFormattedDateTime(new Date(invoice.createdAt))}</td>
                                     <td className="text-left">
@@ -65,8 +67,8 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                         {invoice.isCredit
                                             ? 'Crédito'
                                             : invoice.paymentMethod
-                                            ? PAYMENT_METHODS_OPTIONS[invoice.paymentMethod as keyof typeof PAYMENT_METHODS_OPTIONS]
-                                            : <OptionalInfo content='' />
+                                                ? PAYMENT_METHODS_OPTIONS[invoice.paymentMethod as keyof typeof PAYMENT_METHODS_OPTIONS]
+                                                : <OptionalInfo content='' />
                                         }
                                     </td>
                                     <td className="text-left font-semibold">{formatCurrency(invoice.subtotal + invoice.itbis)}</td>
