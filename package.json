@@ -7,7 +7,8 @@
         "seed": "node scripts/seed.js",
         "build": "next build",
         "start": "next start -p 1441",
-        "lint": "next lint"
+        "lint": "next lint",
+        "prisma:sync": "npx prisma db push && npx prisma generate"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",

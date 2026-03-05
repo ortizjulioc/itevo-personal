@@ -28,8 +28,8 @@ export default function AccountPayableFilter() {
   return (
     <div className="grid md:grid-cols-3 gap-3 mb-5">
       <SelectCourse
-        value={searchParams.get('courseBranchId') || ''}
-        onChange={(selected) => handleFilterChange('courseBranchId', selected?.value || '')}
+        value={searchParams.get('courseId') || ''}
+        onChange={(selected) => handleFilterChange('courseId', selected?.value || '')}
       />
 
       <SelectTeacher
