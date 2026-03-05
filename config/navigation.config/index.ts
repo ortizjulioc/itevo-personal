@@ -213,6 +213,15 @@ const navigationConfig = [
         auth: billingRoles
     },
     {
+        key: 'accounts-payable',
+        title: 'Cuentas por pagar',
+        icon: HiOutlineCurrencyDollar,
+        url: '/accounts-payable',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: billingRoles
+    },
+    {
         key: 'products',
         title: 'Productos',
         icon: TbShoppingCart,
