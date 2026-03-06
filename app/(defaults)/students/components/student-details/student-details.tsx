@@ -3,7 +3,7 @@ import { IconEdit, IconTrashLines, IconUserPlus } from '@/components/icon';
 import { Button } from '@/components/ui';
 import Tooltip from '@/components/ui/tooltip';
 import { confirmDialog, formatIdentification, formatPhoneNumber, getInitials, openNotification } from '@/utils';
-import { IdentificationType, Student } from '@prisma/client';
+import { IdentificationType, Student } from '@/generated/prisma/client';
 import Link from 'next/link';
 import React from 'react';
 import { deleteStudent } from '../../lib/request';

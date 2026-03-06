@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Promotion } from "@prisma/client";
+import type { Promotion } from '@/generated/prisma/client';
 
 export interface PromotionResponse {
     promotions: Promotion[];

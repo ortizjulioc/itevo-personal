@@ -1,4 +1,4 @@
-import { NcfType, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
+import { NcfType, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 // Mapeo de NcfType a sus códigos de dos dígitos
 export const ncfTypeToCode: Record<NcfType, string> = {

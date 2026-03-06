@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
-import { InvoiceStatus } from '@prisma/client';
+import { InvoiceStatus } from '@/generated/prisma/client';
 import SelectStudent from '@/components/common/selects/select-student';
 import { useSession } from 'next-auth/react';
 import { SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN } from '@/constants/role.constant';

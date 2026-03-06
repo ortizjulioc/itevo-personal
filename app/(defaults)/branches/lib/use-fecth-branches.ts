@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Branch } from "@prisma/client";
+import { Branch } from '@/generated/prisma/client';
 
 export interface BranchResponse {
     branches: Branch[];

@@ -5,7 +5,7 @@ import SelectReceivableStatus from "../list/select-status";
 import DatePicker, { extractDate } from "@/components/ui/date-picker";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus } from '@/generated/prisma/client';
 
 export default function AccountReceivableFilter() {
     const searchParams = useSearchParams();

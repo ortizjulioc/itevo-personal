@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashRegister } from "@prisma/client";
+import type { CashRegister } from '@/generated/prisma/client';
 
 export interface CashRegisterResponse {
     cashRegisters: CashRegister[];

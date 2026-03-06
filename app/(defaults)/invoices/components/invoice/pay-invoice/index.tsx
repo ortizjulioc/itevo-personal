@@ -4,7 +4,7 @@ import { Button, Checkbox, Input, Select } from '@/components/ui';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import { formatCurrency } from '@/utils';
 import { Dialog, Transition } from '@headlessui/react';
-import { Invoice, NcfType } from '@prisma/client';
+import { Invoice, NcfType } from '@/generated/prisma/client';
 import { Fragment, useEffect, useState } from 'react';
 import { TbCancel, TbCheck } from 'react-icons/tb';
 import { StylesConfig, GroupBase } from 'react-select';

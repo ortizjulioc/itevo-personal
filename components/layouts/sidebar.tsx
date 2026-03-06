@@ -14,7 +14,7 @@ import { getTranslation } from '@/i18n';
 import { useSession } from 'next-auth/react';
 import navigationConfig from '@/config/navigation.config';
 import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM, NAV_ITEM_TYPE_TITLE } from '@/constants/navigation.constant';
-import { Branch, Role } from '@prisma/client';
+import { Branch, Role } from '@/generated/prisma/client';
 
 interface NavigationConfigInterface {
     key: string;

@@ -7,7 +7,7 @@ import { openNotification } from '@/utils';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Branch } from '@prisma/client';
+import { Branch } from '@/generated/prisma/client';
 import { printClosureDirect } from '@/components/common/print/closure';
 import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 

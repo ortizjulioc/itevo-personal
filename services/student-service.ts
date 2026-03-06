@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { IdentificationType, PrismaClient, Prisma as PrismaTypes } from "@prisma/client";
+import { IdentificationType, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;

@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma as PrismaTypes } from '@/generated/prisma/client';
 export const getCourseBranch = async (filters: any) => {
 
     const { page, top, promotionId, branchId, teacherId, courseId, modality, search } = filters;

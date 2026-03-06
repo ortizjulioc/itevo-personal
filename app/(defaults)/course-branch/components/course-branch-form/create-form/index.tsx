@@ -10,7 +10,7 @@ import GeneralInformationFields from './general-information-fields';
 import { createCourseBranch, loadDefaultPromotion } from '../../../lib/request';
 import { TbArrowLeft, TbArrowRight } from 'react-icons/tb';
 import { useSession } from 'next-auth/react';
-import { Branch } from '@prisma/client';
+import { Branch } from '@/generated/prisma/client';
 
 const COURSE_BRANCH_TABS = [
     'general-information',

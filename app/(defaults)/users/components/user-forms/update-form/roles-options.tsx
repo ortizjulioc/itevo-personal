@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { Button, Checkbox, Drawer } from '@/components/ui';
-import { Role } from '@prisma/client';
+import { Role } from '@/generated/prisma/client';
 import { UserContext } from '@/context/user';
 
 export default function RolesOptions({branchId}: {branchId: string}) {

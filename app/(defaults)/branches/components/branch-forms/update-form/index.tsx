@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { updateBranch } from '../../../lib/request';
-import { Branch } from '@prisma/client';
+import { Branch } from '@/generated/prisma/client';
 import { FormatPatterInput } from '@/components/common';
 
 export default function UpdateBranchForm({ initialValues }: { initialValues: Branch }) {

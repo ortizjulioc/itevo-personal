@@ -11,7 +11,7 @@ import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-
 import Swal from 'sweetalert2';
 import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/modal-cash-register-close';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
-import { Invoice } from '@prisma/client';
+import { Invoice } from '@/generated/prisma/client';
 import DisbursementModal from '../../disbursement-modal';
 import CashMovementsDrawer from '../cash-movements-drawer';
 

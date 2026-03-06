@@ -2,7 +2,7 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { Course } from '@prisma/client';
+import { Course } from '@/generated/prisma/client';
 import { Select } from '@/components/ui';
 import { GroupBase } from 'react-select';
 

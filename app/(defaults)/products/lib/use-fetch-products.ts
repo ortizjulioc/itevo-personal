@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Product } from "@prisma/client";
+import type { Product } from '@/generated/prisma/client';
 
 export interface ProductsResponse {
     products: Product[];

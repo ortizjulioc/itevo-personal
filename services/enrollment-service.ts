@@ -1,5 +1,5 @@
 import 'server-only';
-import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
 export const getEnrollments = async (filters: any) => {

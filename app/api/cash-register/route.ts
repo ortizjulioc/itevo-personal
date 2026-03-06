@@ -3,7 +3,7 @@ import { validateObject } from '@/utils';
 import { getCashRegisters, createCashRegister } from '@/services/cash-register-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CashRegisterStatus } from '@prisma/client';
+import { CashRegisterStatus } from '@/generated/prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 

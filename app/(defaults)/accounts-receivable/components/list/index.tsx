@@ -10,7 +10,7 @@ import { getFormattedDate } from '@/utils/date';
 import SelectReceivableStatus from './select-status';
 import useFetchAccountsReceivables from '../../lib/use-fetch-accounts-receivables';
 import { changeAccountReceivableStatus } from '../../lib/request';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import OptionalInfo from '@/components/common/optional-info';
 
 type AccountsReceivableListProps = {

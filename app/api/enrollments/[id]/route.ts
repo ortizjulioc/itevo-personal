@@ -4,7 +4,7 @@ import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { generateEnrollmentReceivables } from '@/services/account-receivable';
-import { EnrollmentStatus } from '@prisma/client';
+import { EnrollmentStatus } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 // Obtener enrollment por ID
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

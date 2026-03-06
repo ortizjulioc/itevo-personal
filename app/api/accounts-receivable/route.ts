@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { createAccountReceivable, getAccountsReceivable } from '@/services/account-receivable';
 
 // Obtener todas las cuentas por cobrar con filtros y paginación

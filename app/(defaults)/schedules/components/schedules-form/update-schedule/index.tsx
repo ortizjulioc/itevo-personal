@@ -4,7 +4,7 @@ import { Button, FormItem, Input } from '@/components/ui';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { openNotification } from '@/utils';
 import { ScheduleFormType, updateValidationSchema } from '../form.config';
-import { Schedule } from '@prisma/client';
+import { Schedule } from '@/generated/prisma/client';
 import Select from 'react-select';
 import { updateSchedule } from '../../../lib/request';
 interface WeekOption {

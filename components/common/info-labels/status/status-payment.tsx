@@ -1,4 +1,4 @@
-import { PaymentStatus } from '@prisma/client'
+import { PaymentStatus } from '@/generated/prisma/client'
 import React from 'react'
 import { TbPointFilled } from 'react-icons/tb'
 

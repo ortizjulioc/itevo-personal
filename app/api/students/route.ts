@@ -6,7 +6,7 @@ import { createLog } from "@/utils/log";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/auth-options";
 import { Prisma } from "@/utils/lib/prisma";
-import { IdentificationType } from "@prisma/client";
+import { IdentificationType } from '@/generated/prisma/client';
 
 const mapIdentificationType: Record<string, IdentificationType> = {
     cedula: IdentificationType.CEDULA,

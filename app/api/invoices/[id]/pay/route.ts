@@ -3,7 +3,7 @@ import { findInvoiceById, InvoicePaymentData, updateInvoice } from '@/services/i
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus, NcfType, PaymentStatus } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoice, InvoiceItemType, InvoiceStatus, NcfType, PaymentStatus } from '@/generated/prisma/client';
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 import { createCashMovement } from '@/services/cash-movement';

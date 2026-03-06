@@ -7,7 +7,7 @@ import { useURLSearchParams } from '@/utils/hooks';
 import Tooltip from '@/components/ui/tooltip';
 import { TbX } from 'react-icons/tb';
 import { useCourseBranch } from './course-branch-provider';
-import { Course } from '@prisma/client';
+import { Course } from '@/generated/prisma/client';
 
 interface ScheduleAssignmentProps {
   values: CourseBranchFormType;

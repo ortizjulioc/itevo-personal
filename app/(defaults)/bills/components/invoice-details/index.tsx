@@ -12,7 +12,7 @@ import { confirmDialog, formatCurrency, openNotification } from '@/utils'
 import OptionalInfo from '@/components/common/optional-info'
 import { deleteInvoice } from '../../lib/request'
 import { useRouter } from 'next/navigation';
-import { InvoiceStatus } from '@prisma/client'
+import { InvoiceStatus } from '@/generated/prisma/client'
 import { CASHIER, SUPER_ADMIN, GENERAL_ADMIN } from '@/constants/role.constant'
 import Link from 'next/link'
 

@@ -1,4 +1,4 @@
-import { Branch } from '@prisma/client';
+import { Branch } from '@/generated/prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 

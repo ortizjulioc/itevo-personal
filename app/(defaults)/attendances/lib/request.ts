@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import { Attendance, AttendanceStatus, Fingerprint } from "@prisma/client";
+import { Attendance, AttendanceStatus, Fingerprint } from '@/generated/prisma/client';
 
 export interface AttendanceResponse {
     attendances: Attendance[];

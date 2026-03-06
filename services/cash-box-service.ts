@@ -1,5 +1,5 @@
 import 'server-only';
-import { CashBox as PrismaCashBox } from "@prisma/client";
+import { CashBox as PrismaCashBox } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
 // Definimos una interfaz similar a Branch pero omitiendo campos controlados por Prisma

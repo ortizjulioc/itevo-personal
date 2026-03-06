@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashMovement as CashMovementPrima, User, PayablePayment, AccountPayable, Teacher } from "@prisma/client";
+import type { CashMovement as CashMovementPrima, User, PayablePayment, AccountPayable, Teacher } from '@/generated/prisma/client';
 
 export interface CashMovement extends CashMovementPrima {
     user: Omit<User, 'password' | 'email'>;

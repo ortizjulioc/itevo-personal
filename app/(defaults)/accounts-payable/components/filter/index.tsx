@@ -3,7 +3,7 @@ import SelectCourse from "@/components/common/selects/select-course";
 import SelectTeacher from "@/components/common/selects/select-teacher";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus } from '@/generated/prisma/client';
 import SelectPayableStatus, { SelectPayableStatusType } from "./select-status";
 
 export default function AccountPayableFilter() {

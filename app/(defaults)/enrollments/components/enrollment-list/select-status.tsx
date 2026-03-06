@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import { EnrollmentStatus } from '@prisma/client';
+import { EnrollmentStatus } from '@/generated/prisma/client';
 import { GroupBase } from 'react-select';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 import StatusEnrollment from '@/components/common/info-labels/status/status-enrollment';

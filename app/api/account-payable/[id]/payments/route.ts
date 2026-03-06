@@ -4,7 +4,7 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { z } from 'zod';
 import { Prisma } from '@/utils/lib/prisma';
 import { createCashMovement } from '@/services/cash-movement';
-import { CashMovementReferenceType, CashMovementType } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType } from '@/generated/prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 import { newPayablePayment, getPayablePaymentsByAccountPayableId } from '@/services/account-payable';

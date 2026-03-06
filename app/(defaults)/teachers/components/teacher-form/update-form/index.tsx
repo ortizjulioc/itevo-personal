@@ -6,7 +6,7 @@ import { openNotification } from '@/utils';
 import { updateValidationSchema, initialValues } from '../form.config';
 import { updateTeacher } from '../../../lib/request';
 import { FormatPatterInput } from '@/components/common';
-import { Teacher } from '@prisma/client';
+import { Teacher } from '@/generated/prisma/client';
 
 
 export default function UpdateTeacherForm({ initialValues }: { initialValues: Teacher }) {

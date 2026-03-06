@@ -1,5 +1,5 @@
 import 'server-only';
-import { User as PrismaUser, Role, Branch as PrismaBranch } from "@prisma/client";
+import { User as PrismaUser, Role, Branch as PrismaBranch } from '@/generated/prisma/client';
 import { normalizeString } from "@/utils/normalize-string";
 import { Prisma } from '@/utils/lib/prisma';
 const bcrypt = require('bcrypt');

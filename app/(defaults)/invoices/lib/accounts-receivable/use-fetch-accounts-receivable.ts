@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Invoice , InvoiceItem, User } from "@prisma/client";
+import type { Invoice , InvoiceItem, User } from '@/generated/prisma/client';
 
 
 

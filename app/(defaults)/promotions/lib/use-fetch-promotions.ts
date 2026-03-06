@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { Promotion } from "@prisma/client";
+import type { Promotion } from '@/generated/prisma/client';
 
 export interface PromotionsResponse {
     promotions: Promotion[];

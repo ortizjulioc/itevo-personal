@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Holiday } from "@prisma/client";
+import { Holiday } from '@/generated/prisma/client';
 
 export interface HolidayResponse {
   holidays: Holiday[];

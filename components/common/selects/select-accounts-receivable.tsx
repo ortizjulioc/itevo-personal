@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { GroupBase, ActionMeta, components } from 'react-select';
 import { TbCheck } from 'react-icons/tb';
-import { AccountReceivable } from '@prisma/client';
+import { AccountReceivable } from '@/generated/prisma/client';
 import { formatCurrency } from '@/utils';
 import StudentLabel from '../info-labels/student-label';
 import { Select } from '@/components/ui';

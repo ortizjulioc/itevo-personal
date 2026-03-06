@@ -6,7 +6,7 @@ import { createLog } from '@/utils/log';
 import { findCourseBranchById } from '@/services/course-branch-service';
 import { findStudentById } from '@/services/student-service';
 import { createManyAccountsReceivable, generateEnrollmentReceivables } from '@/services/account-receivable';
-import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from '@prisma/client';
+import { CourseBranchStatus, Enrollment, EnrollmentStatus, PaymentStatus, ScholarshipType } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from '@/utils/date';
 import { getHolidays } from '@/services/holiday-service';

@@ -3,7 +3,7 @@ import { SvgSpinner } from "@/assets/svgs/loading-1.";
 import Loading from "@/components/layouts/loading";
 import { confirmDialog } from "@/utils";
 import { convertTimeFrom24To12Format, getHoursDifferenceText } from "@/utils/date";
-import { Schedule } from "@prisma/client";
+import { Schedule } from '@/generated/prisma/client';
 
 interface Props {
     className?: string;

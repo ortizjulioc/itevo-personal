@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { updateRole } from '../../../lib/request';
-import { Role } from '@prisma/client';
+import { Role } from '@/generated/prisma/client';
 
 export default function UpdateRoleForm({ initialValues }: { initialValues: Role }) {
     const route = useRouter();

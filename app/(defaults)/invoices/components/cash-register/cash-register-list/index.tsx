@@ -11,7 +11,7 @@ import { ViewTitle } from "@/components/common";
 import CashRegisterModal from "../cash-register-modal";
 import { useSession } from 'next-auth/react';
 import { getFormattedDate } from "@/utils/date";
-import { CashRegister } from "@prisma/client";
+import { CashRegister } from '@/generated/prisma/client';
 
 interface Props {
     className?: string;

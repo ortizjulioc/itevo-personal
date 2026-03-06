@@ -11,7 +11,7 @@ import { createAttendance, getFingerPrintById } from '../../lib/request';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent, { StudentSelect } from '@/components/common/selects/select-student';
 import StatusAttendance from '../status-attendance';
-import { AttendanceStatus } from '@prisma/client';
+import { AttendanceStatus } from '@/generated/prisma/client';
 import { CourseBranchSelectOption } from '@/app/(defaults)/enrollments/components/enrollment-form/update-form';
 import { CSSObjectWithLabel, StylesConfig } from 'react-select';
 import CompareFingerPrint from '@/components/common/finger-print/compare-finger-print';

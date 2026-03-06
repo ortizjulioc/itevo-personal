@@ -1,5 +1,5 @@
 import { MODALITIES } from '@/constants/modality.constant';
-import { CourseBranchStatus, Modality, PaymentFrequency } from '@prisma/client';
+import { CourseBranchStatus, Modality, PaymentFrequency } from '@/generated/prisma/client';
 import * as Yup from 'yup';
 
 export const createValidationSchema = Yup.object().shape({

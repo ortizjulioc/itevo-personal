@@ -5,7 +5,7 @@ import { Select } from '@/components/ui';
 import SelectStudent from '@/components/common/selects/select-student';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
-import { AttendanceStatus } from '@prisma/client';
+import { AttendanceStatus } from '@/generated/prisma/client';
 import StatusAttendance from '../status-attendance';
 import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 

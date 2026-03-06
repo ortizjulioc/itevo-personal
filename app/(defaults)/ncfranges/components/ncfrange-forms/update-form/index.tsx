@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import type { NcfRange, NcfType } from '@prisma/client';
+import type { NcfRange, NcfType } from '@/generated/prisma/client';
 import { updateNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';

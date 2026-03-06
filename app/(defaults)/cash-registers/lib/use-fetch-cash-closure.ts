@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashMovement as CashMovementPrima, CashRegisterClosure, User } from "@prisma/client";
+import type { CashMovement as CashMovementPrima, CashRegisterClosure, User } from '@/generated/prisma/client';
 
 
 

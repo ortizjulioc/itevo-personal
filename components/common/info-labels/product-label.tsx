@@ -1,4 +1,4 @@
-import { Product } from '@prisma/client';
+import { Product } from '@/generated/prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 

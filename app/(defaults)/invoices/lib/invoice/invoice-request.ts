@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import type { InvoiceItem, InvoiceItemType, Invoice as InvoicePrisma } from '@prisma/client';
+import type { InvoiceItem, InvoiceItemType, Invoice as InvoicePrisma } from '@/generated/prisma/client';
 
 export interface InvoiceResponse {
     invoices: InvoicePrisma[];

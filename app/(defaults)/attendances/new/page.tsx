@@ -4,7 +4,7 @@ import SelectCourseBranch from '@/components/common/selects/select-course-branch
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import React from 'react';
 import useFetchEnrollments from '../../enrollments/lib/use-fetch-enrollments';
-import { AttendanceStatus, Student } from '@prisma/client';
+import { AttendanceStatus, Student } from '@/generated/prisma/client';
 import { Button, Select } from '@/components/ui';
 import StatusAttendance from '../components/status-attendance';
 import StudentLabel from '@/components/common/info-labels/student-label';

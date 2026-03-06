@@ -2,7 +2,7 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
-import { Student } from '@prisma/client';
+import { Student } from '@/generated/prisma/client';
 import { CSSObjectWithLabel, GroupBase, StylesConfig } from 'react-select';
 import { getCustomStyles } from '@/components/ui/select';
 import { useSelector } from 'react-redux';

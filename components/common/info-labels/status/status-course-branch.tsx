@@ -1,4 +1,4 @@
-import { CourseBranchStatus } from '@prisma/client';
+import { CourseBranchStatus } from '@/generated/prisma/client';
 import React from 'react'
 import { TbPointFilled } from 'react-icons/tb';
 

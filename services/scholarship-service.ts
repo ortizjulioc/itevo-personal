@@ -1,5 +1,5 @@
 import 'server-only';
-import { Scholarship as PrismaScholasip } from '@prisma/client';
+import { Scholarship as PrismaScholasip } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
 interface Scholarship extends Omit<PrismaScholasip, 'id' | 'updatedAt' | 'createAt' | 'deleted'> { }

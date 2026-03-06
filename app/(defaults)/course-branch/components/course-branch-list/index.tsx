@@ -12,7 +12,7 @@ import { TbDetails } from "react-icons/tb";
 import { getFormattedDate } from "@/utils/date";
 import ModalityTag from "../modality";
 import StatusCourseBranch from "@/components/common/info-labels/status/status-course-branch";
-import { CourseBranchStatus } from "@prisma/client";
+import { CourseBranchStatus } from '@/generated/prisma/client';
 import SelectCourseBranchStatus from "./select-status";
 import OptionalInfo from "@/components/common/optional-info";
 

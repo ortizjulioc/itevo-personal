@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashMovementReferenceType, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { CashMovementReferenceType, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 export const createCashMovement = async (
   data: PrismaTypes.CashMovementCreateInput,

@@ -1,4 +1,4 @@
-import { Schedule } from "@prisma/client";
+import { Schedule } from '@/generated/prisma/client';
 
 export function convertTimeFrom24To12Format(time: string): string {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;

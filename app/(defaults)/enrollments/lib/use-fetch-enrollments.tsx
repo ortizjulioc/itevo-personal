@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Enrollment } from "@prisma/client";
+import { Enrollment } from '@/generated/prisma/client';
 import { EnrollmentWithRelations } from '@/@types/enrollment';
 
 export interface EnrollmentSummary {

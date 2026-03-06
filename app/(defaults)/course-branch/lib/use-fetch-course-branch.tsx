@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher,CourseBranchStatus } from "@prisma/client";
+import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher,CourseBranchStatus } from '@/generated/prisma/client';
 import { CourseBranchWithRelations } from '@/@types/course-branch';
 
 export interface CourseBranch extends CourseBranchPrisma {

@@ -6,7 +6,7 @@ import { validateObject } from '@/utils';
 import { findStudentByEmail, findStudentByIdentification } from '@/services/student-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { Student } from '@prisma/client';
+import { Student } from '@/generated/prisma/client';
 
 type BatchError = {
     index: number;

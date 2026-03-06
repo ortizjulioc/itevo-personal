@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { CashBox } from "@prisma/client";
+import { CashBox } from '@/generated/prisma/client';
 
 export interface CashBoxResponse {
   cashBoxes: CashBoxWithBranch[];

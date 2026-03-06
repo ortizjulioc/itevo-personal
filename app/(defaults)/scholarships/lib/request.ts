@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { Scholarship } from '@prisma/client';
+import { Scholarship } from '@/generated/prisma/client';
 
 export const createScholarship = async (scholarship: Scholarship) => {
     return await apiRequest.post<Scholarship>('/scholarschips', scholarship);

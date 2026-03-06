@@ -8,7 +8,7 @@ import { createNcfRange } from '../../../libs/request';
 import { NCF_TYPES } from '@/constants/ncfType.constant';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { ncfTypeToCode } from '@/utils/ncf';
-import { NcfType } from '@prisma/client';
+import { NcfType } from '@/generated/prisma/client';
 
 export default function CreateNcfRangeForm() {
     const route = useRouter();

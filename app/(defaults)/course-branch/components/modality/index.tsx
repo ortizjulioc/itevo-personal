@@ -1,4 +1,4 @@
-import { Modality } from "@prisma/client";
+import { Modality } from '@/generated/prisma/client';
 
 interface ModalityTagProps {
   modality: Modality;

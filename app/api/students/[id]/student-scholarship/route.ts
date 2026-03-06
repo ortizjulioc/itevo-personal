@@ -1,4 +1,4 @@
-import { Scholarship } from '@prisma/client';
+import { Scholarship } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 

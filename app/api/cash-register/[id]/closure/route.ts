@@ -5,7 +5,7 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { findCashRegisterById, getCashRegisterInvoicesSummary, getCashRegisterMovementSummary } from '@/services/cash-register-service';
 import { z } from 'zod';
 import { Prisma } from '@/utils/lib/prisma';
-import { CashRegisterStatus } from '@prisma/client';
+import { CashRegisterStatus } from '@/generated/prisma/client';
 
 const CreateClosureSchema = z.object({
   cashBreakdown: z.object({

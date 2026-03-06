@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik';
 import { usePathname, useRouter } from 'next/navigation';
 import { confirmDialog, openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { CourseBranch } from '@prisma/client';
+import { CourseBranch } from '@/generated/prisma/client';
 import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch, updateCourseBranch } from '../../../lib/request';
 import { Tab } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';

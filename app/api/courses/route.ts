@@ -4,7 +4,7 @@ import { getCourses, createCourse, findCourseByCode, addPrerequisite } from "@/s
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
 import { Prisma } from "@/utils/lib/prisma";
-import { Course } from "@prisma/client";
+import { Course } from '@/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
     try {

@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 type AccountPayableByCourseBranchIdParams = {
     courseBranchId: string;

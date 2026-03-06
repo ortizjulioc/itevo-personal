@@ -1,7 +1,7 @@
 import { getLastInvoice, createInvoice, InvoiceCreateDataType, findInvoices } from '@/services/invoice-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { InvoiceStatus, NcfType } from '@prisma/client';
+import { InvoiceStatus, NcfType } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Tipo para los datos de entrada del endpoint

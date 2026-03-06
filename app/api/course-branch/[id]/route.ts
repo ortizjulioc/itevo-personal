@@ -3,7 +3,7 @@ import { findCourseBranchById, updateCourseBranchById, deleteCourseBranchById } 
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@/generated/prisma/client';
 import { COURSE_BRANCH_STATUS } from '@/constants/status.constant';
 
 // Obtener courseBranch por ID

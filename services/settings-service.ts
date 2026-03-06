@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PrismaClient, Prisma as PrismaTypes, } from '@prisma/client';
+import { PrismaClient, Prisma as PrismaTypes, } from '@/generated/prisma/client';
 const bcrypt = require('bcrypt');
 
 export const getSettings = async (

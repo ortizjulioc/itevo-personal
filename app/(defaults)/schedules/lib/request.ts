@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import { Schedule } from "@prisma/client";
+import { Schedule } from '@/generated/prisma/client';
 
 type ScheduleToCreate = Omit<Schedule, 'id' | 'createdAt'| 'updatedAt' | 'deleted'>;
 

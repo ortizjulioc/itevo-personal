@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { updatePromotion } from '../../../lib/request';
-import type { Promotion } from '@prisma/client';
+import type { Promotion } from '@/generated/prisma/client';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 
 export default function UpdatePromotionForm({ initialValues }: { initialValues: Promotion }) {

@@ -5,7 +5,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { CourseBranch, Enrollment } from '@prisma/client';
+import { CourseBranch, Enrollment } from '@/generated/prisma/client';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { updateEnrollment } from '../../../lib/request';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { AccountPayable, CashMovement as CashMovementPrima, PayablePayment, Teacher, User } from "@prisma/client";
+import type { AccountPayable, CashMovement as CashMovementPrima, PayablePayment, Teacher, User } from '@/generated/prisma/client';
 
 
 export interface CashMovement extends CashMovementPrima {

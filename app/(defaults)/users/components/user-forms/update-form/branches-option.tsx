@@ -1,6 +1,6 @@
 
 import classNames from "classnames";
-import { Branch } from "@prisma/client";
+import { Branch } from '@/generated/prisma/client';
 import { Switcher } from "@/components/ui";
 import RolesOptions from "./roles-options";
 

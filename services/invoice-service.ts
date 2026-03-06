@@ -14,7 +14,7 @@ import {
     User,
     Prisma as PrismaTypes,
     CashRegister
-} from "@prisma/client";
+} from '@/generated/prisma/client';
 const USE_NCF = false;
 export interface InvoiceWithItems extends Invoice {
     items: InvoiceItem[];

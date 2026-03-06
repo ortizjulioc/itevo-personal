@@ -5,7 +5,7 @@ import { UpdateUserForm } from "../components/user-forms";
 import { useFetchUserById, UserWithBranchesAndRoles } from "../lib/use-fetch-users";
 import { useEffect } from "react";
 import useFetchRole from "../lib/use-fetch-roles";
-import { Role } from "@prisma/client";
+import { Role } from '@/generated/prisma/client';
 import { AssingRole, RemoveRole } from "../lib/request";
 import { openNotification } from "@/utils";
 import { UserContext } from "@/context/user";

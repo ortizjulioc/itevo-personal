@@ -4,7 +4,7 @@ import React from 'react';
 import { getFormattedDate } from '@/utils/date';
 import { CourseBranchWithRelations } from '@/@types/course-branch';
 import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
-import { CourseBranchStatus } from '@prisma/client';
+import { CourseBranchStatus } from '@/generated/prisma/client';
 import { formatSchedule } from '@/utils/schedule';
 
 const modalities = {

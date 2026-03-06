@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { MODALITIES } from '@/constants/modality.constant';
 import { Select } from '@/components/ui';
 import ModalityTag from '../modality';
-import { Modality } from '@prisma/client';
+import { Modality } from '@/generated/prisma/client';
 
 
 interface SelectOption {

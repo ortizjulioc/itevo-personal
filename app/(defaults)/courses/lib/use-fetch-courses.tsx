@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Course } from "@prisma/client";
+import { Course } from '@/generated/prisma/client';
 
 export interface CourseResponse {
   courses: Course[];

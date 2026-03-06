@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { createDisbursement } from '../../lib/cash-register/disbursement-request';
 import { openNotification } from '@/utils';
-import { CashMovementReferenceType, CashMovementType } from '@prisma/client';
+import { CashMovementReferenceType, CashMovementType } from '@/generated/prisma/client';
 import { IoMdPrint } from 'react-icons/io';
 import PrintCustomDisbursement, { printCustomDisbursement } from '@/components/common/print/custom-disbursement';
 import { CashMovementResponse } from '@/@types/cash-register';

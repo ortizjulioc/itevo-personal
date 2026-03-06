@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import type { CashBox } from '@prisma/client';
+import type { CashBox } from '@/generated/prisma/client';
 import { updateCashBox } from '../../../lib/request';
 
 

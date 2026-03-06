@@ -2,7 +2,7 @@ import { findCourseBranchById, updatePaymentPlanById } from "@/services/course-b
 import { validateObject } from "@/utils";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
-import { Prisma as PrismaClient } from "@prisma/client";
+import { Prisma as PrismaClient } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from "next/server";
 
 type PaymentPlanBody = PrismaClient.CourseBranchPaymentPlanCreateInput;

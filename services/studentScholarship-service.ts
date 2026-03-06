@@ -1,7 +1,7 @@
 import 'server-only';
-import { StudentScholarship as PrismaStudentScholarship } from '@prisma/client';
+import { StudentScholarship as PrismaStudentScholarship } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as prismaTypes } from '@prisma/client';
+import { Prisma as prismaTypes } from '@/generated/prisma/client';
 
 interface StudentScholarship extends Omit<PrismaStudentScholarship, 'id' | 'updatedAt' | 'createAt' | 'deleted'> {}
 

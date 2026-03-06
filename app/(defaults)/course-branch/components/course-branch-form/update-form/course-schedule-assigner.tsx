@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Tooltip from '@/components/ui/tooltip';
 import { convertTimeFrom24To12Format, getHoursDifferenceText } from '@/utils/date';
-import { Schedule } from '@prisma/client';
+import { Schedule } from '@/generated/prisma/client';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 
 interface CourseScheduleAssignerProps {

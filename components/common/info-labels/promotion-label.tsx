@@ -1,4 +1,4 @@
-import { Promotion } from '@prisma/client';
+import { Promotion } from '@/generated/prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 

@@ -10,7 +10,7 @@ import PrerequisitesFields from '../prerrequisites-field';
 import { CourseWithPrerequisites } from '../../../lib/use-fetch-courses';
 import StickyFooter from '@/components/common/sticky-footer';
 import { assignPrerequisiteToCourseBranch, unassignPrerequisiteToCourseBranch } from '@/app/(defaults)/course-branch/lib/request';
-import { Course } from '@prisma/client';
+import { Course } from '@/generated/prisma/client';
 import { useState } from 'react';
 
 

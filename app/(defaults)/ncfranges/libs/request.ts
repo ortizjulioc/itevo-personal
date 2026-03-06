@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import type { NcfRange } from "@prisma/client";
+import type { NcfRange } from '@/generated/prisma/client';
 
 export interface NcfRangeResponse {
     ncfRanges: NcfRange[];

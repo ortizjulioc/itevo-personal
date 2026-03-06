@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { CourseBranch, Promotion } from '@prisma/client';
+import { CourseBranch, Promotion } from '@/generated/prisma/client';
 
 export const createCourseBranch = async (courseBranch: CourseBranch) => {
     return await apiRequest.post<CourseBranch>('/course-branch', courseBranch);

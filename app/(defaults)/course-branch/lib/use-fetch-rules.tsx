@@ -1,5 +1,5 @@
 'use client';
-import { CourseBranchRules } from "@prisma/client";
+import { CourseBranchRules } from '@/generated/prisma/client';
 import { useEffect, useState } from "react";
 import apiRequest from "@/utils/lib/api-request/request";
 

@@ -1,4 +1,4 @@
-import { Teacher } from '@prisma/client';
+import { Teacher } from '@/generated/prisma/client';
 import React, { useEffect, useState } from 'react'
 import apiRequest from '@/utils/lib/api-request/request';
 

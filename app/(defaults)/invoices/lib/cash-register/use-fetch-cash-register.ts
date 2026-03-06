@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashBox, CashRegister as CashRegisterPrima, User } from "@prisma/client";
+import type { CashBox, CashRegister as CashRegisterPrima, User } from '@/generated/prisma/client';
 import { getSession } from 'next-auth/react';
 
 

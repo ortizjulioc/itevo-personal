@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from '@prisma/client';
+import { Prisma as PrismaTypes } from '@/generated/prisma/client';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 import { getServerSession } from 'next-auth';
 

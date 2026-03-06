@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { Teacher } from '@prisma/client';
+import { Teacher } from '@/generated/prisma/client';
 
 export const createTeacher = async (teacher: Teacher) => {
   return await apiRequest.post<Teacher>('/teachers', teacher);

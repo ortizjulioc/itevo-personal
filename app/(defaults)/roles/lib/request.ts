@@ -1,5 +1,5 @@
 import apiRequest from "@/utils/lib/api-request/request";
-import { Role } from "@prisma/client";
+import { Role } from '@/generated/prisma/client';
 
 export interface RoleResponse {
     roles: Role[];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Branch as PrismaBranch, Role, User } from "@prisma/client";
+import { Branch as PrismaBranch, Role, User } from '@/generated/prisma/client';
 
 export interface UserResponse {
     users: User[];

@@ -11,7 +11,7 @@ import ViewTitle from '@/components/common/ViewTitle';
 import Swal from 'sweetalert2';
 import StickyFooter from '@/components/common/sticky-footer';
 import { INVOICE_STATUS_OPTIONS, PAYMENT_METHODS_OPTIONS } from '@/constants/invoice.constant';
-import { InvoiceStatus } from '@prisma/client';
+import { InvoiceStatus } from '@/generated/prisma/client';
 
 const GeneralSalesReport = () => {
   const [loading, setLoading] = useState(false);

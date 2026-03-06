@@ -1,6 +1,6 @@
 import React from 'react';
 import Select, { StylesConfig } from 'react-select';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { GroupBase } from 'react-select';
 import StatusPayment from '@/components/common/info-labels/status/status-payment';
 

@@ -6,7 +6,7 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType } from '@prisma/client';
+import { InvoiceItemType } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 

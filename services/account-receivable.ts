@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { AccountReceivable, PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { AccountReceivable, PaymentStatus, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 type processReceivablePaymentProps = {
     unitPrice: number;
@@ -318,7 +318,7 @@ export const changeAccountReceivableStatus = async (id: string, status: PaymentS
     });
 };
 
-import { EnrollmentStatus, ScholarshipType } from '@prisma/client';
+import { EnrollmentStatus, ScholarshipType } from '@/generated/prisma/client';
 import { addDaysToDate, getNextDayOfWeek } from '@/utils/date';
 import { addMonths } from 'date-fns';
 

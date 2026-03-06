@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@/generated/prisma/client';
 
 /**
  * Formatea y devuelve un mensaje de error detallado.

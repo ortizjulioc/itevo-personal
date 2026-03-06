@@ -3,7 +3,7 @@ import { validateObject } from '@/utils';
 import { getNcfRanges, createNcfRange } from '@/services/ncf-range-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { NcfType } from '@prisma/client';
+import { NcfType } from '@/generated/prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 

@@ -12,7 +12,7 @@ import { base64ToUint8Array, validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { Prisma } from '@/utils/lib/prisma';
-import { IdentificationType } from '@prisma/client';
+import { IdentificationType } from '@/generated/prisma/client';
 
 // Obtener estudiante por ID
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

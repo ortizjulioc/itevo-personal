@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { User } from '@prisma/client';
+import { User } from '@/generated/prisma/client';
 
 export interface UserResponse {
     users: User[];

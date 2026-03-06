@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
 import { FormatPatterInput } from '@/components/common';
-import { Student } from '@prisma/client';
+import { Student } from '@/generated/prisma/client';
 import { updateStudent } from '../../../lib/request';
 import CaptureFingerPrint from '@/components/common/finger-print/capture-finger-print';
 import MultiPhoneInput from '@/components/common/multi-phone-input';

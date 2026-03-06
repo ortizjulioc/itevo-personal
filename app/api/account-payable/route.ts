@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { getAccountsPayable } from '@/services/account-payable';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {

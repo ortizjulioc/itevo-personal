@@ -1,4 +1,4 @@
-import { IdentificationType } from "@prisma/client";
+import { IdentificationType } from '@/generated/prisma/client';
 
 export const formatPhoneNumber = (phone?: string | null): string => {
   // Si no hay número de teléfono, retornamos un string vacío

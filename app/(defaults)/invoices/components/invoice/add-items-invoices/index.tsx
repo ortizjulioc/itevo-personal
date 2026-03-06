@@ -2,7 +2,7 @@
 import { Button, Input } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
-import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
+import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@/generated/prisma/client';
 import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';

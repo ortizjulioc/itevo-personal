@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Setting } from "@prisma/client";
+import { Setting } from '@/generated/prisma/client';
 
 export interface SettingResponse {
     settings: Setting; // 👈 ya no es un array

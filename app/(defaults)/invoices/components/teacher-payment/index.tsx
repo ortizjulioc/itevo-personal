@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation'
 import CourseBranchLabel from '@/components/common/info-labels/course-branch-label'
 import { useRouter } from 'next/navigation'
 import { GenericSkeleton } from '@/components/common/Skeleton'
-import { Teacher } from '@prisma/client'
+import { Teacher } from '@/generated/prisma/client'
 import { HiX } from 'react-icons/hi'
 interface SelectTeacherType {
     value: string

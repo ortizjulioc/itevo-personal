@@ -13,7 +13,7 @@ import IconLogout from '@/components/icon/icon-logout';
 import { usePathname } from 'next/navigation';
 import { IconSettings } from '../icon';
 import { signOut } from 'next-auth/react';
-import { Role } from '@prisma/client';
+import { Role } from '@/generated/prisma/client';
 import Avatar from '../common/Avatar';
 import { getInitials } from '@/utils';
 import { ADMIN } from '@/constants/role.constant';

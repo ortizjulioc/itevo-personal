@@ -11,7 +11,7 @@ import TeacherLabel from '@/components/common/info-labels/teacher-label';
 // import { useURLSearchParams } from '@/utils/hooks';
 // import useFetchcourses from '@/app/(defaults)/courses/lib/use-fetch-courses';
 import { useCourseBranch } from './course-branch-provider';
-import { Course, CourseBranchStatus } from '@prisma/client';
+import { Course, CourseBranchStatus } from '@/generated/prisma/client';
 import { MODALITIES } from '@/constants/modality.constant';
 import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
 import { getPaymentPlan } from '../../../lib/request';

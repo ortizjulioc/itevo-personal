@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { AttendanceStatus, Prisma as PrismaTypes } from '@prisma/client';
+import { AttendanceStatus, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 // Obtener todos los registros de asistencia con búsqueda por courseBranchId, paginación y conteo total
 export async function getAttendanceRecords(filter: {

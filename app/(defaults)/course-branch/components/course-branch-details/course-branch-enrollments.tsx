@@ -7,7 +7,7 @@ import { ENROLLMENT_STATUS } from "@/constants/enrollment.status.constant";
 import useFetchEnrollments from "@/app/(defaults)/enrollments/lib/use-fetch-enrollments";
 import { Pagination } from "@/components/ui";
 import StatusEnrollment from "@/components/common/info-labels/status/status-enrollment";
-import { EnrollmentStatus } from "@prisma/client";
+import { EnrollmentStatus } from '@/generated/prisma/client';
 import { getFormattedDateTime } from "@/utils/date";
 import Avatar from "@/components/common/Avatar";
 import OptionalInfo from "@/components/common/optional-info";

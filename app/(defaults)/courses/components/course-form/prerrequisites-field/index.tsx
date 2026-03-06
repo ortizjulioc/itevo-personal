@@ -3,7 +3,7 @@ import { SearchInput } from '@/components/common';
 import { useURLSearchParams } from '@/utils/hooks';
 import Tooltip from '@/components/ui/tooltip';
 import { TbX } from 'react-icons/tb';
-import { Course } from '@prisma/client';
+import { Course } from '@/generated/prisma/client';
 import useFetchcourses from '../../../lib/use-fetch-courses';
 
 interface ScheduleAssignmentProps {

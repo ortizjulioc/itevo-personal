@@ -6,7 +6,7 @@ import { updateProductById } from "@/services/product-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
-import { InvoiceItemType, InvoiceStatus } from "@prisma/client";
+import { InvoiceItemType, InvoiceStatus } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Role, Student } from "@prisma/client";
+import { Role, Student } from '@/generated/prisma/client';
 
 export interface StudentResponse {
   students: Student[];

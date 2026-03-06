@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Scholarship } from "@prisma/client";
+import { Scholarship } from '@/generated/prisma/client';
 
 export interface ScholarshipResponse {
     data: Scholarship[];

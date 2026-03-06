@@ -1,6 +1,6 @@
 'use client';
 
-import { Branch, Role } from '@prisma/client';
+import { Branch, Role } from '@/generated/prisma/client';
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Dropdown from '@/components/dropdown';

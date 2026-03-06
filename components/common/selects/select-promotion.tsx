@@ -1,6 +1,6 @@
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState} from 'react';
-import { Promotion } from '@prisma/client';
+import { Promotion } from '@/generated/prisma/client';
 import Select from '@/components/ui/select';
 import AsyncSelect from 'react-select/async';
 import { GroupBase } from 'react-select';

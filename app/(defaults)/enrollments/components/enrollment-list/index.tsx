@@ -8,7 +8,7 @@ import Skeleton from "@/components/common/Skeleton";
 import { deleteEnrollment, updateEnrollment } from "../../lib/request";
 import { getFormattedDate } from "@/utils/date";
 import SelectEnrollmentStatus from "./select-status";
-import { EnrollmentStatus } from "@prisma/client";
+import { EnrollmentStatus } from '@/generated/prisma/client';
 import { formatScheduleList } from "@/utils/schedule";
 import { useState } from "react";
 

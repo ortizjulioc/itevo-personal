@@ -7,7 +7,7 @@ import { AccountPayableWithRelations } from '@/@types/accounts-payables';
 import Link from 'next/link';
 import Avatar from '@/components/common/Avatar';
 import useFetchAccountsPayable from '../../../invoices/lib/accounts-payable/use-fetch-accounts-payable';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import OptionalInfo from '@/components/common/optional-info';
 
 type AccountsPayableListProps = {

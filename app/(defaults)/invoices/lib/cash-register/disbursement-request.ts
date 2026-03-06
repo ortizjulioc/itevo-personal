@@ -1,6 +1,6 @@
 import { CashMovementResponse } from "@/@types/cash-register";
 import apiRequest from "@/utils/lib/api-request/request";
-import type { CashMovement } from "@prisma/client";
+import type { CashMovement } from '@/generated/prisma/client';
 
 export interface CreateDisbursementInput {
     amount: number;

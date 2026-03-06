@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { cancelAccountReceivableById, findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 
 // Obtener una cuenta por cobrar por ID

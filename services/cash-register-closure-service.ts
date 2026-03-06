@@ -1,6 +1,6 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 export const getCashRegisterClosureByCashRegisterId = async (
   cashRegisterId: string,

@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import { CourseBranchStatus } from '@prisma/client';
+import { CourseBranchStatus } from '@/generated/prisma/client';
 import { GroupBase } from 'react-select';
 import StatusCourseBranch from '@/components/common/info-labels/status/status-course-branch';
 

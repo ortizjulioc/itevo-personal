@@ -1,5 +1,5 @@
 import Tooltip from '@/components/ui/tooltip'
-import { Invoice } from '@prisma/client'
+import { Invoice } from '@/generated/prisma/client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'

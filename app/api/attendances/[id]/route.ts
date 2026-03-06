@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateObject } from '@/utils';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { Attendance } from '@prisma/client';
+import { Attendance } from '@/generated/prisma/client';
 import { getAttendanceRecords, createAttendanceRecord, findAttendanceRecordById, updateAttendanceRecordById, deleteAttendanceRecordById } from '@/services/attendance-service';
 import { findEnrollmentById } from '@/services/enrollment-service';
 import { findCourseBranchById } from '@/services/course-branch-service';

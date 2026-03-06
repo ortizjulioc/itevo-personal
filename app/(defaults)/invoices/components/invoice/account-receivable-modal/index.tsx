@@ -1,4 +1,4 @@
-import { AccountReceivable, InvoiceItem } from '@prisma/client';
+import { AccountReceivable, InvoiceItem } from '@/generated/prisma/client';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import StudentLabel from '@/components/common/info-labels/student-label';

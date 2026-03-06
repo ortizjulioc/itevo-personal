@@ -7,7 +7,7 @@ import { createValidationSchema, initialValues } from '../form.config';
 
 import { createCashBox } from '../../../lib/request';
 import { useSession } from 'next-auth/react';
-import { Branch, Role } from '@prisma/client';
+import { Branch, Role } from '@/generated/prisma/client';
 
 
 

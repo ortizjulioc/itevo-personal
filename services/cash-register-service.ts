@@ -1,7 +1,7 @@
 import 'server-only';
-import { CashRegister as PrismaCashRegister, CashRegisterStatus, InvoiceStatus, CashMovementReferenceType } from "@prisma/client";
+import { CashRegister as PrismaCashRegister, CashRegisterStatus, InvoiceStatus, CashMovementReferenceType } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
-import { Prisma as PrismaTypes } from '@prisma/client';
+import { Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 export type CashRegisterCreateInput = Omit<
   PrismaCashRegister,

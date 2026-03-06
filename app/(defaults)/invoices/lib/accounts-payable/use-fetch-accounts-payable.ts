@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from '@/utils/lib/api-request/request';
-import type { AccountPayable, PayableEarning, PayablePayment } from '@prisma/client';
+import type { AccountPayable, PayableEarning, PayablePayment } from '@/generated/prisma/client';
 import { AccountPayableWithRelations } from '@/@types/accounts-payables';
 
 export interface AccountsPayableResponse {

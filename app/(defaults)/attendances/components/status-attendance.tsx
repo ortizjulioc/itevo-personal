@@ -1,4 +1,4 @@
-import { AttendanceStatus } from '@prisma/client';
+import { AttendanceStatus } from '@/generated/prisma/client';
 import React from 'react';
 import { TbPointFilled } from 'react-icons/tb';
 

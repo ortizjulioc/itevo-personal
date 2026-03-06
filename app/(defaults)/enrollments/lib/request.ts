@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { Enrollment } from '@prisma/client';
+import { Enrollment } from '@/generated/prisma/client';
 
 export const createEnrollment = async (enrollment: Enrollment) => {
   return await apiRequest.post<Enrollment>('/enrollments', enrollment);

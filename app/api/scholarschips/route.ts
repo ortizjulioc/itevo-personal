@@ -4,7 +4,7 @@ import { getScholarships, createScholarship } from '@/services/scholarship-servi
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 
-import { ScholarshipType } from '@prisma/client';
+import { ScholarshipType } from '@/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
     try {

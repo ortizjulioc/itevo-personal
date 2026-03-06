@@ -1,5 +1,5 @@
 import apiRequest from '@/utils/lib/api-request/request';
-import { Holiday } from '@prisma/client';
+import { Holiday } from '@/generated/prisma/client';
 
 export const createHoliday = async (holiday: Holiday) => {
   return await apiRequest.post<Holiday>('/holidays', holiday);

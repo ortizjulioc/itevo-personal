@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
 import { updateValidationSchema } from '../form.config';
-import { Holiday } from '@prisma/client';
+import { Holiday } from '@/generated/prisma/client';
 import { updateHoliday } from '../../../lib/request';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 

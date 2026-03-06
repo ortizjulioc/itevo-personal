@@ -6,7 +6,7 @@ import SelectTeacher, { SelectTeacherType } from "@/components/common/selects/se
 import SelectCourse, { SelectCourseType } from "@/components/common/selects/select-course";
 import { CreateCourseBranchFormType } from "../form.config";
 import { useSession } from 'next-auth/react';
-import { Branch, Role } from "@prisma/client";
+import { Branch, Role } from '@/generated/prisma/client';
 import { ADMIN } from "@/constants/role.constant";
 import ModalCreateCourse from "../update-form/modal-create-course";
 import { useState } from "react";

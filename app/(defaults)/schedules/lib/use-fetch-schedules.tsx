@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Schedule } from "@prisma/client";
+import { Schedule } from '@/generated/prisma/client';
 
 export interface ScheduleResponse {
     schedules: Schedule[];

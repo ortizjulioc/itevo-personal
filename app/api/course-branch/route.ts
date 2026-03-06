@@ -3,7 +3,7 @@ import { validateObject } from '@/utils';
 import { getCourseBranch, createCourseBranch, addPaymentPlanToCourseBranch } from '@/services/course-branch-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
-import { CourseBranchStatus, Modality } from '@prisma/client';
+import { CourseBranchStatus, Modality } from '@/generated/prisma/client';
 import { findCourseById } from '@/services/course-service';
 import { getSettings } from '@/services/settings-service';
 

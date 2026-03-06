@@ -9,7 +9,7 @@ import useFetchNcfRanges from "../../libs/use-fetch-nfcranges";
 import { deleteNcfRange } from "../../libs/request";
 import NcfStatus from "./NcfStatus";
 import { getFormattedDate } from "@/utils/date";
-import { NcfType } from "@prisma/client";
+import { NcfType } from '@/generated/prisma/client';
 import OptionalInfo from "@/components/common/optional-info";
 
 const ncfTypeToCode: Record<NcfType, string> = {
