@@ -1,9 +1,20 @@
+import 'dotenv/config';
 const fs = require("fs");
 const path = require("path");
-const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
+import { PrismaClient } from '../generated/prisma/client'; // Tu ruta de output
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import mariadb from 'mariadb';
 
-const prisma = new PrismaClient();
+const pool = mariadb.createPool({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    connectionLimit: 5,
+});
+const adapter = new PrismaMariaDb(pool);
+const prisma = new PrismaClient({ adapter });
 
 // 📌 Cargar el archivo settings.json
 const settingsPath = path.join(__dirname, "../settings.json");
@@ -11,6 +22,16 @@ const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
 
 async function main() {
     console.log("🔹 Iniciando seed...");
+
+    if (!process.env.DATABASE_URL) {
+        console.error("❌ Error: DATABASE_URL no está definido.");
+        process.exit(1);
+    }
+
+    if (!settings) {
+        console.error("❌ Error: El archivo settings.json no existe.");
+        process.exit(1);
+    }
 
     // 🔹 Crear configuración de la empresa
     let setting = await prisma.setting.findFirst();
@@ -89,7 +110,7 @@ async function main() {
             // 🔹 Asignar roles y sucursal al usuario
             // Si el usuario tiene el rol super_admin o si tiene allRoles: true, asignar todos los roles
             const shouldAssignAllRoles = userData.role === "super_admin" || userData.allRoles === true;
-            
+
             if (shouldAssignAllRoles) {
                 // Obtener todos los roles disponibles
                 const allRoles = await prisma.role.findMany({
