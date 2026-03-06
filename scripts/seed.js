@@ -1,10 +1,14 @@
 import 'dotenv/config';
-const fs = require("fs");
-const path = require("path");
-const bcrypt = require("bcrypt");
-import { PrismaClient } from '../generated/prisma/client'; // Tu ruta de output
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import bcrypt from "bcrypt";
+import { PrismaClient } from '../generated/prisma/index.js'; // Tu ruta de output
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import mariadb from 'mariadb';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const pool = mariadb.createPool({
     host: process.env.DATABASE_HOST,
