@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Definir la ruta donde se guardará la imagen
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'logo');
+    const uploadDir = join(process.cwd(), 'uploads', 'logo');
     const fileName = `${Date.now()}-${file.name}`;
     const filePath = join(uploadDir, fileName);
 
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
     // Guardar el archivo en el servidor
     await writeFile(filePath, buffer);
 
-    // Devolver la URL pública del archivo
-    const fileUrl = pathPosix.join('/uploads/logo', fileName);
+    // Devolver la URL pública del archivo mediante el nuevo endpoint dinámico
+    const fileUrl = pathPosix.join('/api/uploads/logo', fileName);
 
     // Aquí podrías guardar la URL en la base de datos si es necesario
     await changeLogo(fileUrl);
@@ -58,7 +58,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Construir la ruta del archivo
-    const filePath = join(process.cwd(), 'public/uploads/logo', fileName);
+    const filePath = join(process.cwd(), 'uploads/logo', fileName);
 
     // Verificar si el archivo existe y eliminarlo
     try {
