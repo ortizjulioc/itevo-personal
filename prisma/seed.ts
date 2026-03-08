@@ -3,6 +3,7 @@ import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import bcrypt from "bcrypt";
 
 const databaseUrlString = process.env.DATABASE_URL;
 if (!databaseUrlString) {
@@ -96,7 +97,7 @@ async function main() {
 
   // 4. Crear Usuarios y asignar relaciones (UserRoleBranch)
   for (const userData of data.users) {
-    // Upsert del usuario principal
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await prisma.user.upsert({
       where: { username: userData.username },
       update: {
@@ -104,7 +105,7 @@ async function main() {
         name: userData.name,
         lastName: userData.lastName,
         phone: userData.phone,
-        password: userData.password, // Considera usar bcrypt para hashear esto en un entorno real
+        password: hashedPassword,
       },
       create: {
         username: userData.username,
@@ -112,7 +113,7 @@ async function main() {
         name: userData.name,
         lastName: userData.lastName,
         phone: userData.phone,
-        password: userData.password,
+        password: hashedPassword,
       },
     });
 

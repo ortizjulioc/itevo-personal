@@ -6,7 +6,7 @@
         "dev": "next dev",
         "seed": "node scripts/seed.mjs",
         "build": "next build",
-        "start": "next start -p 1441",
+        "start": "next start -p 1442",
         "lint": "next lint",
         "prisma:sync": "npx prisma db push && npx prisma generate"
     },
