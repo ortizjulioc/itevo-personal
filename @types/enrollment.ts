@@ -1,4 +1,4 @@
-import { Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma as PrismaTypes } from "@/generated/prisma/client";
 
 export const enrollmentWithRelations = PrismaTypes.validator<PrismaTypes.EnrollmentDefaultArgs>()({
   include: {
