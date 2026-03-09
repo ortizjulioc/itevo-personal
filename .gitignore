@@ -39,7 +39,7 @@ next-env.d.ts
 settings.json
 
 # LOGS
-logs
+/logs
 
 # Uploaded files
 /public/uploads
