@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Role } from "@prisma/client";
+import { Role } from "@/generated/prisma/client";
 import { UserWithBranchesAndRoles } from "@/app/(defaults)/users/lib/use-fetch-users";
 
 interface UserContextType {

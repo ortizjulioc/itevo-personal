@@ -1,4 +1,4 @@
-import { Prisma as PrismaTypes } from '@prisma/client';
+import { Prisma as PrismaTypes } from '@/generated/prisma/client';
 
 export const accountReceivableWithRelations = PrismaTypes.validator<PrismaTypes.AccountReceivableDefaultArgs>()({
   select: {

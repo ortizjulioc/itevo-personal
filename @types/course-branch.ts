@@ -1,4 +1,4 @@
-import { Prisma as PrismaTypes, Schedule } from "@prisma/client";
+import { Prisma as PrismaTypes, Schedule } from "@/generated/prisma/client";
 
 export const courseBranchWithRelations = PrismaTypes.validator<PrismaTypes.CourseBranchDefaultArgs>()({
   include: {
