@@ -47,7 +47,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     paymentMethod: body.paymentMethod,
                     paymentDetails: body.paymentDetails || {},
                     isCredit,
-                    itbis: USE_NCF ? invoice.subtotal * 0.18 : invoice.itbis,
                 }, tx);
                 newInvoiceData = updatedInvoice;
                 // Si es crédito, crear cuenta por cobrar
@@ -77,7 +76,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     paymentMethod: body.paymentMethod,
                     paymentDetails: body.paymentDetails || {},
                     isCredit,
-                    itbis: USE_NCF ? invoice.subtotal * 0.18 : invoice.itbis,
                 }, tx);
                 newInvoiceData = updatedInvoice;
 
