@@ -47,3 +47,5 @@ settings.json
 /uploads
 
 /generated
+
+ecosystem.config.js
