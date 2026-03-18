@@ -8,7 +8,8 @@
         "build": "next build",
         "start": "next start -p 1442",
         "lint": "next lint",
-        "prisma:sync": "npx prisma db push && npx prisma generate"
+        "prisma:sync": "npx prisma db push && npx prisma generate",
+        "prisma:seed": "npx prisma db seed"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",
