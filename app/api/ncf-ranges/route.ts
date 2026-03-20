@@ -45,7 +45,6 @@ export async function POST(request: NextRequest) {
       'startSequence',
       'endSequence',
       'currentSequence',
-      'dueDate',
       'authorizationNumber',
     ]);
 

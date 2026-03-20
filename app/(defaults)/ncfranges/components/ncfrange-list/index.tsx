@@ -10,6 +10,7 @@ import { deleteNcfRange } from "../../libs/request";
 import NcfStatus from "./NcfStatus";
 import { getFormattedDate } from "@/utils/date";
 import { NcfType } from "@prisma/client";
+import OptionalInfo from "@/components/common/optional-info";
 
 const ncfTypeToCode: Record<NcfType, string> = {
     FACTURA_CREDITO_FISCAL: "01",
@@ -104,7 +105,9 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                                         <div className="whitespace-nowrap">{ncfRange.authorizationNumber}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{getFormattedDate(new Date(ncfRange.dueDate))}</div>
+                                        <div className="whitespace-nowrap">
+                                            {ncfRange.dueDate ? getFormattedDate(new Date(ncfRange.dueDate)) : <OptionalInfo message="No proporcionada" />}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">{`${ncfRange.prefix}${ncfTypeToCode[ncfRange.type]}${ncfRange.startSequence.toString().padStart(8, '0')}`}</div>
@@ -129,7 +132,7 @@ export default function NcfRangeList({ className, query = '' }: Props) {
                                                 <Button onClick={() => onDelete(ncfRange.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
                                             </Tooltip>
                                             <Tooltip title="Editar">
-                                                <Link href={`/NcfRanges/${ncfRange.id}`}>
+                                                <Link href={`/ncfranges/${ncfRange.id}`}>
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
                                                 </Link>
                                             </Tooltip>

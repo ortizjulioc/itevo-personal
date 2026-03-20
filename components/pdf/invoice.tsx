@@ -137,7 +137,14 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
           <Text>Factura No. {invoiceNumber}</Text>
           {isValidNCF(invoice.ncf) && <Text>NCF: {invoice.ncf}</Text>}
           <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
-          <Text>Estudiante: {student ? `${student.firstName || ''} ${student.lastName || ''}` : ''} </Text>
+          {student ? (
+            <Text>Estudiante: {student.firstName || ''} {student.lastName || ''}</Text>
+          ) : (paymentDetails as Record<string, any>)?.datosContribuyente ? (
+            <>
+              <Text>Cliente: {(paymentDetails as Record<string, any>).customerName || ''}</Text>
+              <Text>RNC/Cédula: {(paymentDetails as Record<string, any>).customerRnc || ''}</Text>
+            </>
+          ) : null}
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>
           <View style={styles.line} />
