@@ -7,7 +7,6 @@ import { getFormattedDateTime } from '@/utils/date';
 import TeacherPayment from '../../teacher-payment';
 import { useRouter, usePathname } from 'next/navigation';
 import { openNotification } from '@/utils';
-import AttendanceModal from '@/app/(defaults)/attendances/components/attendance-modal';
 import Swal from 'sweetalert2';
 import ModalCashRegisterClose from '@/app/(defaults)/cash-registers/components/modal-cash-register-close';
 import useFetchInvoices from '@/app/(defaults)/bills/lib/use-fetch-invoices';
@@ -36,7 +35,6 @@ export interface CashRegister {
 
 export default function CashRegisterDetails({ CashRegister }: { CashRegister: CashRegister }) {
     const [openModalTeacher, setOpenModalTeacher] = React.useState(false);
-    const [openModalAttendance, setOpenModalAttendance] = React.useState(false);
     const [openModalDisbursement, setOpenModalDisbursement] = React.useState(false);
     const { invoices, fetchInvoicesData } = useFetchInvoices('');
     const pathname = usePathname();
@@ -97,24 +95,6 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
                             >
                                 <div className="!min-w-[200px]">
                                     <ul className="divide-white-light dark:divide-white-light/10">
-                                        <li>
-                                            <button
-                                                type="button"
-                                                disabled={loadingAction !== null}
-                                                onClick={async () => {
-                                                    setLoadingAction('attendance');
-                                                    await new Promise((res) => setTimeout(res, 200));
-                                                    setOpenModalAttendance(true);
-                                                    setLoadingAction(null);
-                                                }}
-                                                className="dropdown-item w-full flex items-center gap-2"
-                                            >
-                                                {loadingAction === 'attendance' && (
-                                                    <span className="w-4 h-4 border-2 border-t-transparent border-blue-500 rounded-full animate-spin" />
-                                                )}
-                                                Registro de asistencia
-                                            </button>
-                                        </li>
                                         {/* <li>
                                             <button
                                                 type="button"
@@ -209,7 +189,6 @@ export default function CashRegisterDetails({ CashRegister }: { CashRegister: Ca
 
                     {/* Modales */}
                     <TeacherPayment setOpenModal={setOpenModalTeacher} openModal={openModalTeacher} />
-                    <AttendanceModal setOpenModal={setOpenModalAttendance} openModal={openModalAttendance} />
                     <DisbursementModal setOpenModal={setOpenModalDisbursement} openModal={openModalDisbursement} />
                     <ModalCashRegisterClose setOpenModal={setOpenModalClose} openModal={openModalClose} />
                     <CashMovementsDrawer open={openModalMovements} setOpen={setOpenModalMovements} cashRegisterId={CashRegister.id} />

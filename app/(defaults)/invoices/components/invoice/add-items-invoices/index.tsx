@@ -2,7 +2,7 @@
 import { Button, Input } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
-import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@prisma/client';
+import { InvoiceItemType, type Invoice, type InvoiceItem } from '@prisma/client';
 import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
@@ -14,38 +14,22 @@ import PrintInvoiceModal from '../print-invoice';
 import { Tab } from '@headlessui/react';
 import { Fragment } from 'react';
 
-import SelectStudent, { StudentSelect } from '@/components/common/selects/select-student';
-import apiRequest from '@/utils/lib/api-request/request';
-import AccountReceivableModal from '../account-receivable-modal';
 import { useInvoice } from '../../../[id]/bill/[billid]/invoice-provider';
-import { set } from 'lodash';
-import { HiOutlinePlusCircle } from 'react-icons/hi';
-import { InvoicebyId } from '../../../lib/invoice/use-fetch-cash-invoices';
+
 import { useFetchCashRegistersById } from '../../../lib/cash-register/use-fetch-cash-register';
 
-export interface AccountsReceivablesResponse {
-    accountsReceivable: AccountReceivable[];
-    totalAccountsReceivables: number;
-}
-
 export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegisterId }: { InvoiceId: string; fetchInvoiceData: (id: string) => Promise<void>; cashRegisterId: string }) {
-    const { id } = useParams();
-
-    const { loading, CashRegister } = useFetchCashRegistersById(cashRegisterId);
+    const route = useRouter();
     const { invoice, setInvoice } = useInvoice();
+    const { loading, CashRegister } = useFetchCashRegistersById(cashRegisterId);
 
     const quantityRef = useRef<HTMLInputElement>(null);
     const productRef = useRef<HTMLSelectElement>(null);
-    const route = useRouter();
     const [item, setItem] = useState<InvoiceItem | null>(null);
     const [itemLoading, setItemloading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [openPrintModal, setOpenPrintModal] = useState(false);
-    const [student, setStudent] = useState<string | null>(invoice?.studentId || null);
-    const [searchLoading, setSearchLoading] = useState(false);
-    const [accountReceivables, setAccountReceivables] = useState<AccountReceivable[] | null>(null);
-    const [openAccountReceivableModal, setOpenAccountReceivableModal] = useState(false);
 
     const commentRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -168,22 +152,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
                 if (resp.success) {
                     openNotification('success', 'Item eliminado correctamente');
                     await fetchInvoiceData(InvoiceId);
-
-                    console.log('item eliminado', item);
-
-                    setAccountReceivables((prev) => {
-                        if (!prev) return [];
-                        return prev.map((ar) =>
-                            ar.id === item.accountReceivableId
-                                ? {
-                                    ...ar,
-
-                                    AmountPaid: 0,
-                                    uiStatus: null,
-                                }
-                                : ar
-                        );
-                    });
                     return;
                 }
                 openNotification('error', resp.message);
@@ -191,54 +159,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
         );
 
         setItemloading(false);
-    };
-
-    const handleSearchAccountReceivables = async (studentId: string | null) => {
-        if (!studentId) {
-            openNotification('error', 'Por favor, selecciona un estudiante');
-            return;
-        }
-        setSearchLoading(true);
-        try {
-            const res = await apiRequest.get<AccountsReceivablesResponse>(`/accounts-receivable?studentId=${studentId}&status=PENDING&top=1000`);
-            if (!res.success) {
-                openNotification('error', res.message);
-                return;
-            }
-            const accounts = res.data?.accountsReceivable || [];
-            if (accounts) {
-                setAccountReceivables(accounts);
-            }
-        } catch (error) {
-            console.error('Error fetching accounts receivable:', error);
-            openNotification('error', 'Error al buscar cuentas por cobrar');
-        } finally {
-            setSearchLoading(false);
-        }
-    };
-    const onChangeStudent = async (selected: StudentSelect) => {
-        const studentId = selected?.value ?? null;
-        setStudent(studentId);
-
-        setInvoice((prev: InvoicebyId) => ({
-            ...prev!,
-            studentId: studentId,
-        }));
-
-        try {
-            const resp = await updateInvoice(InvoiceId, {
-                ...invoice,
-                studentId: studentId,
-            } as Invoice);
-            if (resp.success) {
-                openNotification('success', 'Estudiante encontrado correctamente');
-            }
-            await handleSearchAccountReceivables(studentId);
-            //setOpenAccountReceivableModal(true);
-        } catch (error) {
-            console.error('Error updating invoice with student:', error);
-            openNotification('error', 'Error al actualizar el estudiante en la factura');
-        }
     };
 
     const handleCancelInvoice = async () => {
@@ -262,15 +182,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
     };
 
     useEffect(() => {
-        if (invoice?.studentId) {
-            setStudent(invoice.studentId);
-            handleSearchAccountReceivables(invoice.studentId);
-        } else {
-            setStudent(null);
-        }
-    }, [invoice?.studentId]);
-
-    useEffect(() => {
         if (commentRef.current) {
             clearTimeout(commentRef.current);
         }
@@ -287,45 +198,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
         <div className="panel p-4">
             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-12">
                 <div className="col-span-12 md:col-span-8">
-                    <div className="mt-4 flex flex-col items-stretch gap-4 md:flex-row">
-                        <div className="w-full md:w-[calc(100%-220px)]">
-                            <SelectStudent
-                                value={student ?? undefined}
-                                loading={searchLoading}
-                                onChange={(selected: StudentSelect | null) => {
-                                    if (!selected) {
-                                        setStudent(null);
-                                        setInvoice((prev: InvoicebyId) => ({
-                                            ...prev!,
-                                            studentId: null,
-                                        }));
-                                        return;
-                                    }
-                                    onChangeStudent(selected);
-                                }}
-                                isDisabled={Boolean(student)}
-                            />
-                        </div>
-
-                        <div className="flex w-full items-center justify-start md:w-[220px]">
-                            {student ? (
-                                <Button
-                                    type="button"
-                                    color="primary"
-                                    className="w-full md:w-auto"
-                                    icon={<HiOutlinePlusCircle className="text-lg" />}
-                                    onClick={async () => {
-                                        setOpenAccountReceivableModal(true);
-                                    }}
-                                >
-                                    Agregar Pagos
-                                </Button>
-                            ) : (
-                                <div className="h-10" />
-                            )}
-                        </div>
-                    </div>
-
                     {/* Sección de Productos */}
                     <div className="mt-4 flex flex-col items-stretch gap-4 md:flex-row">
                         <div className="w-full md:w-[calc(100%-220px)]">
@@ -471,17 +343,6 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
                 returnedInvoice={Math.max(parseFloat((invoice.paymentDetails as any)?.receivedAmount || 0) - ((invoice?.subtotal ?? 0) + (invoice?.itbis ?? 0)), 0)}
                 openModal={openPrintModal}
                 setOpenModal={setOpenPrintModal}
-            />
-            <AccountReceivableModal
-                studentId={student ?? ''}
-                accountReceivables={accountReceivables ?? []}
-                openModal={openAccountReceivableModal}
-                handleAddItemsInvoice={handleAddItem}
-                setAccountsReceivables={setAccountReceivables}
-                setItem={setItem}
-                setOpenModal={(open) => {
-                    setOpenAccountReceivableModal(open);
-                }}
             />
         </div>
     );
