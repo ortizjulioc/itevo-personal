@@ -49,3 +49,4 @@ settings.json
 /generated
 
 ecosystem.config.js
+deply.sh
