@@ -54,9 +54,14 @@ export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClie
         }
 
         // Actualizar la secuencia en el rango
+        const isLimitReached = newSequence >= ncfRange.endSequence;
+
         await tx.ncfRange.update({
             where: { id: ncfRange.id },
-            data: { currentSequence: newSequence },
+            data: {
+                currentSequence: newSequence,
+                ...(isLimitReached && { isActive: false }),
+            },
         });
 
         return ncf; // NCF generado exitosamente
