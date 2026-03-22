@@ -11,7 +11,7 @@ export default function EditNcfRange({ params }: { params: Promise<{ id: string 
     const { loading, ncfRange } = useFetchNcfRangesById(id);
     return (
         <div>
-            <ViewTitle className='mb-6' title="Editar usuario" showBackPage />
+            <ViewTitle className='mb-6' title="Editar rango NCF" showBackPage />
 
             {loading && <FormSkeleton />}
             {ncfRange && <UpdateNcfRangeForm initialValues={ncfRange} />}

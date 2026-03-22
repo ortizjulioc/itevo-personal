@@ -32,7 +32,7 @@ export const updateValidationSchema = Yup.object().shape({
     }),
     dueDate: Yup.date().nullable(),
     authorizationNumber: Yup.string().required('El número de autorización es requerido'),
-
+    isActive: Yup.boolean(),
 });
 
 export const initialValues = {
@@ -42,4 +42,5 @@ export const initialValues = {
     endSequence: 0,
     dueDate: null,
     authorizationNumber: '',
+    isActive: true,
 };

@@ -88,7 +88,7 @@ export default function CreateNcfRangeForm() {
                         </div>
                         {values.startSequence !== undefined && values.endSequence !== undefined && Number(values.endSequence) > 0 && (
                             <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                                Cantidad de comprobantes a ingresar: {Math.max(0, Number(values.endSequence) - Number(values.startSequence))}
+                                Cantidad de comprobantes a ingresar: {Math.max(0, Number(values.endSequence) - Number(values.startSequence) + 1)}
                             </div>
                         )}
 

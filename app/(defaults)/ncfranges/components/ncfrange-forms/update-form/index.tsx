@@ -20,11 +20,13 @@ export default function UpdateNcfRangeForm({ initialValues }: { initialValues: N
     }));
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleSubmit = async (values: any) => {
+        const currentSequence = values.currentSequence > Number(values.startSequence) - 1 ? values.currentSequence : Number(values.startSequence) - 1;
 
         const valuesToSend = {
             ...values,
             startSequence: Number(values.startSequence),
             endSequence: Number(values.endSequence),
+            currentSequence: Number(currentSequence),
         };
 
         const resp = await updateNcfRange(initialValues.id, valuesToSend);
@@ -83,7 +85,7 @@ export default function UpdateNcfRangeForm({ initialValues }: { initialValues: N
                         </div>
                         {values.startSequence !== undefined && values.endSequence !== undefined && Number(values.endSequence) > 0 && (
                             <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                                Cantidad de comprobantes a ingresar: {Math.max(0, Number(values.endSequence) - Number(values.startSequence))}
+                                Cantidad de comprobantes a ingresar: {Math.max(0, Number(values.endSequence) - Number(values.startSequence) + 1)}
                             </div>
                         )}
 
@@ -98,6 +100,12 @@ export default function UpdateNcfRangeForm({ initialValues }: { initialValues: N
                                         onChange={(date) => form.setFieldValue('dueDate', extractDate(date))}
                                     />
                                 )}
+                            </Field>
+                        </FormItem>
+
+                        <FormItem name="isActive" label="" invalid={Boolean(errors.isActive && touched.isActive)} errorMessage={errors.isActive}>
+                            <Field type="checkbox" name="isActive" component={Checkbox}>
+                                Activo
                             </Field>
                         </FormItem>
 
