@@ -96,6 +96,8 @@ const PAYMENT_METHODS_OPTIONS = [
 
 export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, companyInfo: any, logo: Blob | null }) => {
   const { invoiceNumber, student, date, paymentDetails, paymentMethod, subtotal, itbis, items, user, comment } = invoice;
+  const customerName = paymentDetails?.customerName || '';
+  const customerRnc = paymentDetails?.customerRnc || '';
 
   const total = subtotal + itbis;
   const receivedAmount = parseFloat(paymentDetails?.receivedAmount || '0');
@@ -137,14 +139,11 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
           <Text>Factura No. {invoiceNumber}</Text>
           {isValidNCF(invoice.ncf) && <Text>NCF: {invoice.ncf}</Text>}
           <Text>Fecha: {getFormattedDateTime(new Date(date), { hour12: true })}</Text>
-          {student ? (
-            <Text>Estudiante: {student.firstName || ''} {student.lastName || ''}</Text>
-          ) : (paymentDetails as Record<string, any>)?.datosContribuyente ? (
-            <>
-              <Text>Cliente: {(paymentDetails as Record<string, any>).customerName || ''}</Text>
-              <Text>RNC/Cédula: {(paymentDetails as Record<string, any>).customerRnc || ''}</Text>
-            </>
-          ) : null}
+
+          {student && (<Text>Estudiante: {student.firstName || ''} {student.lastName || ''}</Text>)}
+          {(customerName) && (<Text>{student ? 'Cliente' : 'Estudiante'}: {customerName}</Text>)}
+          {(customerRnc) && (<Text>RNC/Cédula: {customerRnc}</Text>)}
+
           <View style={styles.line} />
           <Text style={{ textAlign: 'center' }}>FACTURA CONTADO</Text>
           <View style={styles.line} />

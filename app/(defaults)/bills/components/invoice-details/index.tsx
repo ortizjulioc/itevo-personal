@@ -65,8 +65,9 @@ export default function InvoiceDetails({ invoice, currentUser }: { invoice: any,
         reference: "Referencia de Tarjeta",
         TransferNumber: "Numero de Transferencia",
         bankName: "Nombre del Banco",
-        receivedAmount: "Monto Recibido"
-
+        receivedAmount: "Monto Recibido",
+        customerName: "Nombre del Cliente",
+        customerRnc: "RNC del Cliente"
     }
     // If cashier doesn't own this cash register, show access denied
     if (isCashier && !isOwnCashRegister) {
@@ -105,12 +106,16 @@ export default function InvoiceDetails({ invoice, currentUser }: { invoice: any,
                             <strong>Metodo de Pago:</strong> {invoice?.paymentMethod ? PAYMENT_METHODS[invoice.paymentMethod as keyof typeof PAYMENT_METHODS] : 'No disponible'}
                         </p>
                         {invoice?.paymentDetails &&
-                            Object.entries(invoice.paymentDetails).map(([key, value]) => (
-                                <p key={key}>
-                                    {' '}
-                                    <strong>{PAYMENT_PROPERTIES[key as keyof typeof PAYMENT_PROPERTIES]}:</strong> {String(value)}{' '}
-                                </p>
-                            ))}
+                            Object.entries(invoice.paymentDetails).map(([key, value]) => {
+                                if (key !== 'datosContribuyente') {
+                                    return (
+                                        <p key={key}>
+                                            {' '}
+                                            <strong>{PAYMENT_PROPERTIES[key as keyof typeof PAYMENT_PROPERTIES]}:</strong> {String(value)}{' '}
+                                        </p>
+                                    )
+                                }
+                            })}
                     </div>
                     <div className=" flex flex-col items-end text-lg  md:col-span-4">
                         <h3 className="mb-2 text-xl font-bold">Consumidores finales</h3>
