@@ -52,6 +52,10 @@ export default function StudentImport() {
             else if (lowerKey.includes('telefono') || lowerKey.includes('celular')) newRow.telefono = row[key];
             else if (lowerKey.includes('email') || lowerKey.includes('correo')) newRow.email = row[key];
             else if (lowerKey.includes('direccion')) newRow.direccion = row[key];
+            else if (lowerKey.includes('menor')) {
+              const val = row[key];
+              newRow.isMinor = val ? (String(val).toLowerCase() === 'si' || val === true || String(val) === '1') : false;
+            }
             else newRow[lowerKey] = row[key];
           });
           if (!newRow.nombres && row.nombres) newRow.nombres = row.nombres;
@@ -100,7 +104,7 @@ export default function StudentImport() {
 
   const downloadTemplate = () => {
     const headers = [
-      ["Nombres", "Apellidos", "Cedula", "Telefono", "Email", "Direccion"]
+      ["Nombres", "Apellidos", "Cedula", "Telefono", "Email", "Direccion", "Es menor"]
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(headers);
@@ -183,7 +187,8 @@ export default function StudentImport() {
                   <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Cedula</span>,
                   <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Telefono</span>,
                   <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Email</span>,
-                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Direccion</span>
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Direccion</span>,
+                  <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded ml-1">Es menor</span>
                 </li>
                 <li className="italic text-xs mt-2">Los encabezados no distinguen mayúsculas/minúsculas (ej. "Nombre", "nombre", "NOMBRE" son válidos).</li>
               </ul>
@@ -220,6 +225,7 @@ export default function StudentImport() {
                         <th className="p-3">Apellido</th>
                         <th className="p-3">Cédula</th>
                         <th className="p-3">Teléfono</th>
+                        <th className="p-3">Es Menor</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -229,6 +235,7 @@ export default function StudentImport() {
                           <td className="p-3">{row.apellidos || '-'}</td>
                           <td className="p-3">{normalizeIdentification(row.cedula) || <span className="text-gray-400 italic">Vacío/Inválido</span>}</td>
                           <td className="p-3">{normalizePhone(row.telefono) || <span className="text-gray-400 italic">Vacío/Inválido</span>}</td>
+                          <td className="p-3">{row.isMinor ? 'Sí' : 'No'}</td>
                         </tr>
                       ))}
                     </tbody>

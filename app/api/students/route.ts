@@ -73,6 +73,7 @@ export async function POST(request: Request) {
                 address: body.address.trim(),
                 phone: body.phone.trim(),
                 hasTakenCourses: body.hasTakenCourses,
+                isMinor: body.isMinor,
                 identificationType: body.identificationType ?? IdentificationType.CEDULA,
                 branch: { connect: { id: body.branchId } },
             }, prisma);

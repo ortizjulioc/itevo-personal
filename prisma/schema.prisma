@@ -110,6 +110,7 @@ model Student {
     phone              String?
     email              String?
     address            String?
+    isMinor            Boolean             @default(false) @map("is_minor")
     hasTakenCourses    Boolean             @default(false) @map("has_taken_courses")
     createdAt          DateTime            @default(now()) @map("created_at")
     updatedAt          DateTime            @updatedAt @map("updated_at")

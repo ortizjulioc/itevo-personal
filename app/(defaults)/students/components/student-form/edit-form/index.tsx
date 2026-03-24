@@ -53,6 +53,7 @@ export default function UpdateStudentForm({ initialValues }: Props) {
           identificationType: (initialValues.identificationType ?? 'CEDULA').toUpperCase(),
           identification: (initialValues.identification ?? '').toUpperCase(),
           phone: initialValues.phone ?? '',
+          isMinor: initialValues.isMinor ?? false,
         }}
         validationSchema={updateValidationSchema}
         onSubmit={handleSubmit}
@@ -194,12 +195,24 @@ export default function UpdateStudentForm({ initialValues }: Props) {
                 <Field type="email" name="email" component={Input} />
               </FormItem>
 
+              {/* Es menor */}
+              <FormItem
+                name="isMinor"
+                label=""
+                invalid={Boolean(errors.isMinor && touched.isMinor)}
+                errorMessage={errors.isMinor as string}
+              >
+                <Field type="checkbox" name="isMinor" component={Checkbox}>
+                  Es menor de edad
+                </Field>
+              </FormItem>
+
               {/* Ha tomado cursos */}
               <FormItem
                 name="hasTakenCourses"
                 label=""
                 invalid={Boolean(errors.hasTakenCourses && touched.hasTakenCourses)}
-                errorMessage={errors.hasTakenCourses}
+                errorMessage={errors.hasTakenCourses as string}
               >
                 <Field type="checkbox" name="hasTakenCourses" component={Checkbox}>
                   Ha tomado cursos anteriormente

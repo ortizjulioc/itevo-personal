@@ -69,6 +69,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     address: body.address.trim(),
                     phone: body.phone.trim(),
                     hasTakenCourses: body.hasTakenCourses,
+                    isMinor: body.isMinor,
                     branch: { connect: { id: body.branchId } },
                     identificationType: body.identificationType || IdentificationType.CEDULA,
                 },
