@@ -290,6 +290,7 @@ model Enrollment {
     courseBranchId String           @map("course_branch_id")
     enrollmentDate DateTime         @map("enrollment_date")
     status         EnrollmentStatus
+    notes          String?          @map("notes")
     createdAt      DateTime         @default(now()) @map("created_at")
     updatedAt      DateTime         @updatedAt @map("updated_at")
     courseBranch   CourseBranch     @relation(fields: [courseBranchId], references: [id])

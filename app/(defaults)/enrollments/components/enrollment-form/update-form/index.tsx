@@ -9,11 +9,9 @@ import { CourseBranch, Enrollment } from '@/generated/prisma/client';
 import DatePicker, { extractDate } from '@/components/ui/date-picker';
 import { updateEnrollment } from '../../../lib/request';
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
-import SelectCourseBranch, { } from '@/components/common/selects/select-course-branch';
+import SelectCourseBranch from '@/components/common/selects/select-course-branch';
 import SelectStudent from '@/components/common/selects/select-student';
 import StatusEnrollment, { EnrollmentStatus } from '@/components/common/info-labels/status/status-enrollment';
-
-
 
 interface OptionSelect {
     value: string;
@@ -30,17 +28,12 @@ export interface CourseBranchSelectOption {
     courseBranch?: CourseBranch;
 }
 
-
 export default function UpdateEnrollmentForm({ initialValues }: { initialValues: Enrollment }) {
     const route = useRouter();
-
-
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         setSubmitting(true);
         const data = { ...values };
-
-
 
         const resp = await updateEnrollment(initialValues.id, data);
 
@@ -59,8 +52,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
         { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} /> },
         { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} /> },
         { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} /> },
-    ]
-
+    ];
 
     return (
         <div className="panel">
@@ -86,7 +78,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                             />
                         </FormItem>
 
-                        <FormItem name='status' label='Estado' invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
+                        <FormItem name="status" label="Estado" invalid={Boolean(errors.status && touched.status)} errorMessage={errors.status}>
                             <Select
                                 name="status"
                                 options={statusOptions}
@@ -100,13 +92,19 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                             />
                         </FormItem>
 
+                        <FormItem
+                            name="enrollmentDate"
+                            label="Fecha de Inscripcion"
+                            invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)}
+                            errorMessage={errors.enrollmentDate ? String(errors.enrollmentDate) : undefined}
+                        >
+                            <DatePicker value={values.enrollmentDate} onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))} />
+                        </FormItem>
 
-                        <FormItem name="enrollmentDate" label="Fecha de Inscripcion" invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)} errorMessage={errors.enrollmentDate ? String(errors.enrollmentDate) : undefined}>
-                            <DatePicker
-
-                                value={values.enrollmentDate}
-                                onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))}
-                            />
+                        <FormItem name="notes" label="Notas" invalid={Boolean(errors.notes && touched.notes)} errorMessage={errors.notes}>
+                            <Field name="notes">
+                                {({ field }: any) => <Input {...field} textArea value={values.notes || ''} onChange={field.onChange} placeholder="Agregar notas sobre la inscripción..." rows={3} />}
+                            </Field>
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">

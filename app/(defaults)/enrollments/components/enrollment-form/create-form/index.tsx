@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Button, FormItem, Select } from '@/components/ui';
+import { Button, FormItem, Input, Select } from '@/components/ui';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { openNotification } from '@/utils';
@@ -33,7 +33,7 @@ interface statusOption {
     label: React.ReactElement;
 }
 
-export default function CreateEnrollmentForm({ courseBranchId, studentId }: { courseBranchId?: string, studentId?: string }) {
+export default function CreateEnrollmentForm({ courseBranchId, studentId }: { courseBranchId?: string; studentId?: string }) {
     const route = useRouter();
     const [modal, setModal] = useState<boolean>(false);
     const [scholarshipDrawer, setScholarshipDrawer] = useState<boolean>(false);
@@ -45,9 +45,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
 
     // Verificar si el usuario tiene permisos para asignar becas
     const userRoles = (session?.user as any)?.roles || [];
-    const canManageScholarships = userRoles.some((role: any) =>
-        [SUPER_ADMIN, GENERAL_ADMIN, ADMIN].includes(role.normalizedName)
-    );
+    const canManageScholarships = userRoles.some((role: any) => [SUPER_ADMIN, GENERAL_ADMIN, ADMIN].includes(role.normalizedName));
 
     // Verificar becas aplicables cuando cambia el estudiante o la oferta académica
     useEffect(() => {
@@ -100,7 +98,6 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
 
         console.log('Submitting values:', data);
 
-
         const resp = await createEnrollment(data);
 
         if (resp.success) {
@@ -118,8 +115,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
         { value: 'ENROLLED', label: <StatusEnrollment status={EnrollmentStatus.ENROLLED} /> },
         { value: 'COMPLETED', label: <StatusEnrollment status={EnrollmentStatus.COMPLETED} /> },
         { value: 'ABANDONED', label: <StatusEnrollment status={EnrollmentStatus.ABANDONED} /> },
-    ]
-
+    ];
 
     return (
         <div className="panel">
@@ -169,23 +165,22 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                 }}
                             />
 
-                            {canManageScholarships && values.studentId && !loadingScholarship && (
-                                applicableScholarship ? (
-                                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                            {canManageScholarships &&
+                                values.studentId &&
+                                !loadingScholarship &&
+                                (applicableScholarship ? (
+                                    <div className="mt-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
                                         <div className="flex items-center gap-2">
-                                            <MdCardGiftcard className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                            <MdCardGiftcard className="h-5 w-5 text-green-600 dark:text-green-400" />
                                             <div className="flex-1">
-                                                <p className="text-sm font-semibold text-green-800 dark:text-green-300">
-                                                    Beca: {applicableScholarship.scholarship?.name}
-                                                </p>
-                                                <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
-                                                    Cobertura: {applicableScholarship.scholarship?.type === 'percentage'
+                                                <p className="text-sm font-semibold text-green-800 dark:text-green-300">Beca: {applicableScholarship.scholarship?.name}</p>
+                                                <p className="mt-0.5 text-xs text-green-600 dark:text-green-400">
+                                                    Cobertura:{' '}
+                                                    {applicableScholarship.scholarship?.type === 'percentage'
                                                         ? `${applicableScholarship.scholarship?.value}%`
                                                         : `$${applicableScholarship.scholarship?.value?.toLocaleString()}`}
                                                     {' • '}
-                                                    {applicableScholarship.courseBranch
-                                                        ? 'Específica para este curso'
-                                                        : 'Beca general'}
+                                                    {applicableScholarship.courseBranch ? 'Específica para este curso' : 'Beca general'}
                                                 </p>
                                             </div>
                                         </div>
@@ -195,20 +190,17 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                         type="button"
                                         variant="outline"
                                         color="success"
-                                        icon={<MdCardGiftcard className="w-4 h-4" />}
+                                        icon={<MdCardGiftcard className="h-4 w-4" />}
                                         onClick={() => setScholarshipDrawer(true)}
                                         className="mt-2 w-full"
                                     >
                                         Asignar Beca (Opcional)
                                     </Button>
-                                )
-                            )}
+                                ))}
 
                             {canManageScholarships && values.studentId && loadingScholarship && (
-                                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                                        Verificando becas...
-                                    </p>
+                                <div className="mt-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+                                    <p className="text-center text-sm text-gray-500 dark:text-gray-400">Verificando becas...</p>
                                 </div>
                             )}
                         </FormItem>
@@ -233,10 +225,13 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                             invalid={Boolean(errors.enrollmentDate && touched.enrollmentDate)}
                             errorMessage={errors.enrollmentDate ? String(errors.enrollmentDate) : undefined}
                         >
-                            <DatePicker
-                                value={values.enrollmentDate}
-                                onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))}
-                            />
+                            <DatePicker value={values.enrollmentDate} onChange={(date) => setFieldValue('enrollmentDate', extractDate(date))} />
+                        </FormItem>
+
+                        <FormItem name="notes" label="Notas" invalid={Boolean(errors.notes && touched.notes)} errorMessage={errors.notes}>
+                            <Field name="notes">
+                                {({ field }: any) => <Input {...field} textArea value={values.notes || ''} onChange={field.onChange} placeholder="Agregar notas sobre la inscripción..." rows={3} />}
+                            </Field>
                         </FormItem>
 
                         <div className="mt-6 flex justify-end gap-2">
@@ -248,26 +243,14 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                             </Button>
                         </div>
 
-                        <ModalOpenFormStudent
-                            modal={modal}
-                            setModal={setModal}
-                            setFieldValue={setFieldValue}
-                        />
+                        <ModalOpenFormStudent modal={modal} setModal={setModal} setFieldValue={setFieldValue} />
 
                         {canManageScholarships && (
-                            <AssignScholarshipDrawer
-                                isOpen={scholarshipDrawer}
-                                onClose={() => setScholarshipDrawer(false)}
-                                studentId={selectedStudentId}
-                                courseBranchId={selectedCourseBranchId}
-                            />
+                            <AssignScholarshipDrawer isOpen={scholarshipDrawer} onClose={() => setScholarshipDrawer(false)} studentId={selectedStudentId} courseBranchId={selectedCourseBranchId} />
                         )}
                     </Form>
-
                 )}
-
             </Formik>
-
         </div>
     );
 }

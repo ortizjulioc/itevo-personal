@@ -29,10 +29,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const { id } = await params;
         const body = await request.json();
 
-        // Validar el cuerpo de la solicitud (usando la validación existente)
-        const { isValid, message } = validateObject(body, ['studentId', 'courseBranchId', 'enrollmentDate', 'status']);
-        if (!isValid) {
-            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_NOT_FOUND', message }, { status: 400 });
+        // Solo validar si los campos están presentes (permitir actualizaciones parciales)
+        if (body.studentId === '' || body.courseBranchId === '' || body.status === '') {
+            return NextResponse.json({ code: 'E_COURSE_ENROLLMENT_INVALID', message: 'Los campos proporcionados no pueden estar vacíos' }, { status: 400 });
         }
 
         // Verificar si el enrollment existe

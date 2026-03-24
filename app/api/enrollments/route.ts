@@ -155,6 +155,7 @@ export async function POST(request: Request) {
                         courseBranch: { connect: { id: courseBranch.id } },
                         enrollmentDate: body.enrollmentDate ? new Date(body.enrollmentDate) : new Date(),
                         status: body.status,
+                        notes: body.notes || undefined,
                     },
                     prisma
                 );
