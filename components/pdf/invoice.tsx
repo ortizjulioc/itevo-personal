@@ -192,7 +192,7 @@ export const InvoicePDF = ({ invoice, companyInfo, logo }: { invoice: any, compa
 
           <View style={styles.footer}>
             <View style={styles.line} />
-            <Text>¡Gracias por su compra!</Text>
+            <Text>¡Gracias por su pago!</Text>
             <Text style={{ fontSize: 6 }}>No se acepta devoluciones de dinero en efectivo</Text>
             <View style={styles.line} />
           </View>
