@@ -60,6 +60,7 @@ model Branch {
     cashBox      CashBox[]
     products     Product[]
     ncfRanges    NcfRange[]
+    quotations   Quotation[]
 
     @@map("branches")
 }
@@ -678,6 +679,9 @@ model Quotation {
     items           QuotationItem[]
     user            User            @relation(fields: [createdBy], references: [id])
     student         Student?        @relation(fields: [studentId], references: [id])
+    concept         String?         @db.VarChar(255)
+    branchId        String?         @map("branch_id")
+    branch          Branch?         @relation(fields: [branchId], references: [id])
 
     @@index([createdBy], map: "quotations_created_by_fkey")
     @@index([studentId], map: "quotations_student_id_fkey")
@@ -694,6 +698,8 @@ model QuotationItem {
     unitPrice      Float           @map("unit_price")
     subtotal       Float           @default(0)
     itbis          Float           @default(0)
+    discount       Float           @default(0)
+    concept        String          @default("") @db.VarChar(255)
     createdAt      DateTime        @default(now()) @map("created_at")
     updatedAt      DateTime        @updatedAt @map("updated_at")
     courseBranch   CourseBranch?   @relation(fields: [courseBranchId], references: [id])

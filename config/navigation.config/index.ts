@@ -169,9 +169,18 @@ const navigationConfig = [
     },
     {
         key: 'invoices',
-        title: 'Facturación',
+        title: 'Facturación rápida',
         icon: TbBrandCashapp,
         url: '/invoices',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: cashierRoles
+    },
+    {
+        key: 'quotations',
+        title: 'Cotizaciones',
+        icon: TbFileText,
+        url: '/quotations',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: cashierRoles

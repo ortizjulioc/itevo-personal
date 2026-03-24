@@ -11,6 +11,7 @@ export interface CourseBranch extends CourseBranchPrisma {
   capacity: number;
   sessionCount: number;
   status: CourseBranchStatus;
+  paymentPlan?: { id: string, installments: number, frequency: string };
 }
 
 export interface CourseBranchResponse {

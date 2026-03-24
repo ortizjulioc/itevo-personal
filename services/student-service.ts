@@ -62,13 +62,18 @@ export const createStudent = async (
     return student;
 };
 
-// Obtener student por ID
 export const findStudentById = async (id: string) => {
     return Prisma.student.findUnique({
         where: {
             id: id,
             deleted: false,
         },
+        include: {
+            scholarships: {
+                where: { active: true },
+                include: { scholarship: true }
+            }
+        }
     });
 };
 
