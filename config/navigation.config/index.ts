@@ -169,22 +169,14 @@ const navigationConfig = [
     },
     {
         key: 'invoices',
-        title: 'Facturación rápida',
+        title: 'Facturación',
         icon: TbBrandCashapp,
         url: '/invoices',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: cashierRoles
     },
-    {
-        key: 'quotations',
-        title: 'Cotizaciones',
-        icon: TbFileText,
-        url: '/quotations',
-        type: NAV_ITEM_TYPE_ITEM,
-        subItems: [],
-        auth: cashierRoles
-    },
+
     {
         key: 'bills',
         title: 'Facturas',
@@ -230,6 +222,7 @@ const navigationConfig = [
         subItems: [],
         auth: billingRoles
     },
+
     {
         key: 'products',
         title: 'Productos',
@@ -249,12 +242,22 @@ const navigationConfig = [
         auth: billingRoles
     },
     {
+        key: 'quotations',
+        title: 'Cotizaciones',
+        icon: TbFileText,
+        url: '/quotations',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: cashierRoles
+    },
+    {
         key: 'reports',
         title: 'Reportes',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
         auth: billingRoles
     },
+
     {
         key: 'general-sales-report',
         title: 'Reporte General',

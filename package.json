@@ -57,6 +57,7 @@
         "react-text-mask": "^5.5.0",
         "recharts": "^3.8.0",
         "server-only": "^0.0.1",
+        "sh": "^0.0.3",
         "slug": "^9.1.0",
         "sweetalert2": "^11.14.0",
         "universal-cookie": "^6.1.1",
