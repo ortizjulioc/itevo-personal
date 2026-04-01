@@ -165,7 +165,7 @@ const navigationConfig = [
         title: 'Facturación',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
-        auth: cashierRoles
+        auth: [...cashierRoles, ASSISTANT]
     },
     {
         key: 'invoices',
@@ -184,7 +184,7 @@ const navigationConfig = [
         url: '/bills',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [...billingRoles, ASSISTANT]
+        auth: [...cashierRoles, ASSISTANT]
     },
     {
         key: 'cashRegisters',

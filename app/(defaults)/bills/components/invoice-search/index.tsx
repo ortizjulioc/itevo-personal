@@ -69,41 +69,37 @@ export default function SearchInvoice() {
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">
 
+            <DatePicker
+                value={filters.fromDate ? new Date(filters.fromDate) : undefined}
+                onChange={(date) => setFilters(prev => ({ ...prev, fromDate: extractDate(date) }))}
+                placeholder="Fecha Desde"
+                isClearable
+            />
+            <DatePicker
+                value={filters.toDate ? new Date(filters.toDate) : undefined}
+                onChange={(date) => setFilters(prev => ({ ...prev, toDate: extractDate(date) }))}
+                placeholder="Fecha Hasta"
+                isClearable
+            />
+
+            <Select
+                options={NCF_TYPES_OPTIONS}
+                value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === filters.type)}
+                onChange={(option) => handleFilterChange('type', option as SelectOption | null)}
+                isSearchable={false}
+                placeholder="-Tipo Factura-"
+                isClearable={true}
+            />
+            
             {hasFullAccess && (
-                <>
-                    <DatePicker
-
-                        value={filters.fromDate ? new Date(filters.fromDate) : undefined}
-                        onChange={(date) => setFilters(prev => ({ ...prev, fromDate: extractDate(date) }))}
-                        placeholder="Fecha Desde"
-                        isClearable
-
-                    />
-                    <DatePicker
-
-                        value={filters.toDate ? new Date(filters.toDate) : undefined}
-                        onChange={(date) => setFilters(prev => ({ ...prev, toDate: extractDate(date) }))}
-                        placeholder="Fecha Hasta"
-                        isClearable
-                    />
-
-                    <Select
-                        options={NCF_TYPES_OPTIONS}
-                        value={NCF_TYPES_OPTIONS.find((ncfType) => ncfType.value === filters.type)}
-                        onChange={(option) => handleFilterChange('type', option as SelectOption | null)}
-                        isSearchable={false}
-                        placeholder="-Tipo Factura-"
-                        isClearable={true}
-                    />
-                    <Select
-                        options={STATUS_OPTIONS}
-                        value={STATUS_OPTIONS.find((status) => status.value === filters.status)}
-                        onChange={(option) => handleFilterChange('status', option as SelectOption | null)}
-                        isSearchable={false}
-                        placeholder="-Estado-"
-                        isClearable={true}
-                    />
-                </>
+                <Select
+                    options={STATUS_OPTIONS}
+                    value={STATUS_OPTIONS.find((status) => status.value === filters.status)}
+                    onChange={(option) => handleFilterChange('status', option as SelectOption | null)}
+                    isSearchable={false}
+                    placeholder="-Estado-"
+                    isClearable={true}
+                />
             )}
 
 
