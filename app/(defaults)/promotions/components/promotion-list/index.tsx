@@ -1,7 +1,7 @@
 'use client';
 import { confirmDialog, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import {IconEdit, IconTrashLines} from "@/components/icon";
+import {IconEdit, IconTrashLines, IconEye} from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import useFetchPromotions from "../../lib/use-fetch-promotions";
@@ -79,6 +79,11 @@ export default function PromotionList({ className, query = '' }: Props) {
                                             <Tooltip title="Editar">
                                                 <Link href={`/promotions/${promotion.id}`}>
                                                     <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                </Link>
+                                            </Tooltip>
+                                            <Tooltip title="Detalles">
+                                                <Link href={`/promotions/view/${promotion.id}`}>
+                                                    <Button variant="outline" size="sm" icon={<IconEye className="size-4" />} />
                                                 </Link>
                                             </Tooltip>
                                             {/* ALTERNATIVA */}
