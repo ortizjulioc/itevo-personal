@@ -46,6 +46,11 @@ export default withAuth(
     callbacks: {
       authorized: ({ token }) => !!token,
     },
+    cookies: {
+      sessionToken: {
+        name: process.env.NEXTAUTH_COOKIE_NAME || "next-auth.session-token",
+      },
+    },
   }
 );
 
