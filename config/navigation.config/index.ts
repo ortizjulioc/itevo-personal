@@ -165,7 +165,7 @@ const navigationConfig = [
         title: 'Facturación',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
-        auth: cashierRoles
+        auth: [...cashierRoles, ASSISTANT]
     },
     {
         key: 'invoices',
@@ -176,6 +176,7 @@ const navigationConfig = [
         subItems: [],
         auth: cashierRoles
     },
+
     {
         key: 'bills',
         title: 'Facturas',
@@ -183,7 +184,7 @@ const navigationConfig = [
         url: '/bills',
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
-        auth: [...billingRoles, ASSISTANT]
+        auth: [...cashierRoles, ASSISTANT]
     },
     {
         key: 'cashRegisters',
@@ -221,6 +222,7 @@ const navigationConfig = [
         subItems: [],
         auth: billingRoles
     },
+
     {
         key: 'products',
         title: 'Productos',
@@ -240,12 +242,22 @@ const navigationConfig = [
         auth: billingRoles
     },
     {
+        key: 'quotations',
+        title: 'Cotizaciones',
+        icon: TbFileText,
+        url: '/quotations',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: cashierRoles
+    },
+    {
         key: 'reports',
         title: 'Reportes',
         type: NAV_ITEM_TYPE_TITLE,
         subItems: [],
         auth: billingRoles
     },
+
     {
         key: 'general-sales-report',
         title: 'Reporte General',

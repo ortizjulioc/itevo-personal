@@ -1,39 +1,90 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Itevo Core
 
-## Getting Started
+Proyecto principal para la plataforma Itevo, desarrollado utilizando **Next.js**. Este repositorio contiene el código fuente de la aplicación orientada al manejo de procesos, facturación, y administración del sistema.
 
-First, run the development server:
+## 🚀 Acerca del Proyecto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+Itevo Core es un sistema de gestión estructurado con funcionalidades basadas en roles (dashboard personalizado para administradores, cajeros, asistentes, etc.), administración de usuarios, facturación, generación de comprobantes (NCFs) y el control de entidades educativas/operativas. 
+
+### Tecnologías Principales
+- **Framework:** [Next.js](https://nextjs.org/) (React)
+- **Base de Datos / ORM:** [Prisma](https://www.prisma.io/) (con MariaDB)
+- **Autenticación:** [NextAuth](https://next-auth.js.org/)
+- **Estilos:** Tailwind CSS, Emotion, framer-motion y Headless UI
+- **Estado Global:** Redux Toolkit
+
+## 📋 Requisitos Previos
+
+Asegúrate de tener instalado lo siguiente en tu entorno local antes de iniciar:
+- [Node.js](https://nodejs.org/) (versión 18+ recomendada)
+- Un gestor de paquetes (`npm`, `yarn` o `pnpm`)
+- Una base de datos compatible (Ej. MariaDB / MySQL) corriendo y accesible.
+
+## ⚙️ Variables de Entorno
+
+Para que la aplicación funcione correctamente, es necesario configurar las variables de entorno. Crea un archivo `.env` en la raíz del proyecto basándote en la siguiente estructura:
+
+```env
+DATABASE_URL=""
+NEXTAUTH_URL=""
+NEXTAUTH_SECRET=""
+PORT=""
+APP_NAME=""
+NEXTAUTH_COOKIE_NAME=""
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Descripción de las variables:**
+- `DATABASE_URL`: Cadena de conexión a tu base de datos (Ej: `mysql://USER:PASSWORD@HOST:PORT/DATABASE`).
+- `NEXTAUTH_URL`: URL base de la aplicación (Ej: para desarrollo local `http://localhost:3000`).
+- `NEXTAUTH_SECRET`: Cadena secreta para encriptar los tokens de NextAuth (puedes generar una usando `openssl rand -base64 32`).
+- `PORT`: Puerto en el que correrá la aplicación.
+- `APP_NAME`: Nombre representativo de la aplicación.
+- `NEXTAUTH_COOKIE_NAME`: Nombre personalizado para las cookies de sesión, útil para evitar conflictos de cookies si tienes proyectos similares.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Instalación y Ejecución
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Sigue estos pasos para levantar el entorno de desarrollo:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. **Instala las dependencias** en la raíz del repositorio:
+   ```bash
+   npm install
+   # o
+   yarn install
+   # o
+   pnpm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. **Configura tu base de datos**:
+   Asegúrate de que la variable `DATABASE_URL` en tu archivo `.env` sea correcta y luego sincroniza el esquema de Prisma y genera el cliente:
+   ```bash
+   npm run prisma:sync
+   ```
+   *(Opcional)* Si hay datos semilla (seeders) iniciales necesarios, puedes correrlos con:
+   ```bash
+   npm run prisma:seed
+   # o
+   npm run seed
+   ```
 
-## Learn More
+3. **Inicia el servidor de desarrollo:**
+   ```bash
+   npm run dev
+   # o
+   yarn dev
+   # o
+   pnpm dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Abre la aplicación:**
+   Navega a la url configurada (por defecto [http://localhost:3000](http://localhost:3000)) en tu navegador para ver la interfaz.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📜 Scripts Disponibles en package.json
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+A continuación los comandos principales que puedes ejecutar:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# software-itevo
+- `npm run dev`: Inicia el servidor en modo desarrollo.
+- `npm run build`: Construye y compila el proyecto completo preparándolo para producción.
+- `npm run start`: Inicia el proyecto compilado para ambientes de producción.
+- `npm run lint`: Ejecuta el linter (ESLint) para buscar errores de sintaxis en el código.
+- `npm run prisma:sync`: Ejecuta `db push` y `generate` mediante Prisma para tener la DB actualizada.
+- `npm run prisma:seed` o `npm run seed`: Inserta datos iniciales a tu base de datos utilizando tus configuraciones de semilla.

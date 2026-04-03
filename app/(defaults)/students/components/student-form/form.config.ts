@@ -10,6 +10,7 @@ export const createValidationSchema = Yup.object().shape({
     phone: Yup.string(),
     email: Yup.string().email('El correo electrónico no es válido'),
     hasTakenCourses: Yup.boolean().required('Este campo es obligatorio'),
+    isMinor: Yup.boolean().optional(),
     identificationType: Yup.string().oneOf(['CEDULA', 'PASAPORTE', 'OTRO'], 'Tipo de identificación no válido'),
 });
 
@@ -21,6 +22,7 @@ export const updateValidationSchema = Yup.object().shape({
     phone: Yup.string(),
     email: Yup.string().email('El correo electrónico no es válido'),
     hasTakenCourses: Yup.boolean().required('Este campo es obligatorio'),
+    isMinor: Yup.boolean().optional(),
     identificationType: Yup.string().oneOf(['CEDULA', 'PASAPORTE', 'OTRO'], 'Tipo de identificación no válido'),
 });
 
@@ -32,5 +34,6 @@ export const initialValues = {
     phone: '',
     email: '',
     hasTakenCourses: false,
+    isMinor: false,
     identificationType: 'CEDULA',
 };

@@ -1,7 +1,6 @@
 import { ENROLLMENT_STATUS } from '@/constants/enrollment.status.constant';
 import * as Yup from 'yup';
 
-
 export const createValidationSchema = Yup.object().shape({
     studentId: Yup.string().required('El estudiante es obligatorio'),
     courseBranchId: Yup.string().required('El curso es obligatorio'),
@@ -21,4 +20,5 @@ export const initialValues = {
     courseBranchId: '',
     enrollmentDate: new Date(),
     status: ENROLLMENT_STATUS.WAITING,
+    notes: '',
 };

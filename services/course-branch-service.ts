@@ -31,6 +31,7 @@ export const getCourseBranch = async (filters: any) => {
             teacher: { select: { id: true, firstName: true, lastName: true } },
             course: { select: { id: true, name: true } },
             schedules: { select: { schedule: true } },
+            paymentPlan: true,
         },
         skip: skip,
         take: top,
@@ -70,6 +71,7 @@ export const findCourseBranchById = async (
             teacher: { select: { id: true, firstName: true, lastName: true } },
             course: { select: { id: true, name: true } },
             schedules: { select: { schedule: true } },
+            paymentPlan: true,
         }
     });
 

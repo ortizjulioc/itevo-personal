@@ -8,6 +8,7 @@ import { GroupBase } from 'react-select';
 export interface ProductSelect {
   value: string;
   label: React.ReactElement;
+  name: string;
   price: number;
 }
 
@@ -33,6 +34,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
 
       return response.data?.products.map(product => ({
         value: product.id,
+        name: product.name,
         label: (
           <div className="flex flex-col">
             <span className="font-medium">{product.code} - {product.name}</span>
@@ -67,6 +69,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
           if (response.success && response.data) {
             const newOption: ProductSelect = {
               value: response.data.id,
+              name: response.data.name,
               label: (
                 <div className="flex flex-col">
                   <span className="font-medium">{response.data.code} - {response.data.name}</span>

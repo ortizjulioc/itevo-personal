@@ -4,6 +4,27 @@ import { IdentificationType, PrismaClient, Prisma as PrismaTypes } from '@/gener
 
 export const getStudents = async (search: string, page: number, top: number) => {
     const skip = (page - 1) * top;
+
+    const searchTerms = search.trim().split(/\s+/).filter((t) => t.length > 0);
+
+    const where: any = {
+        deleted: false,
+    };
+
+    if (searchTerms.length > 0) {
+        where.AND = searchTerms.map((term) => ({
+            OR: [
+                { code: { contains: term } },
+                { firstName: { contains: term } },
+                { lastName: { contains: term } },
+                { identification: { contains: term } },
+                { address: { contains: term } },
+                { phone: { contains: term } },
+                { email: { contains: term } },
+            ],
+        }));
+    }
+
     const students = await Prisma.student.findMany({
         orderBy: [
             { firstName: 'asc' },
@@ -18,29 +39,16 @@ export const getStudents = async (search: string, page: number, top: number) => 
             address: true,
             phone: true,
             email: true,
+            isMinor: true,
             hasTakenCourses: true,
         },
-        where: {
-            deleted: false,
-            OR: [
-                { code: { contains: search } },
-                { firstName: { contains: search } },
-                { lastName: { contains: search } },
-                { identification: { contains: search } },
-                { address: { contains: search } },
-                { phone: { contains: search } },
-                { email: { contains: search } },
-            ],
-        },
+        where,
         skip: skip,
         take: top,
     });
 
     const totalStudents = await Prisma.student.count({
-        where: {
-            deleted: false,
-            firstName: { contains: search },
-        },
+        where,
     });
 
     return { students, totalStudents };
@@ -54,13 +62,18 @@ export const createStudent = async (
     return student;
 };
 
-// Obtener student por ID
 export const findStudentById = async (id: string) => {
     return Prisma.student.findUnique({
         where: {
             id: id,
             deleted: false,
         },
+        include: {
+            scholarships: {
+                where: { active: true },
+                include: { scholarship: true }
+            }
+        }
     });
 };
 
@@ -98,6 +111,7 @@ export const updateStudentById = async (
             phone: data.phone,
             email: data.email,
             hasTakenCourses: data.hasTakenCourses,
+            isMinor: data.isMinor,
             identificationType: data.identificationType || IdentificationType.CEDULA,
         },
     });

@@ -211,10 +211,11 @@ export const updateEnrollmentById = async (id: string, data: any) => {
     return Prisma.enrollment.update({
         where: { id },
         data: {
-            studentId: data.studentId,
-            courseBranchId: data.courseBranchId,
-            enrollmentDate: data.enrollmentDate,
-            status: data.status,
+            ...(data.studentId && { studentId: data.studentId }),
+            ...(data.courseBranchId && { courseBranchId: data.courseBranchId }),
+            ...(data.enrollmentDate && { enrollmentDate: new Date(data.enrollmentDate) }),
+            ...(data.status && { status: data.status }),
+            ...(data.notes !== undefined && { notes: data.notes }),
         },
     });
 };

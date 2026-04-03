@@ -50,6 +50,17 @@ export const authOptions = {
     }),
   ],
   pages: { signIn: "/login" },
+  cookies: {
+    sessionToken: {
+      name: process.env.NEXTAUTH_COOKIE_NAME || "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       // Inicialización del token cuando el usuario inicia sesión

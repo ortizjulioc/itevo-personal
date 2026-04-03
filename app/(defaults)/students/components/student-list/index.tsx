@@ -80,7 +80,10 @@ export default function StudentList({ className, query = '' }: Props) {
                     <div className="ml-2 flex items-center gap-2 min-w-64">
                       <Avatar initials={getInitials(student.firstName, student.lastName)} size="sm" color="primary" />
                       <div className="flex flex-col">
-                        <span>{`${student.firstName} ${student.lastName}`}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{`${student.firstName} ${student.lastName}`}</span>
+                          {student.isMinor && <span className="badge bg-info text-xs">Menor</span>}
+                        </div>
                         <span className="font-semibold"><OptionalInfo content={student.code} message="Sin identificación" /></span>
                       </div>
                     </div>

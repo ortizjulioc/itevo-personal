@@ -140,6 +140,7 @@ export async function POST(request: Request) {
                             phone: phone,
                             email: student.email || null,
                             address: student.direccion || null,
+                            isMinor: student.isMinor || false,
                             hasTakenCourses: false,
                             branchId,
                         },
