@@ -18,21 +18,17 @@ export default function ViewPromotion({ params }: { params: Promise<{ id: string
             {promotion && (
                 <>
                     <div className="panel mb-8">
-                       <h5 className="text-lg font-semibold dark:text-white-light mb-4">Información de la Promoción</h5>
-                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                           <div>
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">Descripción: </span>
-                                <span>{promotion.description}</span>
-                           </div>
-                           <div>
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">Fecha de Inicio: </span>
+                        <h5 className="text-lg font-semibold dark:text-white-light mb-4">{promotion.description}</h5>
+                        <div className="flex gap-4">
+                            <div>
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">Desde: </span>
                                 <span>{promotion.startDate ? getFormattedDate(new Date(promotion.startDate)) : 'N/A'}</span>
-                           </div>
-                           <div>
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">Fecha de Fin: </span>
+                            </div>
+                            <div>
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">Hasta: </span>
                                 <span>{promotion.endDate ? getFormattedDate(new Date(promotion.endDate)) : 'N/A'}</span>
-                           </div>
-                       </div>
+                            </div>
+                        </div>
                     </div>
                     <PromotionEnrollments promotionId={id} />
                 </>
