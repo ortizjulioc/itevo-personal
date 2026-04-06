@@ -27,10 +27,10 @@ export default function InvoiceDetails({ invoice, currentUser }: { invoice: any,
     // Cashiers can only view invoices from their own cash register
     const canViewInvoice = !isCashier || (isCashier && isOwnCashRegister);
 
-    // Only admins can cancel invoices
+    // Only admins can cancel invoices, and the invoice must not be already canceled
     const canCancelInvoice = currentUser?.roles?.some((role: any) =>
         [SUPER_ADMIN, GENERAL_ADMIN].includes(role.normalizedName)
-    );
+    ) && invoice?.status !== InvoiceStatus.CANCELED;
 
     const handleCancelInvoice = async () => {
         confirmDialog({
