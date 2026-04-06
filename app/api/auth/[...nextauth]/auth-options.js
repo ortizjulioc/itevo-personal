@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { findUserByEmail, findUserByUsername } from "@/services/user-service";
 import { createLog } from "@/utils/log";
 
+/** @type {import("next-auth").AuthOptions} */
 export const authOptions = {
   providers: [
     CredentialsProvider({
