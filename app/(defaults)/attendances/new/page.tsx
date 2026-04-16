@@ -168,7 +168,7 @@ export default function NewAttendance() {
   React.useEffect(() => {
     if (selectedBranch) {
       console.log('Fetching enrollments for branch:', selectedBranch.id);
-      refetchEnrollments(`courseBranchId=${selectedBranch.id}`);
+      refetchEnrollments(`courseBranchId=${selectedBranch.id}&top=1000`);
     }
   }, [selectedBranch, refetchEnrollments]);
 
