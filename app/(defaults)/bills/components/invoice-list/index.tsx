@@ -3,15 +3,13 @@ import { formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchInvoices from "../../lib/use-fetch-invoices";
-import { NCF_TYPES } from "@/constants/ncfType.constant";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import InvoiceStatusField from "./invoice-status";
 import { getFormattedDateTime } from "@/utils/date";
 import OptionalInfo from "@/components/common/optional-info";
-import StudentLabel from "@/components/common/info-labels/student-label";
-import { PAYMENT_METHODS_OPTIONS } from "@/constants/invoice.constant";
+import { INVOICE_STATUS_OPTIONS, PAYMENT_METHODS_OPTIONS } from "@/constants/invoice.constant";
 import { useSession } from "next-auth/react";
 import { SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, ADMIN } from "@/constants/role.constant";
 import PrintInvoice from "@/components/common/print/invoice";
@@ -26,7 +24,7 @@ interface Props {
 
 export default function InvoiceList({ className, query = '' }: Props) {
     const { data: session } = useSession();
-    const isAdmin = session?.user?.roles?.some((role: any) => 
+    const isAdmin = session?.user?.roles?.some((role: any) =>
         [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, ADMIN].includes(role.normalizedName)
     );
 
@@ -103,14 +101,21 @@ export default function InvoiceList({ className, query = '' }: Props) {
                                             ) : (
                                                 <Tooltip title="Imprimir">
                                                     <div>
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="sm" 
-                                                            icon={<IoMdPrint className="text-lg" />} 
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            icon={<IoMdPrint className="text-lg" />}
                                                             onClick={() => {
+                                                                const status = String(invoice.status || '').toUpperCase();
+                                                                if (status !== 'PAID' && status !== 'COMPLETED') {
+                                                                    openNotification('warning',
+                                                                        `Las facturas con estado ${INVOICE_STATUS_OPTIONS[invoice.status]} no pueden ser impresas.`
+                                                                    );
+                                                                    return;
+                                                                }
                                                                 setInvoiceToPrint(invoice.id);
                                                                 setPrintModalOpen(true);
-                                                            }} 
+                                                            }}
                                                         />
                                                     </div>
                                                 </Tooltip>
