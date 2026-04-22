@@ -50,7 +50,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     await createLog({
       action: 'POST',
-      description: `Se creó un movimiento de caja con la siguiente información: \n${JSON.stringify(cashMovement, null, 2)}`,
+      description: `Movimiento de caja: ${body.type}\nMonto: ${body.amount}\nDescripción: ${body.description || 'Sin descripción'}\nDetalle técnico: ${JSON.stringify(cashMovement, null, 2)}`,
       origin: 'cash-movement',
       elementId: cashMovement.id,
       success: true,

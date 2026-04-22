@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
 
     await createLog({
       action: 'POST',
-      description: `Se creó la caja registradora con la siguiente información: \n${JSON.stringify(cashRegister, null, 2)}`,
-      origin: 'cash_register',
+      description: `Apertura de caja registradora.\nMonto inicial: ${body.initialBalance}\nUsuario ID: ${body.userId}\nDetalle técnico: ${JSON.stringify(cashRegister, null, 2)}`,
+      origin: 'cash-register',
       elementId: cashRegister.id,
       success: true,
     });
