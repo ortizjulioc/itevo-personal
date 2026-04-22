@@ -16,12 +16,13 @@ import { IconEye, IconCopy } from '@/components/icon';
 import PremiumTooltip from '@/components/ui/premium-tooltip';
 import React from 'react';
 
-interface Props {
+interface LogListProps {
+    query: string;
     className?: string;
-    query?: string;
+    date?: string;
 }
 
-export default function LogList({ className, query = '' }: Props) {
+export default function LogList({ className, query = '', date }: LogListProps) {
     const params = queryStringToObject(query);
     const { loading, error, logs, totalLogs, refetch } = useFetchLogs(query);
     const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
@@ -52,7 +53,9 @@ export default function LogList({ className, query = '' }: Props) {
     return (
         <div className={className}>
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">Mostrando {logs.length} registros</h3>
+                <h3 className="text-lg font-bold">
+                    Mostrando {logs.length} registros {date && `del día ${date}`}
+                </h3>
 
             </div>
 

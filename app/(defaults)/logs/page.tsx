@@ -59,7 +59,7 @@ export default async function LogsPage({ searchParams }: LogsProps) {
             <LogFilters showFilters={showFilters} />
 
             <div className="panel border-0 shadow-none bg-transparent p-0">
-                <LogList query={query} />
+                <LogList query={query} date={params.date} />
             </div>
         </div>
     );
