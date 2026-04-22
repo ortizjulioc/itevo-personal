@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 
         await createLog({
             action: 'POST',
-            description: `Se creó un curso con los siguientes datos: ${JSON.stringify(body, null, 2)}`,
+            description: `Asignación de curso a sucursal.\nCurso ID: ${body.courseId}\nSucursal ID: ${body.branchId}\nProfesor ID: ${body.teacherId}\nDetalle técnico: ${JSON.stringify(courseBranch, null, 2)}`,
             origin: 'course-branch',
             elementId: courseBranch.id,
             success: true,

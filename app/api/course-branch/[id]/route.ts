@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         // Enviar log de auditoría
         await createLog({
             action: "PUT",
-            description: `Se actualizó un courseBranch. Información anterior: ${JSON.stringify(courseBranch, null, 2)}. Información actualizada: ${JSON.stringify(updatedCourseBranch, null, 2)}`,
+            description: `Actualización de asignación curso-sucursal.\nDatos anteriores: ${JSON.stringify(courseBranch, null, 2)}\nDatos actualizados: ${JSON.stringify(updatedCourseBranch, null, 2)}`,
             origin: "course-branch/[id]",
             elementId: id,
             success: true,
@@ -119,7 +119,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         await createLog({
             action: "DELETE",
-            description: `Se eliminó un courseBranch con los siguientes datos: ${JSON.stringify(courseBranch, null, 2)}`,
+            description: `Eliminación de asignación curso-sucursal.\nDatos eliminados: ${JSON.stringify(courseBranch, null, 2)}`,
             origin: "course-branch/[id]",
             elementId: id,
             success: true,
