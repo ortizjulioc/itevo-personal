@@ -142,7 +142,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
     await createLog({
       action: 'DELETE',
-      description: `Se anuló la factura con ID: ${id}`,
+      description: `Anulación de factura.\nNúmero de factura: ${invoice.invoiceNumber}\nID Técnico: ${id}`,
       origin: 'invoices/[id]',
       elementId: id,
       success: true,
