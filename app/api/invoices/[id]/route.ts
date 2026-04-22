@@ -71,6 +71,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const updatedInvoice = await updateInvoice(id, data);
 
+    await createLog({
+      action: 'PUT',
+      description: `Se actualizó la factura ${invoice.invoiceNumber}. \nDatos enviados: ${JSON.stringify(data, null, 2)}`,
+      origin: 'invoices/[id]',
+      elementId: id,
+      success: true,
+    });
+
     return NextResponse.json(updatedInvoice, { status: 200 });
   } catch (error) {
     await createLog({
@@ -131,6 +139,14 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
       }, prisma);
     });
 
+
+    await createLog({
+      action: 'DELETE',
+      description: `Se anuló la factura con ID: ${id}`,
+      origin: 'invoices/[id]',
+      elementId: id,
+      success: true,
+    });
 
     return NextResponse.json({ message: 'Factura anulada correctamente' }, { status: 200 });
   } catch (error) {
