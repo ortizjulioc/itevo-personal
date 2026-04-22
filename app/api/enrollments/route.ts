@@ -173,7 +173,7 @@ export async function POST(request: Request) {
                 //Crear logs de auditoría
                 await createLog({
                     action: 'POST',
-                    description: `Se creó un nuevo enrollment con la siguiente información: \n${JSON.stringify(enrollment, null, 2)}`,
+                    description: `Nueva inscripción registrada.\nEstudiante ID: ${student.id}\nCurso Asignado ID: ${courseBranch.id}\nEstado inicial: ${body.status}\nDetalle técnico: ${JSON.stringify(enrollment, null, 2)}`,
                     origin: 'enrollments',
                     elementId: enrollment.id,
                     success: true,
