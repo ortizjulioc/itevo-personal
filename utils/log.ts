@@ -18,6 +18,7 @@ export interface LogEntry {
     origin: string;
     elementId?: string;
     authorId: string;
+    branchId: string;
     success?: boolean;
 }
 
@@ -30,6 +31,7 @@ const LOGS_DIR = path.join(process.cwd(), "logs");
 export const createLog = async (logData: LogData): Promise<void> => {
     try {
         const session = await getServerSession(authOptions);
+        console.log('session log -->', session);
         const now = new Date();
         const year = now.getFullYear().toString();
         const month = (now.getMonth() + 1).toString().padStart(2, "0");
@@ -42,7 +44,8 @@ export const createLog = async (logData: LogData): Promise<void> => {
             description: logData.description,
             origin: logData.origin,
             elementId: logData.elementId,
-            authorId: session?.user?.id || "unknown", // Usar "unknown" si no hay sesión
+            authorId: session?.user?.id || "unknown",
+            branchId: session?.user.activeBranchId || session?.user.mainBranch.id || session?.user.branches[0].id || "unknown"
         };
 
         await fs.mkdir(path.dirname(logFilePath), { recursive: true });

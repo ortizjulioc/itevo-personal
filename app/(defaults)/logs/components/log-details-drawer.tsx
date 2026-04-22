@@ -4,6 +4,7 @@ import { LogEntry } from '@/utils/log';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import UserLabel from '@/components/common/info-labels/user-label';
+import BranchLabel from '@/components/common/info-labels/branch-label';
 import { Button } from '@/components/ui';
 import IconCopy from '@/components/icon/icon-copy';
 import { openNotification } from '@/utils';
@@ -72,12 +73,21 @@ export default function LogDetailsDrawer({ log, open, onClose }: Props) {
                     </div>
                 </div>
 
-                {/* Author Info */}
-                <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Realizado por</label>
-                    <div className="flex items-center gap-2">
-                        <UserLabel UserId={log.authorId} />
-                        <span className="text-[10px] text-gray-400 font-mono">({log.authorId})</span>
+                {/* Author & Branch Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Realizado por</label>
+                        <div className="flex flex-col gap-1">
+                            <UserLabel UserId={log.authorId} />
+                            <span className="text-[10px] text-gray-400 font-mono">ID: {log.authorId}</span>
+                        </div>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Sucursal</label>
+                        <div className="flex flex-col gap-1">
+                            <BranchLabel branchId={log.branchId} />
+                            <span className="text-[10px] text-gray-400 font-mono">ID: {log.branchId}</span>
+                        </div>
                     </div>
                 </div>
 

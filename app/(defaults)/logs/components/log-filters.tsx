@@ -7,6 +7,7 @@ import { Button } from '@/components/ui';
 import IconRefresh from '@/components/icon/icon-refresh';
 import AnimateHeight from 'react-animate-height';
 import SelectUser from '@/components/common/selects/select-user';
+import SelectBranch from '@/components/common/selects/select-branch';
 
 const ACTION_OPTIONS = [
     { value: 'POST', label: 'POST' },
@@ -33,7 +34,8 @@ export default function LogFilters({ showFilters }: Props) {
                       params.get('origin') || 
                       params.get('elementId') || 
                       params.get('description') || 
-                      params.get('authorId');
+                      params.get('authorId') ||
+                      params.get('branchId');
 
     const clearFilters = () => {
         params.delete('action');
@@ -42,6 +44,7 @@ export default function LogFilters({ showFilters }: Props) {
         params.delete('elementId');
         params.delete('description');
         params.delete('authorId');
+        params.delete('branchId');
     };
 
     return (
@@ -66,6 +69,7 @@ export default function LogFilters({ showFilters }: Props) {
                         isClearable
                         value={ACTION_OPTIONS.find(opt => opt.value === params.get('action'))}
                         onChange={(opt: any) => params.set('action', opt?.value || '')}
+                        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                     />
                 </div>
 
@@ -77,6 +81,7 @@ export default function LogFilters({ showFilters }: Props) {
                         isClearable
                         value={SUCCESS_OPTIONS.find(opt => opt.value === params.get('success'))}
                         onChange={(opt: any) => params.set('success', opt?.value || '')}
+                        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
                     />
                 </div>
 
@@ -88,6 +93,14 @@ export default function LogFilters({ showFilters }: Props) {
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">ID Elemento</label>
                     <SearchInput placeholder="Buscar ID..." searchKey="elementId" />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Sucursal</label>
+                    <SelectBranch 
+                        value={params.get('branchId')} 
+                        onChange={(selected) => params.set('branchId', selected?.value || '')} 
+                    />
                 </div>
 
                 <div className="flex flex-col gap-1">

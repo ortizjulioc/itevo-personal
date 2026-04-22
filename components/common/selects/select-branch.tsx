@@ -1,11 +1,12 @@
 'use client';
-
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { Branch } from '@/generated/prisma/client';
-import { Select } from '@/components/ui';
-import { GroupBase, ActionMeta } from 'react-select';
+import { GroupBase, ActionMeta, StylesConfig, CSSObjectWithLabel } from 'react-select';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
+import { getCustomStyles } from '@/components/ui/select';
 
 export type SelectBranchType = {
   value: string;
@@ -20,10 +21,23 @@ export interface BranchesResponse {
 interface SelectBranchProps {
   value?: string;
   onChange?: (selected: SelectBranchType | null, actionMeta: ActionMeta<SelectBranchType>) => void;
+  placeholder?: string;
 }
 
-export default function SelectBranch({ value, onChange, ...rest }: SelectBranchProps) {
+const customStyles: StylesConfig<SelectBranchType, false> = {
+    menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+};
+
+export default function SelectBranch({ value, onChange, placeholder = '-Sucursales-', ...rest }: SelectBranchProps) {
   const [options, setOptions] = useState<SelectBranchType[]>([]);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   const fetchBranchData = async (inputValue: string): Promise<SelectBranchType[]> => {
     try {
@@ -69,14 +83,18 @@ export default function SelectBranch({ value, onChange, ...rest }: SelectBranchP
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
-        placeholder="-Sucursales-"
+        placeholder={placeholder}
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         onChange={onChange}
         isClearable
-        //asComponent={AsyncSelect}
+        styles={{
+            ...customStyles,
+            ...getCustomStyles(Boolean(themeConfig.isDarkMode)),
+        }}
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         {...rest}
       />
     </div>
   );
-}
+}

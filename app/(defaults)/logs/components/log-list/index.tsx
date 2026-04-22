@@ -10,15 +10,11 @@ import { es } from 'date-fns/locale';
 import IconRefresh from '@/components/icon/icon-refresh';
 import IconInfoCircle from '@/components/icon/icon-info-circle';
 import UserLabel from '@/components/common/info-labels/user-label';
+import BranchLabel from '@/components/common/info-labels/branch-label';
 import LogDetailsDrawer from '../log-details-drawer';
 import { IconEye, IconCopy } from '@/components/icon';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
+import PremiumTooltip from '@/components/ui/premium-tooltip';
 import React from 'react';
-
-const TippyTrigger = ({ ref, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { ref?: React.Ref<HTMLButtonElement> }) => (
-    <button ref={ref} {...props} />
-);
 
 interface Props {
     className?: string;
@@ -51,7 +47,7 @@ export default function LogList({ className, query = '' }: Props) {
         openNotification('success', 'ID copiado al portapapeles');
     };
 
-    if (loading) return <Skeleton rows={10} columns={['FECHA', 'AUTOR', 'ACCIÓN', 'ORIGEN', 'ELEMENTO ID', 'ESTADO', 'ACCIONES']} />;
+    if (loading) return <Skeleton rows={10} columns={['FECHA', 'AUTOR', 'SUCURSAL', 'ACCIÓN', 'ORIGEN', 'ELEMENTO ID', 'ESTADO', 'ACCIONES']} />;
 
     return (
         <div className={className}>
@@ -66,6 +62,7 @@ export default function LogList({ className, query = '' }: Props) {
                         <tr>
                             <th>FECHA</th>
                             <th>AUTOR</th>
+                            <th>SUCURSAL</th>
                             <th>ACCIÓN</th>
                             <th>ORIGEN</th>
                             <th>ELEMENTO ID</th>
@@ -90,6 +87,9 @@ export default function LogList({ className, query = '' }: Props) {
                                     <UserLabel UserId={log.authorId} />
                                 </td>
                                 <td>
+                                    <BranchLabel branchId={log.branchId} />
+                                </td>
+                                <td>
                                     <span className={`badge ${getActionBadge(log.action)} uppercase`}>
                                         {log.action}
                                     </span>
@@ -103,14 +103,14 @@ export default function LogList({ className, query = '' }: Props) {
                                             <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                                 {log.elementId}
                                             </code>
-                                            <Tippy content="Copiar ID">
-                                                <TippyTrigger 
+                                            <PremiumTooltip content="Copiar ID">
+                                                <button 
                                                     onClick={() => copyToClipboard(log.elementId!)}
                                                     className="opacity-0 group-hover/copy:opacity-100 text-gray-400 hover:text-primary transition-all"
                                                 >
                                                     <IconCopy className="size-3.5" />
-                                                </TippyTrigger>
-                                            </Tippy>
+                                                </button>
+                                            </PremiumTooltip>
                                         </div>
                                     ) : (
                                         <span className="text-gray-400 italic">N/A</span>
@@ -122,8 +122,8 @@ export default function LogList({ className, query = '' }: Props) {
                                     </span>
                                 </td>
                                 <td className="text-right">
-                                    <Tippy content="Ver detalles">
-                                        <TippyTrigger 
+                                    <PremiumTooltip content="Ver detalles">
+                                        <button 
                                             className="hover:text-primary transition-colors p-2"
                                             onClick={() => {
                                                 setSelectedLog(log);
@@ -131,8 +131,8 @@ export default function LogList({ className, query = '' }: Props) {
                                             }}
                                         >
                                             <IconEye className="size-5" />
-                                        </TippyTrigger>
-                                    </Tippy>
+                                        </button>
+                                    </PremiumTooltip>
                                 </td>
                             </tr>
                         ))}
@@ -146,15 +146,6 @@ export default function LogList({ className, query = '' }: Props) {
                 onClose={() => setLogDrawerOpen(false)} 
             />
 
-            {totalLogs > 10 && (
-                <div className="flex justify-center mt-4">
-                    <Pagination
-                        currentPage={parseInt(params?.page || '1')}
-                        total={totalLogs}
-                        top={parseInt(params?.top || '10')}
-                    />
-                </div>
-            )}
         </div>
     );
 }

@@ -22,6 +22,7 @@ interface LogsProps {
         success?: string;
         page?: string;
         showFilters?: string;
+        branchId?: string;
     }>;
 }
 
