@@ -309,6 +309,15 @@ const navigationConfig = [
         type: NAV_ITEM_TYPE_ITEM,
         subItems: [],
         auth: [SUPER_ADMIN]
+    },
+    {
+        key: 'logs',
+        title: 'Logs del Sistema',
+        icon: TbFileText,
+        url: '/logs',
+        type: NAV_ITEM_TYPE_ITEM,
+        subItems: [],
+        auth: [SUPER_ADMIN]
     }
 ];
 
