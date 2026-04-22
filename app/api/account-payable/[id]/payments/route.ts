@@ -61,7 +61,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             // Log the payment creation
             await createLog({
                 action: 'POST',
-                description: `Se creó un pago de cuenta por pagar con los siguientes datos: ${JSON.stringify(payment, null, 2)}`,
+                description: `Pago a profesor registrado.\nMonto: ${validatedData.amount}\nCuenta Por Pagar ID: ${id}\nDetalle técnico: ${JSON.stringify(payment, null, 2)}`,
                 origin: 'account-payable/[id]/payments',
                 elementId: id,
                 success: true,
