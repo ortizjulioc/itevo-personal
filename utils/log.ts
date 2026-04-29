@@ -31,7 +31,6 @@ const LOGS_DIR = path.join(process.cwd(), "logs");
 export const createLog = async (logData: LogData): Promise<void> => {
     try {
         const session = await getServerSession(authOptions);
-        console.log('session log -->', session);
         const now = new Date();
         const year = now.getFullYear().toString();
         const month = (now.getMonth() + 1).toString().padStart(2, "0");
