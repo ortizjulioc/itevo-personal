@@ -32,7 +32,7 @@ export default function NewAttendance() {
   const { enrollments, refetchEnrollments } = useFetchEnrollments('', { preventFirstFetch: true });
   const [students, setStudents] = React.useState<Student[]>([]);
   const { attendances, fetchAttendanceData, loading, error } = useFetchAttendances(
-    `date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch?.id}`
+    `date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch?.id}&top=1000`
   );
   // Add state to track loading for each student
   const [loadingStudents, setLoadingStudents] = React.useState<{ [key: string]: boolean }>({});
@@ -105,7 +105,7 @@ export default function NewAttendance() {
     try {
       await upsertAttendance(status as AttendanceStatus, student, { silent: false });
       // Un refetch después de cada cambio individual (como ya tenías)
-      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
+      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}&top=500`);
     } finally {
       setLoadingStudents((prev) => ({ ...prev, [student.id]: false }));
     }
@@ -153,7 +153,7 @@ export default function NewAttendance() {
       });
 
       // Un solo refetch al final
-      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}`);
+      await fetchAttendanceData(`date=${extractDate(selectedDate)}&courseBranchId=${selectedBranch.id}&top=500`);
 
       openNotification(
         failed ? 'warning' : 'success',
@@ -168,7 +168,7 @@ export default function NewAttendance() {
   React.useEffect(() => {
     if (selectedBranch) {
       console.log('Fetching enrollments for branch:', selectedBranch.id);
-      refetchEnrollments(`courseBranchId=${selectedBranch.id}&top=1000`);
+      refetchEnrollments(`courseBranchId=${selectedBranch.id}&top=500`);
     }
   }, [selectedBranch, refetchEnrollments]);
 

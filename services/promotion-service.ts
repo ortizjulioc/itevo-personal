@@ -25,7 +25,6 @@ export const getPromotions = async (search: string, page: number, top: number) =
     const totalPromotions = await Prisma.promotion.count({
         where: {
             description: { contains: search },
-            deleted: false,
         },
     });
 

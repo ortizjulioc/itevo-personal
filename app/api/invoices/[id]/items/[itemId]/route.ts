@@ -81,6 +81,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
             );
         });
 
+        await createLog({
+            action: 'DELETE',
+            description: `Se eliminó el ítem con ID: ${itemId} de la factura con ID: ${id}`,
+            origin: `invoices/[id]/items/[itemId]`,
+            elementId: itemId,
+            success: true,
+        });
+
         return NextResponse.json(invoiceUpdated, { status: 200 });
     } catch (error) {
         // Registrar log de error

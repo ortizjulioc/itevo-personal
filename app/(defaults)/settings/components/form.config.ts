@@ -9,7 +9,7 @@ export const updateValidationSchema = Yup.object().shape({
     email: Yup.string().email('Correo electrónico no válido'),
     logo: Yup.string(),
     defaultPassword: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
-    rules: Yup.array().of(Yup.string()),
+    rules: Yup.mixed().nullable(),
     logoReport: Yup.string().nullable(),
     titleReport: Yup.string().nullable(),
     descriptionReport: Yup.string().nullable(),

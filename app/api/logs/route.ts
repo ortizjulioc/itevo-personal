@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
         const elementIdFilter = searchParams.get("elementId");
         const successFilter = searchParams.get("success") ? searchParams.get("success") === "true" : undefined;
         const authorIdFilter = searchParams.get("authorId");
+        const branchIdFilter = searchParams.get("branchId");
 
         // Obtener los logs por fecha
         const logs = await getLogsByDate(date);
@@ -29,11 +30,12 @@ export async function GET(request: NextRequest) {
         const filteredLogs = logs.reduce<LogEntry[]>((result, log) => {
             if (
                 (actionFilter.size > 0 && !actionFilter.has(log.action)) ||
-                (descriptionFilter && !log.description.includes(descriptionFilter)) ||
-                (originFilter && log.origin !== originFilter) ||
+                (descriptionFilter && !log.description.toLowerCase().includes(descriptionFilter.toLowerCase())) ||
+                (originFilter && !log.origin.toLowerCase().includes(originFilter.toLowerCase())) ||
                 (elementIdFilter && log.elementId !== elementIdFilter) ||
                 (successFilter !== undefined && (log.success ?? false) !== successFilter) ||
-                (authorIdFilter && log.authorId !== authorIdFilter)
+                (authorIdFilter && log.authorId !== authorIdFilter) ||
+                (branchIdFilter && log.branchId !== branchIdFilter)
             ) {
                 return result; // Si no coincide con algún filtro, se omite el log
             }
@@ -41,9 +43,12 @@ export async function GET(request: NextRequest) {
             return result;
         }, []);
 
+        // Ordenar por fecha descendente (más recientes primero)
+        const sortedLogs = filteredLogs.sort((a, b) => b.date.localeCompare(a.date));
+
         return NextResponse.json({
-            logs: filteredLogs,
-            totalLogs: filteredLogs.length,
+            logs: sortedLogs,
+            totalLogs: sortedLogs.length,
         }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});

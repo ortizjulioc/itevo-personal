@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     await createLog({
       action: 'POST',
-      description: `Se creó un nuevo cierre de caja.\nInformación del cierre: ${JSON.stringify(closure, null, 2)}`,
+      description: `Cierre de caja registradora.\nTotal Efectivo: ${validatedData.totalCash}\nTotal Tarjeta: ${validatedData.totalCard}\nDiferencia: ${difference}\nDetalle técnico: ${JSON.stringify(closure, null, 2)}`,
       origin: 'cash-register/[id]/closure',
       elementId: closure?.id || '',
       success: true,

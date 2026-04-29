@@ -1,6 +1,8 @@
 import { formatCurrency, formatPhoneNumber } from '@/utils';
 import { getFormattedDate } from '@/utils/date';
 import { formatScheduleList } from '@/utils/schedule';
+import { isLegacyRulesFormat } from '@/app/(defaults)/settings/lib/rules-transform';
+import { TipTapPDFRenderer } from './TipTapPDFRenderer';
 import {
   Document,
   Font,
@@ -131,12 +133,13 @@ function formatPhoneList(phoneList: string): string {
 type EnrollmentPDFProps = {
   enrollment: any;
   companyInfo: any;
-  rules: string[];
+  rules: any;
 };
 
 
 export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFProps) => {
   const schedules = formatScheduleList(enrollment.courseBranch.schedules || []);
+  
   return (
     <Document>
       <Page size={'LETTER'} style={styles.page}>
@@ -174,11 +177,7 @@ export const EnrollmentPDF = ({ enrollment, companyInfo, rules }: EnrollmentPDFP
 
           <View style={styles.rulesSection}>
             <Text style={styles.rulesTitle}>USTED SE INSCRIBIÓ ACEPTANDO LAS SIGUIENTES NORMAS:</Text>
-            {rules.length > 0 && rules.map((norma, index) => (
-              <Text key={index} style={styles.ruleItem}>
-                {index + 1}. {norma}
-              </Text>
-            ))}
+            {rules ? <TipTapPDFRenderer content={rules} /> : null}
           </View>
 
           <View style={styles.signatureContainer}>

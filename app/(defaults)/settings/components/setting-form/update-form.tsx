@@ -10,10 +10,33 @@ import { deleteLogo, deleteLogoReport, updateSetting, uploadLogo, uploadLogoRepo
 import ImageUploader from '@/components/common/ImageUploader';
 import { Tab } from '@headlessui/react';
 import RulesEditor from '../rules-editor';
+import { isLegacyRulesFormat, legacyRulesToTipTap } from '../../lib/rules-transform';
+import { useEffect } from 'react';
+import { useFormikContext } from 'formik';
+
+const FormErrorsWatcher = () => {
+    const { submitCount, isValid, isSubmitting } = useFormikContext();
+
+    useEffect(() => {
+        if (submitCount > 0 && !isValid && !isSubmitting) {
+            openNotification('error', 'Por favor complete todos los campos obligatorios en las diferentes pestañas.');
+        }
+    }, [submitCount, isValid, isSubmitting]);
+
+    return null;
+};
 
 export default function UpdateSettingForm({ initialValues }: { initialValues: Setting }) {
     const route = useRouter();
-    console.log('initialValues', initialValues);
+
+    const processedInitialValues = {
+        ...initialValues,
+        rules: isLegacyRulesFormat(initialValues.rules) 
+            ? legacyRulesToTipTap(initialValues.rules as string[]) 
+            : initialValues.rules
+    };
+
+    console.log('initialValues', processedInitialValues);
     const handleSubmit = async (values: any) => {
         const data = { ...values };
 
@@ -23,7 +46,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
         if (resp.success) {
             openNotification('success', 'Configuracion editada correctamente');
         } else {
-            alert(resp.message);
+            openNotification('error', resp.message || 'Ocurrió un error al guardar la configuración');
         }
     }
 
@@ -101,9 +124,10 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
 
     return (
         <div>
-            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={processedInitialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
+                        <FormErrorsWatcher />
                         <Tab.Group>
                             <Tab.List className="flex flex-wrap">
                                 <Tab
@@ -228,7 +252,7 @@ export default function UpdateSettingForm({ initialValues }: { initialValues: Se
                                 <Tab.Panel>
                                     <div className="mt-6">
                                         <RulesEditor
-                                            value={(values?.rules as string[]) || ['']}
+                                            value={(values?.rules as any) || null}
                                             onChange={(newRules) => setFieldValue('rules', newRules)}
                                         />
                                     </div>

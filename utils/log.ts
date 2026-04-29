@@ -18,6 +18,7 @@ export interface LogEntry {
     origin: string;
     elementId?: string;
     authorId: string;
+    branchId: string;
     success?: boolean;
 }
 
@@ -42,7 +43,8 @@ export const createLog = async (logData: LogData): Promise<void> => {
             description: logData.description,
             origin: logData.origin,
             elementId: logData.elementId,
-            authorId: session?.user?.id || "unknown", // Usar "unknown" si no hay sesión
+            authorId: session?.user?.id || "unknown",
+            branchId: session?.user.activeBranchId || session?.user.mainBranch.id || session?.user.branches[0].id || "unknown"
         };
 
         await fs.mkdir(path.dirname(logFilePath), { recursive: true });

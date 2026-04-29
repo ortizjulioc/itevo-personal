@@ -54,8 +54,8 @@ export async function POST(req: NextRequest) {
         const invoice = await createInvoice(invoiceData);
         await createLog({
             action: 'POST',
-            description: `Se creó la factura con la siguiente información: \n${JSON.stringify(invoice, null, 2)}`,
-            origin: 'branches',
+            description: `Creación de factura en borrador (DRAFT).\nNúmero de factura: ${invoice.invoiceNumber}\nDetalle técnico: ${JSON.stringify(invoice, null, 2)}`,
+            origin: 'invoices',
             elementId: invoice.id,
             success: true,
         });

@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     await createLog({
       action: 'POST',
-      description: `Se creó la cuenta por cobrar con la siguiente información: \n${JSON.stringify(accountReceivable, null, 2)}`,
+      description: `Creación de cuenta por cobrar.\nEstudiante ID: ${body.studentId}\nMonto: ${body.amount}\nFecha de vencimiento: ${body.dueDate}\nDetalle técnico: ${JSON.stringify(accountReceivable, null, 2)}`,
       origin: 'accounts-receivable',
       elementId: accountReceivable.id,
       success: true,

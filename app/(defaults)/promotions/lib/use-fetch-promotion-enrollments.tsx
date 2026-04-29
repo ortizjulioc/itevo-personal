@@ -30,7 +30,7 @@ const useFetchPromotionEnrollments = (promotionId: string, query: string, option
     try {
       setLoading(true);
       const queryString = query ? `?${query}` : '';
-      const response = await apiRequest.get<EnrollmentResponse>(`promotions/${promotionId}/enrollments${queryString}`);
+      const response = await apiRequest.get<EnrollmentResponse>(`/promotions/${promotionId}/enrollments${queryString}`);
       if (!response.success) {
         throw new Error(response.message);
       }

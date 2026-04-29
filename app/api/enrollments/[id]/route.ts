@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         await createLog({
             action: 'PUT',
-            description: `Se actualizó un enrollment. Información anterior: ${JSON.stringify(enrollment, null, 2)}. Información actualizada: ${JSON.stringify(updatedEnrollment, null, 2)}`,
+            description: `Actualización de inscripción.\nDatos anteriores: ${JSON.stringify(enrollment, null, 2)}\nDatos actualizados: ${JSON.stringify(updatedEnrollment, null, 2)}`,
             origin: 'enrollments/[id]',
             elementId: id,
             success: true,
@@ -61,7 +61,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         if (receivables.length > 0) {
             await createLog({
                 action: 'POST',
-                description: `Se generaron cuentas por cobrar al actualizar enrollment a ENROLLED: ${JSON.stringify(receivables, null, 2)}`,
+                description: `Generación automática de cuentas por cobrar por cambio de estado a ${body.status}.\nDetalle: ${JSON.stringify(receivables, null, 2)}`,
                 origin: 'enrollments/[id]',
                 elementId: id,
                 success: true,
@@ -102,7 +102,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         await createLog({
             action: 'DELETE',
-            description: `Se eliminó un enrollment con los siguientes datos: ${JSON.stringify(enrollment, null, 2)}`,
+            description: `Eliminación de inscripción.\nDatos eliminados: ${JSON.stringify(enrollment, null, 2)}`,
             origin: 'enrollments/[id]',
             elementId: id,
             success: true,

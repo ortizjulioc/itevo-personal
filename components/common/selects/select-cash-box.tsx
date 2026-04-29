@@ -1,9 +1,11 @@
 'use client';
-
 import apiRequest from '@/utils/lib/api-request/request';
 import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
-import { GroupBase, ActionMeta } from 'react-select';
+import { GroupBase, ActionMeta, StylesConfig, CSSObjectWithLabel } from 'react-select';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
+import { getCustomStyles } from '@/components/ui/select';
 
 export type SelectCashBoxType = {
   value: string;
@@ -28,10 +30,23 @@ interface CashBox {
 interface SelectCashBoxProps {
   value?: string;
   onChange?: (selected: SelectCashBoxType | null, actionMeta: ActionMeta<SelectCashBoxType>) => void;
+  placeholder?: string;
 }
 
-export default function SelectCashBox({ value, onChange, ...rest }: SelectCashBoxProps) {
+const customStyles: StylesConfig<SelectCashBoxType, false> = {
+    menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+};
+
+export default function SelectCashBox({ value, onChange, placeholder = '-Cajas-', ...rest }: SelectCashBoxProps) {
   const [options, setOptions] = useState<SelectCashBoxType[]>([]);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   const fetchCashBoxData = async (inputValue: string): Promise<SelectCashBoxType[]> => {
     try {
@@ -79,11 +94,16 @@ export default function SelectCashBox({ value, onChange, ...rest }: SelectCashBo
         loadOptions={loadOptions}
         cacheOptions
         defaultOptions={options}
-        placeholder="-Cajas-"
+        placeholder={placeholder}
         noOptionsMessage={() => 'No hay opciones'}
         value={options.find((option) => option.value === value) || null}
         onChange={onChange}
         isClearable
+        styles={{
+            ...customStyles,
+            ...getCustomStyles(Boolean(themeConfig.isDarkMode)),
+        }}
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         {...rest}
       />
     </div>

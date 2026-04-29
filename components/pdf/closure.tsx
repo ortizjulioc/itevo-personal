@@ -74,11 +74,12 @@ const styles = StyleSheet.create({
   infoFieldTitle: {
     fontWeight: 'bold',
     width: 84, // Ajusta el ancho del título para que no ocupe toda la línea
+    hyphens: 'none',
   },
   infoFieldValue: {
     flex: 1,
     flexWrap: 'wrap',
-    wordBreak: 'break-word',
+    hyphens: 'none',
   },
   footer: {
     textAlign: 'center',
@@ -128,6 +129,7 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
     closureDate,
     initialCash,
     expectedCash,
+    reportedCash,
     differenceCash,
     branch,
     user,
@@ -167,7 +169,9 @@ export const ClosurePDF = ({ closure, companyInfo, logo }: { closure: any, compa
             <InfoField title="Cierre:" value={getFormattedDateTime(new Date(closureDate))} />
 
             <InfoField title="Efectivo inicial:" value={formatCurrency(initialCash)} />
-            <InfoField title="Efectivo en caja:" value={formatCurrency(expectedCash)} />
+            <InfoField title="Efectivo Esperado:" value={formatCurrency(expectedCash)} />
+            <InfoField title="Efectivo Reportado:" value={formatCurrency(reportedCash)} />
+
             <DifferenceLabel title="Diferencia:" difference={differenceCash} />
 
           </View>
