@@ -54,9 +54,8 @@ export default function LogList({ className, query = '', date }: LogListProps) {
         <div className={className}>
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold">
-                    Mostrando {logs.length} registros {date && `del día ${date}`}
+                    Mostrando {logs.length} de {totalLogs} registros {date && `del día ${date}`}
                 </h3>
-
             </div>
 
             <div className="table-responsive mb-5 panel p-0 border-0 overflow-hidden rounded-xl shadow-lg bg-white/60 dark:bg-black/60 backdrop-blur-md">
@@ -148,6 +147,14 @@ export default function LogList({ className, query = '', date }: LogListProps) {
                 open={logDrawerOpen} 
                 onClose={() => setLogDrawerOpen(false)} 
             />
+
+            <div className="mt-5">
+                <Pagination 
+                    currentPage={parseInt(params?.page || '1')}
+                    total={totalLogs}
+                    top={parseInt(params?.top || '50')}
+                />
+            </div>
 
         </div>
     );

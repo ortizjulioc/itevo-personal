@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
                 (authorIdFilter && log.authorId !== authorIdFilter) ||
                 (branchIdFilter && log.branchId !== branchIdFilter)
             ) {
-                return result; // Si no coincide con algún filtro, se omite el log
+                return result; 
             }
             result.push(log);
             return result;
@@ -46,9 +46,18 @@ export async function GET(request: NextRequest) {
         // Ordenar por fecha descendente (más recientes primero)
         const sortedLogs = filteredLogs.sort((a, b) => b.date.localeCompare(a.date));
 
+        // Implementar Paginación
+        const page = parseInt(searchParams.get("page") || "1");
+        const top = parseInt(searchParams.get("top") || "50");
+        const startIndex = (page - 1) * top;
+        const endIndex = page * top;
+        const paginatedLogs = sortedLogs.slice(startIndex, endIndex);
+
         return NextResponse.json({
-            logs: sortedLogs,
+            logs: paginatedLogs,
             totalLogs: sortedLogs.length,
+            totalPages: Math.ceil(sortedLogs.length / top),
+            currentPage: page,
         }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: formatErrorMessage(error)},{ status: 500});
