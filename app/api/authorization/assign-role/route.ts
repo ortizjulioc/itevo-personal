@@ -2,7 +2,10 @@ import { NextResponse, NextRequest } from "next/server";
 import { assignRoleToUserInBranch } from "@/services/authorization-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
-import { error } from "console";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/auth-options";
+import { SUPER_ADMIN } from "@/constants/role.constant";
+import { findRoleById } from "@/services/role-service";
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,6 +14,17 @@ export async function POST(request: NextRequest) {
 
         if (!userId || !branchId || !roleId) {
             return NextResponse.json({ code: 'E_MISSING_FIELDS' ,message:'Los campos userId, branchId y roleId son obligatorios.'}, { status: 400 });
+        }
+
+        // Obtener rol a asignar
+        const roleToAssign = await findRoleById(roleId);
+        if (roleToAssign?.normalizedName === SUPER_ADMIN) {
+            const session = await getServerSession(authOptions);
+            const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+            
+            if (!isSuperAdmin) {
+                return NextResponse.json({ code: 'E_UNAUTHORIZED', message: 'Solo los super_admin pueden asignar este rol.' }, { status: 403 });
+            }
         }
 
         const result = await assignRoleToUserInBranch(userId, branchId, roleId);
