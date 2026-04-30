@@ -75,7 +75,7 @@ export default function LogList({ className, query = '', date }: LogListProps) {
                     <tbody>
                         {logs.length === 0 && (
                             <tr>
-                                <td colSpan={5} className="text-center text-gray-500 dark:text-gray-600 italic py-10">
+                                <td colSpan={8} className="text-center text-gray-500 dark:text-gray-600 italic py-10">
                                     No se encontraron registros para los filtros seleccionados
                                 </td>
                             </tr>
@@ -106,7 +106,7 @@ export default function LogList({ className, query = '', date }: LogListProps) {
                                                 {log.elementId}
                                             </code>
                                             <PremiumTooltip content="Copiar ID">
-                                                <button 
+                                                <button
                                                     onClick={() => copyToClipboard(log.elementId!)}
                                                     className="opacity-0 group-hover/copy:opacity-100 text-gray-400 hover:text-primary transition-all"
                                                 >
@@ -125,7 +125,7 @@ export default function LogList({ className, query = '', date }: LogListProps) {
                                 </td>
                                 <td className="text-right">
                                     <PremiumTooltip content="Ver detalles">
-                                        <button 
+                                        <button
                                             className="hover:text-primary transition-colors p-2"
                                             onClick={() => {
                                                 setSelectedLog(log);
@@ -142,14 +142,14 @@ export default function LogList({ className, query = '', date }: LogListProps) {
                 </table>
             </div>
 
-            <LogDetailsDrawer 
-                log={selectedLog} 
-                open={logDrawerOpen} 
-                onClose={() => setLogDrawerOpen(false)} 
+            <LogDetailsDrawer
+                log={selectedLog}
+                open={logDrawerOpen}
+                onClose={() => setLogDrawerOpen(false)}
             />
 
             <div className="mt-5">
-                <Pagination 
+                <Pagination
                     currentPage={parseInt(params?.page || '1')}
                     total={totalLogs}
                     top={parseInt(params?.top || '50')}
