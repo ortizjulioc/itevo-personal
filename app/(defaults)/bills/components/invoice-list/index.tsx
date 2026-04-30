@@ -18,6 +18,9 @@ import PrintInvoice from "@/components/common/print/invoice";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 import { IoMdPrint } from 'react-icons/io';
+import { LuRotateCcw } from "react-icons/lu";
+import { restoreInvoice } from "../../lib/request";
+import { confirmDialog } from "@/utils";
 
 interface Props {
     className?: string;
@@ -29,14 +32,33 @@ export default function InvoiceList({ className, query = '' }: Props) {
     const isAdmin = session?.user?.roles?.some((role: any) => 
         [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, ADMIN].includes(role.normalizedName)
     );
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
 
     const [printModalOpen, setPrintModalOpen] = useState(false);
     const [invoiceToPrint, setInvoiceToPrint] = useState<string | null>(null);
 
     const params = queryStringToObject(query);
-    const { loading, error, invoices, totalInvoices, setInvoices } = useFetchInvoices(query);
+    const { loading, error, invoices, totalInvoices, setInvoices, fetchInvoicesData } = useFetchInvoices(query);
     if (error) {
         openNotification('error', error);
+    }
+
+    const onRestore = async (id: string) => {
+        confirmDialog({
+            title: 'Restaurar Factura',
+            text: '¿Quieres restaurar esta factura cancelada?',
+            confirmButtonText: 'Sí, restaurar',
+            icon: 'info'
+        }, async () => {
+            const resp = await restoreInvoice(id);
+            if (resp.success) {
+                openNotification('success', 'Factura restaurada correctamente');
+                fetchInvoicesData(query);
+                return;
+            } else {
+                openNotification('error', resp.message);
+            }
+        });
     }
 
 
@@ -68,8 +90,9 @@ export default function InvoiceList({ className, query = '' }: Props) {
                             </tr>
                         )}
                         {invoices?.map((invoice) => {
+                            const isCanceled = invoice.status === 'CANCELED';
                             return (
-                                <tr key={invoice.id}>
+                                <tr key={invoice.id} className={isCanceled ? "opacity-50 grayscale-[0.5]" : ""}>
                                     <td className="text-left">{invoice.invoiceNumber}</td>
                                     <td className="text-left">{invoice.ncf.startsWith('B') ? invoice.ncf : <OptionalInfo />}</td>
                                     <td className="text-left"> {invoice.studentId ? <OptionalInfo content={`${invoice.student?.firstName} ${invoice.student?.lastName}`} message="No registrado" /> : <OptionalInfo content='' />}</td>
@@ -94,26 +117,42 @@ export default function InvoiceList({ className, query = '' }: Props) {
 
                                     <td>
                                         <div className="flex justify-end gap-2">
-                                            {isAdmin ? (
-                                                <Tooltip title="detalles">
-                                                    <Link href={`/bills/${invoice.id}`}>
-                                                        <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
-                                                    </Link>
-                                                </Tooltip>
-                                            ) : (
-                                                <Tooltip title="Imprimir">
+                                            {isSuperAdmin && isCanceled ? (
+                                                <Tooltip title="Restaurar">
                                                     <div>
                                                         <Button 
                                                             variant="outline" 
                                                             size="sm" 
-                                                            icon={<IoMdPrint className="text-lg" />} 
-                                                            onClick={() => {
-                                                                setInvoiceToPrint(invoice.id);
-                                                                setPrintModalOpen(true);
-                                                            }} 
+                                                            color="success"
+                                                            icon={<LuRotateCcw className="text-lg" />} 
+                                                            onClick={() => onRestore(invoice.id)} 
                                                         />
                                                     </div>
                                                 </Tooltip>
+                                            ) : (
+                                                <>
+                                                    {isAdmin ? (
+                                                        <Tooltip title="detalles">
+                                                            <Link href={`/bills/${invoice.id}`}>
+                                                                <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                            </Link>
+                                                        </Tooltip>
+                                                    ) : (
+                                                        <Tooltip title="Imprimir">
+                                                            <div>
+                                                                <Button 
+                                                                    variant="outline" 
+                                                                    size="sm" 
+                                                                    icon={<IoMdPrint className="text-lg" />} 
+                                                                    onClick={() => {
+                                                                        setInvoiceToPrint(invoice.id);
+                                                                        setPrintModalOpen(true);
+                                                                    }} 
+                                                                />
+                                                            </div>
+                                                        </Tooltip>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </td>

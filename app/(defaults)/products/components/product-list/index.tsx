@@ -7,8 +7,12 @@ import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchProducts from "../../lib/use-fetch-products";
 import { deleteProduct } from "../../lib/request";
-import { TbPointFilled } from "react-icons/tb";
 import OptionalInfo from "@/components/common/optional-info";
+import { useSession } from "next-auth/react";
+import { restoreProduct } from "../../lib/request";
+import { LuRotateCcw } from "react-icons/lu";
+import { TbPointFilled } from "react-icons/tb";
+import { SUPER_ADMIN } from "@/constants/role.constant";
 
 interface Props {
     className?: string;
@@ -17,7 +21,9 @@ interface Props {
 
 export default function ProductList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, products, totalProducts, setProducts } = useFetchProducts(query);
+    const { data: session } = useSession();
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+    const { loading, error, products, totalProducts, setProducts, refetchProducts } = useFetchProducts(query);
     if (error) {
         openNotification('error', error);
     }
@@ -34,6 +40,23 @@ export default function ProductList({ className, query = '' }: Props) {
             if (resp.success) {
                 setProducts(products?.filter((product) => product.id !== id));
                 openNotification('success', 'Producto eliminada correctamente');
+                return;
+            }
+            openNotification('error', resp.message);
+        });
+    }
+
+    const onRestore = async (id: string) => {
+        confirmDialog({
+            title: 'Restaurar producto',
+            text: '¿Quieres restaurar este producto?',
+            confirmButtonText: 'Sí, restaurar',
+            icon: 'info'
+        }, async () => {
+            const resp = await restoreProduct(id);
+            if (resp.success) {
+                openNotification('success', 'Producto restaurado correctamente');
+                refetchProducts();
                 return;
             }
             openNotification('error', resp.message);
@@ -64,13 +87,17 @@ export default function ProductList({ className, query = '' }: Props) {
                             </tr>
                         )}
                         {products?.map((product) => {
+                            const isDeleted = product.deleted;
                             return (
-                                <tr key={product.id}>
+                                <tr key={product.id} className={isDeleted ? "opacity-50 grayscale-[0.5]" : ""}>
                                     <td>
                                         <div className="whitespace-nowrap">{product.code}</div>
                                     </td>
                                     <td>
-                                        <div className="whitespace-nowrap">{product.name}</div>
+                                        <div className="whitespace-nowrap flex items-center gap-2">
+                                            {product.name}
+                                            {isDeleted && <span className="badge bg-danger text-xs">Eliminado</span>}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">
@@ -98,14 +125,22 @@ export default function ProductList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(product.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/products/${product.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                                                </Link>
-                                            </Tooltip>
+                                            {isSuperAdmin && isDeleted ? (
+                                                <Tooltip title="Restaurar">
+                                                    <Button onClick={() => onRestore(product.id)} variant="outline" size="sm" icon={<LuRotateCcw className="size-4" />} color="success" />
+                                                </Tooltip>
+                                            ) : (
+                                                <>
+                                                    <Tooltip title="Eliminar">
+                                                        <Button onClick={() => onDelete(product.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                    </Tooltip>
+                                                    <Tooltip title="Editar">
+                                                        <Link href={`/products/${product.id}`}>
+                                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                        </Link>
+                                                    </Tooltip>
+                                                </>
+                                            )}
                                             {/* ALTERNATIVA */}
                                             {/* <Button onClick={() => onDelete(Role.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
                                             <Link href={`/Roles/${Role.id}`}>

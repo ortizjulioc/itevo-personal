@@ -11,9 +11,13 @@ import { Prisma } from '@/utils/lib/prisma';
 import { addDaysToDate, getCourseEndDate, getNextDayOfWeek } from '@/utils/date';
 import { getHolidays } from '@/services/holiday-service';
 import { addMonths } from 'date-fns';
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 export async function GET(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
         const { searchParams } = new URL(request.url);
 
         const filters = {
@@ -32,7 +36,7 @@ export async function GET(request: NextRequest) {
             courseBranchId: searchParams.get('courseBranchId') || undefined,
         };
 
-        const { enrollments, totalEnrollments, summary } = await getEnrollments(filters);
+        const { enrollments, totalEnrollments, summary } = await getEnrollments(filters, isSuperAdmin);
 
         return NextResponse.json(
             {

@@ -24,17 +24,19 @@ async function apiRequest<T>(params: AxiosRequestConfig): Promise<ApiResponse<T>
 
 async function get<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     const { params, ...restOptions } = options;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
     return await apiRequest<T>({
         ...restOptions,
         params,
-        url: `/api/${path}`,
+        url: `/api/${cleanPath}`,
         method: 'GET',
     });
 }
 
 async function post<T>(path: string, data: T, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
     return await apiRequest<T>({
-        url: `/api/${path}`,
+        url: `/api/${cleanPath}`,
         ...options,
         method: 'POST',
         data,
@@ -42,18 +44,30 @@ async function post<T>(path: string, data: T, options: RequestOptions = {}): Pro
 }
 
 async function put<T>(path: string, data: T, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
     return await apiRequest<T>({
-        url: `/api/${path}`,
+        url: `/api/${cleanPath}`,
         ...options,
         method: 'PUT',
         data,
     });
 }
 
+async function patch<T>(path: string, data?: any, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return await apiRequest<T>({
+        url: `/api/${cleanPath}`,
+        ...options,
+        method: 'PATCH',
+        data,
+    });
+}
+
 async function remove<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
     return await apiRequest<T>({
         ...options,
-        url: `/api/${path}`,
+        url: `/api/${cleanPath}`,
         method: 'DELETE',
     });
 }
@@ -62,8 +76,9 @@ export {
     get,
     post,
     put,
+    patch,
     remove
 };
 
-const request = { get, post, put, remove };
+const request = { get, post, put, patch, remove };
 export default request;

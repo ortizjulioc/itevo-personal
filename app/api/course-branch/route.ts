@@ -6,9 +6,13 @@ import { createLog } from '@/utils/log';
 import { CourseBranchStatus, Modality } from '@/generated/prisma/client';
 import { findCourseById } from '@/services/course-service';
 import { getSettings } from '@/services/settings-service';
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 export async function GET(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
         const { searchParams } = new URL(request.url);
 
         // Filtros de búsqueda
@@ -24,7 +28,7 @@ export async function GET(request: NextRequest) {
             endDate: searchParams.get('endDate') || undefined,
             search: searchParams.get('search') || undefined,
         }
-        const { courseBranches, totalCourseBranches } = await getCourseBranch(filters);
+        const { courseBranches, totalCourseBranches } = await getCourseBranch(filters, isSuperAdmin);
 
         return NextResponse.json(
             {

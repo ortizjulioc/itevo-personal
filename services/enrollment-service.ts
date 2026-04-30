@@ -2,12 +2,12 @@ import 'server-only';
 import { EnrollmentStatus, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 import { Prisma } from '@/utils/lib/prisma';
 
-export const getEnrollments = async (filters: any) => {
+export const getEnrollments = async (filters: any, includeDeleted: boolean = false) => {
     const { studentId, courseId, teacherId, branchId, promotionId, modality, status, startDate, endDate, page, top, courseBranchId } = filters;
     const skip = (page - 1) * top;
 
     const where: PrismaTypes.EnrollmentWhereInput = {
-        deleted: false,
+        ...(includeDeleted ? {} : { deleted: false }),
         ...(courseBranchId && { courseBranchId }),
         ...(studentId && { studentId }),
         ...(status && {
@@ -28,7 +28,7 @@ export const getEnrollments = async (filters: any) => {
                 },
             }),
         courseBranch: {
-            deleted: false,
+            ...(includeDeleted ? {} : { deleted: false }),
             ...(courseId && { courseId }),
             ...(teacherId && { teacherId }),
             ...(branchId && { branchId }),
@@ -151,11 +151,11 @@ export const createEnrollment = async (data: PrismaTypes.EnrollmentCreateInput, 
 // };
 
 // Obtener enrollment por ID
-export const findEnrollmentById = async (id: string) => {
+export const findEnrollmentById = async (id: string, includeDeleted: boolean = false) => {
     const enrollment = await Prisma.enrollment.findUnique({
         where: {
             id: id,
-            deleted: false,
+            ...(includeDeleted ? {} : { deleted: false }),
         },
         include: {
             student: {
@@ -225,5 +225,13 @@ export const deleteEnrollmentById = async (id: string) => {
     return Prisma.enrollment.update({
         where: { id },
         data: { deleted: true },
+    });
+};
+
+// Restaurar enrollment por ID
+export const restoreEnrollmentById = async (id: string) => {
+    return Prisma.enrollment.update({
+        where: { id },
+        data: { deleted: false },
     });
 };

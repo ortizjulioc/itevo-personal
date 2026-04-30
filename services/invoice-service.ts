@@ -73,7 +73,7 @@ interface InvoiceFilter {
     pageSize?: number;
 }
 
-export const findInvoices = async (filter: InvoiceFilter): Promise<{
+export const findInvoices = async (filter: InvoiceFilter, includeCanceled: boolean = false): Promise<{
     invoices: Invoice[];
     totalInvoices: number,
     currentPage: number,
@@ -112,6 +112,9 @@ export const findInvoices = async (filter: InvoiceFilter): Promise<{
         where.status = { in: status };
     } else if (status) {
         where.status = status;
+    } else if (!includeCanceled) {
+        // Por defecto, excluir canceladas si no se solicita verlas
+        where.status = { not: InvoiceStatus.CANCELED };
     }
 
     if (fromDate || toDate) {
@@ -333,3 +336,15 @@ export const deleteInvoiceItem = async (
         where: { id: itemId },
     })
 }
+
+export const restoreInvoiceById = async (id: string) => {
+    // Para restaurar una factura, la devolvemos a PAID o COMPLETED. 
+    // Como es difícil saber cuál era sin un histórico, usaremos PAID si tiene subtotal > 0.
+    const invoice = await Prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) throw new Error("Factura no encontrada");
+    
+    return await Prisma.invoice.update({
+        where: { id },
+        data: { status: InvoiceStatus.PAID },
+    });
+};

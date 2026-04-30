@@ -1,12 +1,12 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { Prisma as PrismaTypes } from '@/generated/prisma/client';
-export const getCourseBranch = async (filters: any) => {
+export const getCourseBranch = async (filters: any, includeDeleted: boolean = false) => {
 
     const { page, top, promotionId, branchId, teacherId, courseId, modality, search } = filters;
     const skip = (page - 1) * top;
     const whereClause: PrismaTypes.CourseBranchWhereInput = {
-        deleted: false,
+        ...(includeDeleted ? {} : { deleted: false }),
         ...(promotionId && { promotionId }),
         ...(branchId && { branchId }),
         ...(teacherId && { teacherId }),
@@ -38,13 +38,7 @@ export const getCourseBranch = async (filters: any) => {
     });
 
     const totalCourseBranches = await Prisma.courseBranch.count({
-        where: {
-            promotionId,
-            branchId,
-            teacherId,
-            courseId,
-            modality,
-        },
+        where: whereClause,
     });
 
     return {
@@ -62,10 +56,11 @@ export const createCourseBranch = async (data: PrismaTypes.CourseBranchCreateInp
 
 export const findCourseBranchById = async (
     id: string,
+    includeDeleted: boolean = false,
     prisma: PrismaTypes.TransactionClient = Prisma
 ) => {
     const courseBranch = await prisma.courseBranch.findUnique({
-        where: { id, deleted: false },
+        where: { id, ...(includeDeleted ? {} : { deleted: false }) },
         include: {
             branch: { select: { id: true, name: true } },
             teacher: { select: { id: true, firstName: true, lastName: true } },
@@ -96,6 +91,14 @@ export const deleteCourseBranchById = async (id: string) => {
     return Prisma.courseBranch.update({
         where: { id },
         data: { deleted: true },
+    });
+};
+
+// Restaurar courseBranch por ID
+export const restoreCourseBranchById = async (id: string) => {
+    return Prisma.courseBranch.update({
+        where: { id },
+        data: { deleted: false },
     });
 };
 

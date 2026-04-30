@@ -15,6 +15,10 @@ import StatusCourseBranch from "@/components/common/info-labels/status/status-co
 import { CourseBranchStatus } from '@/generated/prisma/client';
 import SelectCourseBranchStatus from "./select-status";
 import OptionalInfo from "@/components/common/optional-info";
+import { useSession } from "next-auth/react";
+import { restoreCourseBranch } from "../../lib/request";
+import { LuRotateCcw } from "react-icons/lu";
+import { SUPER_ADMIN } from "@/constants/role.constant";
 
 
 
@@ -30,7 +34,9 @@ type StatusOption = {
 
 export default function CourseBranchList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, courseBranches, totalCourseBranches, setCourseBranches } = useFetchCourseBranch(query);
+    const { data: session } = useSession();
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+    const { loading, error, courseBranches, totalCourseBranches, setCourseBranches, refetch } = useFetchCourseBranch(query);
 
     if (error) {
         openNotification('error', error);
@@ -50,6 +56,24 @@ export default function CourseBranchList({ className, query = '' }: Props) {
             if (resp.success) {
                 setCourseBranches(courseBranches?.filter((courseBranch) => courseBranch.id !== id));
                 openNotification('success', 'oferta  academica eliminada correctamente');
+                return;
+            } else {
+                openNotification('error', resp.message);
+            }
+        });
+    }
+
+    const onRestore = async (id: string) => {
+        confirmDialog({
+            title: 'Restaurar oferta académica',
+            text: '¿Quieres restaurar esta oferta académica?',
+            confirmButtonText: 'Sí, restaurar',
+            icon: 'info'
+        }, async () => {
+            const resp = await restoreCourseBranch(id);
+            if (resp.success) {
+                openNotification('success', 'Oferta académica restaurada correctamente');
+                refetch();
                 return;
             } else {
                 openNotification('error', resp.message);
@@ -107,8 +131,9 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                             </tr>
                         )}
                         {courseBranches?.map((courseBranch) => {
+                            const isDeleted = (courseBranch as any).deleted;
                             return (
-                                <tr key={courseBranch.id}>
+                                <tr key={courseBranch.id} className={isDeleted ? "opacity-50 grayscale-[0.5]" : ""}>
                                     <td><ModalityTag modality={courseBranch.modality} short /></td>
                                     <td>
                                         {courseBranch.startDate ? getFormattedDate(new Date(courseBranch.startDate)) : ''} {courseBranch.endDate ? ` ~ ${getFormattedDate(new Date(courseBranch.endDate))}` : ''}
@@ -116,6 +141,7 @@ export default function CourseBranchList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <span className='font-semibold'>{courseBranch.course.name}</span>
+                                        {isDeleted && <span className="badge bg-danger text-xs ml-2">Eliminado</span>}
                                     </td>
                                     <td>{courseBranch.teacher.firstName} {courseBranch.teacher.lastName}</td>
                                     <td>{courseBranch.sessionCount}</td>
@@ -132,21 +158,31 @@ export default function CourseBranchList({ className, query = '' }: Props) {
 
                                     <td>
                                         <div className="flex items-center gap-3 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <button onClick={() => onDelete(courseBranch.id)}>
-                                                    <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
-                                                </button>
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/course-branch/${courseBranch.id}`}>
-                                                    <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
-                                                </Link>
-                                            </Tooltip>
-                                            <Tooltip title="Detalles">
-                                                <Link href={`/course-branch/view/${courseBranch.id}`}>
-                                                    <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
-                                                </Link>
-                                            </Tooltip>
+                                            {isSuperAdmin && isDeleted ? (
+                                                <Tooltip title="Restaurar">
+                                                    <button onClick={() => onRestore(courseBranch.id)}>
+                                                        <LuRotateCcw className="size-5 hover:text-success hover:cursor-pointer" />
+                                                    </button>
+                                                </Tooltip>
+                                            ) : (
+                                                <>
+                                                    <Tooltip title="Eliminar">
+                                                        <button onClick={() => onDelete(courseBranch.id)}>
+                                                            <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                                                        </button>
+                                                    </Tooltip>
+                                                    <Tooltip title="Editar">
+                                                        <Link href={`/course-branch/${courseBranch.id}`}>
+                                                            <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
+                                                        </Link>
+                                                    </Tooltip>
+                                                    <Tooltip title="Detalles">
+                                                        <Link href={`/course-branch/view/${courseBranch.id}`}>
+                                                            <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
+                                                        </Link>
+                                                    </Tooltip>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

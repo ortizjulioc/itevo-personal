@@ -8,12 +8,14 @@ import { authOptions } from '../auth/[...nextauth]/auth-options';
 // Obtener todos los productos con búsqueda y paginación
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') ?? '';
     const page = parseInt(searchParams.get('page') ?? '1');
     const top = parseInt(searchParams.get('top') ?? '10');
 
-    const { products, totalProducts } = await getProducts(search, page, top);
+    const { products, totalProducts } = await getProducts(search, page, top, isSuperAdmin);
     return NextResponse.json({ products, totalProducts }, { status: 200 });
   } catch (error) {
     await createLog({
