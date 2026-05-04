@@ -6,7 +6,8 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType } from '@/generated/prisma/client';
+import { InvoiceItemType, MovementType } from '@/generated/prisma/client';
+import { recordInventoryMovement } from '@/services/inventory-service';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -62,6 +63,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 }
 
                 body.concept = product.name;
+
+                // Registrar movimiento de inventario OUT
+                await recordInventoryMovement({
+                    productId: product.id,
+                    quantity: body.quantity,
+                    previousStock: product.stock,
+                    newStock: product.stock - body.quantity,
+                    type: MovementType.OUT,
+                    reference: id,
+                    note: `Ítem agregado a factura en borrador`,
+                    branchId: product.branchId || null,
+                    tx: prisma,
+                });
+
                 // Actualizar el stock del producto
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,

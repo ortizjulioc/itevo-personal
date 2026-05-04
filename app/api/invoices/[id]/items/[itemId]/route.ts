@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { deleteInvoiceItem, findInvoiceById, updateInvoice } from '@/services/invoice-service';
 import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
-import { InvoiceItemType, PaymentStatus } from '@/generated/prisma/client';
+import { InvoiceItemType, MovementType, PaymentStatus } from '@/generated/prisma/client';
 import { findProductById, updateProductById } from '@/services/product-service';
+import { recordInventoryMovement } from '@/services/inventory-service';
 import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 import { deleteEarningFromAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 import Prisma from '@/utils/lib/prisma';
@@ -36,6 +37,19 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
                 if (!product) {
                     throw new Error(`Producto con ID ${item.productId} no encontrado`);
                 }
+                // Registrar movimiento de inventario IN
+                await recordInventoryMovement({
+                    productId: product.id,
+                    quantity: item.quantity || 0,
+                    previousStock: product.stock,
+                    newStock: product.stock + (item.quantity || 0),
+                    type: MovementType.IN,
+                    reference: id,
+                    note: `Ítem eliminado de la factura`,
+                    branchId: product.branchId || null,
+                    tx: prisma,
+                });
+
                 // Actualizar stock del producto
                 await updateProductById(
                     item.productId,
