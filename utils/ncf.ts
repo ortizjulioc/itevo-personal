@@ -22,39 +22,51 @@ export const ncfTypeToCode: Record<NcfType, string> = {
  * @returns NCF generado
  */
 export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClient, ncfType: NcfType, branchId?: string | null): Promise<string> {
-    const maxRetries = 5; // Límite de reintentos para evitar bucles infinitos
+    const maxRetries = 5;
     let attempt = 0;
 
     while (attempt < maxRetries) {
-        // Buscar el primer rango activo disponible
         const ncfRange = await tx.ncfRange.findFirst({
             where: {
                 isActive: true,
                 type: ncfType,
                 ...(branchId ? { branchId } : {}),
             },
-            orderBy: { currentSequence: 'asc' },
-            select: { id: true, prefix: true, currentSequence: true, endSequence: true },
+            orderBy: { startSequence: 'asc' },
+            select: { id: true, prefix: true, currentSequence: true, endSequence: true, startSequence: true },
         });
 
         if (!ncfRange) throw new Error(`No hay rangos de NCF activos disponibles para el tipo ${ncfType}`);
 
-        // Validar que hay secuencias disponibles
-        if (ncfRange.currentSequence >= ncfRange.endSequence) throw new Error(`El rango de NCF ${ncfRange.prefix} para ${ncfType} ha alcanzado su límite (${ncfRange.endSequence})`);
+        // Si el rango ya está agotado pero sigue activo, inactivarlo y buscar otro
+        if (ncfRange.currentSequence >= ncfRange.endSequence) {
+            await tx.ncfRange.update({
+                where: { id: ncfRange.id },
+                data: { isActive: false },
+            });
+            attempt++;
+            continue;
+        }
 
-        const newSequence = ncfRange.currentSequence + 1;
+        const newSequence = Math.max(ncfRange.currentSequence + 1, ncfRange.startSequence);
         const typeCode = ncfTypeToCode[ncfType];
         const ncf = `${ncfRange.prefix}${typeCode}${newSequence.toString().padStart(8, '0')}`;
 
-        // Verificar si el NCF ya existe
+        const isLimitReached = newSequence >= ncfRange.endSequence;
+
+        // Verificar si el NCF ya existe (colisión); si es así, avanzar la secuencia y reintentar
         const ncfExists = await tx.invoice.findUnique({ where: { ncf } });
         if (ncfExists) {
+            await tx.ncfRange.update({
+                where: { id: ncfRange.id },
+                data: {
+                    currentSequence: newSequence,
+                    ...(isLimitReached && { isActive: false }),
+                },
+            });
             attempt++;
-            continue; // Reintentar con el siguiente número
+            continue;
         }
-
-        // Actualizar la secuencia en el rango
-        const isLimitReached = newSequence >= ncfRange.endSequence;
 
         await tx.ncfRange.update({
             where: { id: ncfRange.id },
@@ -64,7 +76,7 @@ export async function generateNcf(tx: PrismaClient | PrismaTypes.TransactionClie
             },
         });
 
-        return ncf; // NCF generado exitosamente
+        return ncf;
     }
 
     throw new Error(`No se pudo generar un NCF único para el tipo ${ncfType} tras ${maxRetries} intentos`);
