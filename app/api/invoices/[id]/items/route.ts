@@ -72,7 +72,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     newStock: product.stock - body.quantity,
                     type: MovementType.OUT,
                     reference: id,
-                    note: `Ítem agregado a factura en borrador`,
+                    note: `Ítem agregado a factura ${invoice?.invoiceNumber || ''}`,
                     branchId: product.branchId || null,
                     tx: prisma,
                 });
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 })
 
                 if (accountReceivable.courseBranchId) {
-                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, false, prisma);
                     if (!courseBranch) {
                         throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
                     }
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
             }
-            const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
+            const { invoiceUpdated, itemCreated } = await addNewItemToInvoice(id, {
                 type: body.type,
                 productId: body.productId,
                 accountReceivableId: body.accountReceivableId,

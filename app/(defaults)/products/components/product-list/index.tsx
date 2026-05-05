@@ -1,7 +1,7 @@
 'use client';
 import { confirmDialog, formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
-import { IconEdit, IconTrashLines } from "@/components/icon";
+import { IconEdit, IconTrashLines, IconEye } from "@/components/icon";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import Skeleton from "@/components/common/Skeleton";
@@ -137,6 +137,11 @@ export default function ProductList({ className, query = '' }: Props) {
                                                     <Tooltip title="Editar">
                                                         <Link href={`/products/${product.id}`}>
                                                             <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                        </Link>
+                                                    </Tooltip>
+                                                    <Tooltip title="Ver detalle">
+                                                        <Link href={`/products/${product.id}/details`}>
+                                                            <Button variant="outline" size="sm" icon={<IconEye className="size-4" />} color="primary" />
                                                         </Link>
                                                     </Tooltip>
                                                 </>

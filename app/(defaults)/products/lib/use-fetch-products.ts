@@ -40,7 +40,7 @@ const useFetchProducts = (query: string) => {
     return { products, setTotalProducts, loading, error, setProducts, totalProducts, refetchProducts: () => fetchProductsData(query) };
 };
 
-export const useFetchProductsById = (id: string) => {
+export const useFetchProductsById = (id: string, includeMovements: boolean = false) => {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export const useFetchProductsById = (id: string) => {
     useEffect(() => {
         const fetchProductData = async (id: string) => {
             try {
-                const response = await apiRequest.get<Product>(`/products/${id}`);
+                const response = await apiRequest.get<Product>(`/products/${id}${includeMovements ? '?includeMovements=true' : ''}`);
                 if (!response.success) {
                     throw new Error(response.message);
                 }

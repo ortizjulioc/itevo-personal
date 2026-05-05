@@ -4,6 +4,9 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
+import Prisma from '@/utils/lib/prisma';
+import { recordInventoryMovement } from '@/services/inventory-service';
+import { MovementType } from '@/generated/prisma/client';
 
 // Obtener todos los productos con búsqueda y paginación
 export async function GET(request: NextRequest) {
@@ -34,9 +37,26 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     const body = await request.json();
 
-    const newProduct = await createProduct({
-      ...body,
-      branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+    const newProduct = await Prisma.$transaction(async (tx) => {
+        const created = await createProduct({
+          ...body,
+          branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+        }, tx);
+
+        if (created.stock && created.stock !== 0) {
+            await recordInventoryMovement({
+                productId: created.id,
+                quantity: created.stock,
+                previousStock: 0,
+                newStock: created.stock,
+                type: MovementType.ADJUST,
+                reference: 'Creación',
+                note: 'Inventario inicial',
+                branchId: created.branchId,
+                tx
+            });
+        }
+        return created;
     });
 
     await createLog({

@@ -8,7 +8,8 @@ import { getServerSession } from 'next-auth';
 export async function getProducts(search = '', page = 1, top = 10, includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
-
+  const searchAsNumber = Number(search);
+  const isNumber = !isNaN(searchAsNumber);
   const skip = (page - 1) * top;
 
   const where: PrismaTypes.ProductWhereInput = {
@@ -16,6 +17,7 @@ export async function getProducts(search = '', page = 1, top = 10, includeDelete
     OR: [
       { name: { contains: search } },
       { description: { contains: search } },
+      ...(isNumber ? [{ code: searchAsNumber }] : []),
     ],
     ...(branchId ? { branchId } : {}),
   };
@@ -54,21 +56,26 @@ export async function getAllProducts(search = '', includeDeleted = false) {
 }
 
 // Crear un producto
-export async function createProduct(data: PrismaTypes.ProductCreateInput) {
-  return await Prisma.product.create({ data });
+export async function createProduct(
+  data: PrismaTypes.ProductCreateInput,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) {
+  return await prisma.product.create({ data });
 }
 
 // Buscar producto por ID
 export async function findProductById(
   id: string,
   includeDeleted = false,
-  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+  includeMovements = false
 ) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
   return await prisma.product.findUnique({
     where:
-      { id, ...(includeDeleted ? {} : { deleted: false }), ...(branchId ? { branchId } : {}) }
+      { id, ...(includeDeleted ? {} : { deleted: false }), ...(branchId ? { branchId } : {}) },
+    include: includeMovements ? { movements: { orderBy: { createdAt: 'desc' } } } : undefined
   });
 }
 
