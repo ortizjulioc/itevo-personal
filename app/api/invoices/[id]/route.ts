@@ -9,6 +9,8 @@ import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
 import { InvoiceItemType, InvoiceStatus, MovementType } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -94,6 +96,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
     const { id } = await params;
 
     const invoice = await findInvoiceById(id);
@@ -116,6 +119,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
                   reference: id,
                   note: `Anulación de factura`,
                   branchId: product.branchId || null,
+                  createdBy: session?.user?.id as string || '',
                   tx: prisma,
               });
               await updateProductById(item.productId, { stock: product.stock + (item.quantity || 0) }, prisma);

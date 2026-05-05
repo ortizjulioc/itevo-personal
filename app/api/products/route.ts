@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
                 reference: 'Creación',
                 note: 'Inventario inicial',
                 branchId: created.branchId,
+                createdBy: session?.user?.id as string || '',
                 tx
             });
         }

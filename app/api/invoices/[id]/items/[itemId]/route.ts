@@ -8,11 +8,14 @@ import { recordInventoryMovement } from '@/services/inventory-service';
 import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from '@/services/account-receivable';
 import { deleteEarningFromAccountsPayable, getAccountPayableByCourseBranchId } from '@/services/account-payable';
 import Prisma from '@/utils/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
 // Handler DELETE para eliminar un ítem de la factura
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string; itemId: string }> }) {
     const { id, itemId } = await params; // ID de la factura y del ítem
     try {
+        const session = await getServerSession(authOptions);
         let invoiceUpdated;
         // Iniciar transacción
         await Prisma.$transaction(async (prisma) => {
@@ -33,7 +36,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
             // Si es un producto, actualizar el stock
             if (item.type === InvoiceItemType.PRODUCT && item.productId) {
-                const product = await findProductById(item.productId, prisma);
+                const product = await findProductById(item.productId);
                 if (!product) {
                     throw new Error(`Producto con ID ${item.productId} no encontrado`);
                 }
@@ -47,6 +50,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
                     reference: id,
                     note: `Ítem eliminado de la factura`,
                     branchId: product.branchId || null,
+                    createdBy: session?.user?.id as string || '',
                     tx: prisma,
                 });
 

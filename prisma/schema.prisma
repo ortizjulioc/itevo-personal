@@ -28,6 +28,7 @@ model User {
     Quotation            Quotation[]
     roleBranch           UserRoleBranch[]
     assignedScholarships StudentScholarship[]
+    inventoryMovements   InventoryMovement[]
 
     @@map("users")
 }
@@ -688,6 +689,8 @@ model InventoryMovement {
     branch   Branch? @relation(fields: [branchId], references: [id])
 
     createdAt DateTime @default(now()) @map("created_at")
+    createdBy String   @map("created_by")
+    user      User     @relation(fields: [createdBy], references: [id])
 
     @@index([productId])
     @@index([type])

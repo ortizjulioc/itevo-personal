@@ -67,6 +67,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 reference: 'Edición',
                 note: 'Ajuste manual de inventario',
                 branchId: updated.branchId,
+                createdBy: session?.user?.id as string || '',
                 tx
             });
         }

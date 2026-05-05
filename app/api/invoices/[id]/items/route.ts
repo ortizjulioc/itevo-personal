@@ -9,6 +9,8 @@ import { createLog } from '@/utils/log';
 import { InvoiceItemType, MovementType } from '@/generated/prisma/client';
 import { recordInventoryMovement } from '@/services/inventory-service';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
 
 // Tipo para los datos de entrada del ítem
@@ -24,6 +26,7 @@ interface InvoiceItemInput {
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params; // ID de la factura
     try {
+        const session = await getServerSession(authOptions);
         const body: InvoiceItemInput = await req.json();
 
         // Verificar que la factura existe y está en DRAFT
@@ -74,6 +77,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     reference: id,
                     note: `Ítem agregado a factura ${invoice?.invoiceNumber || ''}`,
                     branchId: product.branchId || null,
+                    createdBy: session?.user?.id as string || '',
                     tx: prisma,
                 });
 
