@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Users, BookOpen, Activity, FileText, ArrowUpRight, ArrowDownRight, ArrowDown, ArrowUp } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { CompactNumber } from '@/components/common/CompactNumber';
 
 interface DashboardData {
   activeStudentsCount: number;
@@ -85,7 +86,7 @@ export default function AssistantDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiantes Activos</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeStudentsCount}
+                <CompactNumber value={data.activeStudentsCount} />
               </h3>
               <TrendBadgeLocal value={data.studentsChange} label="crecimiento" />
             </div>
@@ -102,7 +103,7 @@ export default function AssistantDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Cursos en Progreso</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeCoursesCount}
+                <CompactNumber value={data.activeCoursesCount} />
               </h3>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20">
@@ -118,7 +119,7 @@ export default function AssistantDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Transacciones de Hoy</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.recentTransactions.filter(t => new Date(t.createdAt).toDateString() === new Date().toDateString()).length}
+                <CompactNumber value={data.recentTransactions.filter(t => new Date(t.createdAt).toDateString() === new Date().toDateString()).length} />
               </h3>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-500 dark:bg-purple-500/20">

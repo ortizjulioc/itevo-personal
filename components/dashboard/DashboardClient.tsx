@@ -6,6 +6,7 @@ import { Users, BookOpen, DollarSign, Activity, FileText, ArrowUpRight, ArrowDow
 import { BarChart, Bar, Legend } from "recharts";
 import { es } from "date-fns/locale";
 import { format } from "date-fns";
+import { CompactNumber } from '@/components/common/CompactNumber';
 
 interface DashboardData {
   totalRevenue: number;
@@ -95,7 +96,7 @@ export default function DashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Ingresos del Mes</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {formatCurrency(data.totalRevenue)}
+                RD$<CompactNumber value={data.totalRevenue} />
               </h3>
               <TrendBadge value={data.revenueChange} label="vs mes pasado" />
             </div>
@@ -112,7 +113,7 @@ export default function DashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiantes Activos</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeStudentsCount}
+                <CompactNumber value={data.activeStudentsCount} />
               </h3>
               <TrendBadge value={data.studentsChange} label="crecimiento" />
             </div>
@@ -129,11 +130,11 @@ export default function DashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Cursos en Progreso</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeCoursesCount}
+                <CompactNumber value={data.activeCoursesCount} />
               </h3>
               <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                 <BookCheck className="h-3 w-3" />
-                <span>{data.completedCoursesCount} completados este mes</span>
+                <span><CompactNumber value={data.completedCoursesCount} /> completados este mes</span>
               </div>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20">
@@ -149,7 +150,7 @@ export default function DashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Transacciones de Hoy</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.recentTransactions.filter(t => new Date(t.createdAt).toDateString() === new Date().toDateString()).length}
+                <CompactNumber value={data.recentTransactions.filter(t => new Date(t.createdAt).toDateString() === new Date().toDateString()).length} />
               </h3>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-500 dark:bg-purple-500/20">
