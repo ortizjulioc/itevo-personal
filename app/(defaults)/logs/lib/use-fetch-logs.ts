@@ -7,6 +7,8 @@ export default function useFetchLogs(query: string) {
     const [error, setError] = useState<string | null>(null);
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [totalLogs, setTotalLogs] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchLogs = async () => {
         setLoading(true);
@@ -16,6 +18,8 @@ export default function useFetchLogs(query: string) {
             if (response.ok) {
                 setLogs(data.logs);
                 setTotalLogs(data.totalLogs);
+                setTotalPages(data.totalPages);
+                setCurrentPage(data.currentPage);
             } else {
                 setError(data.error || 'Error al obtener los logs');
             }
@@ -30,5 +34,14 @@ export default function useFetchLogs(query: string) {
         fetchLogs();
     }, [query]);
 
-    return { loading, error, logs, totalLogs, setLogs, refetch: fetchLogs };
+    return { 
+        loading, 
+        error, 
+        logs, 
+        totalLogs, 
+        totalPages, 
+        currentPage, 
+        setLogs, 
+        refetch: fetchLogs 
+    };
 }

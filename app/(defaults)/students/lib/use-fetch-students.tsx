@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import { Role, Student } from '@/generated/prisma/client';
 
@@ -13,30 +13,31 @@ const useFetchStudents = (query: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchrolesData = async (query: string) => {
-      try {
-        const response = await apiRequest.get<StudentResponse>(`/students?${query}`);
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-        setStudents(response.data?.students || []);
-        setTotalStudents(response.data?.totalStudents || 0);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('Ha ocurrido un error al obtener los estudiantes');
-        }
-      } finally {
-        setLoading(false);
+  const fetchStudentsData = useCallback(async (query: string) => {
+    try {
+      setLoading(true);
+      const response = await apiRequest.get<StudentResponse>(`/students?${query}`);
+      if (!response.success) {
+        throw new Error(response.message);
       }
-    };
+      setStudents(response.data?.students || []);
+      setTotalStudents(response.data?.totalStudents || 0);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ha ocurrido un error al obtener los estudiantes');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    fetchrolesData(query);
-  }, [query]);
+  useEffect(() => {
+    fetchStudentsData(query);
+  }, [query, fetchStudentsData]);
 
-  return { students, totalStudents, loading, error, setStudents };
+  return { students, totalStudents, loading, error, setStudents, refetch: () => fetchStudentsData(query) };
 };
 
 export const useFetchStudentById = (id: string) => {

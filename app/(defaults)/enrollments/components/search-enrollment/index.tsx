@@ -57,17 +57,26 @@ export default function SearchEnrollments() {
 
     useEffect(() => {
         const params = new URLSearchParams(searchParams.toString());
+        let hasChanged = false;
 
         Object.entries(filters).forEach(([key, value]) => {
-            if (value) params.set(key, value);
-            else params.delete(key);
+            const currentParam = searchParams.get(key) || '';
+            if (value !== currentParam) {
+                if (value) params.set(key, value);
+                else params.delete(key);
+                hasChanged = true;
+            }
         });
 
-        params.delete('page');
+        if (params.has('page')) {
+            params.delete('page');
+            hasChanged = true;
+        }
 
-        router.push(`${pathname}?${params.toString()}`);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters, pathname, router]);
+        if (hasChanged) {
+            router.push(`${pathname}?${params.toString()}`);
+        }
+    }, [filters, pathname, router, searchParams]);
 
 
 

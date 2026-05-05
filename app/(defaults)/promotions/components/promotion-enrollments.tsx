@@ -19,7 +19,7 @@ export default function PromotionEnrollments({ promotionId }: { promotionId: str
     // Filter using URL parameters (managed by SearchEnrollments)
     const query = objectToQueryString(Object.fromEntries(params.entries()));
 
-    const { enrollments, totalEnrollments, summary, loading, error, setEnrollments } = useFetchPromotionEnrollments(promotionId, query);
+    const { enrollments, totalEnrollments, summary, loading, error, setEnrollments, refetchEnrollments } = useFetchPromotionEnrollments(promotionId, query);
 
     return (
         <div className="mt-10">
@@ -44,7 +44,7 @@ export default function PromotionEnrollments({ promotionId }: { promotionId: str
                     <SearchEnrollments />
                 </div>
             )}
-            
+
             <EnrollmentList
                 query={query}
                 enrollments={enrollments}
@@ -52,6 +52,7 @@ export default function PromotionEnrollments({ promotionId }: { promotionId: str
                 loading={loading}
                 error={error}
                 setEnrollments={setEnrollments}
+                refetchEnrollments={refetchEnrollments}
             />
         </div>
     );

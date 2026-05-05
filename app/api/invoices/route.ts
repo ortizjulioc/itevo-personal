@@ -3,6 +3,8 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 import { createLog } from '@/utils/log';
 import { InvoiceStatus, NcfType } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 // Tipo para los datos de entrada del endpoint
 interface InvoiceInput {
@@ -74,6 +76,8 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
         const { searchParams } = req.nextUrl;
 
         const statusParam = searchParams.get('status');
@@ -101,7 +105,7 @@ export async function GET(req: NextRequest) {
             pageSize: Number(searchParams.get('pageSize') || '10'),
         };
 
-        const result = await findInvoices(filters);
+        const result = await findInvoices(filters, isSuperAdmin);
         return NextResponse.json(result, { status: 200 });
     } catch (error) {
         await createLog({

@@ -6,8 +6,11 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType } from '@/generated/prisma/client';
+import { InvoiceItemType, MovementType } from '@/generated/prisma/client';
+import { recordInventoryMovement } from '@/services/inventory-service';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
 
 // Tipo para los datos de entrada del ítem
@@ -23,6 +26,7 @@ interface InvoiceItemInput {
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params; // ID de la factura
     try {
+        const session = await getServerSession(authOptions);
         const body: InvoiceItemInput = await req.json();
 
         // Verificar que la factura existe y está en DRAFT
@@ -62,6 +66,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 }
 
                 body.concept = product.name;
+
+                // Registrar movimiento de inventario OUT
+                await recordInventoryMovement({
+                    productId: product.id,
+                    quantity: body.quantity,
+                    previousStock: product.stock,
+                    newStock: product.stock - body.quantity,
+                    type: MovementType.OUT,
+                    reference: id,
+                    note: `Ítem agregado a factura ${invoice?.invoiceNumber || ''}`,
+                    branchId: product.branchId || null,
+                    createdBy: session?.user?.id as string || '',
+                    tx: prisma,
+                });
+
                 // Actualizar el stock del producto
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,
@@ -75,7 +94,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 })
 
                 if (accountReceivable.courseBranchId) {
-                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, false, prisma);
                     if (!courseBranch) {
                         throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
                     }
@@ -102,7 +121,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
             }
-            const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
+            const { invoiceUpdated, itemCreated } = await addNewItemToInvoice(id, {
                 type: body.type,
                 productId: body.productId,
                 accountReceivableId: body.accountReceivableId,

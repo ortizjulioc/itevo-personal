@@ -8,6 +8,9 @@ import { createLog } from '@/utils/log';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/auth-options';
+import Prisma from '@/utils/lib/prisma';
+import { recordInventoryMovement } from '@/services/inventory-service';
+import { MovementType } from '@/generated/prisma/client';
 
 // Obtener producto por ID
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -15,7 +18,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const session = await getServerSession(authOptions);
     const { id } = await params;
 
-    const product = await findProductById(id);
+    const includeMovements = request.nextUrl.searchParams.get('includeMovements') === 'true';
+    const product = await findProductById(id, false, Prisma, includeMovements);
 
     if (!product) {
       return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
@@ -46,9 +50,28 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND'}, { status: 404 });
     }
 
-    const updatedProduct = await updateProductById(id, {
-      ...body,
-      branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+    const updatedProduct = await Prisma.$transaction(async (tx) => {
+        const updated = await updateProductById(id, {
+          ...body,
+          branchId: body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null,
+        }, tx);
+
+        if (body.stock !== undefined && existingProduct.stock !== updated.stock) {
+            const difference = updated.stock - existingProduct.stock;
+            await recordInventoryMovement({
+                productId: updated.id,
+                quantity: Math.abs(difference),
+                previousStock: existingProduct.stock,
+                newStock: updated.stock,
+                type: MovementType.ADJUST,
+                reference: 'Edición',
+                note: 'Ajuste manual de inventario',
+                branchId: updated.branchId,
+                createdBy: session?.user?.id as string || '',
+                tx
+            });
+        }
+        return updated;
     });
 
     await createLog({

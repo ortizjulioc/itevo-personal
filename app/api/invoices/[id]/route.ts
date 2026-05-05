@@ -2,12 +2,15 @@ import { deleteEarningFromAccountsPayable } from "@/services/account-payable";
 import { annularReceivablePayment, findAccountReceivableById, updateAccountReceivableById } from "@/services/account-receivable";
 import { deleteCashMovementsByInvoiceId } from "@/services/cash-movement";
 import { findInvoiceById, updateInvoice } from "@/services/invoice-service";
-import { updateProductById } from "@/services/product-service";
+import { findProductById, updateProductById } from "@/services/product-service";
+import { recordInventoryMovement } from "@/services/inventory-service";
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { Prisma } from "@/utils/lib/prisma";
 import { createLog } from "@/utils/log";
-import { InvoiceItemType, InvoiceStatus } from '@/generated/prisma/client';
+import { InvoiceItemType, InvoiceStatus, MovementType } from '@/generated/prisma/client';
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -93,6 +96,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
     const { id } = await params;
 
     const invoice = await findInvoiceById(id);
@@ -104,7 +108,22 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     await Prisma.$transaction(async (prisma) => {
       for (const item of invoice.items) {
         if (item.type === InvoiceItemType.PRODUCT && item.productId) {
-          await updateProductById(item.productId, { stock: { increment: item.quantity || 0 } }, prisma);
+          const product = await findProductById(item.productId);
+          if (product) {
+              await recordInventoryMovement({
+                  productId: product.id,
+                  quantity: item.quantity || 0,
+                  previousStock: product.stock,
+                  newStock: product.stock + (item.quantity || 0),
+                  type: MovementType.IN,
+                  reference: id,
+                  note: `Anulación de factura`,
+                  branchId: product.branchId || null,
+                  createdBy: session?.user?.id as string || '',
+                  tx: prisma,
+              });
+              await updateProductById(item.productId, { stock: product.stock + (item.quantity || 0) }, prisma);
+          }
         } else if (item.type === InvoiceItemType.RECEIVABLE && item.accountReceivableId) {
           const { accountReceivable, receivablePayment } = await annularReceivablePayment({
             unitPrice: item.unitPrice || 0,

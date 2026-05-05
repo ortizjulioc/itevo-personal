@@ -11,6 +11,10 @@ import SelectEnrollmentStatus from './select-status';
 import { EnrollmentStatus } from '@/generated/prisma/client';
 import { formatScheduleList } from '@/utils/schedule';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { restoreEnrollment } from '../../lib/request';
+import { LuRotateCcw } from "react-icons/lu";
+import { SUPER_ADMIN } from '@/constants/role.constant';
 
 import PrintEnrollmentModal from '@/components/common/print/print-enrollment-modal';
 import { EnrollmentWithRelations } from '@/@types/enrollment';
@@ -26,10 +30,13 @@ interface Props {
     loading: boolean;
     error: string | null;
     setEnrollments: React.Dispatch<React.SetStateAction<EnrollmentWithRelations[]>>;
+    refetchEnrollments: (query: string) => Promise<void>;
 }
 
-export default function EnrollmentList({ className, query = '', enrollments, totalEnrollments, loading, error, setEnrollments }: Props) {
+export default function EnrollmentList({ className, query = '', enrollments, totalEnrollments, loading, error, setEnrollments, refetchEnrollments }: Props) {
     const params = queryStringToObject(query);
+    const { data: session } = useSession();
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const [printModal, setPrintModal] = useState<{ open: boolean; enrollmentId: string; courseBranchId: string }>({
         open: false,
@@ -63,6 +70,24 @@ export default function EnrollmentList({ className, query = '', enrollments, tot
             }
         );
     };
+
+    const onRestore = async (id: string) => {
+        confirmDialog({
+            title: 'Restaurar inscripción',
+            text: '¿Quieres restaurar esta inscripción?',
+            confirmButtonText: 'Sí, restaurar',
+            icon: 'info'
+        }, async () => {
+            const resp = await restoreEnrollment(id);
+            if (resp.success) {
+                openNotification('success', 'Inscripción restaurada correctamente');
+                refetchEnrollments(query);
+                return;
+            } else {
+                openNotification('error', resp.message);
+            }
+        });
+    }
 
     const onStatusChange = async (id: string, status: EnrollmentStatus) => {
         try {
@@ -122,13 +147,17 @@ export default function EnrollmentList({ className, query = '', enrollments, tot
                             </tr>
                         )}
                         {enrollments?.map((enrollment) => {
+                            const isDeleted = (enrollment as any).deleted;
                             return (
-                                <tr key={enrollment.id}>
+                                <tr key={enrollment.id} className={isDeleted ? "opacity-50 grayscale-[0.5]" : ""}>
                                     <td>{getFormattedDate(new Date(enrollment.enrollmentDate))}</td>
                                     <td>
                                         <span className="">{`${enrollment.student.code} - ${enrollment.student.firstName} ${enrollment.student.lastName}`}</span>
                                     </td>
-                                    <td>{enrollment.courseBranch.course.name}</td>
+                                    <td>
+                                        {enrollment.courseBranch.course.name}
+                                        {isDeleted && <span className="badge bg-danger text-xs ml-2">Eliminado</span>}
+                                    </td>
                                     <td>
                                         {enrollment.courseBranch.teacher.firstName} {enrollment.courseBranch.teacher.lastName}
                                     </td>
@@ -143,70 +172,84 @@ export default function EnrollmentList({ className, query = '', enrollments, tot
                                     </td>
                                     <td>
                                         <div className="flex items-center justify-end gap-3">
-                                            <div className="relative inline-block text-left">
-                                                <button
-                                                    className="cursor-pointer rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setOpenDropdownId((prev) => (prev === enrollment.id ? null : enrollment.id));
-                                                    }}
-                                                >
-                                                    <div className="relative">
-                                                        <IoIosMore className="rotate-90 text-xl" />
-                                                        {enrollment.notes && (
-                                                            <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5">
-                                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-                                                                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary"></span>
-                                                            </span>
+                                            {isSuperAdmin && isDeleted ? (
+                                                <Tooltip title="Restaurar">
+                                                    <Button
+                                                        onClick={() => onRestore(enrollment.id)}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        color="success"
+                                                        icon={<LuRotateCcw className="text-lg" />}
+                                                    />
+                                                </Tooltip>
+                                            ) : (
+                                                <>
+                                                    <div className="relative inline-block text-left">
+                                                        <button
+                                                            className="cursor-pointer rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenDropdownId((prev) => (prev === enrollment.id ? null : enrollment.id));
+                                                            }}
+                                                        >
+                                                            <div className="relative">
+                                                                <IoIosMore className="rotate-90 text-xl" />
+                                                                {enrollment.notes && (
+                                                                    <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5">
+                                                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                                                                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary"></span>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </button>
+
+                                                        {openDropdownId === enrollment.id && (
+                                                            <div
+                                                                className="fixed right-4 z-50 mt-2 w-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-black"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                <div className="py-1">
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            openNotesDrawer(enrollment);
+                                                                            setOpenDropdownId(null);
+                                                                        }}
+                                                                        className={`flex w-full items-start justify-start border-none bg-white text-sm shadow-none hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-800 ${
+                                                                            enrollment.notes ? 'text-primary' : 'text-gray-500'
+                                                                        }`}
+                                                                        icon={<IconNotes className="h-5 w-5" />}
+                                                                    >
+                                                                        {enrollment.notes ? 'Ver/Editar notas' : 'Agregar notas'}
+                                                                    </Button>
+
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            onDelete(enrollment.id);
+                                                                            setOpenDropdownId(null);
+                                                                        }}
+                                                                        className="flex w-full items-start justify-start border-none bg-white text-sm text-red-600 shadow-none hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-800"
+                                                                        icon={<IconTrashLines className="size-5" />}
+                                                                    >
+                                                                        Eliminar
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
                                                         )}
                                                     </div>
-                                                </button>
 
-                                                {openDropdownId === enrollment.id && (
-                                                    <div
-                                                        className="fixed right-4 z-50 mt-2 w-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-black"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <div className="py-1">
-                                                            <Button
-                                                                onClick={() => {
-                                                                    openNotesDrawer(enrollment);
-                                                                    setOpenDropdownId(null);
-                                                                }}
-                                                                className={`flex w-full items-start justify-start border-none bg-white text-sm shadow-none hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-800 ${
-                                                                    enrollment.notes ? 'text-primary' : 'text-gray-500'
-                                                                }`}
-                                                                icon={<IconNotes className="h-5 w-5" />}
-                                                            >
-                                                                {enrollment.notes ? 'Ver/Editar notas' : 'Agregar notas'}
-                                                            </Button>
+                                                    <Tooltip title="Imprimir">
+                                                        <button onClick={() => setPrintModal({ open: true, enrollmentId: enrollment.id, courseBranchId: enrollment.courseBranchId })}>
+                                                            <IconPrinter className="size-5 hover:cursor-pointer hover:text-primary" />
+                                                        </button>
+                                                    </Tooltip>
 
-                                                            <Button
-                                                                onClick={() => {
-                                                                    onDelete(enrollment.id);
-                                                                    setOpenDropdownId(null);
-                                                                }}
-                                                                className="flex w-full items-start justify-start border-none bg-white text-sm text-red-600 shadow-none hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-800"
-                                                                icon={<IconTrashLines className="size-5" />}
-                                                            >
-                                                                Eliminar
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <Tooltip title="Imprimir">
-                                                <button onClick={() => setPrintModal({ open: true, enrollmentId: enrollment.id, courseBranchId: enrollment.courseBranchId })}>
-                                                    <IconPrinter className="size-5 hover:cursor-pointer hover:text-primary" />
-                                                </button>
-                                            </Tooltip>
-
-                                            <Tooltip title="Editar">
-                                                <Link href={`/enrollments/${enrollment.id}`}>
-                                                    <IconEdit className="size-5 hover:cursor-pointer hover:text-primary" />
-                                                </Link>
-                                            </Tooltip>
+                                                    <Tooltip title="Editar">
+                                                        <Link href={`/enrollments/${enrollment.id}`}>
+                                                            <IconEdit className="size-5 hover:cursor-pointer hover:text-primary" />
+                                                        </Link>
+                                                    </Tooltip>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

@@ -7,7 +7,6 @@ import { CashMovementReferenceType, CashMovementType, CashRegisterStatus, Invoic
 import { getSettings } from '@/services/settings-service';
 import { generateNcf } from '@/utils/ncf';
 import { createCashMovement } from '@/services/cash-movement';
-
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params; // ID de la factura
     try {
@@ -97,6 +96,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 elementId: newInvoiceData.id,
                 success: true,
             });
+
+
 
         });
 
