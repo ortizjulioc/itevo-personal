@@ -17,8 +17,11 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') ?? '';
     const page = parseInt(searchParams.get('page') ?? '1');
     const top = parseInt(searchParams.get('top') ?? '10');
+    const excludeDeleted = searchParams.get('excludeDeleted') === 'true';
 
-    const { products, totalProducts } = await getProducts(search, page, top, isSuperAdmin);
+    const includeDeleted = isSuperAdmin && !excludeDeleted;
+
+    const { products, totalProducts } = await getProducts(search, page, top, includeDeleted);
     return NextResponse.json({ products, totalProducts }, { status: 200 });
   } catch (error) {
     await createLog({

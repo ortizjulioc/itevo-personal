@@ -6,7 +6,7 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType, MovementType } from '@/generated/prisma/client';
+import { InvoiceItemType, MovementType, PaymentStatus } from '@/generated/prisma/client';
 import { recordInventoryMovement } from '@/services/inventory-service';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         await Prisma.$transaction(async (prisma) => {
             // Validar y calcular impuestos según el tipo de ítem
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-                const product = await findProductById(body.productId);
+                const product = await findProductById(body.productId, false, prisma);
 
                 if (!product) {
                     throw new Error(`Producto ${body.productId} no encontrado`);
@@ -86,8 +86,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
+                const totalPaid = body.unitPrice * body.quantity;
+
                 const { accountReceivable, receivablePayment } = await processReceivablePayment({
-                    unitPrice: body.unitPrice,
+                    unitPrice: totalPaid,
                     accountReceivableId: body.accountReceivableId,
                     invoiceId: id,
                     prisma,
@@ -105,16 +107,30 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                         prisma,
                     });
 
-                    // Agregar ganancia a la cuenta por pagar
-                    await addNewEarningToAccountsPayable(
-                        accountPayable.id,
-                        courseBranch.commissionAmount ?? 0.00,
-                        receivablePayment.id,
-                        prisma
-                    );
-
                     if (!accountPayable) {
                         throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                    }
+
+                    let comissionToPay = 0;
+
+                    if (courseBranch.commissionRate && courseBranch.commissionRate > 0) {
+                        // Pago proporcional según porcentaje de comisión
+                        comissionToPay = totalPaid * (courseBranch.commissionRate / 100);
+                    } else if (courseBranch.commissionAmount && courseBranch.commissionAmount > 0) {
+                        // Pago por monto fijo, solo cuando se liquide la cuota completamente
+                        if (accountReceivable.status === PaymentStatus.PAID) {
+                            comissionToPay = courseBranch.commissionAmount;
+                        }
+                    }
+
+                    if (comissionToPay > 0) {
+                        // Agregar ganancia a la cuenta por pagar
+                        await addNewEarningToAccountsPayable(
+                            accountPayable.id,
+                            comissionToPay,
+                            receivablePayment.id,
+                            prisma
+                        );
                     }
                 }
 
