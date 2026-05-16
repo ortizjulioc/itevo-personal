@@ -42,6 +42,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         let subtotal = body.unitPrice * body.quantity;
         let itbis = 0;
 
+        // Validaciones estrictas del backend
+        if (!body.type) throw new Error('El tipo de ítem es requerido');
+        if (body.type === InvoiceItemType.PRODUCT && !body.productId) throw new Error('Debe especificar un producto válido');
+        if (body.type === InvoiceItemType.RECEIVABLE && !body.accountReceivableId) throw new Error('Debe especificar una cuenta por cobrar válida');
+        if (body.unitPrice === undefined || body.unitPrice === null || isNaN(body.unitPrice)) throw new Error('El precio unitario no es válido');
+        if (!body.quantity || body.quantity <= 0) throw new Error('La cantidad debe ser mayor a 0');
+
         await Prisma.$transaction(async (prisma) => {
             // Validar y calcular impuestos según el tipo de ítem
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {

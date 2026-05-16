@@ -25,14 +25,14 @@ export const fetchImageAsBase64 = async (imageUrl: string): Promise<Blob | null>
     const response = await fetch(imageUrl);
 
     if (!response.ok) {
-      console.error('Error en la carga de imagen:', response.statusText);
+      console.warn(`No se pudo cargar la imagen (${imageUrl}): ${response.statusText}`);
       return null;
     }
 
     const blob = await response.blob();
     return blob;
   } catch (error) {
-    console.error('Error en la carga de imagen:', error);
+    console.warn('Advertencia en la carga de imagen:', error);
     return null;
   }
 };
