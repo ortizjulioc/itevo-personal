@@ -9,10 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         const rules = await getRulesByCourseBranchId(id);
         if (!rules) {
-            return NextResponse.json({
-                code: "E_RULES_NOT_FOUND",
-                message: "No se encontraron normas para la oferta académica."
-            }, { status: 404 });
+            return NextResponse.json(null, { status: 200 });
         }
 
         return NextResponse.json(rules, { status: 200 });
