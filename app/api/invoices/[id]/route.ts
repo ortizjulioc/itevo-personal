@@ -72,6 +72,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ code: 'E_INVOICE_NOT_FOUND', message: 'Factura no encontrado' }, { status: 404 });
     }
 
+    if (invoice.status === InvoiceStatus.PAID) {
+      return NextResponse.json({ code: 'E_INVOICE_PAID', message: 'No se puede editar una factura pagada' }, { status: 400 });
+    }
+
+    if (invoice.studentId && data.studentId && invoice.studentId !== data.studentId) {
+      return NextResponse.json({ code: 'E_STUDENT_ALREADY_ASSIGNED', message: 'La factura ya tiene un estudiante asignado' }, { status: 400 });
+    }
+
     const updatedInvoice = await updateInvoice(id, data);
 
     await createLog({
