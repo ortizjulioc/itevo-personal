@@ -3,15 +3,13 @@ import { formatCurrency, openNotification, queryStringToObject } from "@/utils";
 import { Button, Pagination } from "@/components/ui";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchInvoices from "../../lib/use-fetch-invoices";
-import { NCF_TYPES } from "@/constants/ncfType.constant";
 import Tooltip from "@/components/ui/tooltip";
 import Link from "next/link";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import InvoiceStatusField from "./invoice-status";
 import { getFormattedDateTime } from "@/utils/date";
 import OptionalInfo from "@/components/common/optional-info";
-import StudentLabel from "@/components/common/info-labels/student-label";
-import { PAYMENT_METHODS_OPTIONS } from "@/constants/invoice.constant";
+import { INVOICE_STATUS_OPTIONS, PAYMENT_METHODS_OPTIONS } from "@/constants/invoice.constant";
 import { useSession } from "next-auth/react";
 import { SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, ADMIN } from "@/constants/role.constant";
 import PrintInvoice from "@/components/common/print/invoice";
@@ -29,7 +27,7 @@ interface Props {
 
 export default function InvoiceList({ className, query = '' }: Props) {
     const { data: session } = useSession();
-    const isAdmin = session?.user?.roles?.some((role: any) => 
+    const isAdmin = session?.user?.roles?.some((role: any) =>
         [SUPER_ADMIN, GENERAL_ADMIN, BILLING_ADMIN, ADMIN].includes(role.normalizedName)
     );
     const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
@@ -117,42 +115,26 @@ export default function InvoiceList({ className, query = '' }: Props) {
 
                                     <td>
                                         <div className="flex justify-end gap-2">
-                                            {isSuperAdmin && isCanceled ? (
-                                                <Tooltip title="Restaurar">
+                                            {isAdmin ? (
+                                                <Tooltip title="detalles">
+                                                    <Link href={`/bills/${invoice.id}`}>
+                                                        <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
+                                                    </Link>
+                                                </Tooltip>
+                                            ) : (
+                                                <Tooltip title="Imprimir">
                                                     <div>
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="sm" 
-                                                            color="success"
-                                                            icon={<LuRotateCcw className="text-lg" />} 
-                                                            onClick={() => onRestore(invoice.id)} 
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            icon={<IoMdPrint className="text-lg" />}
+                                                            onClick={() => {
+                                                                setInvoiceToPrint(invoice.id);
+                                                                setPrintModalOpen(true);
+                                                            }}
                                                         />
                                                     </div>
                                                 </Tooltip>
-                                            ) : (
-                                                <>
-                                                    {isAdmin ? (
-                                                        <Tooltip title="detalles">
-                                                            <Link href={`/bills/${invoice.id}`}>
-                                                                <Button variant="outline" size="sm" icon={<HiOutlinePaperAirplane className="size-4 rotate-90" />} />
-                                                            </Link>
-                                                        </Tooltip>
-                                                    ) : (
-                                                        <Tooltip title="Imprimir">
-                                                            <div>
-                                                                <Button 
-                                                                    variant="outline" 
-                                                                    size="sm" 
-                                                                    icon={<IoMdPrint className="text-lg" />} 
-                                                                    onClick={() => {
-                                                                        setInvoiceToPrint(invoice.id);
-                                                                        setPrintModalOpen(true);
-                                                                    }} 
-                                                                />
-                                                            </div>
-                                                        </Tooltip>
-                                                    )}
-                                                </>
                                             )}
                                         </div>
                                     </td>

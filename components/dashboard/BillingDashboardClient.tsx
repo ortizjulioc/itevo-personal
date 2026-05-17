@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, Activity, FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { es } from "date-fns/locale";
 import { format } from "date-fns";
+import { CompactNumber } from '@/components/common/CompactNumber';
 
 interface DashboardData {
   totalRevenue: number;
@@ -77,7 +78,7 @@ export default function BillingDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Ingresos del Mes</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {formatCurrency(data.totalRevenue)}
+                RD$<CompactNumber value={data.totalRevenue} />
               </h3>
               <TrendBadgeLocal value={data.revenueChange} label="vs mes pasado" />
             </div>

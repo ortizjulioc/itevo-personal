@@ -11,7 +11,7 @@ import OptionalInfo from "@/components/common/optional-info";
 import { useSession } from "next-auth/react";
 import { restoreProduct } from "../../lib/request";
 import { LuRotateCcw } from "react-icons/lu";
-import { TbPointFilled } from "react-icons/tb";
+import { TbDetails, TbPointFilled } from "react-icons/tb";
 import { SUPER_ADMIN } from "@/constants/role.constant";
 
 interface Props {
@@ -124,7 +124,7 @@ export default function ProductList({ className, query = '' }: Props) {
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="flex gap-2 justify-end">
+                                        <div className="flex items-center gap-3 justify-end">
                                             {isSuperAdmin && isDeleted ? (
                                                 <Tooltip title="Restaurar">
                                                     <Button onClick={() => onRestore(product.id)} variant="outline" size="sm" icon={<LuRotateCcw className="size-4" />} color="success" />
@@ -132,16 +132,18 @@ export default function ProductList({ className, query = '' }: Props) {
                                             ) : (
                                                 <>
                                                     <Tooltip title="Eliminar">
-                                                        <Button onClick={() => onDelete(product.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                        <button onClick={() => onDelete(product.id)}>
+                                                            <IconTrashLines className="size-5 hover:text-danger hover:cursor-pointer" />
+                                                        </button>
                                                     </Tooltip>
                                                     <Tooltip title="Editar">
                                                         <Link href={`/products/${product.id}`}>
-                                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                            <IconEdit className="size-5 hover:text-primary hover:cursor-pointer" />
                                                         </Link>
                                                     </Tooltip>
                                                     <Tooltip title="Ver detalle">
                                                         <Link href={`/products/${product.id}/details`}>
-                                                            <Button variant="outline" size="sm" icon={<IconEye className="size-4" />} color="primary" />
+                                                            <Button size="sm" icon={<TbDetails className="size-4 rotate-90" />} />
                                                         </Link>
                                                     </Tooltip>
                                                 </>

@@ -9,7 +9,8 @@
         "start": "dotenv -e .env -- sh -c 'next start -p $PORT'",
         "lint": "next lint",
         "prisma:sync": "npx prisma db push && npx prisma generate",
-        "prisma:seed": "npx prisma db seed"
+        "prisma:seed": "npx prisma db seed",
+        "git:merge-core": "git switch main && git pull origin main && git pull core main && git push origin main"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",
