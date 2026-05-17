@@ -131,7 +131,17 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
             setItemloading(false);
             return false;
         }
-        const type = item?.productId ? InvoiceItemType.PRODUCT : InvoiceItemType.RECEIVABLE;
+
+        if (!item?.productId && !item?.accountReceivableId && !item?.concept) {
+            openNotification('error', 'Debe seleccionar un producto o cuenta por cobrar válida');
+            setItemloading(false);
+            return false;
+        }
+
+        let type: InvoiceItemType = InvoiceItemType.CUSTOM;
+        if (item?.productId) type = InvoiceItemType.PRODUCT;
+        else if (item?.accountReceivableId) type = InvoiceItemType.RECEIVABLE;
+
         const itemWithType = {
             ...item,
             type,

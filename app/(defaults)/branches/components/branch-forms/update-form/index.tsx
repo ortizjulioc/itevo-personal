@@ -26,10 +26,16 @@ export default function UpdateBranchForm({ initialValues }: { initialValues: Bra
     }
 
 
+    const initialFormValues = {
+        ...initialValues,
+        phone: initialValues.phone ?? '',
+        email: initialValues.email ?? '',
+    };
+
     return (
         <div className="panel">
             <h4 className="mb-4 text-xl font-semibold dark:text-white-light">Formulario  de sucursales</h4>
-            <Formik initialValues={initialValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={initialFormValues} validationSchema={updateValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched }) => (
                     <Form className="form">
                          <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>

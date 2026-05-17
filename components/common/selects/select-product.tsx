@@ -29,7 +29,7 @@ const SelectProduct = forwardRef<any, SelectProductProps>(({ value, onChange, di
 
   const fetchProductData = async (inputValue: string): Promise<ProductSelect[]> => {
     try {
-      const response = await apiRequest.get<ProductsResponse>(`/products?search=${inputValue}`);
+      const response = await apiRequest.get<ProductsResponse>(`/products?search=${inputValue}&excludeDeleted=true`);
       if (!response.success) throw new Error(response.message);
 
       return response.data?.products.map(product => ({
