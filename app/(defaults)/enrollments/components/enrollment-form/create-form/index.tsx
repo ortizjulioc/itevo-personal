@@ -133,6 +133,7 @@ export default function CreateEnrollmentForm({ courseBranchId, studentId }: { co
                                     <SelectCourseBranch
                                         {...field}
                                         value={values.courseBranchId}
+                                        onlyEnrollable={true}
                                         onChange={(option: CourseBranchSelect | null) => {
                                             form.setFieldValue('courseBranchId', option?.value || '');
                                             setSelectedCourseBranchId(option?.value || '');

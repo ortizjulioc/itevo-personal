@@ -110,6 +110,7 @@ export default function AssignScholarshipDrawer({
                         <SelectCourseBranch
                             value={selectedCourseBranch?.value}
                             onChange={setSelectedCourseBranch}
+                            onlyEnrollable={true}
                         />
                     </div>
 

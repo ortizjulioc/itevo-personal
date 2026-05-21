@@ -63,6 +63,7 @@ export default function UpdateEnrollmentForm({ initialValues }: { initialValues:
                         <FormItem name="courseBranchId" label="Oferta Academica" invalid={Boolean(errors.courseBranchId && touched.courseBranchId)} errorMessage={errors.courseBranchId}>
                             <SelectCourseBranch
                                 value={values.courseBranchId}
+                                onlyEnrollable={true}
                                 onChange={(option: CourseBranchSelectOption | null) => {
                                     setFieldValue('courseBranchId', option?.value || '');
                                 }}
