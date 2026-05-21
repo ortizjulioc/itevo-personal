@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher,CourseBranchStatus } from '@/generated/prisma/client';
+import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher, CourseBranchStatus, EnrollmentStatus } from '@/generated/prisma/client';
 import { CourseBranchWithRelations } from '@/@types/course-branch';
 
 export interface CourseBranch extends CourseBranchPrisma {
@@ -12,6 +12,7 @@ export interface CourseBranch extends CourseBranchPrisma {
   sessionCount: number;
   status: CourseBranchStatus;
   paymentPlan?: { id: string, installments: number, frequency: string };
+  enrollment?: { id: string; status: EnrollmentStatus }[];
 }
 
 export interface CourseBranchResponse {

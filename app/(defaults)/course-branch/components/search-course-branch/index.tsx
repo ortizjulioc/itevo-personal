@@ -2,6 +2,7 @@
 import SelectBranch from '@/components/common/selects/select-branch';
 import SelectTeacher from '@/components/common/selects/select-teacher';
 import SelectCourse from '@/components/common/selects/select-course';
+import SelectPromotion from '@/components/common/selects/select-promotion';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { MODALITIES } from '@/constants/modality.constant';
@@ -32,6 +33,7 @@ export default function SearchCourseBranch() {
         teacherId: searchParams.get('teacherId') || '',
         courseId: searchParams.get('courseId') || '',
         modality: searchParams.get('modality') || '',
+        promotionId: searchParams.get('promotionId') || '',
     });
 
    
@@ -59,7 +61,7 @@ export default function SearchCourseBranch() {
     }, [filters, pathname, router, searchParams]);
 
     return (
-        <div className="grid md:grid-cols-3 gap-3 mb-5">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 mb-5">
 
             <SelectTeacher
                 value={filters.teacherId}
@@ -68,6 +70,10 @@ export default function SearchCourseBranch() {
             <SelectCourse
                 value={filters.courseId}
                 onChange={(selected) => handleFilterChange('courseId', selected)}
+            />
+            <SelectPromotion
+                value={filters.promotionId}
+                onChange={(selected) => handleFilterChange('promotionId', selected)}
             />
             <Select
 

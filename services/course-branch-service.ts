@@ -23,7 +23,7 @@ export const getCourseBranch = async (filters: any, includeDeleted: boolean = fa
 
     const courseBranches = await Prisma.courseBranch.findMany({
         orderBy: [
-            { courseId: 'asc' },
+            { updatedAt: 'desc' },
         ],
         where: whereClause,
         include: {
@@ -32,6 +32,10 @@ export const getCourseBranch = async (filters: any, includeDeleted: boolean = fa
             course: { select: { id: true, name: true } },
             schedules: { select: { schedule: true } },
             paymentPlan: true,
+            enrollment: {
+                where: { deleted: false },
+                select: { id: true, status: true }
+            }
         },
         skip: skip,
         take: top,
