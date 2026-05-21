@@ -12,7 +12,7 @@ export const getCourses = async (search: string, page: number, top: number, incl
 
     const courses = await Prisma.course.findMany({
         orderBy: [
-            { name: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,

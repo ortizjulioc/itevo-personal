@@ -27,8 +27,7 @@ export const getStudents = async (search: string, page: number, top: number, inc
 
     const students = await Prisma.student.findMany({
         orderBy: [
-            { firstName: 'asc' },
-            { lastName: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,
