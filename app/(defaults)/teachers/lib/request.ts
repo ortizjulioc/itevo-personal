@@ -12,3 +12,7 @@ export const updateTeacher = async (id: string, teacher: Teacher) => {
 export const deleteTeacher = async (id: string) => {
   return await apiRequest.remove<string>(`/teachers/${id}`);
 };
+
+export const restoreTeacher = async (id: string) => {
+  return await apiRequest.patch<{ message: string }>(`/teachers/${id}/restore`);
+};
