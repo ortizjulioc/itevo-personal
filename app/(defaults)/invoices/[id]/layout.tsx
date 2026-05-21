@@ -43,38 +43,42 @@ export default function Layout({ children, params }: { children: React.ReactNode
     <div className="px-2 md:px-6">
       <ViewTitle title="Facturación" className="mb-6" />
 
-      {loading && <GenericSkeleton className="mb-6" lines={2} withHeader={false} />}
-
-      {CashRegister && (
-        <CashRegisterDetails
-          CashRegister={CashRegister as unknown as CashRegister}
-        />
-      )}
-
-      {!loading && CashRegister && !isCorrectBranch ? (
-        <div className="mt-12 flex flex-col items-center justify-center p-10 panel bg-danger-light border-danger text-danger">
-            <div className="bg-danger text-white p-4 rounded-full mb-4">
-                <IconLock className="w-12 h-12" />
-            </div>
-            <h2 className="text-2xl font-extrabold mb-2 text-center uppercase">Sucursal Incorrecta</h2>
-            <p className="text-lg text-center max-w-md">
-                Esta caja registradora pertenece a la sucursal <span className="font-bold">{(CashRegister as any).cashBox.branch.name}</span>.
-            </p>
-            <p className="mt-4 font-medium text-center italic">
-                Por favor, cambia tu sucursal activa en la parte superior derecha para poder operar con esta caja.
-            </p>
-        </div>
+      {loading ? (
+        <GenericSkeleton className="mb-6" lines={6} withHeader={false} />
       ) : (
-        <div className="mt-6">
-          <h2 className="mb-3 text-2xl font-bold">Facturas</h2>
-          <div className="flex gap-4 flex-col md:flex-row">
-            <div className="w-full md:w-[15rem]">
-              <InvoiceList cashRegisterId={id} userId={CashRegister?.user.id} />
-            </div>
+        <>
+          {CashRegister && (
+            <CashRegisterDetails
+              CashRegister={CashRegister as unknown as CashRegister}
+            />
+          )}
 
-            <div className="w-full">{children}</div>
-          </div>
-        </div>
+          {!isCorrectBranch ? (
+            <div className="mt-12 flex flex-col items-center justify-center p-10 panel bg-danger-light border-danger text-danger">
+                <div className="bg-danger text-white p-4 rounded-full mb-4">
+                    <IconLock className="w-12 h-12" />
+                </div>
+                <h2 className="text-2xl font-extrabold mb-2 text-center uppercase">Sucursal Incorrecta</h2>
+                <p className="text-lg text-center max-w-md">
+                    Esta caja registradora pertenece a la sucursal <span className="font-bold">{(CashRegister as any).cashBox.branch.name}</span>.
+                </p>
+                <p className="mt-4 font-medium text-center italic">
+                    Por favor, cambia tu sucursal activa en la parte superior derecha para poder operar con esta caja.
+                </p>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <h2 className="mb-3 text-2xl font-bold">Facturas</h2>
+              <div className="flex gap-4 flex-col md:flex-row">
+                <div className="w-full md:w-[15rem]">
+                  <InvoiceList cashRegisterId={id} userId={(session?.user as any)?.id || (CashRegister as any)?.user?.id} />
+                </div>
+
+                <div className="w-full">{children}</div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
