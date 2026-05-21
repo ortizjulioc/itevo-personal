@@ -160,7 +160,7 @@ export default function FinancialConfigFields({ values, errors, touched, classNa
                                     onChange={(e) => {
                                         const input = Number(e.target.value);
                                         form.setFieldValue("commissionAmount", input);
-                                        const newRate = rawAmount !== 0 ? (input / rawAmount) * 100 : 0;
+                                        const newRate = rawAmount !== 0 ? (input / rawAmount) : 0;
                                         form.setFieldValue("commissionRate", newRate);
                                     }}
                                     onWheel={(e) => (e.target as HTMLInputElement).blur()}

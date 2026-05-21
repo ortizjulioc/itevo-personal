@@ -12,6 +12,7 @@ import { PayAccount } from '@/app/(defaults)/invoices/lib/accounts-payable/reque
 import { getFormattedDate } from '@/utils/date';
 import { IoMdPrint } from 'react-icons/io';
 import PrintDisbursement from '@/components/common/print/disbursement';
+import useFetchSetting from '@/app/(defaults)/settings/lib/use-fetch-settings';
 import { AccountPayableWithRelations } from '@/@types/accounts-payables';
 
 interface PayableEarning {
@@ -84,7 +85,8 @@ const SummaryDashboard = ({ accounts }: { accounts: AccountPayableWithRelations[
 export default function TeacherPayments() {
     const { id: cashRegisterId, teacherid } = useParams();
     const teacherId = (Array.isArray(teacherid) ? teacherid[0] : teacherid) ?? '';
-    const { accountsPayable, loading, fetchAccountsPayableData } = useFetchAccountsPayable(`teacherId=${teacherid}&top=1000`);
+    const { accountsPayable, loading, fetchAccountsPayableData } = useFetchAccountsPayable(`teacherId=${teacherId}&top=1000`);
+    const { setting } = useFetchSetting();
     const [loadingPayment, setLoadingPayment] = useState(false)
     const [earningsMap, setEarningsMap] = useState<Record<string, PayableEarning[]>>({});
     const [paymentsMap, setPaymentsMap] = useState<Record<string, PayablePayment[]>>({});
@@ -337,7 +339,11 @@ export default function TeacherPayments() {
                                                                 </div>
                                                                 <div className="flex items-center gap-4">
                                                                     <span className="text-sm font-bold text-success">{formatCurrency(payment.amount)}</span>
-                                                                    <PrintDisbursement paymentId={payment.id}>
+                                                                    <PrintDisbursement
+                                                                        paymentId={payment.id}
+                                                                        payableId={item.id}
+                                                                        setting={setting}
+                                                                    >
                                                                         {({ loading }) => (
                                                                             <Button
                                                                                 loading={loading}

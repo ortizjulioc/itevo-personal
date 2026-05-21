@@ -122,7 +122,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
                     if (courseBranch.commissionRate && courseBranch.commissionRate > 0) {
                         // Pago proporcional según porcentaje de comisión
-                        comissionToPay = totalPaid * (courseBranch.commissionRate / 100);
+                        comissionToPay = totalPaid * courseBranch.commissionRate;
                     } else if (courseBranch.commissionAmount && courseBranch.commissionAmount > 0) {
                         // Pago por monto fijo, solo cuando se liquide la cuota completamente
                         if (accountReceivable.status === PaymentStatus.PAID) {
