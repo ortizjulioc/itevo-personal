@@ -7,7 +7,10 @@ import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchCourses from "../../lib/use-fetch-courses";
-import { deleteCourse } from "../../lib/request";
+import { deleteCourse, restoreCourse } from "../../lib/request";
+import { useSession } from "next-auth/react";
+import { LuRotateCcw } from "react-icons/lu";
+import { SUPER_ADMIN } from "@/constants/role.constant";
 
 
 
@@ -18,7 +21,9 @@ interface Props {
 
 export default function CoursetList({ className, query = '' }: Props) {
     const params = queryStringToObject(query);
-    const { loading, error, courses, totalCourses, setCourses } = useFetchCourses(query);
+    const { data: session } = useSession();
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+    const { loading, error, courses, totalCourses, setCourses, refetch } = useFetchCourses(query);
     if (error) {
         openNotification('error', error);
     }
@@ -36,6 +41,24 @@ export default function CoursetList({ className, query = '' }: Props) {
             if (resp.success) {
                 setCourses(courses?.filter((Courset) => Courset.id !== id));
                 openNotification('success', 'curso eliminado correctamente');
+                return;
+            } else {
+                openNotification('error', resp.message);
+            }
+        });
+    }
+
+    const onRestore = async (id: string) => {
+        confirmDialog({
+            title: 'Restaurar Curso',
+            text: '¿Quieres restaurar este curso?',
+            confirmButtonText: 'Sí, restaurar',
+            icon: 'info'
+        }, async () => {
+            const resp = await restoreCourse(id);
+            if (resp.success) {
+                openNotification('success', 'Curso restaurado correctamente');
+                refetch(); // Recargar la lista para reflejar el cambio de estado
                 return;
             } else {
                 openNotification('error', resp.message);
@@ -66,13 +89,17 @@ export default function CoursetList({ className, query = '' }: Props) {
                             </tr>
                         )}
                         {courses?.map((course) => {
+                            const isDeleted = (course as any).deleted;
                             return (
-                                <tr key={course.id}>
+                                <tr key={course.id} className={isDeleted ? "opacity-50 grayscale-[0.5]" : ""}>
                                     <td>
                                         {course.code}
                                     </td>
                                     <td>
-                                        {course.name}
+                                        <div className="flex items-center gap-2">
+                                            <span>{course.name}</span>
+                                            {isDeleted && <span className="badge bg-danger text-xs">Eliminado</span>}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="whitespace-nowrap">
@@ -87,19 +114,28 @@ export default function CoursetList({ className, query = '' }: Props) {
                                     </td>
                                     <td>
                                         <div className="flex gap-2 justify-end">
-                                            <Tooltip title="Eliminar">
-                                                <Button onClick={() => onDelete(course.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                                            </Tooltip>
-                                            <Tooltip title="Editar">
-                                                <Link href={`/courses/${course.id}`}>
-                                                    <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                                                </Link>
-                                            </Tooltip>
-                                            {/* ALTERNATIVA */}
-                                            {/* <Button onClick={() => onDelete(Courset.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/courses/${Courset.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
+                                            {isSuperAdmin && isDeleted ? (
+                                                <Tooltip title="Restaurar">
+                                                    <Button
+                                                        onClick={() => onRestore(course.id)}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        color="success"
+                                                        icon={<LuRotateCcw className="size-4" />}
+                                                    />
+                                                </Tooltip>
+                                            ) : (
+                                                <>
+                                                    <Tooltip title="Eliminar">
+                                                        <Button onClick={() => onDelete(course.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                                                    </Tooltip>
+                                                    <Tooltip title="Editar">
+                                                        <Link href={`/courses/${course.id}`}>
+                                                            <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                                                        </Link>
+                                                    </Tooltip>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
