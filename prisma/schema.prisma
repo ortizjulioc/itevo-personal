@@ -28,6 +28,7 @@ model User {
     Quotation            Quotation[]
     roleBranch           UserRoleBranch[]
     assignedScholarships StudentScholarship[]
+    inventoryMovements   InventoryMovement[]
 
     @@map("users")
 }
@@ -61,6 +62,7 @@ model Branch {
     products     Product[]
     ncfRanges    NcfRange[]
     quotations   Quotation[]
+    movements    InventoryMovement[]
 
     @@map("branches")
 }
@@ -602,7 +604,7 @@ model Invoice {
     itbis             Float               @default(0)
     paymentDate       DateTime?           @map("payment_date")
     paymentMethod     String?             @default("") @map("payment_method")
-    paymentDetails    Json?               @default("{}") @map("payment_details")
+    paymentDetails    Json?               @map("payment_details")
     status            InvoiceStatus       @default(DRAFT)
     comment           String?             @default("")
     isCredit          Boolean             @default(false) @map("is_credit")
@@ -657,14 +659,44 @@ model Product {
     billingWithoutStock Boolean @default(true) @map("billing_without_stock")
     branchId            String? @map("branch_id")
 
-    deleted       Boolean         @default(false)
-    createdAt     DateTime        @default(now()) @map("created_at")
-    updatedAt     DateTime        @updatedAt @map("updated_at")
+    deleted       Boolean             @default(false)
+    createdAt     DateTime            @default(now()) @map("created_at")
+    updatedAt     DateTime            @updatedAt @map("updated_at")
     invoiceItems  InvoiceItem[]
     QuotationItem QuotationItem[]
-    branch        Branch?         @relation(fields: [branchId], references: [id])
+    branch        Branch?             @relation(fields: [branchId], references: [id])
+    movements     InventoryMovement[]
 
     @@map("products")
+}
+
+model InventoryMovement {
+    id String @id @default(uuid())
+
+    productId String  @map("product_id")
+    product   Product @relation(fields: [productId], references: [id])
+
+    type     MovementType
+    quantity Int
+
+    previousStock Int @map("previous_stock")
+    newStock      Int @map("new_stock")
+
+    reference String? // Ej: invoiceId, purchaseId, manual, etc.
+    note      String?
+
+    branchId String? @map("branch_id") // coherente con tu modelo actual
+    branch   Branch? @relation(fields: [branchId], references: [id])
+
+    createdAt DateTime @default(now()) @map("created_at")
+    createdBy String   @map("created_by")
+    user      User     @relation(fields: [createdBy], references: [id])
+
+    @@index([productId])
+    @@index([type])
+    @@index([createdAt])
+    @@index([branchId])
+    @@map("inventory_movements")
 }
 
 model Quotation {
@@ -874,4 +906,10 @@ enum IdentificationType {
 enum ScholarshipType {
     percentage
     fixed_amount
+}
+
+enum MovementType {
+    IN     @map("in")
+    OUT    @map("out")
+    ADJUST @map("adjust")
 }

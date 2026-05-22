@@ -46,7 +46,7 @@ const useFetchcourses = (query: string) => {
     fetchData(query);
   }, [query, fetchData]);
 
-  return { courses, totalCourses, loading, error, setCourses, fetchCourses: fetchData };
+  return { courses, totalCourses, loading, error, setCourses, fetchCourses: fetchData, refetch: () => fetchData(query) };
 };
 
 export const useFetchCourseById = (id: string) => {

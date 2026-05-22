@@ -30,7 +30,7 @@ export const GET = async (request: NextRequest) => {
         await createLog({
             action: 'GET',
             description: formatErrorMessage(error),
-            origin: 'accounts-receivable',
+            origin: 'account-payable',
             success: false,
         });
         return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });

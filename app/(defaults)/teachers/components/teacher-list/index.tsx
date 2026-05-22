@@ -8,7 +8,10 @@ import Link from "next/link";
 import OptionalInfo from "@/components/common/optional-info";
 import Skeleton from "@/components/common/Skeleton";
 import useFetchTeachers from "../../lib/use-fetch-teachers";
-import { deleteTeacher } from "../../lib/request";
+import { deleteTeacher, restoreTeacher } from "../../lib/request";
+import { useSession } from "next-auth/react";
+import { LuRotateCcw } from "react-icons/lu";
+import { SUPER_ADMIN } from "@/constants/role.constant";
 
 interface Props {
   className?: string;
@@ -17,7 +20,9 @@ interface Props {
 
 export default function TeacherList({ className, query = '' }: Props) {
   const params = queryStringToObject(query);
-  const { loading, error, teachers, totalTeachers, setTeachers } = useFetchTeachers(query);
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+  const { loading, error, teachers, totalTeachers, setTeachers, refetch } = useFetchTeachers(query);
   if (error) {
     openNotification('error', error);
   }
@@ -34,6 +39,24 @@ export default function TeacherList({ className, query = '' }: Props) {
       if (resp.success) {
         setTeachers(teachers?.filter((teacher) => teacher.id !== id));
         openNotification('success', 'Profesor eliminado correctamente');
+        return;
+      } else {
+        openNotification('error', resp.message);
+      }
+    });
+  }
+
+  const onRestore = async (id: string) => {
+    confirmDialog({
+      title: 'Restaurar Profesor',
+      text: '¿Quieres restaurar este profesor?',
+      confirmButtonText: 'Sí, restaurar',
+      icon: 'info'
+    }, async () => {
+      const resp = await restoreTeacher(id);
+      if (resp.success) {
+        openNotification('success', 'Profesor restaurado correctamente');
+        refetch(); // Recargar la lista para reflejar el cambio de estado
         return;
       } else {
         openNotification('error', resp.message);
@@ -62,13 +85,17 @@ export default function TeacherList({ className, query = '' }: Props) {
               </tr>
             )}
             {teachers?.map((teacher) => {
+              const isDeleted = (teacher as any).deleted;
               return (
-                <tr key={teacher.id}>
+                <tr key={teacher.id} className={isDeleted ? "opacity-50 grayscale-[0.5]" : ""}>
                   <td>
                     <div className="flex gap-2 items-center ml-2">
                       <Avatar initials={getInitials(teacher.firstName, teacher.lastName)} size="sm" color="primary" />
                       <div className='flex flex-col'>
-                        <span>{`${teacher.firstName} ${teacher.lastName}`}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{`${teacher.firstName} ${teacher.lastName}`}</span>
+                          {isDeleted && <span className="badge bg-danger text-xs">Eliminado</span>}
+                        </div>
                         <span className='font-semibold'>{teacher.identification}</span>
                       </div>
                     </div>
@@ -81,19 +108,28 @@ export default function TeacherList({ className, query = '' }: Props) {
                   </td>
                   <td>
                     <div className="flex gap-2 justify-end">
-                      <Tooltip title="Eliminar">
-                        <Button onClick={() => onDelete(teacher.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
-                      </Tooltip>
-                      <Tooltip title="Editar">
-                        <Link href={`/teachers/${teacher.id}`}>
-                          <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
-                        </Link>
-                      </Tooltip>
-                      {/* ALTERNATIVA */}
-                      {/* <Button onClick={() => onDelete(teacher.id)} variant="outline" size="sm" color="danger" >Eliminar</Button>
-                                            <Link href={`/teachers/${teacher.id}`}>
-                                                <Button variant="outline" size="sm">Editar</Button>
-                                            </Link> */}
+                      {isSuperAdmin && isDeleted ? (
+                        <Tooltip title="Restaurar">
+                          <Button
+                            onClick={() => onRestore(teacher.id)}
+                            variant="outline"
+                            size="sm"
+                            color="success"
+                            icon={<LuRotateCcw className="size-4" />}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <>
+                          <Tooltip title="Eliminar">
+                            <Button onClick={() => onDelete(teacher.id)} variant="outline" size="sm" icon={<IconTrashLines className="size-4" />} color="danger" />
+                          </Tooltip>
+                          <Tooltip title="Editar">
+                            <Link href={`/teachers/${teacher.id}`}>
+                              <Button variant="outline" size="sm" icon={<IconEdit className="size-4" />} />
+                            </Link>
+                          </Tooltip>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

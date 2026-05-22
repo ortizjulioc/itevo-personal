@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Users, BookOpen, BookCheck, AlertCircle } from "lucide-react";
+import { CompactNumber } from '@/components/common/CompactNumber';
 
 interface DashboardData {
   activeStudentsCount: number;
@@ -70,7 +71,7 @@ export default function AcademicDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiantes Activos</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeStudentsCount}
+                <CompactNumber value={data.activeStudentsCount} />
               </h3>
               <TrendBadgeLocal value={data.studentsChange} label="crecimiento" />
             </div>
@@ -87,7 +88,7 @@ export default function AcademicDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Cursos en Progreso</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.activeCoursesCount}
+                <CompactNumber value={data.activeCoursesCount} />
               </h3>
               <div className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                  <span>Listos para impartir</span>
@@ -106,7 +107,7 @@ export default function AcademicDashboardClient() {
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Cursos Completados</p>
               <h3 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {data.completedCoursesCount}
+                <CompactNumber value={data.completedCoursesCount} />
               </h3>
               <div className="mt-2 flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400">
                 <span>Este mes</span>

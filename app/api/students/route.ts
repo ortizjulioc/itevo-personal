@@ -16,12 +16,15 @@ const mapIdentificationType: Record<string, IdentificationType> = {
 
 export async function GET(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
+
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
 
-        const { students, totalStudents } = await getStudents(search, page, top);
+        const { students, totalStudents } = await getStudents(search, page, top, isSuperAdmin);
 
         return NextResponse.json({
             students,

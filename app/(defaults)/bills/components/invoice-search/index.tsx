@@ -56,15 +56,22 @@ export default function SearchInvoice() {
 
 
     useEffect(() => {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(searchParams.toString());
+        let hasChanged = false;
 
         Object.entries(filters).forEach(([key, value]) => {
-            if (value) params.set(key, value);
+            const currentParam = searchParams.get(key) || '';
+            if (value !== currentParam) {
+                if (value) params.set(key, value);
+                else params.delete(key);
+                hasChanged = true;
+            }
         });
 
-        router.push(`${pathname}?${params.toString()}`);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters]);
+        if (hasChanged) {
+            router.push(`${pathname}?${params.toString()}`);
+        }
+    }, [filters, pathname, router, searchParams]);
 
     return (
         <div className="grid md:grid-cols-3 gap-3 mb-5">

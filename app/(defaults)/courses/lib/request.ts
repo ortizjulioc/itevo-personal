@@ -12,3 +12,7 @@ export const updateCourse = async (id: string, course: Course) => {
 export const deleteCourse = async (id: string) => {
   return await apiRequest.remove<string>(`/courses/${id}`);
 };
+
+export const restoreCourse = async (id: string) => {
+  return await apiRequest.patch<{ message: string }>(`/courses/${id}/restore`);
+};

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
 import { Role, Teacher } from '@/generated/prisma/client';
 
@@ -13,30 +13,31 @@ const useFetchTeachers = (query: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchrolesData = async (query: string) => {
-      try {
-        const response = await apiRequest.get<TeacherResponse>(`/teachers?${query}`);
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-        setTeachers(response.data?.teachers || []);
-        setTotalTeachers(response.data?.totalTeachers || 0);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('Ha ocurrido un error al obtener los profesores');
-        }
-      } finally {
-        setLoading(false);
+  const fetchrolesData = useCallback(async (query: string) => {
+    try {
+      setLoading(true);
+      const response = await apiRequest.get<TeacherResponse>(`/teachers?${query}`);
+      if (!response.success) {
+        throw new Error(response.message);
       }
-    };
+      setTeachers(response.data?.teachers || []);
+      setTotalTeachers(response.data?.totalTeachers || 0);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ha ocurrido un error al obtener los profesores');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchrolesData(query);
-  }, [query]);
+  }, [query, fetchrolesData]);
 
-  return { teachers, totalTeachers, loading, error, setTeachers };
+  return { teachers, totalTeachers, loading, error, setTeachers, refetch: () => fetchrolesData(query) };
 };
 
 export const useFetchTeacherById = (id: string) => {

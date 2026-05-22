@@ -298,6 +298,7 @@ export default function AddItemsQuotation() {
                             <div className="w-full md:w-[calc(100%-120px)]">
                                 <SelectCourseBranch
                                     value={courseBranch?.id || ''}
+                                    onlyEnrollable={true}
                                     onChange={(selected: any) => {
                                         if (!selected) setCourseBranch(null);
                                         else {

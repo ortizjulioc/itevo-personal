@@ -47,6 +47,7 @@ export async function printClosureDirect(params: PrintClosureParams) {
         closureDate: data.closureDate,
         initialCash: data.cashRegister.initialBalance,
         expectedCash: data.expectedTotalCash,
+        reportedCash: data.totalCash,
         differenceCash: data.totalCash - data.expectedTotalCash,
         branch: data.cashRegister.cashBox.branch.name,
         user: `${data.user.name} ${data.user.lastName}`,
@@ -109,6 +110,7 @@ export default function PrintClosure({ closureId, cashRegisterId }: { closureId:
 
             initialCash: data.cashRegister.initialBalance,
             expectedCash: data.expectedTotalCash,
+            reportedCash: data.totalCash,
             differenceCash: data.totalCash - data.expectedTotalCash,
 
             branch: data.cashRegister.cashBox.branch.name,

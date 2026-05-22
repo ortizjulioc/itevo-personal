@@ -3,15 +3,20 @@ import { validateObject } from "@/utils";
 import { getTeachers, createTeacher, findTeacherByIdentification } from '@/services/teacher-service';
 import { formatErrorMessage } from "@/utils/error-to-string";
 import { createLog } from "@/utils/log";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/auth-options";
 
 export async function GET(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === 'super_admin');
+
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
         const page = parseInt(searchParams.get('page') || '1', 10);
         const top = parseInt(searchParams.get('top') || '10', 10);
 
-        const { teachers, totalTeachers } = await getTeachers(search, page, top);
+        const { teachers, totalTeachers } = await getTeachers(search, page, top, isSuperAdmin);
 
         return NextResponse.json({
             teachers,

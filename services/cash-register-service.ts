@@ -50,7 +50,7 @@ export const getCashRegisters = async ({
         user: {
           select: { id: true, name: true, lastName: true },
         },
-        cashBox: { select: { id: true, name: true } },
+        cashBox: { select: { id: true, name: true, branchId: true, branch: { select: { name: true } } } },
         createdAt: true,
         updatedAt: true,
       },
@@ -83,7 +83,7 @@ export const findCashRegisterById = async (id: string) => {
       user: {
         select: { id: true, name: true, lastName: true, username: true }
       },
-      cashBox: { select: { id: true, name: true } },
+      cashBox: { select: { id: true, name: true, branchId: true, branch: { select: { name: true } } } },
       createdAt: true,
       updatedAt: true
     }

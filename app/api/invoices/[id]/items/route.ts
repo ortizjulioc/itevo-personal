@@ -6,8 +6,11 @@ import { findProductById, updateProductById } from '@/services/product-service';
 import { formatErrorMessage } from '@/utils/error-to-string';
 import { Prisma } from '@/utils/lib/prisma';
 import { createLog } from '@/utils/log';
-import { InvoiceItemType } from '@/generated/prisma/client';
+import { InvoiceItemType, MovementType, PaymentStatus } from '@/generated/prisma/client';
+import { recordInventoryMovement } from '@/services/inventory-service';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
 
 // Tipo para los datos de entrada del ítem
@@ -23,6 +26,7 @@ interface InvoiceItemInput {
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params; // ID de la factura
     try {
+        const session = await getServerSession(authOptions);
         const body: InvoiceItemInput = await req.json();
 
         // Verificar que la factura existe y está en DRAFT
@@ -38,10 +42,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         let subtotal = body.unitPrice * body.quantity;
         let itbis = 0;
 
+        // Validaciones estrictas del backend
+        if (!body.type) throw new Error('El tipo de ítem es requerido');
+        if (body.type === InvoiceItemType.PRODUCT && !body.productId) throw new Error('Debe especificar un producto válido');
+        if (body.type === InvoiceItemType.RECEIVABLE && !body.accountReceivableId) throw new Error('Debe especificar una cuenta por cobrar válida');
+        if (body.unitPrice === undefined || body.unitPrice === null || isNaN(body.unitPrice)) throw new Error('El precio unitario no es válido');
+        if (!body.quantity || body.quantity <= 0) throw new Error('La cantidad debe ser mayor a 0');
+
         await Prisma.$transaction(async (prisma) => {
             // Validar y calcular impuestos según el tipo de ítem
             if (body.type === InvoiceItemType.PRODUCT && body.productId) {
-                const product = await findProductById(body.productId);
+                const product = await findProductById(body.productId, false, prisma);
 
                 if (!product) {
                     throw new Error(`Producto ${body.productId} no encontrado`);
@@ -62,20 +73,37 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 }
 
                 body.concept = product.name;
+
+                // Registrar movimiento de inventario OUT
+                await recordInventoryMovement({
+                    productId: product.id,
+                    quantity: body.quantity,
+                    previousStock: product.stock,
+                    newStock: product.stock - body.quantity,
+                    type: MovementType.OUT,
+                    reference: id,
+                    note: `Ítem agregado a factura ${invoice?.invoiceNumber || ''}`,
+                    branchId: product.branchId || null,
+                    createdBy: session?.user?.id as string || '',
+                    tx: prisma,
+                });
+
                 // Actualizar el stock del producto
                 await updateProductById(body.productId, {
                     stock: product.stock - body.quantity,
                 }, prisma);
             } else if (body.type === InvoiceItemType.RECEIVABLE && body.accountReceivableId) {
+                const totalPaid = body.unitPrice * body.quantity;
+
                 const { accountReceivable, receivablePayment } = await processReceivablePayment({
-                    unitPrice: body.unitPrice,
+                    unitPrice: totalPaid,
                     accountReceivableId: body.accountReceivableId,
                     invoiceId: id,
                     prisma,
                 })
 
                 if (accountReceivable.courseBranchId) {
-                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, prisma);
+                    const courseBranch = await findCourseBranchById(accountReceivable.courseBranchId, false, prisma);
                     if (!courseBranch) {
                         throw new Error(`Oferta académica con ID ${accountReceivable.courseBranchId} no encontrada`);
                     }
@@ -86,23 +114,37 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                         prisma,
                     });
 
-                    // Agregar ganancia a la cuenta por pagar
-                    await addNewEarningToAccountsPayable(
-                        accountPayable.id,
-                        courseBranch.commissionAmount ?? 0.00,
-                        receivablePayment.id,
-                        prisma
-                    );
-
                     if (!accountPayable) {
                         throw new Error(`Cuenta por pagar no encontrada para la cuenta por cobrar ${body.accountReceivableId}`);
+                    }
+
+                    let comissionToPay = 0;
+
+                    if (courseBranch.commissionRate && courseBranch.commissionRate > 0) {
+                        // Pago proporcional según porcentaje de comisión
+                        comissionToPay = totalPaid * courseBranch.commissionRate;
+                    } else if (courseBranch.commissionAmount && courseBranch.commissionAmount > 0) {
+                        // Pago por monto fijo, solo cuando se liquide la cuota completamente
+                        if (accountReceivable.status === PaymentStatus.PAID) {
+                            comissionToPay = courseBranch.commissionAmount;
+                        }
+                    }
+
+                    if (comissionToPay > 0) {
+                        // Agregar ganancia a la cuenta por pagar
+                        await addNewEarningToAccountsPayable(
+                            accountPayable.id,
+                            comissionToPay,
+                            receivablePayment.id,
+                            prisma
+                        );
                     }
                 }
 
             } else if (body.type === InvoiceItemType.CUSTOM && (!body.unitPrice || body.quantity <= 0)) {
                 throw new Error('Para ítems CUSTOM, unitPrice y quantity deben ser válidos');
             }
-            const { invoiceUpdated, itemCreated} = await addNewItemToInvoice(id, {
+            const { invoiceUpdated, itemCreated } = await addNewItemToInvoice(id, {
                 type: body.type,
                 productId: body.productId,
                 accountReceivableId: body.accountReceivableId,

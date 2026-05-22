@@ -1,12 +1,17 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 
-export const getTeachers = async (search: string, page: number, top: number) => {
+export const getTeachers = async (search: string, page: number, top: number, includeDeleted: boolean = false) => {
     const skip = (page - 1) * top;
+
+    const where: any = {
+        ...(includeDeleted ? {} : { deleted: false }),
+        firstName: { contains: search },
+    };
+
     const teachers = await Prisma.teacher.findMany({
         orderBy: [
-            { firstName: 'asc' },
-            { lastName: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,
@@ -18,20 +23,15 @@ export const getTeachers = async (search: string, page: number, top: number) => 
             phone: true,
             email: true,
             commissionRate: true,
+            deleted: true,
         },
-        where: {
-            deleted: false,
-            firstName: { contains: search },
-        },
+        where,
         skip: skip,
         take: top,
     });
 
     const totalTeachers = await Prisma.teacher.count({
-        where: {
-            deleted: false,
-            firstName: { contains: search },
-        },
+        where,
     });
 
     return { teachers, totalTeachers };
@@ -57,11 +57,11 @@ export const findTeacherByIdentification= async (data: any) => {
 };
 
 // Obtener teacher por ID
-export const findTeacherById = async (id: string) => {
+export const findTeacherById = async (id: string, includeDeleted: boolean = false) => {
     return Prisma.teacher.findUnique({
         where: {
             id: id,
-            deleted: false,
+            ...(includeDeleted ? {} : { deleted: false }),
         },
     });
 };
@@ -79,5 +79,13 @@ export const deleteTeacherById = async (id: string) => {
     return Prisma.teacher.update({
         where: { id },
         data: { deleted: true },
+    });
+};
+
+// Restaurar teacher por ID
+export const restoreTeacherById = async (id: string) => {
+    return Prisma.teacher.update({
+        where: { id },
+        data: { deleted: false },
     });
 };

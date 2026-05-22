@@ -9,6 +9,8 @@ import { Role } from '@/generated/prisma/client';
 import { AssingRole, RemoveRole } from "../lib/request";
 import { openNotification } from "@/utils";
 import { UserContext } from "@/context/user";
+import { useSession } from "next-auth/react";
+import { SUPER_ADMIN } from "@/constants/role.constant";
 
 
 // const UserInitialValues = {
@@ -57,7 +59,14 @@ import { UserContext } from "@/context/user";
 export default function EditUser({ params }: { params: Promise<{ id: string }> }) {
     const { id } = React.use(params);
     const { loading, user, setUser } = useFetchUserById(id);
-    const { roles } = useFetchRole('');
+    const { roles: allRoles } = useFetchRole('');
+    const { data: session } = useSession();
+
+    const isSuperAdmin = session?.user?.roles?.some((role: any) => role.normalizedName === SUPER_ADMIN);
+
+    const roles = isSuperAdmin 
+        ? allRoles 
+        : allRoles.filter(role => role.normalizedName !== SUPER_ADMIN);
 
 
     const onChange = (user: UserWithBranchesAndRoles | null) => {

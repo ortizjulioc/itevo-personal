@@ -13,6 +13,10 @@ export const deleteCourseBranch = async (id: CourseBranch['id']) => {
     return await apiRequest.remove<string>(`/course-branch/${id}`);
 };
 
+export const restoreCourseBranch = async (id: CourseBranch['id']) => {
+    return await apiRequest.patch<{ message: string }>(`/course-branch/${id}/restore`);
+};
+
 export const assignScheduleToCourseBranch = async (courseId: CourseBranch['id'], scheduleId: string) => {
     return await apiRequest.post(`/courses/${courseId}/schedules`, { scheduleId });
 };

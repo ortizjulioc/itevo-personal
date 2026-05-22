@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiRequest from "@/utils/lib/api-request/request";
-import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher,CourseBranchStatus } from '@/generated/prisma/client';
+import { Branch, Course, CourseBranch as CourseBranchPrisma, Schedule, Teacher, CourseBranchStatus, EnrollmentStatus } from '@/generated/prisma/client';
 import { CourseBranchWithRelations } from '@/@types/course-branch';
 
 export interface CourseBranch extends CourseBranchPrisma {
@@ -12,6 +12,7 @@ export interface CourseBranch extends CourseBranchPrisma {
   sessionCount: number;
   status: CourseBranchStatus;
   paymentPlan?: { id: string, installments: number, frequency: string };
+  enrollment?: { id: string; status: EnrollmentStatus }[];
 }
 
 export interface CourseBranchResponse {
@@ -25,30 +26,31 @@ const useFetchCourseBranch = (query: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCourseBranch = async (query: string) => {
-      try {
-        const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?${query}`);
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-        setCourseBranches(response.data?.courseBranches || []);
-        setTotalCourseBranches(response.data?.totalCourseBranches || 0);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('Ha ocurrido un error al obtener las ofertas academicas');
-        }
-      } finally {
-        setLoading(false);
+  const fetchCourseBranchData = useCallback(async (query: string) => {
+    try {
+      setLoading(true);
+      const response = await apiRequest.get<CourseBranchResponse>(`/course-branch?${query}`);
+      if (!response.success) {
+        throw new Error(response.message);
       }
-    };
+      setCourseBranches(response.data?.courseBranches || []);
+      setTotalCourseBranches(response.data?.totalCourseBranches || 0);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ha ocurrido un error al obtener las ofertas academicas');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    fetchCourseBranch(query);
-  }, [query]);
+  useEffect(() => {
+    fetchCourseBranchData(query);
+  }, [query, fetchCourseBranchData]);
 
-  return { courseBranches, totalCourseBranches, loading, error, setCourseBranches };
+  return { courseBranches, totalCourseBranches, loading, error, setCourseBranches, refetch: () => fetchCourseBranchData(query) };
 };
 
 export const useFetchCourseBranchById = (id: string) => {

@@ -5,17 +5,19 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 import { getServerSession } from 'next-auth';
 
 // Obtener todos los productos con búsqueda y paginación
-export async function getProducts(search = '', page = 1, top = 10) {
+export async function getProducts(search = '', page = 1, top = 10, includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
-
+  const searchAsNumber = Number(search);
+  const isNumber = !isNaN(searchAsNumber);
   const skip = (page - 1) * top;
 
   const where: PrismaTypes.ProductWhereInput = {
-    deleted: false,
+    ...(includeDeleted ? {} : { deleted: false }),
     OR: [
       { name: { contains: search } },
       { description: { contains: search } },
+      ...(isNumber ? [{ code: searchAsNumber }] : []),
     ],
     ...(branchId ? { branchId } : {}),
   };
@@ -34,12 +36,12 @@ export async function getProducts(search = '', page = 1, top = 10) {
 }
 
 // Obtener todos los productos para exportación (sin paginación)
-export async function getAllProducts(search = '') {
+export async function getAllProducts(search = '', includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
 
   const where: PrismaTypes.ProductWhereInput = {
-    deleted: false,
+    ...(includeDeleted ? {} : { deleted: false }),
     OR: [
       { name: { contains: search } },
       { description: { contains: search } },
@@ -54,28 +56,34 @@ export async function getAllProducts(search = '') {
 }
 
 // Crear un producto
-export async function createProduct(data: PrismaTypes.ProductCreateInput) {
-  return await Prisma.product.create({ data });
+export async function createProduct(
+  data: PrismaTypes.ProductCreateInput,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+) {
+  return await prisma.product.create({ data });
 }
 
 // Buscar producto por ID
 export async function findProductById(
   id: string,
-  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma
+  includeDeleted = false,
+  prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
+  includeMovements = false
 ) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
   return await prisma.product.findUnique({
     where:
-      { id, deleted: false, ...(branchId ? { branchId } : {}) }
+      { id, ...(includeDeleted ? {} : { deleted: false }), ...(branchId ? { branchId } : {}) },
+    include: includeMovements ? { movements: { orderBy: { createdAt: 'desc' } } } : undefined
   });
 }
 
 // Buscar producto por código
-export async function findProductByCode(code: number) {
+export async function findProductByCode(code: number, includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
-  return await Prisma.product.findUnique({ where: { code, deleted: false, ...(branchId ? { branchId } : {}) } });
+  return await Prisma.product.findUnique({ where: { code, ...(includeDeleted ? {} : { deleted: false }), ...(branchId ? { branchId } : {}) } });
 }
 
 // Actualizar producto por ID
@@ -92,5 +100,13 @@ export async function deleteProductById(id: string) {
   return await Prisma.product.update({
     where: { id },
     data: { deleted: true },
+  });
+}
+
+// Restaurar producto por ID
+export async function restoreProductById(id: string) {
+  return await Prisma.product.update({
+    where: { id },
+    data: { deleted: false },
   });
 }

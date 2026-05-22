@@ -1,11 +1,9 @@
 import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
-import { PrismaClient, Prisma as PrismaTypes, } from '@/generated/prisma/client';
+import { PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 const bcrypt = require('bcrypt');
 
-export const getSettings = async (
-    prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma,
-) => {
+export const getSettings = async (prisma: PrismaClient | PrismaTypes.TransactionClient = Prisma) => {
     return await prisma.setting.findFirst();
 };
 
@@ -50,7 +48,7 @@ export const changeLogo = async (logo: string) => {
     } else {
         throw new Error('No se encontró una configuracion existente para actualizar el logo.');
     }
-}
+};
 
 export const changeLogoReport = async (logoReport: string) => {
     // Verificar si ya existe un setting
@@ -67,19 +65,17 @@ export const changeLogoReport = async (logoReport: string) => {
     } else {
         throw new Error('No se encontró una configuracion existente para actualizar el logo del reporte.');
     }
-}
-
+};
 
 // Actualizar setting por ID
 export const updateSettingById = async (id: string, data: any) => {
     // Actualizar el campo defaultPassword si está presente
-    if (data.defaultPassword) {
+    if (data.defaultPassword && data.defaultPassword != '') {
         const saltRounds = 10;
         data.defaultPassword = bcrypt.hashSync(data.defaultPassword, saltRounds);
     } else {
         delete data.defaultPassword;
     }
-
     return Prisma.setting.update({
         where: { id },
         data: data,

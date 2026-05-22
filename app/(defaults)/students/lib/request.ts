@@ -12,3 +12,7 @@ export const updateStudent = async (id: string, student: Student) => {
 export const deleteStudent = async (id: string) => {
   return await apiRequest.remove<string>(`/students/${id}`);
 };
+
+export const restoreStudent = async (id: string) => {
+  return await apiRequest.patch<{ message: string }>(`/students/${id}/restore`);
+};

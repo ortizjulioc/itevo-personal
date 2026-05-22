@@ -2,13 +2,13 @@ import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { IdentificationType, PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
-export const getStudents = async (search: string, page: number, top: number) => {
+export const getStudents = async (search: string, page: number, top: number, includeDeleted: boolean = false) => {
     const skip = (page - 1) * top;
 
     const searchTerms = search.trim().split(/\s+/).filter((t) => t.length > 0);
 
     const where: any = {
-        deleted: false,
+        ...(includeDeleted ? {} : { deleted: false }),
     };
 
     if (searchTerms.length > 0) {
@@ -27,8 +27,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
 
     const students = await Prisma.student.findMany({
         orderBy: [
-            { firstName: 'asc' },
-            { lastName: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,
@@ -41,6 +40,7 @@ export const getStudents = async (search: string, page: number, top: number) => 
             email: true,
             isMinor: true,
             hasTakenCourses: true,
+            deleted: true,
         },
         where,
         skip: skip,
@@ -61,12 +61,11 @@ export const createStudent = async (
     const student = await prisma.student.create({ data: data });
     return student;
 };
-
-export const findStudentById = async (id: string) => {
+export const findStudentById = async (id: string, includeDeleted: boolean = false) => {
     return Prisma.student.findUnique({
         where: {
             id: id,
-            deleted: false,
+            ...(includeDeleted ? {} : { deleted: false }),
         },
         include: {
             scholarships: {
@@ -122,6 +121,14 @@ export const deleteStudentById = async (id: string) => {
     return Prisma.student.update({
         where: { id },
         data: { deleted: true },
+    });
+};
+
+// Restaurar student por ID
+export const restoreStudentById = async (id: string) => {
+    return Prisma.student.update({
+        where: { id },
+        data: { deleted: false },
     });
 };
 

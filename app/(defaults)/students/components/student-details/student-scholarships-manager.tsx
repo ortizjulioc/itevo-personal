@@ -137,6 +137,7 @@ export default function StudentScholarshipsManager({ studentId, isOpen, onClose 
                                     <SelectCourseBranch
                                         value={selectedCourseBranch?.value}
                                         onChange={setSelectedCourseBranch}
+                                        onlyEnrollable={true}
                                     />
                                 </div>
 

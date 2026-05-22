@@ -6,7 +6,7 @@ export const getPromotions = async (search: string, page: number, top: number) =
     const skip = (page - 1) * top;
     const promotions = await Prisma.promotion.findMany({
         orderBy: [
-            { startDate: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,

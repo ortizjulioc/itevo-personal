@@ -6,6 +6,7 @@ import { createLog } from '@/utils/log';
 import { CashRegisterStatus } from '@/generated/prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
+import { Prisma } from '@/utils/lib/prisma';
 
 // Obtener todas las cajas registradoras (GET)
 export async function GET(request: NextRequest) {
@@ -62,6 +63,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ code: 'E_MISSING_FIELDS', error: message }, { status: 400 });
     }
 
+    // Validar que el usuario no tenga ya una caja abierta en esta sucursal
+    const cashBox = await Prisma.cashBox.findUnique({
+      where: { id: body.cashBoxId },
+      select: { branchId: true },
+    });
+
+    if (!cashBox) {
+      return NextResponse.json({ error: 'La caja seleccionada no existe.' }, { status: 400 });
+    }
+
+    const existingOpenCashRegister = await Prisma.cashRegister.findFirst({
+      where: {
+        userId: body.userId,
+        status: CashRegisterStatus.OPEN,
+        deleted: false,
+        cashBox: {
+          branchId: cashBox.branchId,
+        },
+      },
+    });
+
+    if (existingOpenCashRegister) {
+      return NextResponse.json({ 
+        error: 'El usuario ya tiene una caja abierta en esta sucursal.' 
+      }, { status: 400 });
+    }
+
     const cashRegister = await createCashRegister({
       user: { connect: { id: body.userId } },
       initialBalance: body.initialBalance,
@@ -71,8 +99,8 @@ export async function POST(request: NextRequest) {
 
     await createLog({
       action: 'POST',
-      description: `Se creó la caja registradora con la siguiente información: \n${JSON.stringify(cashRegister, null, 2)}`,
-      origin: 'cash_register',
+      description: `Apertura de caja registradora.\nMonto inicial: ${body.initialBalance}\nUsuario ID: ${body.userId}\nDetalle técnico: ${JSON.stringify(cashRegister, null, 2)}`,
+      origin: 'cash-register',
       elementId: cashRegister.id,
       success: true,
     });

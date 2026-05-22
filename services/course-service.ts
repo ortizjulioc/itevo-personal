@@ -2,11 +2,17 @@ import 'server-only';
 import { Prisma } from '@/utils/lib/prisma';
 import { PrismaClient, Prisma as PrismaTypes } from '@/generated/prisma/client';
 
-export const getCourses = async (search: string, page: number, top: number) => {
+export const getCourses = async (search: string, page: number, top: number, includeDeleted: boolean = false) => {
     const skip = (page - 1) * top;
+
+    const where: any = {
+        ...(includeDeleted ? {} : { deleted: false }),
+        name: { contains: search },
+    };
+
     const courses = await Prisma.course.findMany({
         orderBy: [
-            { name: 'asc' },
+            { createdAt: 'desc' },
         ],
         select: {
             id: true,
@@ -15,20 +21,15 @@ export const getCourses = async (search: string, page: number, top: number) => {
             description: true,
             duration: true,
             requiresGraduation: true,
+            deleted: true,
         },
-        where: {
-            deleted: false,
-            name: { contains: search },
-        },
+        where,
         skip: skip,
         take: top,
     });
 
     const totalCourses = await Prisma.course.count({
-        where: {
-            deleted: false,
-            name: { contains: search },
-        },
+        where,
     });
 
     return { courses, totalCourses };
@@ -50,12 +51,12 @@ export const findCourseByCode= async (code: number) => {
 };
 
 // Obtener course por ID
-export const findCourseById = async (id: string) => {
+export const findCourseById = async (id: string, includeDeleted: boolean = false) => {
 
     const course = await Prisma.course.findUnique({
         where: {
             id: id,
-            deleted: false,
+            ...(includeDeleted ? {} : { deleted: false }),
         },
         include: {
             prerequisites: {
@@ -90,6 +91,14 @@ export const deleteCourseById = async (id: string) => {
     return Prisma.course.update({
         where: { id },
         data: { deleted: true },
+    });
+};
+
+// Restaurar course por ID
+export const restoreCourseById = async (id: string) => {
+    return Prisma.course.update({
+        where: { id },
+        data: { deleted: false },
     });
 };
 

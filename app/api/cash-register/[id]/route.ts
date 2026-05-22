@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     await createLog({
       action: 'GET',
       description: formatErrorMessage(error),
-      origin: 'cash_register/[id]',
+      origin: 'cash-register/[id]',
       success: false,
     });
     return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
@@ -51,7 +51,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     await createLog({
       action: 'PUT',
-      description: `Se actualizó la caja registradora.\nInformación anterior: ${JSON.stringify(existing, null, 2)}\nInformación actualizada: ${JSON.stringify(updated, null, 2)}`,
+      description: `Actualización de caja registradora.\nDatos previos: ${JSON.stringify(existing, null, 2)}\nDatos nuevos: ${JSON.stringify(updated, null, 2)}`,
       origin: 'cash-register/[id]',
       elementId: updated.id,
       success: true,
@@ -83,7 +83,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     await createLog({
       action: 'DELETE',
-      description: `Se eliminó la caja registradora con la siguiente información: \n${JSON.stringify(existing, null, 2)}`,
+      description: `Eliminación de caja registradora.\nInformación eliminada: ${JSON.stringify(existing, null, 2)}`,
       origin: 'cash-register/[id]',
       elementId: id,
       success: true,

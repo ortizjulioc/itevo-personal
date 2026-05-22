@@ -35,9 +35,10 @@ interface CourseBranchSelect {
 interface SelectCourseBranchProps {
     value?: string;
     onChange?: (selected: CourseBranchSelect | null, actionMeta: ActionMeta<CourseBranchSelect>) => void;
+    onlyEnrollable?: boolean;
 }
 
-export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranchProps) {
+export default function SelectCourseBranch({ value, onlyEnrollable = false, ...rest }: SelectCourseBranchProps) {
     const [options, setOptions] = useState<CourseBranchSelect[]>([]);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const { activeBranchId } = useActiveBranch();
@@ -58,11 +59,25 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
                 throw new Error(response.message);
             }
 
-            return response.data?.courseBranches.map(courseBranch => ({
+            let branches = response.data?.courseBranches || [];
+
+            if (onlyEnrollable) {
+                branches = branches.filter(courseBranch => {
+                    // Siempre permitimos el valor actualmente seleccionado
+                    if (courseBranch.id === value) return true;
+
+                    const isInvalidStatus = ['DRAFT', 'CANCELED', 'COMPLETED'].includes(courseBranch.status);
+                    const isExpired = courseBranch.endDate && new Date(courseBranch.endDate) < new Date();
+
+                    return !isInvalidStatus && !isExpired;
+                });
+            }
+
+            return branches.map(courseBranch => ({
                 value: courseBranch.id,
                 label: courseBranch.course.name,
                 courseBranch: courseBranch
-            })) || [];
+            }));
         } catch (error) {
             console.error('Error fetching Course-Branches data:', error);
             return [];
@@ -74,37 +89,56 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
     };
 
     const CustomSelectedOption = (props: any) => {
-        const { isSelected, innerProps, data } = props;
+        const { isSelected, isDisabled, innerProps, data } = props;
         const { courseBranch } = data;
+
+        const enrolledCount = courseBranch.enrollment?.filter((e: any) => e.status === 'ENROLLED').length || 0;
+        const capacity = courseBranch.capacity;
+        const available = capacity > 0 ? Math.max(0, capacity - enrolledCount) : null;
 
         return (
             <div
                 className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition px-4
               ${isSelected ? "bg-gray-100 dark:bg-gray-700" : "hover:bg-gray-50 dark:hover:bg-gray-600"}
+              ${isDisabled ? "opacity-60 cursor-not-allowed bg-red-50/20 dark:bg-red-950/10" : ""}
             `}
                 {...innerProps}
             >
                 <div className="flex flex-col">
                     <div>
-                        <span className="font-semibold text-base text-black dark:text-white mr-2">
+                        <span className={`font-semibold text-base mr-2 ${isDisabled ? "text-red-500 dark:text-red-400" : "text-black dark:text-white"}`}>
                             {courseBranch.course.name}
                         </span>
                         <ModalityTag modality={courseBranch.modality} />
+                        {isDisabled && (
+                            <span className="badge bg-danger/10 text-danger border border-danger/25 text-[10px] ml-2 font-bold px-1.5 py-0.5 rounded">
+                                Lleno
+                            </span>
+                        )}
                     </div>
 
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                         {courseBranch.teacher.firstName} {courseBranch.teacher.lastName} | {courseBranch.branch.name}
                     </span>
 
-                    {courseBranch.schedules && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {formatSchedule(courseBranch.schedules)}
-                        </span>
-                    )}
-
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        {courseBranch.schedules && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {formatSchedule(courseBranch.schedules)}
+                            </span>
+                        )}
+                        {capacity > 0 && (
+                            <>
+                                <span className="text-slate-300 dark:text-slate-600 text-xs">|</span>
+                                <span className={`text-xs font-semibold ${available === 0 ? "text-red-500 font-bold" : "text-emerald-600 dark:text-emerald-400"}`}>
+                                    Cupos: {available} disp. / {capacity} tot.
+                                </span>
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                <div className='flex'>
+                <div className='flex items-center'>
                     <span className="text-base font-bold dark:text-white">
                         {formatCurrency(courseBranch.amount)}
                     </span>
@@ -147,7 +181,7 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
         };
 
         fetchData();
-    }, [value, activeBranchId]);
+    }, [value, activeBranchId, onlyEnrollable]);
 
     return (
         <div>
@@ -164,6 +198,15 @@ export default function SelectCourseBranch({ value, ...rest }: SelectCourseBranc
                 components={{
                     Control: CustomControl,
                     Option: CustomSelectedOption
+                }}
+                isOptionDisabled={(option) => {
+                    if (option.value === value) return false;
+                    if (onlyEnrollable && option.courseBranch) {
+                        const cb = option.courseBranch;
+                        const enrolledCount = cb.enrollment?.filter((e: any) => e.status === 'ENROLLED').length || 0;
+                        return cb.capacity > 0 && enrolledCount >= cb.capacity;
+                    }
+                    return false;
                 }}
                 styles={{...getCustomStyles(Boolean(themeConfig.isDarkMode)), ...customStyles}}
                 isClearable

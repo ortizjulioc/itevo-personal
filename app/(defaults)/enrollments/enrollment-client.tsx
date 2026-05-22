@@ -30,7 +30,7 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
   const { showFilters: _, ...paramsForQuery } = paramsWithBranch;
   const query = objectToQueryString(paramsForQuery || {});
 
-  const { enrollments, totalEnrollments, summary, loading, error, setEnrollments } = useFetchEnrollments(query);
+  const { enrollments, totalEnrollments, summary, loading, error, setEnrollments, refetchEnrollments } = useFetchEnrollments(query);
 
   const handleFilterChange = () => {
     const newParams = new URLSearchParams(params.toString());
@@ -73,6 +73,7 @@ export default function Enrollment({ searchParams }: { searchParams?: { search?:
         loading={loading}
         error={error}
         setEnrollments={setEnrollments}
+        refetchEnrollments={refetchEnrollments}
       />
     </div>
   );

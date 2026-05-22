@@ -15,6 +15,7 @@ export default function NewinvoiceCard({ cashRegisterId, userId, loading, setLoa
         setLoading(true);
         if (!cashRegisterId || !userId) {
             console.error('Faltan datos requeridos');
+            openNotification('error', 'Faltan datos requeridos (caja registradora o usuario) para poder crear la factura.');
             setLoading(false);
             return;
         }

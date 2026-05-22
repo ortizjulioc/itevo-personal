@@ -12,3 +12,7 @@ export const updateEnrollment = async (id: string, enrollment: Enrollment) => {
 export const deleteEnrollment = async (id: string) => {
   return await apiRequest.remove<string>(`/enrollments/${id}`);
 };
+
+export const restoreEnrollment = async (id: string) => {
+  return await apiRequest.patch<{ message: string }>(`/enrollments/${id}/restore`);
+};

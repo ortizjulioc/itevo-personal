@@ -17,3 +17,7 @@ export const updateProduct = async (id: string, product: Product) => {
 export const deleteProduct = async (id: string) => {
     return await apiRequest.remove<string>(`/products/${id}`);
 }
+
+export const restoreProduct = async (id: string) => {
+    return await apiRequest.patch<{ message: string }>(`/products/${id}/restore`);
+}

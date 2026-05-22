@@ -9,6 +9,7 @@ import BillingDashboardClient from '@/components/dashboard/BillingDashboardClien
 import CashierDashboardClient from '@/components/dashboard/CashierDashboardClient';
 import AssistantDashboardClient from '@/components/dashboard/AssistantDashboardClient';
 import { SUPER_ADMIN, GENERAL_ADMIN, ROOT, ACADEMIC_ADMIN, BILLING_ADMIN, CASHIER, ASSISTANT } from '@/constants/role.constant';
+import { CompactNumber } from '@/components/common/CompactNumber';
 
 export const metadata: Metadata = {
     title: 'Dashboard de Inicio',
@@ -38,6 +39,7 @@ const Sales = async () => {
     return (
         <div className="space-y-6">
             <ViewTitle title={`¡Bienvenido ${session?.user?.name || ''} ${session?.user?.lastName || ''}!`} />
+
             <DashboardComponent />
         </div>
     );

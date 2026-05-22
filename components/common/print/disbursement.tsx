@@ -14,6 +14,7 @@ import { getFormattedDateTime } from '@/utils/date';
 type PrintDisbursementProps = {
   paymentId: string;
   payableId?: string;
+  setting?: any;
   children?: (props: { loading: boolean; onPrint: () => void }) => React.ReactNode;
 }
 
@@ -45,33 +46,50 @@ type DisbursementData = {
 }
 
 
-export default function PrintDisbursement({ paymentId, payableId, children }: PrintDisbursementProps) {
-  const [loading, setLoading] = useState<boolean>(true);
-  const { setting, loading: loadingSettings } = useFetchSetting();
+export default function PrintDisbursement({ paymentId, payableId, setting: propSetting, children }: PrintDisbursementProps) {
+  const [loading, setLoading] = useState<boolean>(false);
   const { printPDF } = usePrintPDF();
 
 
   const onPrint = () => {
-    handlePrintPDF(setting);
+    handlePrintPDF();
   };
 
-  const handlePrintPDF = async (setting: any) => {
+  const handlePrintPDF = async () => {
     setLoading(true);
-    if (!setting) return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
+    let activeSetting = propSetting;
+    if (!activeSetting) {
+      try {
+        const response = await apiRequest.get<any>('/settings');
+        if (response.success && response.data?.settings) {
+          activeSetting = response.data.settings;
+        }
+      } catch (error) {
+        console.error('Error fetching settings on print:', error);
+      }
+    }
+
+    if (!activeSetting) {
+      setLoading(false);
+      return openNotification('error', 'No se encontró la configuración de la empresa para imprimir.');
+    }
     const disbursement = await getDisbursementData();
-    if (!disbursement) return openNotification('error', 'No se encontró el desembolso para imprimir.');
+    if (!disbursement) {
+      setLoading(false);
+      return openNotification('error', 'No se encontró el desembolso para imprimir.');
+    }
 
     let blobLogo = null;
-    if (setting.logo) {
-      blobLogo = await fetchImageAsBase64(setting.logo);
+    if (activeSetting.logo) {
+      blobLogo = await fetchImageAsBase64(activeSetting.logo);
     }
 
     const companyInfo = {
-      companyName: setting.companyName,
-      rnc: setting.rnc,
-      address: disbursement.accountPayable.courseBranch.branch.address || setting.address,
-      email: disbursement.accountPayable.courseBranch.branch.email || setting.email,
-      phone: disbursement.accountPayable.courseBranch.branch.phone || setting.phone,
+      companyName: activeSetting.companyName,
+      rnc: activeSetting.rnc,
+      address: disbursement.accountPayable.courseBranch.branch.address || activeSetting.address,
+      email: disbursement.accountPayable.courseBranch.branch.email || activeSetting.email,
+      phone: disbursement.accountPayable.courseBranch.branch.phone || activeSetting.phone,
     };
 
     await printPDF(
@@ -119,10 +137,6 @@ export default function PrintDisbursement({ paymentId, payableId, children }: Pr
     }
     return null;
   }
-
-  useEffect(() => {
-    setLoading(loadingSettings);
-  }, [loadingSettings]);
 
 
   return (
