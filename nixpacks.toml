@@ -1,0 +1,23 @@
+[variables]
+PORT = "3002"
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+# Instalamos dependencias y generamos el archivo .env físico a partir de las variables de Dokploy
+cmds = [
+  "npm install --legacy-peer-deps",
+  "echo \"DATABASE_URL=${DATABASE_URL}\" > .env",
+  "echo \"NEXTAUTH_URL=${NEXTAUTH_URL}\" >> .env",
+  "echo \"NEXTAUTH_SECRET=${NEXTAUTH_SECRET}\" >> .env",
+  "echo \"PORT=${PORT}\" >> .env",
+  "echo \"NEXTAUTH_COOKIE_NAME=${NEXTAUTH_COOKIE_NAME}\" >> .env"
+]
+
+[phases.build]
+cmds = ["npx prisma generate", "npm run build"]
+
+[start]
+# CORRECCIÓN AQUÍ: Forzamos a Next.js a escuchar hacia afuera en el puerto correcto
+cmd = "npx next start -H 0.0.0.0 -p 3002"
