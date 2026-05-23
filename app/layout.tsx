@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang="en">
             <body className={nunito.variable}>
-                <NextTopLoader showSpinner={false} color='#4361ee' />
+                <NextTopLoader showSpinner={false} color='#f97316' />
                 <ProviderComponent lang={lang}>{children}</ProviderComponent>
             </body>
         </html>

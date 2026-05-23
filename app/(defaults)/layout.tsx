@@ -14,6 +14,11 @@ export default async function DefaultLayout({ children }: { children: React.Reac
     const session = await getServerSession(authOptions);
     return (
         <>
+            {/* VERSIÓN DE PRUEBA - BANNER */}
+            <div className="sticky top-0 z-50 bg-orange-500 text-white text-center text-sm font-semibold py-1.5 px-4 shadow">
+                ⚠️ VERSIÓN DE PRUEBA — Este sistema es solo para entrenamiento. No realice operaciones reales.
+            </div>
+
             {/* BEGIN MAIN CONTAINER */}
             <div className="relative">
                 <Overlay />
