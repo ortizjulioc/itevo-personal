@@ -51,6 +51,10 @@ export const authOptions = {
     }),
   ],
   pages: { signIn: "/login" },
+
+  // 🚀 PARCHE 1: Forzar a NextAuth a nivel global a no exigir SSL para cookies de apoyo (CSRF, etc.)
+  useSecureCookies: false,
+
   cookies: {
     sessionToken: {
       name: process.env.NEXTAUTH_COOKIE_NAME || "next-auth.session-token",
@@ -58,13 +62,13 @@ export const authOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: process.env.NODE_ENV === "production",
+        // 🚀 PARCHE 2: Cambiado a false para que tu navegador guarde la sesión sobre HTTP (IP pública)
+        secure: false,
       },
     },
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      // Inicialización del token cuando el usuario inicia sesión
       if (user) {
         token.id = user.id;
         token.username = user.username;
@@ -78,7 +82,6 @@ export const authOptions = {
         token.roles = user.roles;
       }
 
-      // Actualizar sucursal activa cuando se cambia desde el frontend
       if (trigger === 'update' && session?.activeBranchId) {
         const activeBranch = token.branches?.find(b => b.id === session.activeBranchId);
         if (activeBranch) {
