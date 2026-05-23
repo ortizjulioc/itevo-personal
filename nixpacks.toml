@@ -2,7 +2,8 @@
 PORT = "3002"
 
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+# SOLUCIÓN: Cambiamos nodejs_20 por nodejs_22 para satisfacer a Prisma
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
 # Instalamos dependencias y generamos el archivo .env físico a partir de las variables de Dokploy
@@ -19,5 +20,4 @@ cmds = [
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
-# CORRECCIÓN AQUÍ: Forzamos a Next.js a escuchar hacia afuera en el puerto correcto
 cmd = "npx next start -H 0.0.0.0 -p 3002"
