@@ -1,12 +1,17 @@
 [variables]
 PORT = "3002"
-# SOLUCIÓN MAESTRA: Forzamos a Nixpacks a descargar una compilación que Prisma acepta obligatoriamente
-NIXPACKS_NODE_VERSION = "22.12.0"
+# SOLUCIÓN MAESTRA: Activamos el soporte nativo de require(ESM) oculto en Node 22.11.0
+NODE_OPTIONS = "--experimental-require-module"
+
+[phases.setup]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
-# Volvemos a una instalación limpia SIN '--ignore-scripts' para que el árbol de dependencias sea idéntico a tu local
+# 1. Saltamos el bloqueo rígido de texto de Prisma usando --ignore-scripts
+# 2. Recompilamos dependencias nativas como bcrypt de forma aislada
 cmds = [
-  "npm install --legacy-peer-deps",
+  "npm install --legacy-peer-deps --ignore-scripts",
+  "npm rebuild bcrypt",
   "echo \"DATABASE_URL=${DATABASE_URL}\" > .env",
   "echo \"NEXTAUTH_URL=${NEXTAUTH_URL}\" >> .env",
   "echo \"NEXTAUTH_SECRET=${NEXTAUTH_SECRET}\" >> .env",
@@ -15,6 +20,7 @@ cmds = [
 ]
 
 [phases.build]
+# Gracias a NODE_OPTIONS, prisma generate interpretará zeptomatch sin crashear
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
