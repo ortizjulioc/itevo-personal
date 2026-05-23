@@ -1,17 +1,12 @@
 [variables]
 PORT = "3002"
-
-[phases.setup]
-nixPkgs = ["nodejs_22"]
+# SOLUCIÓN MAESTRA: Forzamos a Nixpacks a descargar una compilación que Prisma acepta obligatoriamente
+NIXPACKS_NODE_VERSION = "22.12.0"
 
 [phases.install]
-# ESTRATEGIA:
-# 1. Usamos --ignore-scripts para neutralizar por completo el bloqueo de Prisma.
-# 2. Reconstruimos exclusivamente 'bcrypt' para compilar sus binarios nativos de forma aislada.
-# 3. Volcamos tus variables al entorno físico .env.
+# Volvemos a una instalación limpia SIN '--ignore-scripts' para que el árbol de dependencias sea idéntico a tu local
 cmds = [
-  "npm install --legacy-peer-deps --ignore-scripts",
-  "npm rebuild bcrypt",
+  "npm install --legacy-peer-deps",
   "echo \"DATABASE_URL=${DATABASE_URL}\" > .env",
   "echo \"NEXTAUTH_URL=${NEXTAUTH_URL}\" >> .env",
   "echo \"NEXTAUTH_SECRET=${NEXTAUTH_SECRET}\" >> .env",
@@ -20,7 +15,6 @@ cmds = [
 ]
 
 [phases.build]
-# Generamos manualmente el cliente de Prisma y ejecutamos la compilación de Next.js
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
