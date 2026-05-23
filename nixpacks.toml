@@ -2,13 +2,16 @@
 PORT = "3002"
 
 [phases.setup]
-# SOLUCIÓN: Cambiamos nodejs_20 por nodejs_22 para satisfacer a Prisma
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-# Instalamos dependencias y generamos el archivo .env físico a partir de las variables de Dokploy
+# ESTRATEGIA:
+# 1. Usamos --ignore-scripts para neutralizar por completo el bloqueo de Prisma.
+# 2. Reconstruimos exclusivamente 'bcrypt' para compilar sus binarios nativos de forma aislada.
+# 3. Volcamos tus variables al entorno físico .env.
 cmds = [
-  "npm install --legacy-peer-deps",
+  "npm install --legacy-peer-deps --ignore-scripts",
+  "npm rebuild bcrypt",
   "echo \"DATABASE_URL=${DATABASE_URL}\" > .env",
   "echo \"NEXTAUTH_URL=${NEXTAUTH_URL}\" >> .env",
   "echo \"NEXTAUTH_SECRET=${NEXTAUTH_SECRET}\" >> .env",
@@ -17,6 +20,7 @@ cmds = [
 ]
 
 [phases.build]
+# Generamos manualmente el cliente de Prisma y ejecutamos la compilación de Next.js
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
