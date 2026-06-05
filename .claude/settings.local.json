@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir \"c:\\\\Users\\\\crazy\\\\OneDrive\\\\Desktop\\\\proyectos\\\\itevo-core\\\\store\")"
+      "Bash(dir \"c:\\\\Users\\\\crazy\\\\OneDrive\\\\Desktop\\\\proyectos\\\\itevo-core\\\\store\")",
+      "Bash(npx prisma *)",
+      "Bash(npx ts-node *)",
+      "Bash(node -e ' *)",
+      "Bash(set \"PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=si\")"
     ]
   }
 }

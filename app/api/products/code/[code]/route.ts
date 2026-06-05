@@ -6,12 +6,11 @@ import { formatErrorMessage } from '@/utils/error-to-string';
 export async function GET(request: NextRequest, { params }: { params: Promise<{ code: string }> }) {
   try {
     const { code: codeFromParams } = await params;
-    if (!codeFromParams || isNaN(Number(codeFromParams))) {
+    if (!codeFromParams) {
       return NextResponse.json({ code: 'E_INVALID_CODE', message: 'Código de producto inválido' }, { status: 400 });
     }
-    const code = parseInt(codeFromParams, 10);
 
-    const product = await findProductByCode(code);
+    const product = await findProductByCode(codeFromParams);
 
     if (!product) {
       return NextResponse.json({ code: 'E_PRODUCT_NOT_FOUND' }, { status: 404 });

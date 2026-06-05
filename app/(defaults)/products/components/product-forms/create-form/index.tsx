@@ -44,6 +44,9 @@ export default function CreateProductForm() {
             <Formik initialValues={initialValues} validationSchema={createValidationSchema} onSubmit={handleSubmit}>
                 {({ isSubmitting, values, errors, touched, setFieldValue }) => (
                     <Form className="form">
+                        <FormItem name="code" label="Código / Código de Barra" invalid={Boolean(errors.code && touched.code)} errorMessage={errors.code}>
+                            <Field type="text" name="code" component={Input} placeholder="Ingrese el código o escanee el código de barra" />
+                        </FormItem>
                         <FormItem name="name" label="Nombre" invalid={Boolean(errors.name && touched.name)} errorMessage={errors.name}>
                             <Field type="text" name="name" component={Input} />
                         </FormItem>

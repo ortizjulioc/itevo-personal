@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 
 
 export const createValidationSchema = Yup.object().shape({
+    code: Yup.string().required('El código es requerido'),
     name: Yup.string().required('El nombre es requerido'),
     description: Yup.string(),
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
@@ -14,6 +15,7 @@ export const createValidationSchema = Yup.object().shape({
 });
 
 export const updateValidationSchema = Yup.object().shape({
+    code: Yup.string().required('El código es requerido'),
     name: Yup.string().required('El nombre es requerido'),
     description: Yup.string(),
     cost : Yup.number().required('El costo es requerido').positive('El costo debe ser un número positivo'),
@@ -25,6 +27,7 @@ export const updateValidationSchema = Yup.object().shape({
 });
 
 export const initialValues = {
+    code: '',
     name: '',
     description: '',
     cost: 0,

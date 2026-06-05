@@ -8,8 +8,6 @@ import { getServerSession } from 'next-auth';
 export async function getProducts(search = '', page = 1, top = 10, includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
-  const searchAsNumber = Number(search);
-  const isNumber = !isNaN(searchAsNumber);
   const skip = (page - 1) * top;
 
   const where: PrismaTypes.ProductWhereInput = {
@@ -17,7 +15,7 @@ export async function getProducts(search = '', page = 1, top = 10, includeDelete
     OR: [
       { name: { contains: search } },
       { description: { contains: search } },
-      ...(isNumber ? [{ code: searchAsNumber }] : []),
+      ...(search ? [{ code: search }] : []),
     ],
     ...(branchId ? { branchId } : {}),
   };
@@ -80,7 +78,7 @@ export async function findProductById(
 }
 
 // Buscar producto por código
-export async function findProductByCode(code: number, includeDeleted = false) {
+export async function findProductByCode(code: string, includeDeleted = false) {
   const session = await getServerSession(authOptions);
   const branchId = session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || undefined;
   return await Prisma.product.findUnique({ where: { code, ...(includeDeleted ? {} : { deleted: false }), ...(branchId ? { branchId } : {}) } });

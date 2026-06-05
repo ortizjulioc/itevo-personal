@@ -648,7 +648,7 @@ model InvoiceItem {
 
 model Product {
     id                  String  @id @default(uuid())
-    code                Int     @unique @default(autoincrement())
+    code                String  @unique
     name                String
     description         String?
     price               Float

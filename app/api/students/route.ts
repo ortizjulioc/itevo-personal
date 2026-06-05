@@ -63,22 +63,33 @@ export async function POST(request: Request) {
         }
 
         body.code = await createStudentCode();
-        body.branchId = body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null;
+        const rawBranchId = body.branchId || session?.user?.mainBranch?.id || session?.user?.branches?.[0]?.id || null;
+
+        // Verificar que la sucursal exista; si no, usar la primera disponible
+        let resolvedBranchId: string | null = null;
+        if (rawBranchId) {
+            const branch = await Prisma.branch.findUnique({ where: { id: rawBranchId } });
+            resolvedBranchId = branch?.id ?? null;
+        }
+        if (!resolvedBranchId) {
+            const firstBranch = await Prisma.branch.findFirst({ where: { deleted: false } });
+            resolvedBranchId = firstBranch?.id ?? null;
+        }
 
         const student = await Prisma.$transaction(async (prisma) => {
             // Crear el estudiante
             const student = await createStudent({
                 code: body.code,
-                firstName: body.firstName.trim(),
-                lastName: body.lastName.trim(),
-                email: body.email.trim(),
-                identification: body.identification.trim(),
-                address: body.address.trim(),
-                phone: body.phone.trim(),
+                firstName: body.firstName?.trim(),
+                lastName: body.lastName?.trim(),
+                email: body.email?.trim() || null,
+                identification: body.identification?.trim() || null,
+                address: body.address?.trim() || null,
+                phone: body.phone?.trim() || null,
                 hasTakenCourses: body.hasTakenCourses,
                 isMinor: body.isMinor,
                 identificationType: body.identificationType ?? IdentificationType.CEDULA,
-                branch: { connect: { id: body.branchId } },
+                ...(resolvedBranchId ? { branch: { connect: { id: resolvedBranchId } } } : {}),
             }, prisma);
 
             if (body.fingerprint) {
