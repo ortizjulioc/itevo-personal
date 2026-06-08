@@ -14,7 +14,11 @@ async function apiRequest<T>(params: AxiosRequestConfig): Promise<ApiResponse<T>
         const url = axiosError.config?.url;
         const status = axiosError.response?.status;
         const responseData = axiosError.response?.data;
-        console.error(`[API Error] ${status} ${url}`, responseData);
+        if (status === 404) {
+            console.warn(`[API 404] ${url}`);
+        } else {
+            console.error(`[API Error] ${status} ${url}`, responseData);
+        }
 
         const errorResponse = axiosError.response?.data as ApiErrorResponse;
         const message = errorResponse?.message || typedErrorsCode[errorResponse?.code] || errorResponse?.error || `Error ${status}: ${url} - Contacte al administrador del sistema.`;

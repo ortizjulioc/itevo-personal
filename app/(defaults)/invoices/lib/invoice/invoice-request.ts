@@ -22,6 +22,9 @@ export const addItemsInvoice = async (id: string, invoiceItem: InvoiceItem) => {
 export const removeItemsInvoice = async (id: string, invoiceItemId: string) => {
     return await apiRequest.remove<InvoiceItem>(`/invoices/${id}/items/${invoiceItemId}`);
 };
+export const updateItemQuantity = async (id: string, invoiceItemId: string, quantity: number) => {
+    return await apiRequest.patch<InvoiceItem>(`/invoices/${id}/items/${invoiceItemId}`, { quantity });
+};
 
 export const payInvoice = async (id: string, invoice: Invoice) => {
     return await apiRequest.post<Invoice>(`/invoices/${id}/pay`, invoice);

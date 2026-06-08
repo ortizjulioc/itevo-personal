@@ -3,7 +3,7 @@ import { Button, Input } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
 import { confirmDialog, formatCurrency, openNotification } from '@/utils';
 import { InvoiceItemType, type AccountReceivable, type Invoice, type InvoiceItem } from '@/generated/prisma/client';
-import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
+import { addItemsInvoice, cancelInvoice, payInvoice, removeItemsInvoice, updateInvoice, updateItemQuantity } from '@/app/(defaults)/invoices/lib/invoice/invoice-request';
 import { useEffect, useRef, useState } from 'react';
 import SelectProduct, { ProductSelect } from '@/components/common/selects/select-product';
 
@@ -36,6 +36,11 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
 
     const quantityRef = useRef<HTMLInputElement>(null);
     const productRef = useRef<HTMLSelectElement>(null);
+    const barcodeRef = useRef<HTMLInputElement>(null);
+    const [barcodeValue, setBarcodeValue] = useState('');
+    const [barcodeLoading, setBarcodeLoading] = useState(false);
+    const [editingQty, setEditingQty] = useState<{ itemId: string; value: string } | null>(null);
+    const [scannerMode, setScannerMode] = useState(true);
     const route = useRouter();
     const [item, setItem] = useState<InvoiceItem | null>(null);
     const [itemLoading, setItemloading] = useState(false);
@@ -66,6 +71,43 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
             quantityRef.current.select();
             quantityRef.current.focus();
         }
+    };
+
+    const handleBarcodeEnter = async (code: string) => {
+        if (!code.trim()) return;
+        setBarcodeLoading(true);
+        setBarcodeValue('');
+        try {
+            const resp = await apiRequest.get<any>(`/products/code/${encodeURIComponent(code.trim())}`);
+            if (!resp.success || !resp.data) {
+                openNotification('error', `Producto con código "${code}" no encontrado`);
+                barcodeRef.current?.focus();
+                return;
+            }
+            const product = resp.data;
+            await handleAddItem({
+                productId: product.id,
+                unitPrice: product.price,
+                quantity: 1,
+            });
+        } catch {
+            openNotification('error', 'Error al buscar producto por código');
+            barcodeRef.current?.focus();
+        } finally {
+            setBarcodeLoading(false);
+        }
+    };
+
+    const handleUpdateQuantity = async (invoiceItemId: string, newQty: number) => {
+        if (!newQty || newQty <= 0) return;
+        const resp = await updateItemQuantity(InvoiceId, invoiceItemId, newQty);
+        if (resp.success) {
+            await fetchInvoiceData(InvoiceId);
+        } else {
+            openNotification('error', resp.message || 'Error al actualizar la cantidad');
+        }
+        setEditingQty(null);
+        barcodeRef.current?.focus();
     };
 
     const handleSubmit = async (generateNcf: boolean = true): Promise<boolean> => {
@@ -152,10 +194,8 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
             openNotification('success', 'Item agregado correctamente');
             setItem(null);
             await fetchInvoiceData(InvoiceId);
-            if (productRef.current) {
-                productRef.current.focus();
-            }
             setItemloading(false);
+            setTimeout(() => barcodeRef.current?.focus(), 0);
             return true;
         } else {
             openNotification('error', resp.message);
@@ -337,42 +377,84 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
                     </div>
 
                     {/* Sección de Productos */}
-                    <div className="mt-4 flex flex-col items-stretch gap-4 md:flex-row">
-                        <div className="w-full md:w-[calc(100%-220px)]">
-                            <SelectProduct ref={productRef} value={item?.productId ?? ''} onChange={onSelectProduct} disabled={itemLoading} />
-                        </div>
+                    <div className="mt-4 flex items-center gap-3">
+                        <label className="flex cursor-pointer items-center gap-2 select-none">
+                            <div
+                                onClick={() => setScannerMode((prev) => !prev)}
+                                className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${scannerMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                            >
+                                <span
+                                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${scannerMode ? 'translate-x-5' : 'translate-x-0.5'}`}
+                                />
+                            </div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {scannerMode ? 'Lector de barras' : 'Manual'}
+                            </span>
+                        </label>
+                    </div>
 
-                        <div className="w-full md:w-[220px]">
+                    {scannerMode ? (
+                        <div className="mt-3">
                             <div className="relative w-full">
                                 <Input
-                                    ref={quantityRef}
-                                    placeholder="Cantidad"
-                                    type="number"
-                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                    value={item?.quantity === 0 ? '' : item?.quantity ?? ''}
-                                    disabled={itemLoading}
-                                    onChange={(e) => {
-                                        setItem((prev) => ({
-                                            ...prev!,
-                                            quantity: Number(e.target.value),
-                                        }));
-                                    }}
+                                    ref={barcodeRef}
+                                    placeholder="Escanear código de barras..."
+                                    autoFocus
+                                    value={barcodeValue}
+                                    disabled={itemLoading || barcodeLoading}
+                                    onChange={(e) => setBarcodeValue(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
-                                            handleAddItem(item);
+                                            handleBarcodeEnter(barcodeValue);
                                         }
                                     }}
-                                    className={`w-full ${itemLoading ? 'pointer-events-none pr-10 opacity-60' : ''}`}
+                                    className={`w-full ${barcodeLoading ? 'pointer-events-none pr-10 opacity-60' : ''}`}
                                 />
-                                {itemLoading && (
+                                {barcodeLoading && (
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="mt-3 flex flex-col items-stretch gap-4 md:flex-row">
+                            <div className="w-full md:w-[calc(100%-220px)]">
+                                <SelectProduct ref={productRef} value={item?.productId ?? ''} onChange={onSelectProduct} disabled={itemLoading} />
+                            </div>
+                            <div className="w-full md:w-[220px]">
+                                <div className="relative w-full">
+                                    <Input
+                                        ref={quantityRef}
+                                        placeholder="Cantidad"
+                                        type="number"
+                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                        value={item?.quantity === 0 ? '' : item?.quantity ?? ''}
+                                        disabled={itemLoading}
+                                        onChange={(e) => {
+                                            setItem((prev) => ({
+                                                ...prev!,
+                                                quantity: Number(e.target.value),
+                                            }));
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddItem(item);
+                                            }
+                                        }}
+                                        className={`w-full ${itemLoading ? 'pointer-events-none pr-10 opacity-60' : ''}`}
+                                    />
+                                    {itemLoading && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-4 overflow-x-auto">
                         <table className="min-w-full table-auto">
@@ -404,7 +486,30 @@ export default function AddItemsInvoices({ InvoiceId, fetchInvoiceData, cashRegi
                                                 <span className="text-gray-500 dark:text-gray-400">{item.concept || 'Cuenta por cobrar'}</span>
                                             )}
                                         </td>
-                                        <td className="px-2 py-2">{item.quantity}</td>
+                                        <td className="px-2 py-2">
+                                            {editingQty?.itemId === item.id ? (
+                                                <input
+                                                    type="number"
+                                                    autoFocus
+                                                    className="w-20 rounded border px-1 py-0.5 text-sm"
+                                                    value={editingQty.value}
+                                                    onChange={(e) => setEditingQty({ itemId: item.id, value: e.target.value })}
+                                                    onBlur={() => handleUpdateQuantity(item.id, Number(editingQty.value))}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') handleUpdateQuantity(item.id, Number(editingQty.value));
+                                                        if (e.key === 'Escape') setEditingQty(null);
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span
+                                                    className="cursor-pointer rounded px-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                    title="Click para editar"
+                                                    onClick={() => setEditingQty({ itemId: item.id, value: String(item.quantity) })}
+                                                >
+                                                    {item.quantity}
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="px-2 py-2">{formatCurrency(item.unitPrice || 0)}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.subtotal)}</td>
                                         <td className="px-2 py-2">{formatCurrency(item.itbis)}</td>

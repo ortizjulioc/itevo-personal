@@ -5,7 +5,10 @@
       "Bash(npx prisma *)",
       "Bash(npx ts-node *)",
       "Bash(node -e ' *)",
-      "Bash(set \"PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=si\")"
+      "Bash(set \"PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=si\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ortiz\\\\Desktop\\\\Proyectos julio\\\\itevo-personal\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-Table FullName)"
     ]
   }
 }

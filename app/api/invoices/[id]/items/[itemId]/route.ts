@@ -11,6 +11,78 @@ import Prisma from '@/utils/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string; itemId: string }> }) {
+    const { id, itemId } = await params;
+    try {
+        const session = await getServerSession(authOptions);
+        const { quantity } = await req.json();
+
+        if (!quantity || quantity <= 0) {
+            return NextResponse.json({ error: 'La cantidad debe ser mayor a 0' }, { status: 400 });
+        }
+
+        let invoiceUpdated;
+        await Prisma.$transaction(async (prisma) => {
+            const invoice = await findInvoiceById(id, prisma);
+            if (!invoice) throw new Error(`Factura con ID ${id} no encontrada`);
+            if (invoice.status !== 'DRAFT') throw new Error('Solo se pueden editar ítems de facturas en estado DRAFT');
+
+            const item = invoice.items.find((i) => i.id === itemId);
+            if (!item) throw new Error(`Ítem ${itemId} no encontrado`);
+
+            const oldQty = item.quantity || 0;
+            const diff = quantity - oldQty;
+
+            if (item.type === InvoiceItemType.PRODUCT && item.productId) {
+                const product = await findProductById(item.productId);
+                if (!product) throw new Error('Producto no encontrado');
+
+                if (!product.billingWithoutStock && diff > 0 && product.stock < diff) {
+                    throw new Error(`Stock insuficiente. Disponible: ${product.stock}`);
+                }
+
+                const movType = diff > 0 ? MovementType.OUT : MovementType.IN;
+                const absDiff = Math.abs(diff);
+                if (absDiff > 0) {
+                    await recordInventoryMovement({
+                        productId: product.id,
+                        quantity: absDiff,
+                        previousStock: product.stock,
+                        newStock: product.stock - diff,
+                        type: movType,
+                        reference: id,
+                        note: 'Ajuste de cantidad en factura',
+                        branchId: product.branchId || null,
+                        createdBy: session?.user?.id as string || '',
+                        tx: prisma,
+                    });
+                    await updateProductById(item.productId, { stock: product.stock - diff }, prisma);
+                }
+            }
+
+            const newSubtotal = (item.unitPrice || 0) * quantity;
+            const taxRate = item.itbis && oldQty > 0 ? item.itbis / item.subtotal : 0;
+            const newItbis = newSubtotal * taxRate;
+
+            await prisma.invoiceItem.update({
+                where: { id: itemId },
+                data: { quantity, subtotal: newSubtotal, itbis: newItbis },
+            });
+
+            const subtotalDiff = newSubtotal - item.subtotal;
+            const itbisDiff = newItbis - (item.itbis || 0);
+            invoiceUpdated = await updateInvoice(id, {
+                subtotal: invoice.subtotal + subtotalDiff,
+                itbis: invoice.itbis + itbisDiff,
+            }, prisma);
+        });
+
+        return NextResponse.json(invoiceUpdated, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ error: formatErrorMessage(error) }, { status: 500 });
+    }
+}
+
 // Handler DELETE para eliminar un ítem de la factura
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string; itemId: string }> }) {
     const { id, itemId } = await params; // ID de la factura y del ítem
