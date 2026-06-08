@@ -4,7 +4,7 @@ import { Prisma } from '@/utils/lib/prisma';
 export interface SoldInventoryReportItem {
   productId: string;
   productName: string;
-  productCode: number;
+  productCode: string;
   quantitySold: number;
   totalAmount: number;
 }
